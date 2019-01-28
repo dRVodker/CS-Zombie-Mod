@@ -97,7 +97,7 @@ const int iHPReward = 75;				//Give that amount of HP as reward of successful in
 const int iGearUpTime = 40;				//Time to gear up and find a good spot.
 const int iTurningTime = 15;			//Turning time.
 const int iInfectDelay = 3;				//Amount of rounds you have to wait to be the First Infected again.
-const int iWUTime = 4;					//Time of the warmup in seconds.		(default value is 76)
+const int iWUTime = 76;					//Time of the warmup in seconds.		(default value is 76)
 
 //New Consts
 const float flBlockZSTime = 35.00f;		//Amount of time in seconds which abusers must wait to join the zombie team.
@@ -385,7 +385,7 @@ void OnMapInit()
 		flHPRegenTime = Globals.GetCurrentTime() + 0.15f;
 		flCITime = Globals.GetCurrentTime() + 0.5f;
 		
-		//Set Doors Filter to 0
+		//Set Doors Filter to 0 (any team)
 		if(bAllowWarmUp == true) SetDoors(0);
 	
 	}
@@ -866,7 +866,7 @@ HookReturnCode OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageInf
 			if(Utils.GetNumPlayers(zombie, false) >= 2)
 			{
 				pBaseEnt.ChangeTeam(2);
-				Schedule::Task(0.01f, "MovePlrToZombieTeam");
+				Schedule::Task(0.001f, "MovePlrToZombieTeam");
 			}
 		}
 		
@@ -912,7 +912,7 @@ HookReturnCode OnEntityCreation(const string &in strClassname, CBaseEntity@ pEnt
 	{
 		if(strClassname == "npc_grenade_frag")
 		{
-			Engine.Ent_Fire_Ent(pEntity, "AddOutput", "Effects 20");
+			Engine.Ent_Fire_Ent(pEntity, "AddOutput", "Effects 4");	//DLight for npc_grenade_frag
 			return HOOK_HANDLED;
 		}
 	}
@@ -1048,6 +1048,8 @@ void ComparePlr()
 
 void RoundTimeLeft()
 {
+	if(Utils.GetNumPlayers(survivor, false) <= 1) RoundManager.SetWinState(STATE_STALEMATE);
+	
 	if(bAllowCD == true)
 	{
 		float fShowHour = floor(iSeconds / 3600);
@@ -1109,10 +1111,7 @@ void ShowRTL(float &in fShowMin, float &in fShowSec, float &in flHoldTime)
 
 void TimesUp()
 {
-	if(Utils.GetNumPlayers(survivor, true) > 0)
-	{
-		RoundManager.SetWinState(STATE_HUMAN);
-	}
+	if(Utils.GetNumPlayers(survivor, true) > 0) RoundManager.SetWinState(STATE_HUMAN);
 }
 
 void FZColor()
