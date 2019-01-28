@@ -89,7 +89,7 @@ const int iHPReward = 75;				//Give that amount of HP as reward of successful in
 const int iGearUpTime = 40;				//Time to gear up and find a good spot.
 const int iTurningTime = 15;			//Turning time.
 const int iInfectDelay = 3;				//Amount of rounds you have to wait to be the First Infected again.
-const int iWUTime = 76;					//Time of the warmup in seconds.		(default value is 76)
+const int iWUTime = 4;					//Time of the warmup in seconds.		(default value is 76)
 
 //New Consts
 const float flBlockZSTime = 35.00f;		//Amount of time in seconds which abusers must wait to join the zombie team.
@@ -1188,6 +1188,8 @@ void SetZMHealth(CBaseEntity@ pEntPlr)
 void ShowOutbreak(int &in iIndex)
 {
 	CZP_Player@ pFirstInf = ToZPPlayer(iIndex);
+	string strColor = "blue";
+	if(g_bIsVolunteer[iIndex] == true) strColor = "violet";
 	
 	for(int i = 1; i <= iMaxPlayers; i++ )
 	{
@@ -1198,11 +1200,11 @@ void ShowOutbreak(int &in iIndex)
 		CBasePlayer@ pPlrEnt = pPlayer.opCast();
 		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 		
-		if(i != iIndex) Chat.PrintToChatPlayer(pPlrEnt, "{violet}" + pFirstInf.GetPlayerName() + strBecameFi);
-		
-		SendGameTextPlayer(pPlayer, strOutbreakMsg, 1, 0, -1, 0.175, 0, 0.35, 6.75, Color(64, 255, 128), Color(0, 255, 0));
+		if(i != iIndex) Chat.PrintToChatPlayer(pPlrEnt, "{" + strColor + "}" + pFirstInf.GetPlayerName() + strBecameFi);
 	}
 
+	SendGameText(any, strOutbreakMsg, 1, 0, -1, 0.175, 0, 0.35, 6.75, Color(64, 255, 128), Color(0, 255, 0));
+	
 	iFZIndex = 0;
 }
 
