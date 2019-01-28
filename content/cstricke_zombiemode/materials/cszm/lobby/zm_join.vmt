@@ -1,0 +1,8 @@
+"UnlitGeneric"
+{
+	"$basetexture" "cszm/lobby/zm_join"
+	"$surfaceprop" "metal"
+	"$AlphaTest" "1"
+	
+	"$color" "{64 128 255}"
+}

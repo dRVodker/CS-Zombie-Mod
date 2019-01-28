@@ -1,0 +1,20 @@
+VertexLitGeneric
+{
+	$basetexture				"models/cszm/sawyer/sawyer_d"
+	$bumpmap					"models/cszm/sawyer/sawyer_local"
+	
+	"$detail"					"detail/noise_detail_01"
+	"$detailscale"				"4.5"
+	"$detailblendfactor"		"0.425"
+	"$detailblendmode"			"0"
+	
+	"$phong"					"1"
+
+	"$phongexponent"			"50"
+	"$phongexponenttexture"		"models/cszm/sawyer/sawyer_h"
+	"$phongboost"				"5"
+	
+	"$rimlight"					"1"
+	"$rimlightexponent"			"50"
+	"$rimlightboost"			"0.25"
+}

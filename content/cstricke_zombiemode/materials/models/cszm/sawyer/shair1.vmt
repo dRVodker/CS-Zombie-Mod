@@ -1,0 +1,13 @@
+VertexLitGeneric
+{
+	$basetexture			"models/cszm/sawyer/shair1"
+	
+	"$translucent"			"1"
+	
+	"$detail"				"detail/noise_detail_01"
+	"$detailscale"			"4.5"
+	"$detailblendfactor"	"0.425"
+	"$detailblendmode"		"0"
+	
+	"$nodecal"				"1"
+}

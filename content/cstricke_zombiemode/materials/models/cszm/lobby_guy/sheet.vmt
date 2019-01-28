@@ -1,0 +1,5 @@
+VertexLitGeneric
+{
+	"$basetexture"	"models/cszm/lobby_guy/sheet"
+	"$bumpmap"		"models/cszm/lobby_guy/sheet_normal"
+}
