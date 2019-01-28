@@ -13,11 +13,11 @@ void SD(const string &in strMSG)
 array<string> g_strMsg =
 {
 	"null",
-	strCSZM+"{default}Type {lime}!infect{default} to be the {lightseagreen}first infected{default}.",
+	strCSZM+"{default}Type {lime}!infect{default} to choose play as {lightseagreen}first infected{default}.",
 	strCSZM+"{default}If you stuck in spectator mode, press {seagreen}F4{default} to get back to the {green}ready room.{default}.",
-	strCSZM+"{default}Ammunition and armor respawn over a period of time.",
-	strCSZM+"{default}Zombies getting stronger each death!",
-	strCSZM+"{default}Dropped ammunition disappear over a period of time."
+	strCSZM+"{default}Ammunition and armor respawning over a period of time.",
+	strCSZM+"{default}Zombies getting the HP bonus each death!",
+	strCSZM+"{default}Dropped ammunition will be removed over a period of time."
 };
 
 array<bool> g_bIsShown;
