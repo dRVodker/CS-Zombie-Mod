@@ -6,6 +6,7 @@
 */
 
 #include "../SendGameText"
+#include "./cszm/cache.as"
 
 //MyDebugFunc
 void SD(const string &in strMSG)
