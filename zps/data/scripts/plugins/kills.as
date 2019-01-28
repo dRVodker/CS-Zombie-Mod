@@ -216,6 +216,7 @@ HookReturnCode OnKPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageI
 			g_iVictims[pBasaAtt.entindex()]++;
 			g_iSVictims[pBasaAtt.entindex()]++;
 			ShowKills(pPlrAttacker, g_iVictims[pBasaAtt.entindex()], true);
+			KillFeed(pPlrAttacker.GetPlayerName(), pBasaAtt.GetTeamNumber(), pPlayer.GetPlayerName(), pBaseEnt.GetTeamNumber(), true, false);
 			
 			return HOOK_HANDLED;
 		}
@@ -296,13 +297,18 @@ HookReturnCode OnKPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageIn
 		CBasePlayer@ pAttEnt = pPlrAttacker.opCast();
 		CBaseEntity@ pBasaAtt = pAttEnt.opCast();
 		
-		if(pBasaAtt.entindex() == pBaseEnt.entindex()) return HOOK_HANDLED;
+		if(pBasaAtt.entindex() == pBaseEnt.entindex())
+		{
+			KillFeed("", 0, pPlayer.GetPlayerName(), pBaseEnt.GetTeamNumber(), false, true);
+			return HOOK_HANDLED;
+		}
 		
 		if(pBasaAtt.GetTeamNumber() == 2)
 		{
 			g_iKills[pBasaAtt.entindex()]++;
 			g_iSKills[pBasaAtt.entindex()]++;
 			ShowKills(pPlrAttacker, g_iKills[pBasaAtt.entindex()], false);
+			KillFeed(pPlrAttacker.GetPlayerName(), pBasaAtt.GetTeamNumber(), pPlayer.GetPlayerName(), pBaseEnt.GetTeamNumber(), false, false);
 			
 			return HOOK_HANDLED;
 		}
@@ -312,6 +318,7 @@ HookReturnCode OnKPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageIn
 			g_iVictims[pBasaAtt.entindex()]++;
 			g_iSVictims[pBasaAtt.entindex()]++;
 			ShowKills(pPlrAttacker, g_iVictims[pBasaAtt.entindex()], true);
+			KillFeed(pPlrAttacker.GetPlayerName(), pBasaAtt.GetTeamNumber(), pPlayer.GetPlayerName(), pBaseEnt.GetTeamNumber(), false, false);
 			
 			return HOOK_HANDLED;
 		}
@@ -320,7 +327,7 @@ HookReturnCode OnKPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageIn
 	return HOOK_CONTINUE;
 }
 
-void ShowKills(CZP_Player@ pPlayer, const int &in iKills, bool &in bIsVictim)
+void ShowKills(CZP_Player@ pPlayer, const int &in iKills,const bool &in bIsVictim)
 {
 	string strMsgToShow = "";
 	int iR = 235;
@@ -342,6 +349,50 @@ void ShowKills(CZP_Player@ pPlayer, const int &in iKills, bool &in bIsVictim)
 	}
 	
 	SendGameTextPlayer(pPlayer, strMsgToShow + iKills, 5, 0.00f, -1, 0.65f, 0.00f, 0.125f, 2.00f, Color(iR, iG, iB), Color(255, 95, 5));
+}
+
+void KillFeed(const string &in strAttName, const int &in iAttTeam, const string &in strVicName, const int &in iVicTeam, const bool &in bIsInfect, const bool &in bIsSuicide)
+{
+	string VicColoe = "white";
+	string AttColoe = "white";
+	switch(iAttTeam)
+	{
+		case 2:
+			AttColoe = "blue";
+		break;
+		
+		case 3:
+			AttColoe = "red";
+		break;
+		
+		default:
+			AttColoe = "grey";
+		break;
+	}
+	
+	switch(iVicTeam)
+	{
+		case 2:
+			VicColoe = "blue";
+		break;
+		
+		case 3:
+			VicColoe = "red";
+		break;
+		
+		default:
+			VicColoe = "grey";
+		break;
+	}
+	
+	if(bIsSuicide == false)
+	{
+		string strKill = "killed";
+		if(bIsInfect == true) strKill = "infected";
+		Chat.PrintToChat(all, "{"+VicColoe+"}" + strVicName + " {default}" + strKill + " by {"+AttColoe+"}" + strAttName +"{default}.");
+	}
+	
+	else Chat.PrintToChat(all, "{"+VicColoe+"}" + strVicName + "{default} committed suicide.");
 }
 
 void ShowStatsEnd()
