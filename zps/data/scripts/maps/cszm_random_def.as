@@ -7,7 +7,6 @@ void OverrideLimits()
 	RoundManager.Limit_Random("item_ammo_shotgun", 15);
 	RoundManager.Limit_Random("item_ammo_pistol", 45);
 	RoundManager.Limit_Random("item_ammo_rifle", 25);
-	RoundManager.Limit_Random("item_ammo_barricade", 10);
 	RoundManager.Limit_Random("item_armor", 5);
 	RoundManager.Limit_Random("item_healthkit", 0);
 	RoundManager.Limit_Random("item_pills", 0);
@@ -18,19 +17,20 @@ void OverrideLimits()
 	
 	RoundManager.Limit_Random("weapon_frag", 5);
 	RoundManager.Limit_Random("weapon_ied", 2);
-	RoundManager.Limit_Random("weapon_glock", 4);
-	RoundManager.Limit_Random("weapon_ppk", 3);
-	RoundManager.Limit_Random("weapon_usp", 4);
+	RoundManager.Limit_Random("weapon_glock", 3);
+	RoundManager.Limit_Random("weapon_ppk", 2);
+	RoundManager.Limit_Random("weapon_usp", 3);
 	RoundManager.Limit_Random("weapon_ak47", 8);
 	RoundManager.Limit_Random("weapon_m4", 8);
 	RoundManager.Limit_Random("weapon_mp5", 6);
-	RoundManager.Limit_Random("weapon_glock18c	", 5);
+	RoundManager.Limit_Random("weapon_glock18c", 5);
 	RoundManager.Limit_Random("weapon_870", 8);
 	RoundManager.Limit_Random("weapon_supershorty", 5);
 	RoundManager.Limit_Random("weapon_winchester", 3);
 	RoundManager.Limit_Random("weapon_revolver", 2);
 
 	RoundManager.Limit_Random("weapon_barricade", 15);
+	RoundManager.Limit_Random("item_ammo_barricade", 10);
 	
 	RoundManager.Limit_Random("weapon_axe", 0);
 	RoundManager.Limit_Random("weapon_bat_aluminum", 0);
