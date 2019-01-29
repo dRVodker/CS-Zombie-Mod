@@ -56,7 +56,7 @@ HookReturnCode OnPlayerSpawn(CZP_Player@ pPlayer)
 	CBasePlayer@ pPlrEnt = pPlayer.opCast();
 	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 	
-	if(pBaseEnt.entindex() == iFireflyIndex)
+	if(pBaseEnt.entindex() == iFireflyIndex && pBaseEnt.GetTeamNumber() != 1 || pBaseEnt.GetTeamNumber() != 0)
 	{
 		iFireflyIndex = 0;
 		Engine.Ent_Fire("spec_sprite", "kill");
@@ -216,8 +216,8 @@ void PropsHP()
 		
 		else if(Utils.StrContains("vm", pEntity.GetEntityName()))
 		{
-			pEntity.SetMaxHealth(pEntity.GetHealth() + PlrCountHP(70));
-			pEntity.SetHealth(pEntity.GetHealth() + PlrCountHP(70));
+			pEntity.SetMaxHealth(pEntity.GetHealth() + PlrCountHP(100));
+			pEntity.SetHealth(pEntity.GetHealth() + PlrCountHP(100));
 		}
 		
 		else if(Utils.StrContains("Pallet", pEntity.GetEntityName()))
@@ -271,7 +271,7 @@ void RandomizePropCrate()
 	{
 		iRND = Math::RandomInt(1, 100);
 		
-		if(iRND > 19)
+		if(iRND > 32)
 		{
 			if(pEntity.GetEntityName() != "breencrate")
 			{
@@ -280,13 +280,13 @@ void RandomizePropCrate()
 				if(iRND_Type < 5) iRND_Class = Math::RandomInt(0, 10);
 				else if(iRND_Type == 1) iRND_Class = Math::RandomInt(0, 17);
 				else iRND_Class = Math::RandomInt(11, 17);
-				iRND_Count = Math::RandomInt(1, 3);
+				iRND_Count = Math::RandomInt(1, 3);	//Count of weapons
 				
 				if(iRND_Class < 13) iRND_Class = Math::RandomInt(3, 16);
 				
-				if(iRND_Class == 11 || iRND_Class == 12) iRND_Count = Math::RandomInt(3, 7);
-				if(iRND_Class >= 13 && iRND_Class <= 16) iRND_Count = Math::RandomInt(2, 6);
-				if(iRND_Class == 17) iRND_Count = Math::RandomInt(1, 2);
+				if(iRND_Class == 11 || iRND_Class == 12) iRND_Count = Math::RandomInt(3, 4);	//Count of frag and ied
+				if(iRND_Class >= 13 && iRND_Class <= 16) iRND_Count = Math::RandomInt(1, 3);	//Count of ammo
+				if(iRND_Class == 17) iRND_Count = Math::RandomInt(1, 2);	//Count of armor
 				
 				Engine.Ent_Fire_Ent(pEntity, "AddOutput", "ItemCount "+iRND_Count);
 				Engine.Ent_Fire_Ent(pEntity, "AddOutput", "ItemClass "+g_strClassnames[iRND_Class]);

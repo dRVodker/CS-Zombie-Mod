@@ -94,7 +94,13 @@ void PropsSettings()
 		}
 		else if(Utils.StrContains("vent001", pEntity.GetModelName()))
 		{
+			pEntity.SetMaxHealth(5);
 			pEntity.SetHealth(5);
+		}
+		else if(Utils.StrContains("trashdumpster01a", pEntity.GetModelName()))
+		{
+			pEntity.SetMaxHealth(99999);
+			pEntity.SetHealth(99999);
 		}
 		else
 		{
