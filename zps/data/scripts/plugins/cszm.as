@@ -72,7 +72,7 @@ const float flSDMultMEL = 0.800f;
 const float flSDMultFALL = 0.180f;
 
 //Slowdown Time
-const float flMaxSDTime = 1.125f;		//Maximum slow down time.
+const float flMaxSDTime = 1.375f;		//Maximum slow down time.
 const float flSDTime = 0.125f;			//Any other type of a damage.
 const float flSDTimeSG = 0.485f;
 const float flSDTimeEXP = 1.025f;
@@ -188,7 +188,7 @@ HookReturnCode OnPlayerRagdollCreated(CZP_Player@ pPlayer, bool &in bHeadshot, b
 	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 	if(Utils.StrContains("cszm", pBaseEnt.GetModelName()))
 	{
-		bHeadshot = false;
+		bHeadshot = false;	//Disabled headshots cuz it fucked up in the game
 	}
 	
 	return HOOK_CONTINUE;
@@ -1295,7 +1295,7 @@ void MovePlrToSpec(CBaseEntity@ pEntPlr)
 	CBasePlayer@ pPlayer = ToBasePlayer(pEntPlr.entindex());
 }
 
-//WarmUp Funcs
+//WarmUp Related Funcs
 void WarmUpTimer()
 {
 	int iNumPlrs = 0;

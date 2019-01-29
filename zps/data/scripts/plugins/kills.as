@@ -355,6 +355,7 @@ void KillFeed(const string &in strAttName, const int &in iAttTeam, const string 
 {
 	string VicColoe = "white";
 	string AttColoe = "white";
+	
 	switch(iAttTeam)
 	{
 		case 2:
