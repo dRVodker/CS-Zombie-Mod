@@ -21,6 +21,9 @@ void CacheSounds()
 {
     //Boom HeadShot
     Engine.PrecacheFile(sound, ")impacts/flesh_impact_headshot-01.wav");
+	
+	//Item Respawn Sound
+    Engine.PrecacheFile(sound, "items/suitchargeok1.wav");
     
     //ZM First Turn Sound
     Engine.PrecacheFile(sound, "@cszm_fx/misc/suspense.wav");
