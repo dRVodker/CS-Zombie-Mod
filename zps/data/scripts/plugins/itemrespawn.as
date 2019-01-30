@@ -25,10 +25,10 @@ array<float> g_flSTime =
 {
 	0.0f, //0
 	5.0f, //1
-	25.0f, //2
-	30.0f, //3
-	35.0f, //4
-	7.3f //5
+	22.5f, //2
+	22.5f, //3
+	32.5f, //4
+	10.0f //5
 };
 
 array<float> g_flSpawnTime = {0.0f};
