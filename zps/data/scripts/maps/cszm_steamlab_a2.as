@@ -35,7 +35,7 @@ void SetUpStuff()
 	
 	Engine.Ent_Fire("HumanSpawn*", "AddOutput", "OnPlayerSpawn !self:kill:0:0:1");
 	
-	FixZSpawn();
+//	FixZSpawn();
 	
 	CreatedByColors();
 }
@@ -120,6 +120,7 @@ int PlrCountHP(int &in iMulti)
 	return iHP;
 }
 
+/*
 void FixZSpawn()
 {
 	CBaseEntity@ pEntity;
@@ -129,3 +130,4 @@ void FixZSpawn()
 		if(pEntity.GetAbsOrigin() == Vector(-2563.01, 1898.16, 1032)) pEntity.SetAbsOrigin(Vector(-2563.01, 1898.16, 1034));
 	}
 }
+*/
