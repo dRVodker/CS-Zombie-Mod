@@ -6,8 +6,14 @@ void SD(const string &in strMSG)
 	Chat.PrintToChat(all, strMSG);
 }
 
+int iMaxPlayers;
+const float flMaxDist = 1024;
+const float flLastRadius = 384;
+bool bAllowClearName = false;
+
 void OnMapInit()
 {
+	iMaxPlayers = Globals.GetMaxClients();
 	Schedule::Task(0.025f, "SetUpStuff");
 }
 
@@ -24,10 +30,158 @@ void OnMatchBegin()
 	PropsSettings();
 	PropDoorHP();
 	Engine.Ent_Fire("SND_Ambient", "PlaySound");
+	
+	Schedule::Task(5.0f, "SpawnDist");
+}
+
+void SpawnDist()
+{
+	Schedule::Task(0.1f, "SpawnDist");
+
+	int iLCount = 0;
+	float flSDist;
+	
+	CBaseEntity@ pZSpawn;
+	while ((@pZSpawn = FindEntityByClassname(pZSpawn, "info_player_zombie")) !is null)
+	{
+		for(int i = 1; i <= iMaxPlayers; i++)
+		{
+			CZP_Player@ pPlayer = ToZPPlayer(i);
+
+			if(pPlayer is null) continue;
+
+			CBasePlayer@ pPlrEnt = pPlayer.opCast();
+			CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+			
+			if(pBaseEnt.GetTeamNumber() != 2) continue;
+			
+			flSDist = pZSpawn.Distance(pBaseEnt.GetAbsOrigin());
+			
+			if(flSDist < flMaxDist)
+			{
+				if(bAllowClearName == false) bAllowClearName = true;
+				
+				if(pZSpawn.GetEntityName() != "locked")
+				{
+					pZSpawn.SetEntityName("locked");
+					Engine.Ent_Fire_Ent(pZSpawn, "EnableSpawn");
+				}
+			}
+			else
+			{
+				if(pZSpawn.GetEntityName() != "locked" && pZSpawn.GetEntityName() != "disabled")
+				{
+					pZSpawn.SetEntityName("disabled");
+					Engine.Ent_Fire_Ent(pZSpawn, "DisableSpawn");
+				}
+			}
+		}
+	}
+	
+	if(bAllowClearName == true)
+	{
+		CBaseEntity@ pZLockedSpawn;
+		while ((@pZLockedSpawn = FindEntityByClassname(pZLockedSpawn, "info_player_zombie")) !is null)
+		{
+			if(pZLockedSpawn.GetEntityName() == "locked")
+			{
+				iLCount = 0;
+
+				for(int i = 1; i <= iMaxPlayers; i++)
+				{
+					CZP_Player@ pPlayer = ToZPPlayer(i);
+
+					if(pPlayer is null) continue;
+
+					CBasePlayer@ pPlrEnt = pPlayer.opCast();
+					CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+					
+					if(pBaseEnt.GetTeamNumber() != 2) continue;
+					
+					flSDist = pZLockedSpawn.Distance(pBaseEnt.GetAbsOrigin());
+					
+					if(flSDist < flMaxDist) iLCount++;
+				}
+				
+				for(int i = 1; i <= iMaxPlayers; i++)
+				{
+					CZP_Player@ pPlayer = ToZPPlayer(i);
+
+					if(pPlayer is null) continue;
+
+					CBasePlayer@ pPlrEnt = pPlayer.opCast();
+					CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+						
+					flSDist = pZLockedSpawn.Distance(pBaseEnt.GetAbsOrigin());
+						
+					if(flSDist > flMaxDist && pZLockedSpawn.GetEntityName() == "locked" && iLCount == 0) pZLockedSpawn.SetEntityName("");
+				}
+			}
+		}
+	}
+	
+	array<CBaseEntity@> g_pZSpawn;
+	array<float> g_flZSDist;
+
+	CBaseEntity@ pLocked = null;
+	@pLocked = FindEntityByName(pLocked, "locked");
+	
+	if(pLocked is null)
+	{
+		if(bAllowClearName != false) bAllowClearName = false;
+		
+		CBaseEntity@ pFarZSpawn = null;
+		
+		while ((@pFarZSpawn = FindEntityByClassname(pFarZSpawn, "info_player_zombie")) !is null)
+		{
+			g_pZSpawn.insertLast(pFarZSpawn);
+			g_flZSDist.insertLast(0.0f);
+		}
+		
+		CBaseEntity@ pPlayer = null;
+		
+		for(uint ui = 0; ui < g_pZSpawn.length(); ui++)
+		{
+			while ((@pPlayer = FindEntityByClassname(pPlayer, "player")) !is null)
+			{
+				if(pPlayer.GetTeamNumber() == 2) g_flZSDist[ui] = g_pZSpawn[ui].Distance(pPlayer.GetAbsOrigin());
+			}	
+		}
+		
+		float flMinDist = g_flZSDist[0];
+		
+		for(uint ui = 0; ui < g_pZSpawn.length(); ui++)
+		{
+			if(flMinDist > g_flZSDist[ui]) flMinDist = g_flZSDist[ui];
+		}
+		
+		CBaseEntity@ pLastZS;
+		
+		for(uint ui = 0; ui < g_pZSpawn.length(); ui++)
+		{
+			if(g_flZSDist[ui] == flMinDist)
+			{
+				g_pZSpawn[ui].SetEntityName("locked");
+				Engine.Ent_Fire_Ent(g_pZSpawn[ui], "EnableSpawn");
+				@pLastZS = g_pZSpawn[ui];
+			}
+		}
+		
+		for(uint ui = 0; ui < g_pZSpawn.length(); ui++)
+		{
+			float flLDist = g_pZSpawn[ui].Distance(pLastZS.GetAbsOrigin());
+			if(flLDist < flLastRadius)
+			{
+				g_pZSpawn[ui].SetEntityName("locked");
+				Engine.Ent_Fire_Ent(g_pZSpawn[ui], "EnableSpawn");
+			}
+		}
+	}
 }
 
 void SetUpStuff()
 {
+	int iNumbers = 0;
 	RemoveAmmoBar();
 	Engine.Ent_Fire("Precache", "kill");
 	Engine.Ent_Fire("SND_Ambient", "PlaySound");
@@ -36,6 +190,14 @@ void SetUpStuff()
 	
 	FlickerLight1();
 	ChangeFog();
+	
+	CBaseEntity@ pZSpawn;
+	while ((@pZSpawn = FindEntityByClassname(pZSpawn, "info_player_zombie")) !is null)
+	{
+		pZSpawn.SetEntityName("");
+		Engine.Ent_Fire_Ent(pZSpawn, "AddOutput", "minspawns 0");
+		Engine.Ent_Fire_Ent(pZSpawn, "AddOutput", "mintime 1");
+	}
 }
 
 void PropsSettings()
