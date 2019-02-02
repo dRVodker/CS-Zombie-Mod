@@ -16,8 +16,9 @@ array<string> g_strMsg =
 	strCSZM+"{default}Type {lime}!infect{default} to choose play as {lightseagreen}first infected{default}.",
 	strCSZM+"{default}If you stuck in spectator mode, press {seagreen}F4{default} to get back to the {green}ready room.{default}.",
 	strCSZM+"{default}Ammunition and armor respawning over a period of time.",
-	strCSZM+"{default}Zombies getting the HP bonus each death!",
-	strCSZM+"{default}Dropped ammunition will be removed over a period of time."
+	strCSZM+"{default}Zombies getting the HP Bonus each death!",
+	strCSZM+"{default}Dropped ammunition will be removed over a period of time.",
+	strCSZM+"{default}Commiting suicide as zombie won't give you the Death HP Bonus."
 };
 
 array<bool> g_bIsShown;

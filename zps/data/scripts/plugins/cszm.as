@@ -89,7 +89,7 @@ const int iHPReward = 75;				//Give that amount of HP as reward of successful in
 const int iGearUpTime = 40;				//Time to gear up and find a good spot.
 const int iTurningTime = 15;			//Turning time.
 const int iInfectDelay = 3;				//Amount of rounds you have to wait to be the First Infected again.
-const int iWUTime = 4;					//Time of the warmup in seconds.		(default value is 76)
+const int iWUTime = 76;					//Time of the warmup in seconds.		(default value is 76)
 
 //New Consts
 const float flBlockZSTime = 35.00f;		//Amount of time in seconds which abusers must wait to join the zombie team.
