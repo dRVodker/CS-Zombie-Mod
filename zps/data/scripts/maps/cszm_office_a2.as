@@ -35,6 +35,18 @@ void SetUpStuff()
 	RemoveAmmoBar();
 	VMSkins();
 	RndSpawn();
+	OpenDoors();
+}
+
+void OpenDoors()
+{
+	CBaseEntity@ pEntity;
+	while ((@pEntity = FindEntityByClassname(pEntity, "prop_door_rotating")) !is null)
+	{
+		Engine.Ent_Fire_Ent(pEntity, "FireUser1");
+	}
+	
+	Engine.Ent_Fire("H-OF*", "Kill", "0", "0.85");
 }
 
 void RemoveAmmoBar()

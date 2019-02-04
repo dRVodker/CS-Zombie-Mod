@@ -1,4 +1,5 @@
 #include "../SendGameText"
+#include "./cszm/armor.as"
 
 //some data
 int iMaxPlayers;
@@ -39,6 +40,8 @@ void OnMapInit()
 		bIsCSZM = true;
 		iMaxPlayers = Globals.GetMaxClients();
 		
+		Entities::RegisterPickup("item_armor");
+		
 		g_iKills.resize(iMaxPlayers + 1);
 		g_iHits.resize(iMaxPlayers + 1);
 		g_iVictims.resize(iMaxPlayers + 1);
@@ -48,6 +51,7 @@ void OnMapInit()
 		g_flShowDamage.resize(iMaxPlayers + 1);
 		g_flScoreDamage.resize(iMaxPlayers + 1);
 		g_flSDTimer.resize(iMaxPlayers + 1);
+		g_iArmor.resize(iMaxPlayers + 1);
 		
 		flWaitTime = Globals.GetCurrentTime() + 0.10f;
 	}
@@ -60,6 +64,7 @@ void OnNewRound()
 		for(int i = 1; i <= iMaxPlayers; i++) 
 		{
 			g_iHits[i] = 0;
+			g_iArmor[i] = 0;
 			g_iKills[i] = 0;
 			g_iVictims[i] = 0;
 			g_flDamage[i] = 0.0f;
@@ -89,11 +94,14 @@ void OnMapShutdown()
 	
 	flWaitTime = 0.0f;
 	
+	Entities::RemoveRegisterPickup("item_armor");
+	
 	ClearIntArray(g_iKills);
 	ClearIntArray(g_iHits);
 	ClearIntArray(g_iVictims);
 	ClearIntArray(g_iSVictims);
 	ClearIntArray(g_iSKills);
+	ClearIntArray(g_iArmor);
 	ClearFloatArray(g_flDamage);
 	ClearFloatArray(g_flShowDamage);
 	ClearFloatArray(g_flScoreDamage);
@@ -176,6 +184,7 @@ HookReturnCode OnKPlayerConnected(CZP_Player@ pPlayer)
 		CBasePlayer@ pPlrEnt = pPlayer.opCast();
 		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 		
+		g_iArmor[pBaseEnt.entindex()] = 0;
 		g_iKills[pBaseEnt.entindex()] = 0;
 		g_iHits[pBaseEnt.entindex()] = 0;
 		g_iVictims[pBaseEnt.entindex()] = 0;
@@ -196,68 +205,93 @@ HookReturnCode OnKPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageI
 {
 	if(bIsCSZM = true)
 	{
-//		SD("Damage Type: "+DamageInfo.GetDamageType());
-//		SD("Damage: "+DamageInfo.GetDamage());
-
+		CZP_Player@ pPlrAttacker = null;
+		CBasePlayer@ pBPlrAttacker = null;
+	
 		const int iDamageType = DamageInfo.GetDamageType();
 	
 		CBasePlayer@ pPlrEnt = pPlayer.opCast();
 		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 
-		CZP_Player@ pPlrAttacker = ToZPPlayer(DamageInfo.GetAttacker());
+		const int iVicIndex = pBaseEnt.entindex();
 		
-		CBasePlayer@ pAttEnt = pPlrAttacker.opCast();
-		CBaseEntity@ pBasaAtt = pAttEnt.opCast();
+		CBaseEntity@ pEntityAttacker = DamageInfo.GetAttacker();
 		
-		if(pBasaAtt.entindex() == pBaseEnt.entindex()) return HOOK_HANDLED;
+		const int iAttIndex = pEntityAttacker.entindex();
+		const bool bIsAttPlayer = pEntityAttacker.IsPlayer();
 		
-		if(pBasaAtt.GetTeamNumber() == 3 && iDamageType == 8196)
+		if(bIsAttPlayer == true)
 		{
-			g_iVictims[pBasaAtt.entindex()]++;
-			g_iSVictims[pBasaAtt.entindex()]++;
-			ShowKills(pPlrAttacker, g_iVictims[pBasaAtt.entindex()], true);
-			KillFeed(pPlrAttacker.GetPlayerName(), pBasaAtt.GetTeamNumber(), pPlayer.GetPlayerName(), pBaseEnt.GetTeamNumber(), true, false);
+			@pPlrAttacker = ToZPPlayer(iAttIndex);
+			@pBPlrAttacker = ToBasePlayer(iAttIndex);
+		}
+		else
+		{
+			return HOOK_HANDLED;
+		}
+
+		
+		if(iAttIndex == iVicIndex) return HOOK_HANDLED;
+		
+		if(pEntityAttacker.GetTeamNumber() == 3 && iDamageType == 8196)
+		{
+			if(pBaseEnt.GetTeamNumber() == 0 || pBaseEnt.GetTeamNumber() == 1) return HOOK_HANDLED;
+			
+			if(g_iArmor[iVicIndex] > 2) g_iArmor[iVicIndex] = 2;
+			
+			if(g_iArmor[iVicIndex] > 0)
+			{
+				g_iArmor[iVicIndex]--;
+				return HOOK_HANDLED;
+			}
+			else
+			{
+				g_iVictims[iAttIndex]++;
+				g_iSVictims[iAttIndex]++;
+				ShowKills(pPlrAttacker, g_iVictims[iAttIndex], true);
+				KillFeed(pPlrAttacker.GetPlayerName(), pEntityAttacker.GetTeamNumber(), pPlayer.GetPlayerName(), pBaseEnt.GetTeamNumber(), true, false);
+			}
 			
 			return HOOK_HANDLED;
 		}
 		
-		if(pBasaAtt.GetTeamNumber() == 2)
+		if(pEntityAttacker.GetTeamNumber() == 2)
 		{
-			g_flSDTimer[pBasaAtt.entindex()] = 0.8f;
-			g_iHits[pBasaAtt.entindex()]++;
+			g_flSDTimer[iAttIndex] = 0.8f;
+			g_iHits[iAttIndex]++;
 			
 			float flHPD = 0;
 			float flHP = pBaseEnt.GetHealth();
 			float flDMG = floor(DamageInfo.GetDamage());
 			
-			if(g_flScoreDamage[pBasaAtt.entindex()] < 0) g_flScoreDamage[pBasaAtt.entindex()] == 0;
+			if(g_flScoreDamage[iAttIndex] < 0) g_flScoreDamage[iAttIndex] == 0;
 			
 			if(flHP < flDMG)
 			{
 				flHPD = flHP - flDMG;
 				flHPD = flDMG + flHPD;
 				
-				g_flDamage[pBasaAtt.entindex()] += flHPD;
-				g_flShowDamage[pBasaAtt.entindex()] += flHPD;
-				g_flScoreDamage[pBasaAtt.entindex()] += flHPD;
+				g_flDamage[iAttIndex] += flHPD;
+				g_flShowDamage[iAttIndex] += flHPD;
+				g_flScoreDamage[iAttIndex] += flHPD;
 			}
 			
 			else if(DamageInfo.GetDamage() >= pBaseEnt.GetMaxHealth() && pBaseEnt.GetHealth() <= pBaseEnt.GetMaxHealth())
 			{
-				g_flDamage[pBasaAtt.entindex()] += pBaseEnt.GetMaxHealth();
-				g_flShowDamage[pBasaAtt.entindex()] += pBaseEnt.GetMaxHealth();
-				g_flScoreDamage[pBasaAtt.entindex()] += pBaseEnt.GetMaxHealth();
+				g_flDamage[iAttIndex] += pBaseEnt.GetMaxHealth();
+				g_flShowDamage[iAttIndex] += pBaseEnt.GetMaxHealth();
+				g_flScoreDamage[iAttIndex] += pBaseEnt.GetMaxHealth();
 			}
 			
 			else
 			{
-				g_flDamage[pBasaAtt.entindex()] += floor(DamageInfo.GetDamage());
-				g_flShowDamage[pBasaAtt.entindex()] += floor(DamageInfo.GetDamage());
-				g_flScoreDamage[pBasaAtt.entindex()] += floor(DamageInfo.GetDamage());
+				g_flDamage[iAttIndex] += floor(DamageInfo.GetDamage());
+				g_flShowDamage[iAttIndex] += floor(DamageInfo.GetDamage());
+				g_flScoreDamage[iAttIndex] += floor(DamageInfo.GetDamage());
 			}
 			
-			Score(pBasaAtt.entindex());
-			if(g_flShowDamage[pBasaAtt.entindex()] > 0) Chat.CenterMessagePlayer(pAttEnt, "- "+g_flShowDamage[pBasaAtt.entindex()]+" HP");
+			Score(iAttIndex);
+			if(g_flShowDamage[iAttIndex] > 0) Chat.CenterMessagePlayer(pBPlrAttacker, "- "+g_flShowDamage[iAttIndex]+" HP");
 
 			return HOOK_HANDLED;
 		}
@@ -289,36 +323,56 @@ HookReturnCode OnKPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageIn
 {
 	if(bIsCSZM = true)
 	{
+		SD("OnPlayerKilled");
+		CZP_Player@ pPlrAttacker = null;
+		CBasePlayer@ pBPlrAttacker = null;
+	
 		CBasePlayer@ pPlrEnt = pPlayer.opCast();
 		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 		
-		CZP_Player@ pPlrAttacker = ToZPPlayer(DamageInfo.GetAttacker());
+		const int iVicIndex = pBaseEnt.entindex();
+		const int iVicTeam = pBaseEnt.GetTeamNumber();
+		const string strVicName = pPlayer.GetPlayerName();
 		
-		CBasePlayer@ pAttEnt = pPlrAttacker.opCast();
-		CBaseEntity@ pBasaAtt = pAttEnt.opCast();
+		CBaseEntity@ pEntityAttacker = DamageInfo.GetAttacker();
 		
-		if(pBasaAtt.entindex() == pBaseEnt.entindex())
+		const int iAttIndex = pEntityAttacker.entindex();
+		const int iAttTeam = pEntityAttacker.GetTeamNumber();
+		const bool bIsAttPlayer = pEntityAttacker.IsPlayer();
+		
+		if(bIsAttPlayer == true)
 		{
-			KillFeed("", 0, pPlayer.GetPlayerName(), pBaseEnt.GetTeamNumber(), false, true);
+			@pPlrAttacker = ToZPPlayer(iAttIndex);
+			@pBPlrAttacker = ToBasePlayer(iAttIndex);
+		}
+		else
+		{
+			KillFeed("", 0, strVicName, iVicTeam, false, true);
 			return HOOK_HANDLED;
 		}
 		
-		if(pBasaAtt.GetTeamNumber() == 2)
+		const string strAttName = pPlrAttacker.GetPlayerName();
+
+		if(iAttIndex == iVicIndex || pEntityAttacker.IsPlayer() == false)
 		{
-			g_iKills[pBasaAtt.entindex()]++;
-			g_iSKills[pBasaAtt.entindex()]++;
-			ShowKills(pPlrAttacker, g_iKills[pBasaAtt.entindex()], false);
-			KillFeed(pPlrAttacker.GetPlayerName(), pBasaAtt.GetTeamNumber(), pPlayer.GetPlayerName(), pBaseEnt.GetTeamNumber(), false, false);
+			KillFeed("", 0, strVicName, iVicTeam, false, true);
+			return HOOK_HANDLED;
+		}
+		if(iAttTeam == 2)
+		{
+			g_iKills[iAttIndex]++;
+			g_iSKills[iAttIndex]++;
+			ShowKills(pPlrAttacker, g_iKills[iAttIndex], false);
+			KillFeed(strAttName, iAttTeam, strVicName, iVicTeam, false, false);
 			
 			return HOOK_HANDLED;
 		}
-		
-		if(pBasaAtt.GetTeamNumber() == 3)
+		if(iAttTeam == 3)
 		{
-			g_iVictims[pBasaAtt.entindex()]++;
-			g_iSVictims[pBasaAtt.entindex()]++;
-			ShowKills(pPlrAttacker, g_iVictims[pBasaAtt.entindex()], true);
-			KillFeed(pPlrAttacker.GetPlayerName(), pBasaAtt.GetTeamNumber(), pPlayer.GetPlayerName(), pBaseEnt.GetTeamNumber(), false, false);
+			g_iVictims[iAttIndex]++;
+			g_iSVictims[iAttIndex]++;
+			ShowKills(pPlrAttacker, g_iVictims[iAttIndex], true);
+			KillFeed(strAttName, iAttTeam, strVicName, iVicTeam, false, false);
 			
 			return HOOK_HANDLED;
 		}
@@ -376,7 +430,7 @@ void KillFeed(const string &in strAttName, const int &in iAttTeam, const string 
 		case 2:
 			VicColoe = "blue";
 		break;
-		
+	
 		case 3:
 			VicColoe = "red";
 		break;
@@ -389,7 +443,11 @@ void KillFeed(const string &in strAttName, const int &in iAttTeam, const string 
 	if(bIsSuicide == false)
 	{
 		string strKill = "killed";
-		if(bIsInfect == true) strKill = "infected";
+		if(bIsInfect == true)
+		{
+			strKill = "infected";
+			VicColoe = "blue";
+		}
 		Chat.PrintToChat(all, "{"+VicColoe+"}" + strVicName + " {default}" + strKill + " by {"+AttColoe+"}" + strAttName +"{default}.");
 	}
 	

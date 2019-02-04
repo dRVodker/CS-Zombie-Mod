@@ -13,12 +13,13 @@ void SD(const string &in strMSG)
 array<string> g_strMsg =
 {
 	"null",
-	strCSZM+"{default}Type {lime}!infect{default} to choose play as {lightseagreen}first infected{default}.",
-	strCSZM+"{default}If you stuck in spectator mode, press {seagreen}F4{default} to get back to the {green}ready room.{default}.",
-	strCSZM+"{default}Ammunition and armor respawning over a period of time.",
-	strCSZM+"{default}Zombies getting the HP Bonus each death!",
-	strCSZM+"{default}Dropped ammunition will be removed over a period of time.",
-	strCSZM+"{default}Commiting suicide as zombie won't give you the Death HP Bonus."
+	strCSZM+"{default}Type {lime}!infect{default} to choose play as the {lightseagreen}First infected{default}.",
+	strCSZM+"{default}If you stuck in spectator mode, press {seagreen}F4{default} to get back to the {green}ready room{default}.",
+	strCSZM+"{default}Picked up ammo and armor will respawn over a period of time.",
+	strCSZM+"{default}Zombies getting the {lime}HP Bonus{default} each death!",
+	strCSZM+"{default}Dropped ammo will be removed over a period of time.",
+	strCSZM+"{default}Commiting suicide as zombie won't give you the {lime}Death HP Bonus{default}.",
+	strCSZM+"{blue}Armor vest{default} can protect you from {lightseagreen}instant-infection{default}."
 };
 
 array<bool> g_bIsShown;
@@ -84,7 +85,6 @@ void OnProcessRound()
 
 void ShowMsg()
 {
-	bool bYouGotThis = false;
 	int iRND = 0;
 	uint iLength = g_bIsShown.length() - 1;
 	uint iCount = 0;
@@ -102,14 +102,14 @@ void ShowMsg()
 		}
 	}
 	
-	while(bYouGotThis != true)
+	while(iRND == 0)
 	{
 		iRND = Math::RandomInt(1, iLength);
 		if(g_bIsShown[iRND] == false)
 		{
-			bYouGotThis = true;
 			g_bIsShown[iRND] = true;
 			SD(g_strMsg[iRND]);
 		}
+		else iRND = 0;
 	}
 }

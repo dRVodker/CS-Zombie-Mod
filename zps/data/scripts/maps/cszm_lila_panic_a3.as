@@ -286,7 +286,7 @@ void RandomizePropCrate()
 				
 				if(iRND_Class == 11 || iRND_Class == 12) iRND_Count = Math::RandomInt(3, 4);	//Count of frag and ied
 				if(iRND_Class >= 13 && iRND_Class <= 16) iRND_Count = Math::RandomInt(1, 3);	//Count of ammo
-				if(iRND_Class == 17) iRND_Count = Math::RandomInt(1, 2);	//Count of armor
+				if(iRND_Class == 17) iRND_Count = 1;	//Count of armor
 				
 				Engine.Ent_Fire_Ent(pEntity, "AddOutput", "ItemCount "+iRND_Count);
 				Engine.Ent_Fire_Ent(pEntity, "AddOutput", "ItemClass "+g_strClassnames[iRND_Class]);
