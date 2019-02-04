@@ -323,7 +323,6 @@ HookReturnCode OnKPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageIn
 {
 	if(bIsCSZM = true)
 	{
-		SD("OnPlayerKilled");
 		CZP_Player@ pPlrAttacker = null;
 		CBasePlayer@ pBPlrAttacker = null;
 	
