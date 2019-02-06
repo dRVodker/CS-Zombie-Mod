@@ -24,6 +24,9 @@ void CacheSounds()
 	
 	//Item Respawn Sound
     Engine.PrecacheFile(sound, "items/suitchargeok1.wav");
+	
+	//ZM Leave Warning Sound
+    Engine.PrecacheFile(sound, "common/warning.wav");
     
     //ZM First Turn Sound
     Engine.PrecacheFile(sound, "@cszm_fx/misc/suspense.wav");

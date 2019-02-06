@@ -90,7 +90,7 @@ const int iHPReward = 75;				//Give that amount of HP as reward of successful in
 const int iGearUpTime = 40;				//Time to gear up and find a good spot.
 const int iTurningTime = 20;			//Turning time.
 const int iInfectDelay = 3;				//Amount of rounds you have to wait to be the First Infected again.
-const int iWUTime = 76;					//Time of the warmup in seconds.		(default value is 76)
+const int iWUTime = 4;					//Time of the warmup in seconds.		(default value is 76)
 
 //New Consts
 const bool bAllowTimeHP = true;			//Allow Time HP Bonus
@@ -127,6 +127,7 @@ const string strCannotJoinZT1 = "{default}Round is already in progress, you cann
 const string strHintF1 = "F1 - Join the game";
 const string strHintF3 = "F3 - Spectate";
 const string strHintF4 = "F4 - Back to the Lobby";
+const string strLastZLeave = "{red}WARNING{default}: Last player in the Zombie team has leave.\n{blue}Round Restarting....";
 
 //List of available ZM Player models (make sure your server has it)
 array<string> g_strModels = 
@@ -738,6 +739,8 @@ HookReturnCode OnPlayerSpawn(CZP_Player@ pPlayer)
 			{
 				if(g_flSDMulti[iIndex] != 0) g_flSDMulti[iIndex] = 0.0f;
 				if(g_flSDTime[iIndex] != 0) g_flSDTime[iIndex] = 0.0f;
+				g_flIdleTime[iIndex] = 0.1f;
+				
 				RndZModel(pPlayer, pBaseEnt);
 				SetZMHealth(pBaseEnt);
 				
@@ -978,7 +981,16 @@ HookReturnCode OnPlayerDisonnected(CZP_Player@ pPlayer)
 	{
 		CBasePlayer@ pPlrEnt = pPlayer.opCast();
 		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+		
 		if(iFZIndex == pBaseEnt.entindex()) iFZIndex = 0;
+		
+		if(pBaseEnt.GetTeamNumber() == 3 && Utils.GetNumPlayers(zombie, false) <= 1)
+		{
+			flCITime = Globals.GetCurrentTime() + 40.0f;
+			Engine.EmitSound("common/warning.wav");
+			RoundManager.SetWinState(STATE_STALEMATE);
+			SD(strLastZLeave);
+		}
 	}
 	
 	return HOOK_CONTINUE;
@@ -1016,7 +1028,7 @@ HookReturnCode RoundWin(const string &in strMapname, RoundWinState iWinState)
 
 void RoundTimeLeft()
 {
-	if(Utils.GetNumPlayers(survivor, false) == 0 || Utils.GetNumPlayers(zombie, false) == 0 && bIsFirstITurns == true) RoundManager.SetWinState(STATE_STALEMATE);
+	if(Utils.GetNumPlayers(survivor, false) == 0) RoundManager.SetWinState(STATE_STALEMATE);
 	
 	if(bAllowCD == true)
 	{
@@ -1149,7 +1161,7 @@ void FirstZombie()
 				int iG = Math::RandomInt(135, 255);
 				int iB = Math::RandomInt(135, 255);
 				
-				SendGameTextPlayer(pPlayer, "\n\n" + strPreTurnMsg, 1, 0, -1, 0.175, 0, 0, 0.075, Color(iR, iG, iB), Color(0, 0, 0));
+				SendGameTextPlayer(pPlayer, strPreTurnMsg, 1, 0, -1, 0.35, 0, 0, 0.075, Color(iR, iG, iB), Color(0, 0, 0));
 			}
 			else
 			{
