@@ -267,7 +267,7 @@ void RemoveAmmoBar()
 	{
 		iRND = Math::RandomInt(1, 100);
 		
-		if(iRND < 35)
+		if(iRND < 55)
 		{
 			pEntity.SUB_Remove();
 		}

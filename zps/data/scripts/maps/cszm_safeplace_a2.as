@@ -44,7 +44,7 @@ void RemoveAmmoBar()
 	{
 		iRND = Math::RandomInt(0, 100);
 		
-		if(iRND < 85)
+		if(iRND < 75)
 		{
 			pEntity.SUB_Remove();
 		}
@@ -56,8 +56,8 @@ void PropsHP()
 	CBaseEntity@ pEntity;
 	while ((@pEntity = FindEntityByClassname(pEntity, "prop_physics_multiplayer")) !is null)
 	{
-		pEntity.SetMaxHealth(pEntity.GetHealth() + CalculateHealthPoints(15));
-		pEntity.SetHealth(pEntity.GetHealth() + CalculateHealthPoints(15));
+		pEntity.SetMaxHealth(pEntity.GetHealth() + CalculateHealthPoints(25));
+		pEntity.SetHealth(pEntity.GetHealth() + CalculateHealthPoints(25));
 	}
 }
 
@@ -66,7 +66,7 @@ void PropDoorHP()
 	CBaseEntity@ pEntity;
 	while ((@pEntity = FindEntityByClassname(pEntity, "prop_door_rotating")) !is null)
 	{
-		Engine.Ent_Fire_Ent(pEntity, "SetDoorHealth", "" + CalculateHealthPoints(5));
+		Engine.Ent_Fire_Ent(pEntity, "SetDoorHealth", "" + CalculateHealthPoints(6));
 	}
 }
 

@@ -107,7 +107,7 @@ const int iDefaultTHPSeconds = 30;		//Amount of time in seconds to increase amou
 const int iRoundTime = 300 + iGearUpTime;	//Round time in seconds.
 const int iSoT = iRoundTime - iGearUpTime + iTurningTime;		//Second at which the turning time start countdown. don't touch this.
 
-const float flBaseSDMult = 1.02f;
+const float flBaseSDMult = 1.01f;
 const float flMaxSDMult = 0.25f;
 const float flBaseRecoverTime = 0.055f;
 
@@ -254,6 +254,7 @@ void OnMapInit()
 		flSloDTimer = Globals.GetCurrentTime() + 0.01f;
 		flHPRegenTime = Globals.GetCurrentTime() + 0.15f;
 		flCITime = Globals.GetCurrentTime() + 0.5f;
+		flSloDRecoreTime = Globals.GetCurrentTime() + flBaseRecoverTime;
 		
 		//Set Doors Filter to 0 (any team)
 		if(bAllowWarmUp == true) SetDoors(0);
@@ -391,7 +392,7 @@ void OnProcessRound()
 					
 				if(g_flSDMulti[i] < 0)
 				{
-					g_flSDMulti[i] = 0.000f;
+					g_flSDMulti[i] = 0.0f;
 					continue;
 				}
 					
@@ -401,13 +402,11 @@ void OnProcessRound()
 					float y = pBaseEnt.GetAbsVelocity().y;
 					float z = pBaseEnt.GetAbsVelocity().z;
 					
-					
-					
 					if(z == 0 || z >= 150)
 					{
 						x = pBaseEnt.GetAbsVelocity().x / (flBaseSDMult + g_flSDMulti[i]);
 						y = pBaseEnt.GetAbsVelocity().y / (flBaseSDMult + g_flSDMulti[i]);
-						
+
 						pBaseEnt.SetAbsVelocity(Vector(x, y, z));
 					}
 						
@@ -415,7 +414,7 @@ void OnProcessRound()
 						
 					if(g_flSDTime[i] < 0) g_flSDTime[i] = 0.0f;
 					
-					if(bAllowDebug == true) Chat.CenterMessagePlayer(pPlrEnt, "SDMulti = "+g_flSDMulti[i]+"\nSDTime = "+g_flSDTime[i]+"\nZ = "+z);
+					if(bAllowDebug == true) Chat.CenterMessagePlayer(pPlrEnt, "SDMulti = "+g_flSDMulti[i]+"\nSDTime = "+g_flSDTime[i]);
 				}
 			}
 			
@@ -446,7 +445,7 @@ void OnProcessRound()
 				CBasePlayer@ pPlrEnt = pPlayer.opCast();
 				CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 				
-				if(g_flSDTime[i] == 0 && g_flSDMulti[i] > 0) g_flSDMulti[i] -= 0.01f;
+				if(g_flSDTime[i] <= 0 && g_flSDMulti[i] > 0) g_flSDMulti[i] -= 0.01f;
 				
 				if(g_flSDMulti[i] < 0) g_flSDMulti[i] = 0.0f;
 			}
@@ -526,6 +525,7 @@ void OnNewRound()
 		flSloDTimer = Globals.GetCurrentTime() + 0.01f;
 		flHPRegenTime = Globals.GetCurrentTime() + 0.15f;
 		flCITime = Globals.GetCurrentTime() + 0.5f;
+		flSloDRecoreTime = Globals.GetCurrentTime() + flBaseRecoverTime;
 		
 		ShowRTL(0, 0, 300);
 		

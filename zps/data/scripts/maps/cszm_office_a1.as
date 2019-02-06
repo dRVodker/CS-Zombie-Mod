@@ -43,10 +43,8 @@ void OpenDoors()
 	CBaseEntity@ pEntity;
 	while ((@pEntity = FindEntityByClassname(pEntity, "prop_door_rotating")) !is null)
 	{
-		Engine.Ent_Fire_Ent(pEntity, "FireUser1");
+		Engine.Ent_Fire_Ent(pEntity, "use");
 	}
-	
-	Engine.Ent_Fire("H-OF*", "Kill", "0", "0.85");
 }
 
 void RemoveAmmoBar()
@@ -58,7 +56,7 @@ void RemoveAmmoBar()
 	{
 		iRND = Math::RandomInt(0, 100);
 		
-		if(iRND < 50)
+		if(iRND < 47)
 		{
 			pEntity.SUB_Remove();
 		}

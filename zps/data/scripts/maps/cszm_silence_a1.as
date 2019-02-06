@@ -35,6 +35,7 @@ void SetStuff()
 {
 	Engine.Ent_Fire("Precache", "kill");
 	Engine.Ent_Fire("shading", "StartOverlays");
+	RemoveAmmoBar();
 }
 
 void PropsSettings()
@@ -163,4 +164,20 @@ int PlrCountHP(int &in iMulti)
 	iHP = iSurvNum * iMulti;
 	
 	return iHP;
+}
+
+void RemoveAmmoBar()
+{
+	int iRND;
+	
+	CBaseEntity@ pEntity;
+	while ((@pEntity = FindEntityByClassname(pEntity, "item_ammo_barricade")) !is null)
+	{
+		iRND = Math::RandomInt(0, 100);
+		
+		if(iRND < 45)
+		{
+			pEntity.SUB_Remove();
+		}
+	}
 }
