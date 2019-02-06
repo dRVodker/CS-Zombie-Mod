@@ -17,7 +17,6 @@ array<string> g_strMsg =
 	strCSZM+"{default}If you stuck in spectator mode, press {seagreen}F4{default} to get back to the {green}ready room{default}.",
 	strCSZM+"{default}Picked up ammo and kevlar will respawn over a period of time.",
 	strCSZM+"{default}Zombies getting the {lime}HP Bonus{default} each death!",
-	strCSZM+"{default}Dropped ammo will be removed over a period of time.",
 	strCSZM+"{default}Commiting suicide as zombie won't give you the {lime}Death HP Bonus{default}.",
 	strCSZM+"{blue}Kevlar vest{default} can protect you from {lightseagreen}instant-infection{default}."
 };

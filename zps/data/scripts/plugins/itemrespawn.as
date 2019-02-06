@@ -9,7 +9,17 @@ void SD(const string &in strMSG)
 
 int iUNum = 0; 
 float flWaitSpawnTime = 0;
-const float flRemoveTime = 15.00f;
+
+int iDroppedAmmoCount = 0;
+const int iMaxDroppedAmmo = 30;
+
+array<string> g_strAmmoClass =
+{
+	"item_ammo_pistol_clip",
+	"item_ammo_rifle_clip",
+	"item_ammo_revolver_clip",
+	"item_ammo_shotgun_clip"
+};
 
 array<string> g_strCName =
 {
@@ -51,7 +61,6 @@ void OnPluginInit()
 	//Events
 	Events::Entities::OnEntityDestruction.Hook(@OnEntityDestruction);
 	Events::Entities::OnEntityCreation.Hook(@OnEntityCreation);
-	Events::Player::PlayerSay.Hook(@PlayerSay);
 }
 
 void OnMapInit()
@@ -198,9 +207,24 @@ HookReturnCode OnEntityCreation(const string &in strClassname, CBaseEntity@ pEnt
 
 		if(Utils.StrContains("clip", strClassname) && strClassname != "item_ammo_barricade_clip")
 		{
-			pEntity.SetEntityName("_remove_me");
-			Schedule::Task(0.15f, "RemoveThing");
-			
+			uint iType = 0;
+
+			for(uint ui = 0; ui < g_strAmmoClass.length(); ui++)
+			{
+				if(strClassname == g_strAmmoClass[ui])
+				{
+					iDroppedAmmoCount++;
+					iType = ui;
+				}
+			}
+
+			if(iDroppedAmmoCount > iMaxDroppedAmmo)
+			{
+				uint iResult = 1;
+				if((iDroppedAmmoCount - iMaxDroppedAmmo) > 0) iResult = iDroppedAmmoCount - iMaxDroppedAmmo;
+				RemoveExtraClip(iResult);
+			}
+
 			return HOOK_HANDLED;
 		}
 		
@@ -231,31 +255,26 @@ HookReturnCode OnEntityCreation(const string &in strClassname, CBaseEntity@ pEnt
 	return HOOK_CONTINUE;
 }
 
-HookReturnCode PlayerSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
-{
-	if(bIsCSZM == true)
-	{
-		CBasePlayer@ pBasePlayer = pPlayer.opCast();
-		
-		if(Utils.StrEql("!arr", pArgs.Arg(1)))
-		{
-			for(uint i = 0; i <= g_bIsSpawned.length() - 1; i++)
-			{
-				Chat.PrintToChatPlayer(pBasePlayer, "g_bIsSpawned["+i+"] = " + g_bIsSpawned[i]);
-			}
-			
-			return HOOK_HANDLED;
-		}
-
-	}
-	
-	return HOOK_CONTINUE;
-}
-
 HookReturnCode OnEntityDestruction(const string &in strClassname, CBaseEntity@ pEntity)
 {
 	if(bIsCSZM == true && bAllowEvents == true)
 	{
+		if(Utils.StrContains("clip", strClassname) && strClassname != "item_ammo_barricade_clip")
+		{
+			uint iType = 0;
+
+			for(uint ui = 0; ui < g_strAmmoClass.length(); ui++)
+			{
+				if(strClassname == g_strAmmoClass[ui])
+				{
+					iDroppedAmmoCount--;
+					if(iDroppedAmmoCount < 0) iDroppedAmmoCount = 0;
+				}
+			}
+
+			return HOOK_HANDLED;
+		}
+
 		for(uint i = 1; i <= g_strCName.length(); i++)
 		{
 			if(strClassname == g_strCName[i])
@@ -285,12 +304,25 @@ void OnEntityPickedUp(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 	}
 }
 
-void RemoveThing()
+void RemoveExtraClip(const uint &in iUnit)
 {
-	CBaseEntity@ pEntity;
-	while((@pEntity = FindEntityByName(pEntity, "_remove_me")) !is null)
+	array<CBaseEntity@> g_pAmmoEntity;
+	CBaseEntity@ pAmmoEntity;
+
+	for(uint ui = 0; ui < g_strAmmoClass.length(); ui++)
 	{
-		pEntity.SetEntityName("");
-		pEntity.SUB_StartFadeOut(flRemoveTime, false);
+		while((@pAmmoEntity = FindEntityByClassname(pAmmoEntity, g_strAmmoClass[ui])) !is null)
+		{
+				g_pAmmoEntity.insertLast(pAmmoEntity);
+		}
+	}
+
+	if(iUnit == 1) g_pAmmoEntity[0].SUB_Remove();
+	else
+	{
+		for(uint uii = 0; uii <= iUnit; uii++)
+		{
+			g_pAmmoEntity[uii].SUB_Remove();
+		}
 	}
 }

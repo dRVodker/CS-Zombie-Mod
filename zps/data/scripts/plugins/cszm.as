@@ -1584,7 +1584,7 @@ void PutPlrToLobby(CBaseEntity@ pEntPlayer)
 	array<CBaseEntity@> g_pLobbySpawn = {null};
 	CBaseEntity@ pEntity;
 	
-	while ((@pEntity = FindEntityByClassname(pEntity, "info_player_commons")) !is null)
+	while((@pEntity = FindEntityByClassname(pEntity, "info_player_commons")) !is null)
 	{
 		g_pLobbySpawn.insertLast(pEntity);
 	}
