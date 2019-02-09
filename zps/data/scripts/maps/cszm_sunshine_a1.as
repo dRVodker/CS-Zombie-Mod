@@ -17,6 +17,7 @@ void OnMapInit()
 	Events::Trigger::OnEndTouch.Hook(@OnEndTouch);
 	
 	Schedule::Task(0.01f, "SetUpStuff");
+	OverrideLimits();
 }
 
 int CalculateHealthPoints(int &in iMulti)

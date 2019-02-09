@@ -15,6 +15,7 @@ void OnMapInit()
 {
 	iMaxPlayers = Globals.GetMaxClients();
 	Schedule::Task(0.025f, "SetUpStuff");
+	OverrideLimits();
 }
 
 void OnNewRound()

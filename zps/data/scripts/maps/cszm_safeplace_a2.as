@@ -13,6 +13,7 @@ int CalculateHealthPoints(int &in iMulti)
 void OnMapInit()
 {
 	Schedule::Task(0.05f, "SetUpStuff");
+	OverrideLimits();
 }
 
 void OnNewRound()

@@ -8,6 +8,7 @@ void OnMapInit()
 	Events::Trigger::OnStartTouch.Hook( @OnStartTouch );
 	Events::Trigger::OnEndTouch.Hook( @OnEndTouch );
 	Schedule::Task(0.05f, "SetStuff");
+	OverrideLimits();
 }
 
 void OnNewRound()

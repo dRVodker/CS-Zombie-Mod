@@ -8,6 +8,7 @@ void SD(const string &in strMSG)
 void OnMapInit()
 {	
 	SetUpStuff();
+	OverrideLimits();
 }
 
 void OnNewRound()

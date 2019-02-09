@@ -73,8 +73,8 @@ const float flSDMultMEL = 0.3f;
 const float flSDMultFALL = 0.15f;
 
 //Slowdown Time
-//const float flSDTime = 0.125f;			//Any other type of a damage.
-const float flSDTime = 0.27f;		//Maximum slow down time.
+//const float flSDTime = 0.125f;		//Any other type of a damage.
+const float flSDTime = 0.27f;			//Maximum slow down time.
 const float flSDTimeSG = 0.36f;
 const float flSDTimeMAG = 0.47f;
 const float flSDTimeFALL = 0.5f;
@@ -85,8 +85,8 @@ const float flSDTimeEXP = 2.0f;
 const float flHPRDelay = 0.42f;			//Amount of time you have to wait to start HP Regeneration. (Custom HP Regeneration)
 const float flSpawnDelay = 3.00f;		//Zombies spawn delay.
 const int iFirstInfectedHPMult = 125;	//HP multiplier of first infected.
-const int iZMMaxHPBoost = 200;			//Additional HP to Max Health of a zombie.
-const int iHPReward = 75;				//Give that amount of HP as reward of successful infection.
+const int iZombieMaxHP = 200;			//Additional HP to Max Health of a zombie.
+const int iHPReward = 125;				//Give that amount of HP as reward of successful infection.
 const int iGearUpTime = 40;				//Time to gear up and find a good spot.
 const int iTurningTime = 20;			//Turning time.
 const int iInfectDelay = 3;				//Amount of rounds you have to wait to be the First Infected again.
@@ -95,21 +95,22 @@ const int iWUTime = 4;					//Time of the warmup in seconds.		(default value is 7
 //New Consts
 const bool bAllowTimeHP = true;			//Allow Time HP Bonus
 const float flBlockZSTime = 35.00f;		//Amount of time in seconds which abusers must wait to join the zombie team.
-const float flCSDDivider = 7.0f;		//Slowdown divider of the carrier.
+const float flCSDDivider = 4.00f;		//Slowdown divider of the carrier.
 const float flFISDDivider = 1.85f;		//Slowdown divider of the first infected.
 const int iSubtractDeath = 2;			//Amount of units subtract from the death counter
 const int iInfectionATSec = 15;			//Amount of time in seconds add to the round time in case of successful infection
-const int iCMaxHPBoost = 0;				//Additional HP to Max Health of the carrier.	//Currently equal 0 because the carrier is too OP.
-const int iDeathHPBonus = 100;			//Multiplier of death hp bonus.
-const int iDeathTimeHPBonus = 25;		//Multiplier of time hp bonus.
+const int iCarrierMaxHP = 0;			//Additional HP to Max Health of the carrier.	(Currently equal 0 because the carrier is too OP)
+const int iDHPBonus = 100;				//Multiplier of death hp bonus.
+const int iTHPBonus = 45;				//Multiplier of time hp bonus.
 const int iMaxDeath = 7;				//Maximum amount of death to boost up the max health.
 const int iDefaultTHPSeconds = 30;		//Amount of time in seconds to increase amount of the time hp bonus.
+
 const int iRoundTime = 300 + iGearUpTime;	//Round time in seconds.
 const int iSoT = iRoundTime - iGearUpTime + iTurningTime;		//Second at which the turning time start countdown. don't touch this.
 
-const float flBaseSDMult = 1.01f;
-const float flMaxSDMult = 0.25f;
-const float flBaseRecoverTime = 0.055f;
+const float flBaseSDMult = 1.01f;		//Base value of slowdown
+const float flMaxSDMult = 0.25f;		//Maximum value of slowdown
+const float flBaseRecoverTime = 0.055f;	//Base recover Time
 
 //Some text over here
 const string strRoundBegun = "{default}Round has begun, you have {lightgreen}"+iGearUpTime+" seconds{default} to gear up before the {lightseagreen}first infected{default} turns.";
@@ -153,10 +154,10 @@ array<int> g_iInfectDelay;
 array<int> g_iZMDeathCount;
 
 array<int> g_iCVSIndex;
-array<bool> g_bWasFirstZombie;
+array<bool> g_bWasFirstInfected;
 array<bool> g_bIsVolunteer;
 array<bool> g_bIsSpawned;
-array<bool> g_bIsFirstZombie;
+array<bool> g_bIsFirstInfected;
 array<bool> g_bIsAbuser;
 
 //Other Data (Don't even touch this)
@@ -199,11 +200,9 @@ HookReturnCode OnPlayerRagdollCreated(CZP_Player@ pPlayer, bool &in bHeadshot, b
 {
 	CBasePlayer@ pPlrEnt = pPlayer.opCast();
 	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
-	if(Utils.StrContains("cszm", pBaseEnt.GetModelName()))
-	{
-		bHeadshot = false;	//Disabled headshots cuz it fucked up in the game
-	}
-	
+
+	if(Utils.StrContains("cszm", pBaseEnt.GetModelName())) bHeadshot = false;	//Disabled headshots cuz it fucked up in the game
+
 	return HOOK_CONTINUE;
 }
 
@@ -217,7 +216,7 @@ void OnMapInit()
 		//Set 'sv_zps_solo' to 0
 		pSoloMode.SetValue("0");
 		
-		// Cache
+		//Cache
 		CacheModels();
 		CacheSounds();
 		
@@ -232,8 +231,8 @@ void OnMapInit()
 		g_flSDTime.resize(iMaxPlayers + 1);		
 		g_flSDMulti.resize(iMaxPlayers + 1);
 		g_iCVSIndex.resize(iMaxPlayers + 1);
-		g_bWasFirstZombie.resize(iMaxPlayers + 1);
-		g_bIsFirstZombie.resize(iMaxPlayers + 1);
+		g_bWasFirstInfected.resize(iMaxPlayers + 1);
+		g_bIsFirstInfected.resize(iMaxPlayers + 1);
 		g_bIsAbuser.resize(iMaxPlayers + 1);
 		g_bIsVolunteer.resize(iMaxPlayers + 1);
 		g_flHPRDelay.resize(iMaxPlayers + 1);
@@ -293,8 +292,8 @@ void OnMapShutdown()
 	bETimeHP = false;
 	bAllowWarmUp = true;
 	
-	ClearBoolArray(g_bWasFirstZombie);
-	ClearBoolArray(g_bIsFirstZombie);
+	ClearBoolArray(g_bWasFirstInfected);
+	ClearBoolArray(g_bIsFirstInfected);
 	ClearBoolArray(g_bIsAbuser);
 	ClearBoolArray(g_bIsVolunteer);
 	ClearBoolArray(g_bIsSpawned);
@@ -357,15 +356,15 @@ void OnProcessRound()
 					switch(g_iCVSIndex[i])
 					{
 						case 2:
-							g_flIdleTime[i] = Math::RandomFloat(2.95f, 6.25f);
+							g_flIdleTime[i] = Math::RandomFloat(3.00f, 6.25f);
 						break;
 						
 						case 3:
-							g_flIdleTime[i] = Math::RandomFloat(3.80f, 9.15f);
+							g_flIdleTime[i] = Math::RandomFloat(3.75f, 9.15f);
 						break;
 						
 						default:
-							g_flIdleTime[i] = Math::RandomFloat(3.00f, 11.10f);
+							g_flIdleTime[i] = Math::RandomFloat(3.15f, 11.10f);
 						break;	
 					}
 				}
@@ -537,7 +536,7 @@ void OnNewRound()
 			g_iZMDeathCount[i] = -1;
 			g_flHPRDelay[i] = 0.00f;
 				
-			g_bIsFirstZombie[i] = false;
+			g_bIsFirstInfected[i] = false;
 			g_bIsVolunteer[i] = false;
 			g_bIsAbuser[i] = false;
 		}
@@ -614,14 +613,14 @@ void ComparePlr()
 		if(pPlayer is null) continue;
 		
 		iPlr++;
-		if(g_bWasFirstZombie[i] == true) iPlrWasFZ++;
+		if(g_bWasFirstInfected[i] == true) iPlrWasFZ++;
 	}
 	
 	if(iPlrWasFZ >= iPlr)
 	{
 		for(int i = 1; i <= iMaxPlayers; i++ )
 		{
-			g_bWasFirstZombie[i] = false;
+			g_bWasFirstInfected[i] = false;
 		}
 	}
 }
@@ -642,8 +641,8 @@ HookReturnCode OnPlayerConnected(CZP_Player@ pPlayer)
 		g_flHPRDelay[pBaseEnt.entindex()] = 0.00f;
 		g_iCVSIndex[pBaseEnt.entindex()] = Math::RandomInt(1, 3);
 			
-		g_bWasFirstZombie[pBaseEnt.entindex()] = false;
-		g_bIsFirstZombie[pBaseEnt.entindex()] = false;
+		g_bWasFirstInfected[pBaseEnt.entindex()] = false;
+		g_bIsFirstInfected[pBaseEnt.entindex()] = false;
 		g_bIsAbuser[pBaseEnt.entindex()] = false;
 		g_bIsVolunteer[pBaseEnt.entindex()] = false;
 		g_bIsSpawned[pBaseEnt.entindex()] = false;
@@ -708,7 +707,7 @@ HookReturnCode OnPlayerSpawn(CZP_Player@ pPlayer)
 		
 		if(bAllowWarmUp == false)
 		{
-			if(g_bIsFirstZombie[iIndex] == true) g_bIsFirstZombie[iIndex] = false;
+			if(g_bIsFirstInfected[iIndex] == true) g_bIsFirstInfected[iIndex] = false;
 		
 			if(pBaseEnt.GetTeamNumber() != 3 && g_iZMDeathCount[iIndex] < 0) g_iZMDeathCount[iIndex] = -1;
 			
@@ -817,31 +816,31 @@ HookReturnCode OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageIn
 			}
 
 			if(pPlayer.IsCarrier() == true) flDivisor = flCSDDivider;
-			if(g_bIsFirstZombie[iIndex] == true) flDivisor = flFISDDivider;
+			if(g_bIsFirstInfected[iIndex] == true) flDivisor = flFISDDivider;
 				
 			switch(iDamageType)
 			{
-				case 536879106: //Buckshot DT
+				case 536879106:	//Buckshot DT
 					flLocalSDMult += flSDMultSG / flDivisor;
 					flLocalSDTime = flSDTimeSG;
 				break;
 					
-				case 64: //Blast DT
+				case 64:		//Blast DT
 					flLocalSDMult += flSDMultEXP / flDivisor;
 					flLocalSDTime = flSDTimeEXP;
 				break;
 					
-				case 134217792: //Explosive Barrels DT
+				case 134217792:	//Explosive Barrels DT
 					flLocalSDMult += flSDMultEXP / flDivisor;
 					flLocalSDTime = flSDTimeEXP;
 				break;
 					
-				case 8320: //Melee DT
+				case 8320:		//Melee DT
 					flLocalSDMult += flSDMultMEL / flDivisor;
 					flLocalSDTime = flSDTimeMEL;
 				break;
 				
-				case 8194: //Revolver and Rifles DT
+				case 8194:		//Revolver and Rifles DT
 					if(flDamage > 79)
 					{
 						flLocalSDMult += flSDMultMAG / flDivisor;
@@ -859,7 +858,7 @@ HookReturnCode OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageIn
 					bIsFall = true;
 				break;
 					
-				default: //Any other DT
+				default:		//Any other DT
 					flLocalSDMult += flSDMult / flDivisor;
 				break;
 			}
@@ -877,10 +876,10 @@ HookReturnCode OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageIn
 				
 			}
 			
-			return HOOK_HANDLED;
+		return HOOK_HANDLED;
 		}
 		
-		return HOOK_CONTINUE;
+	return HOOK_CONTINUE;
 }
 
 HookReturnCode OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageInfo) 
@@ -928,7 +927,7 @@ HookReturnCode OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageInf
 		
 		if(iVicTeam == 3)
 		{
-			if(g_iZMDeathCount[iAttIndex] < iMaxDeath && g_bIsFirstZombie[iVicIndex] == false) g_iZMDeathCount[iVicIndex]++;
+			if(g_iZMDeathCount[iAttIndex] < iMaxDeath && g_bIsFirstInfected[iVicIndex] == false) g_iZMDeathCount[iVicIndex]++;
 			
 			pPlrAttacker.AddScore(1);
 			
@@ -1002,7 +1001,8 @@ HookReturnCode OnEntityCreation(const string &in strClassname, CBaseEntity@ pEnt
 	{
 		if(strClassname == "npc_grenade_frag")
 		{
-			Engine.Ent_Fire_Ent(pEntity, "AddOutput", "Effects 4");	//DLight for npc_grenade_frag
+			Engine.Ent_Fire_Ent(pEntity, "AddOutput", "Effects 4");		//DLight for npc_grenade_frag
+
 			return HOOK_HANDLED;
 		}
 	}
@@ -1050,8 +1050,8 @@ void RoundTimeLeft()
 			}
 			iFZTurningTime = (iSAt - iSeconds) * - 1;
 			FZColor();
-			Schedule::Task(0.0f, "FirstZombie");	//Fix Me
-//			FirstZombie();
+			Schedule::Task(0.0f, "FirstInfected");	//Fix Me
+//			FirstInfected();
 			if(iFZTurningTime <= 10 && iFZTurningTime > 0) EmitCountdownSound(iFZTurningTime);
 		}
 		
@@ -1074,9 +1074,9 @@ void TimeHPBonus()
 		if(iTimeHPBonusSeconds <=0)
 		{
 			iTimeHPBonusSeconds = iDefaultTHPSeconds;
-			iTimeHPBonus += iDeathTimeHPBonus;
+			iTimeHPBonus += iTHPBonus;
 
-			if(bAllowDebug == true) SD("{Default}Current Time Health Bonus: {cyan}" + iTimeHPBonus + "HP");
+			SD("{Default}Time Health Bonus: {cyan}"+iTimeHPBonus+" HP");
 		}
 	}
 }
@@ -1113,11 +1113,7 @@ void AddTime(const int &in iTime)
 {
 	int iOverTimeMult = 1;
 	
-	if(iSeconds <= 0)
-	{
-		SD("iSeconds = " + iSeconds);
-		iOverTimeMult = 3;
-	}
+	if(iSeconds <= 0) iOverTimeMult = 3;
 	
 	if(iSeconds < 41 && iTime > 0 && bAllowAddTime == true)
 	{
@@ -1137,12 +1133,12 @@ void FZColor()
 {
 	if(bAllowFZColor == true && bIsFirstITurns != true)
 	{
-		Schedule::Task(0.05f, "FirstZombie");
+		Schedule::Task(0.05f, "FirstInfected");
 		Schedule::Task(0.05f, "FZColor");
 	}
 }
 
-void FirstZombie()
+void FirstInfected()
 {
 	if(iFZTurningTime > 0)
 	{
@@ -1151,6 +1147,7 @@ void FirstZombie()
 			CZP_Player@ pPlayer = ToZPPlayer(iFZIndex);
 			CBasePlayer@ pPlrEnt = pPlayer.opCast();
 			CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+
 			if(pBaseEnt.IsAlive() == true && pBaseEnt.GetTeamNumber() == 2)
 			{
 				string strPTMAddon = strBecomFI;
@@ -1166,20 +1163,20 @@ void FirstZombie()
 			else
 			{
 				iFZIndex = ChooseVolunteer();
-				if(iFZIndex == 0) iFZIndex = ChooseFirstZombie();
-				FirstZombie();
+				if(iFZIndex == 0) iFZIndex = ChooseFirstInfected();
+				FirstInfected();
 			}
 		}
 		else
 		{
 			iFZIndex = ChooseVolunteer();
-			if(iFZIndex == 0) iFZIndex = ChooseFirstZombie();
-			FirstZombie();
+			if(iFZIndex == 0) iFZIndex = ChooseFirstInfected();
+			FirstInfected();
 		}
 	}
 	else
 	{
-		Schedule::Task(30.0f, "TurnOnTHPBonus");
+		Schedule::Task(iDefaultTHPSeconds, "TurnOnTHPBonus");
 		TurnToZ(iFZIndex);
 		ShowOutbreak(iFZIndex);
 	}
@@ -1195,19 +1192,20 @@ void TurnToZ(const int &in iIndex)
 	if(iIndex != 0 && iIndex > 0)
 	{
 		CZP_Player@ pPlayer = ToZPPlayer(iIndex);
-		CBasePlayer@ pPlrEnt = pPlayer.opCast();
-		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 
 		if(pPlayer !is null)
 		{
+			CBasePlayer@ pPlrEnt = pPlayer.opCast();
+			CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+
 			if(bIsFirstITurns != true)
 			{
 				pSoloMode.SetValue("0");
 				bAllowZS = true;
 				bIsFirstITurns = true;
 				Engine.EmitSound("CS_FirstTurn");
-				g_bWasFirstZombie[iIndex] = true;
-				g_bIsFirstZombie[iIndex] = true;
+				g_bWasFirstInfected[iIndex] = true;
+				g_bIsFirstInfected[iIndex] = true;
 				Schedule::Task(flBlockZSTime, "AllowZSProgress");
 				MakeThemAbuser();
 			}
@@ -1217,9 +1215,13 @@ void TurnToZ(const int &in iIndex)
 			pPlayer.CompleteInfection();
 			Engine.EmitSoundEntity(pBaseEnt, "Flesh.HeadshotExplode");
 			Engine.EmitSoundEntity(pBaseEnt, "CSPlayer.Turn");
+
 			RndZModel(pPlayer, pBaseEnt);
 			SetZMHealth(pBaseEnt);
 			
+			//below is a walkaround to emit particles and fade a player screen
+			//cuz AS currently does not have necessary functions....
+			//and "Engine.Ent_Fire_Ent" dosen't work with player entity
 			iUNum++;
 			pBaseEnt.SetEntityName("PlrTurn"+iUNum);
 			Engine.Ent_Fire("PlrTurn"+iUNum, "AddOutput", "OnUser1 BadRed-Fade:fade:0:0:1");
@@ -1321,27 +1323,27 @@ void SetZMHealth(CBaseEntity@ pEntPlr)
 	
 	if(g_iZMDeathCount[pEntPlr.entindex()] < 0 ) g_iZMDeathCount[pEntPlr.entindex()] = 0;
 	
-	int iHPBonus = g_iZMDeathCount[pEntPlr.entindex()] * iDeathHPBonus;
+	int iHPBonus = g_iZMDeathCount[pEntPlr.entindex()] * iDHPBonus;
 	
 	CZP_Player@ pPlayer = ToZPPlayer(pEntPlr);
 	
 	if(pPlayer.IsCarrier() == false)
 	{
-		if(g_bIsFirstZombie[pEntPlr.entindex()] == true)
+		if(g_bIsFirstInfected[pEntPlr.entindex()] == true)
 		{
 			pEntPlr.SetMaxHealth(iFirstInfectedHP / 3);
 			pEntPlr.SetHealth(iFirstInfectedHP);
 		}
 		else
 		{
-			pEntPlr.SetMaxHealth(pEntPlr.GetMaxHealth() + iTimeHPBonus + iZMMaxHPBoost + iHPBonus);
-			pEntPlr.SetHealth(pEntPlr.GetHealth() + iTimeHPBonus + (iZMMaxHPBoost / 4) + iHPBonus);
+			pEntPlr.SetMaxHealth(pEntPlr.GetMaxHealth() + iTimeHPBonus + iZombieMaxHP + iHPBonus);
+			pEntPlr.SetHealth(pEntPlr.GetHealth() + iTimeHPBonus + (iZombieMaxHP / 4) + iHPBonus);
 		}
 	}
 	else
 	{
-		pEntPlr.SetMaxHealth(pEntPlr.GetMaxHealth() + iTimeHPBonus + int(float(iCMaxHPBoost) + (float(iHPBonus) * flMultiplier)));
-		pEntPlr.SetHealth(pEntPlr.GetHealth() + iTimeHPBonus + int(float(iCMaxHPBoost) + (float(iHPBonus) * flMultiplier)));
+		pEntPlr.SetMaxHealth(pEntPlr.GetMaxHealth() + iTimeHPBonus + int(float(iCarrierMaxHP) + (float(iHPBonus) * flMultiplier)));
+		pEntPlr.SetHealth(pEntPlr.GetHealth() + iTimeHPBonus + int(float(iCarrierMaxHP) + (float(iHPBonus) * flMultiplier)));
 	}
 }
 
@@ -1402,7 +1404,7 @@ int ChooseVolunteer()
 	return iVolunteerIndex;
 }
 
-int ChooseFirstZombie()
+int ChooseFirstInfected()
 {
 	int iCount = 0;
 	int iChoosenIndex = 0;
@@ -1418,7 +1420,7 @@ int ChooseFirstZombie()
 		
 		CBasePlayer@ pPlrEnt = pPlayer.opCast();
 		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
-		if(g_bWasFirstZombie[i] == false && pBaseEnt.IsAlive() == true && g_iInfectDelay[i] < 2)
+		if(g_bWasFirstInfected[i] == false && pBaseEnt.IsAlive() == true && g_iInfectDelay[i] < 2)
 		{
 			iCount++;
 			g_pVictim.insertLast(pBaseEnt);
@@ -1446,8 +1448,8 @@ int ChooseFirstZombie()
 
 void MovePlrToSpec(CBaseEntity@ pEntPlr)
 {
-	//Usually a 'trigger_joinspectatorteam' hasn't an origin coordinates (it's equal '0 0 0' by default)
-	//and you cannot get correct coordinates with a '.GetAbsOrigin()' func...
+	//Usually a "trigger_joinspectatorteam" hasn't an origin coordinates (it's equal "0 0 0" by default)
+	//and you cannot get correct coordinates with a ".GetAbsOrigin()" func...
 	//so, this solution won't work for every single map, keep it in mind.
 	CBaseEntity@ pSpecTrigger = FindEntityByClassname(pSpecTrigger, "trigger_joinspectatorteam");
 	pEntPlr.ChangeTeam(0);

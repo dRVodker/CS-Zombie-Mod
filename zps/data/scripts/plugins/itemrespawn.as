@@ -11,7 +11,7 @@ int iUNum = 0;
 float flWaitSpawnTime = 0;
 
 int iDroppedAmmoCount = 0;
-const int iMaxDroppedAmmo = 30;
+const int iMaxDroppedAmmo = 45;
 
 array<string> g_strAmmoClass =
 {
@@ -68,6 +68,7 @@ void OnMapInit()
 	if(Utils.StrContains("cszm", Globals.GetCurrentMapName()))
 	{
 		flWaitSpawnTime = 0;
+		iDroppedAmmoCount =0;
 		bIsCSZM = true;
 		Entities::RegisterPickup("item_ammo_pistol");
 		Entities::RegisterPickup("item_ammo_revolver");
@@ -93,6 +94,7 @@ void OnNewRound()
 void OnMapShutdown()
 {
 	iUNum = 0;
+	iDroppedAmmoCount = 0;
 	bIsCSZM = false;
 	bAllowEvents = false;
 	ClearArrays();

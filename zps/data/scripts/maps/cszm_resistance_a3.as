@@ -9,6 +9,7 @@ void SD(const string &in strMSG)
 void OnMapInit()
 {
 	Schedule::Task(0.05f, "SetUpStuff");
+	OverrideLimits();
 }
 /* //Walkaround to make a fade effect via AS
 void WAFade(const string &in strTarName, CBaseEntity@ pEntity)
