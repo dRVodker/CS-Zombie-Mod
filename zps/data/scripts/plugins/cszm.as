@@ -105,7 +105,7 @@ const int iTHPBonus = 45;				//Multiplier of time hp bonus.
 const int iMaxDeath = 7;				//Maximum amount of death to boost up the max health.
 const int iDefaultTHPSeconds = 30;		//Amount of time in seconds to increase amount of the time hp bonus.
 
-const int iRoundTime = 300 + iGearUpTime;	//Round time in seconds.
+const int iRoundTime = 300 + iGearUpTime;						//Round time in seconds.
 const int iSoT = iRoundTime - iGearUpTime + iTurningTime;		//Second at which the turning time start countdown. don't touch this.
 
 const float flBaseSDMult = 1.01f;		//Base value of slowdown
@@ -129,6 +129,8 @@ const string strHintF1 = "F1 - Join the game";
 const string strHintF3 = "F3 - Spectate";
 const string strHintF4 = "F4 - Back to the Lobby";
 const string strLastZLeave = "{red}WARNING{default}: Last player in the Zombie team has leave.\n{blue}Round Restarting....";
+const string strAMP = "Awaiting More Players";
+const string strWarmUp = "-= Warm Up! =-";
 
 //List of available ZM Player models (make sure your server has it)
 array<string> g_strModels = 
@@ -256,7 +258,7 @@ void OnMapInit()
 		flSloDRecoreTime = Globals.GetCurrentTime() + flBaseRecoverTime;
 		
 		//Set Doors Filter to 0 (any team)
-		if(bAllowWarmUp == true) SetDoors(0);
+		if(bAllowWarmUp == true) SetDoorFilter(0);
 	
 	}
 	else
@@ -310,7 +312,7 @@ void OnMapShutdown()
 
 void ClearIntArray(array<int> &iTarget)
 {
-    while (iTarget.length() > 0)
+    while(iTarget.length() > 0)
     {
         iTarget.removeAt(0);
     }
@@ -318,7 +320,7 @@ void ClearIntArray(array<int> &iTarget)
 
 void ClearFloatArray(array<float> &iTarget)
 {
-    while (iTarget.length() > 0)
+    while(iTarget.length() > 0)
     {
         iTarget.removeAt(0);
     }
@@ -326,7 +328,7 @@ void ClearFloatArray(array<float> &iTarget)
 
 void ClearBoolArray(array<bool> &iTarget)
 {
-    while (iTarget.length() > 0)
+    while(iTarget.length() > 0)
     {
         iTarget.removeAt(0);
     }
@@ -563,7 +565,7 @@ void OnMatchBegin()
 		if(iWUSeconds == 0)
 		{
 			PutPlrToLobby(null);
-			SetDoors(1);
+			SetDoorFilter(1);
 			iWUSeconds = iWUTime;
 		}
 	}
@@ -1219,7 +1221,7 @@ void TurnToZ(const int &in iIndex)
 			RndZModel(pPlayer, pBaseEnt);
 			SetZMHealth(pBaseEnt);
 			
-			//below is a walkaround to emit particles and fade a player screen
+			//walkaround to emit particles and fade a player screen
 			//cuz AS currently does not have necessary functions....
 			//and "Engine.Ent_Fire_Ent" dosen't work with player entity
 			iUNum++;
@@ -1468,7 +1470,7 @@ void WarmUpTimer()
 	{
 		iWUSeconds--;
 
-		string TimerText = "\n\n\n-= Warm Up! =-\n| "+iWUSeconds+" |";
+		string TimerText = "\n\n\n"+strWarmUp+"\n| "+iWUSeconds+" |";
 		SendGameText(any, TimerText, 1, 0.00f, -1, 0.00f, 0.00f, 0.00f, 1.10f, Color(255, 175, 85), Color(255, 95, 5));
 		Schedule::Task(1.00f, "WarmUpTimer");
 
@@ -1481,7 +1483,7 @@ void WarmUpTimer()
 	else if (iNumPlrs <= 1)
 	{
 		iWUSeconds = iWUTime;
-		SendGameText(any, "Awaiting More Players", 1, 0.00f, -1, 0.00f, 0.00f, 0.00f, 600.00f, Color(255, 255, 255), Color(255, 95, 5));
+		SendGameText(any, strAMP, 1, 0.00f, -1, 0.00f, 0.00f, 0.00f, 600.00f, Color(255, 255, 255), Color(255, 95, 5));
 	}
 }
 
@@ -1621,17 +1623,17 @@ void PutPlrToPlayZone(CBaseEntity@ pEntPlayer)
 	array<CBaseEntity@> g_pOtherSpawn = {null};
 	CBaseEntity@ pEntity;
 	
-	while ((@pEntity = FindEntityByClassname(pEntity, "info_player_human")) !is null)
+	while((@pEntity = FindEntityByClassname(pEntity, "info_player_human")) !is null)
 	{
 		g_pOtherSpawn.insertLast(pEntity);
 	}
 	
-	while ((@pEntity = FindEntityByClassname(pEntity, "info_player_zombie")) !is null)
+	while((@pEntity = FindEntityByClassname(pEntity, "info_player_zombie")) !is null)
 	{
 		g_pOtherSpawn.insertLast(pEntity);
 	}
 	
-	while ((@pEntity = FindEntityByClassname(pEntity, "info_player_start")) !is null)
+	while((@pEntity = FindEntityByClassname(pEntity, "info_player_start")) !is null)
 	{
 		g_pOtherSpawn.insertLast(pEntity);
 	}
@@ -1661,10 +1663,10 @@ void PutPlrToPlayZone(CBaseEntity@ pEntPlayer)
 	}
 }
 
-void SetDoors(const int &in iFilter)
+void SetDoorFilter(const int &in iFilter)
 {
 	CBaseEntity@ pEntity;
-	while ((@pEntity = FindEntityByClassname(pEntity, "prop_door_rotating")) !is null)
+	while((@pEntity = FindEntityByClassname(pEntity, "prop_door_rotating")) !is null)
 	{
 		Engine.Ent_Fire_Ent(pEntity, "AddOutput", "doorfilter " + iFilter);
 	}
