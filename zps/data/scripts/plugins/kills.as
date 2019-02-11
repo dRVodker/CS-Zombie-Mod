@@ -59,7 +59,7 @@ void OnMapInit()
 
 void OnNewRound()
 {
-	if(bIsCSZM = true)
+	if(bIsCSZM == true)
 	{
 		for(int i = 1; i <= iMaxPlayers; i++) 
 		{
@@ -79,7 +79,7 @@ void OnNewRound()
 
 void OnMatchEnded()
 {
-	if(bIsCSZM = true)
+	if(bIsCSZM == true)
 	{
 		ShowStatsEnd();
 	}
@@ -179,7 +179,7 @@ HookReturnCode KRoundWin(const string &in strMapname, RoundWinState iWinState)
 
 HookReturnCode OnKPlayerConnected(CZP_Player@ pPlayer)
 {
-	if(bIsCSZM = true)
+	if(bIsCSZM == true)
 	{
 		CBasePlayer@ pPlrEnt = pPlayer.opCast();
 		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
@@ -203,7 +203,7 @@ HookReturnCode OnKPlayerConnected(CZP_Player@ pPlayer)
 
 HookReturnCode OnKPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageInfo)
 {
-	if(bIsCSZM = true)
+	if(bIsCSZM == true)
 	{
 		CZP_Player@ pPlrAttacker = null;
 		CBasePlayer@ pBPlrAttacker = null;
@@ -321,7 +321,7 @@ void Score(const int &in iPlrIndex)
 
 HookReturnCode OnKPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageInfo)
 {
-	if(bIsCSZM = true)
+	if(bIsCSZM == true)
 	{
 		CZP_Player@ pPlrAttacker = null;
 		CBasePlayer@ pBPlrAttacker = null;
