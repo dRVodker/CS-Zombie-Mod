@@ -44,7 +44,7 @@ array<float> g_flSTime =
 array<float> g_flSpawnTime = {0.0f};
 array<string> g_strClassname = {""};
 array<Vector> g_vecOrigin = {Vector(0, 0, 0)};
-array<QAngle> g_angleAngles = {QAngle(0, 0, 0)};
+array<QAngle> g_angAngles = {QAngle(0, 0, 0)};
 array<bool> g_bIsSpawned = {true};
 
 void ClearArrays()
@@ -52,7 +52,7 @@ void ClearArrays()
 	g_flSpawnTime.removeRange(0, g_flSpawnTime.length());
 	g_strClassname.removeRange(0, g_strClassname.length());
 	g_vecOrigin.removeRange(0, g_vecOrigin.length());
-	g_angleAngles.removeRange(0, g_angleAngles.length());
+	g_angAngles.removeRange(0, g_angAngles.length());
 	g_bIsSpawned.removeRange(0, g_bIsSpawned.length());
 }
 
@@ -123,82 +123,45 @@ void OnProcessRound()
 		if(flWaitSpawnTime <= Globals.GetCurrentTime())
 		{
 			flWaitSpawnTime = Globals.GetCurrentTime() + 0.01f;
-			
+
 			for(uint i = 0; i <= g_flSpawnTime.length(); i++)
 			{
-				if(g_bIsSpawned[i] == true) continue;
-					
-				if(g_flSpawnTime[i] > 0)
+				if(g_bIsSpawned[i] == false)
 				{
-					g_flSpawnTime[i] -= 0.01f;
-					continue;
-				}
-				if(g_flSpawnTime[i] < 0)
-				{
-					g_flSpawnTime[i] = 0;
-					continue;
-				}
-				if(g_flSpawnTime[i] == 0)
-				{
-					SpawnThing(i);
-					continue;
+					if(g_flSpawnTime[i] <= Globals.GetCurrentTime())
+					{
+						g_bIsSpawned[i] = true;
+						SpawnItem(i);
+					}
 				}
 			}
 		}
 	}
 }
 
-void SpawnThing(const int &in iIndex)
+void SpawnItem(const int &in iID)
 {
-	if(g_bIsSpawned[iIndex] == false)
-	{
-		if(g_strClassname[iIndex] == "item_ammo_pistol")
-		{
-//			SD("Index: "+iIndex+"\nClass: "+g_strClassname[iIndex]+"\nRTime: "+g_flSpawnTime[iIndex]+"\nSpawned: "+g_bIsSpawned[iIndex]);
-			CBaseEntity@ pMakerAmmoPistol;
-			@pMakerAmmoPistol = FindEntityByName(pMakerAmmoPistol, "-maker_item_ammo_pistol");
-			pMakerAmmoPistol.SetAbsAngles(g_angleAngles[iIndex]);
-			pMakerAmmoPistol.SetAbsOrigin(g_vecOrigin[iIndex]);
-			Engine.Ent_Fire_Ent(pMakerAmmoPistol, "ForceSpawn");
-			g_bIsSpawned[iIndex] = true;
-		}
-		else if(g_strClassname[iIndex] == "item_ammo_rifle")
-		{
-			CBaseEntity@ pMakerAmmoRifle;
-			@pMakerAmmoRifle = FindEntityByName(pMakerAmmoRifle, "-maker_item_ammo_rifle");
-			pMakerAmmoRifle.SetAbsAngles(g_angleAngles[iIndex]);
-			pMakerAmmoRifle.SetAbsOrigin(g_vecOrigin[iIndex]);
-			Engine.Ent_Fire_Ent(pMakerAmmoRifle, "ForceSpawn");
-			g_bIsSpawned[iIndex] = true;
-		}
-		else if(g_strClassname[iIndex] == "item_ammo_revolver")
-		{
-			CBaseEntity@ pMakerAmmoRevolver;
-			@pMakerAmmoRevolver = FindEntityByName(pMakerAmmoRevolver, "-maker_item_ammo_revolver");
-			pMakerAmmoRevolver.SetAbsAngles(g_angleAngles[iIndex]);
-			pMakerAmmoRevolver.SetAbsOrigin(g_vecOrigin[iIndex]);
-			Engine.Ent_Fire_Ent(pMakerAmmoRevolver, "ForceSpawn");
-			g_bIsSpawned[iIndex] = true;
-		}
-		else if(g_strClassname[iIndex] == "item_ammo_shotgun")
-		{
-			CBaseEntity@ pMakerAmmoShotgun;
-			@pMakerAmmoShotgun = FindEntityByName(pMakerAmmoShotgun, "-maker_item_ammo_shotgun");
-			pMakerAmmoShotgun.SetAbsAngles(g_angleAngles[iIndex]);
-			pMakerAmmoShotgun.SetAbsOrigin(g_vecOrigin[iIndex]);
-			Engine.Ent_Fire_Ent(pMakerAmmoShotgun, "ForceSpawn");
-			g_bIsSpawned[iIndex] = true;
-		}
-		else if(g_strClassname[iIndex] == "item_armor")
-		{
-			CBaseEntity@ pMakerArmor;
-			@pMakerArmor = FindEntityByName(pMakerArmor, "-maker_item_armor");
-			pMakerArmor.SetAbsAngles(g_angleAngles[iIndex]);
-			pMakerArmor.SetAbsOrigin(g_vecOrigin[iIndex]);
-			Engine.Ent_Fire_Ent(pMakerArmor, "ForceSpawn");
-			g_bIsSpawned[iIndex] = true;
-		}
-	}
+	CEntityData@ inputdata = EntityCreator::EntityData();
+	inputdata.Add("targetname", "item-respawned");
+
+	inputdata.Add("DisableDamageForces", "1", true);
+
+	EntityCreator::Create(g_strClassname[iID], g_vecOrigin[iID], g_angAngles[iID], inputdata);
+}
+
+void EnvSpark(const Vector &in vecOrigin)
+{
+	CEntityData@ inputdata = EntityCreator::EntityData();
+	inputdata.Add("targetname", "item-respawn-spark");
+	inputdata.Add("spawnflags", "896");
+	inputdata.Add("Magnitude", "1");
+	inputdata.Add("TrailLength", "1");
+	inputdata.Add("MaxDelay", "0");
+
+	inputdata.Add("SparkOnce", "0", true);
+	inputdata.Add("kill", "0", true);
+
+	EntityCreator::Create("env_spark", vecOrigin, QAngle(-90, 0, 0), inputdata);	
 }
 
 HookReturnCode OnEntityCreation(const string &in strClassname, CBaseEntity@ pEntity)
@@ -230,25 +193,14 @@ HookReturnCode OnEntityCreation(const string &in strClassname, CBaseEntity@ pEnt
 			return HOOK_HANDLED;
 		}
 		
-		if(Utils.StrContains("base_item", pEntity.GetEntityName()))
+		if(Utils.StrContains("item-respawned", pEntity.GetEntityName()))
 		{
 			for(uint i = 1; i <= g_strCName.length(); i++)
 			{
 				if(strClassname == g_strCName[i])
 				{
 					Engine.EmitSoundEntity(pEntity, "CS.ItemMaterialize");
-					if(pEntity.GetEntityName() == "base_item_rot_armor")
-					{
-						Engine.Ent_Fire("-maker_spark", "ForceSpawnAtEntityOrigin", ""+pEntity.GetEntityName());
-					}
-					else
-					{
-						iUNum++;
-						pEntity.SetEntityName("RE-ITEM"+iUNum);
-						Engine.Ent_Fire("-maker_spark", "ForceSpawnAtEntityOrigin", "RE-ITEM"+iUNum);
-					}
-					
-					return HOOK_HANDLED;
+					EnvSpark(pEntity.GetAbsOrigin());
 				}
 			}
 		}
@@ -281,12 +233,12 @@ HookReturnCode OnEntityDestruction(const string &in strClassname, CBaseEntity@ p
 		{
 			if(strClassname == g_strCName[i])
 			{
-				g_flSpawnTime.insertLast(g_flSTime[i] + Math::RandomFloat(0.05f, 1.25f));
-				g_strClassname.insertLast(strClassname);
+				g_flSpawnTime.insertLast(Globals.GetCurrentTime() + g_flSTime[i]);
+				g_strClassname.insertLast(pEntity.GetClassname());
 				g_vecOrigin.insertLast(pEntity.GetAbsOrigin());
-				g_angleAngles.insertLast(pEntity.GetAbsAngles());
+				g_angAngles.insertLast(pEntity.GetAbsAngles());
 				g_bIsSpawned.insertLast(false);
-					
+						
 				return HOOK_HANDLED;
 			}
 		}

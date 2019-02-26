@@ -46,6 +46,8 @@ bool bAllowDebug = false;				//Allow Debug?
 
 //Some Data
 CASConVar@ pSoloMode = null;
+CASConVar@ pTestMode = null;
+CASConVar@ pINGWarmUp = null;
 int iUNum;
 int iMaxPlayers;
 int iDoorsState;
@@ -186,6 +188,14 @@ void OnPluginInit()
 	@pSoloMode = ConVar::Find("sv_zps_solo");
 	if(pSoloMode !is null) ConVar::Register(pSoloMode, "ConVar_SoloMode");
 
+	//Find 'sv_testmode' ConVar
+	@pTestMode = ConVar::Find("sv_testmode");
+	if(pTestMode !is null) ConVar::Register(pTestMode, "ConVar_TestMode");
+
+	//Find 'sv_zps_warmup' ConVar
+	@pINGWarmUp = ConVar::Find("sv_zps_warmup");
+	if(pINGWarmUp !is null) ConVar::Register(pINGWarmUp, "ConVar_WarmUpTime");
+
 	//Events
 	Events::Player::OnPlayerConnected.Hook(@OnPlayerConnected);
 	Events::Player::OnPlayerSpawn.Hook(@OnPlayerSpawn);
@@ -217,6 +227,12 @@ void OnMapInit()
 		
 		//Set 'sv_zps_solo' to 0
 		pSoloMode.SetValue("0");
+
+		//Set 'sv_testmode' to 0
+		pTestMode.SetValue("0");
+
+		//Set 'sv_zps_warmup' to 0
+		pINGWarmUp.SetValue("0");
 		
 		//Cache
 		CacheModels();
