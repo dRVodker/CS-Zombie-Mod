@@ -1019,13 +1019,70 @@ HookReturnCode OnEntityCreation(const string &in strClassname, CBaseEntity@ pEnt
 	{
 		if(strClassname == "npc_grenade_frag")
 		{
-			Engine.Ent_Fire_Ent(pEntity, "AddOutput", "Effects 4");		//DLight for npc_grenade_frag
+			iUNum++;
+			pEntity.SetEntityName("frag-grenade"+iUNum);
 
-			return HOOK_HANDLED;
+			CEntityData@ SPRTrailIPD = EntityCreator::EntityData();
+			SPRTrailIPD.Add("targetname", "frag-grenade-trail"+iUNum);
+			SPRTrailIPD.Add("lifetime", "0.25");
+			SPRTrailIPD.Add("renderamt", "255");
+			SPRTrailIPD.Add("rendercolor", "245 16 16");
+			SPRTrailIPD.Add("rendermode", "5");
+			SPRTrailIPD.Add("spritename", "sprites/lgtning.vmt");
+			SPRTrailIPD.Add("startwidth", "4");
+
+			CEntityData@ SpriteIPD = EntityCreator::EntityData();
+			SpriteIPD.Add("targetname", "frag-grenade-sprite"+iUNum);
+
+			SpriteIPD.Add("spawnflags", "1");
+			SpriteIPD.Add("GlowProxySize", "4");
+			SpriteIPD.Add("scale", "0.35");
+			SpriteIPD.Add("rendermode", "9");
+			SpriteIPD.Add("rendercolor", "245 16 16");
+			SpriteIPD.Add("renderamt", "255");
+			SpriteIPD.Add("model", "sprites/light_glow01.vmt");
+			SpriteIPD.Add("renderfx", "0");
+
+			CEntityData@ DLightIPD = EntityCreator::EntityData();
+			DLightIPD.Add("targetname", "frag-grenade-dlight"+iUNum);
+
+			DLightIPD.Add("_cone", "0");
+			DLightIPD.Add("_inner_cone", "0");
+			DLightIPD.Add("pitch", "0");
+			DLightIPD.Add("spawnflags", "0");
+			DLightIPD.Add("spotlight_radius", "0");
+			DLightIPD.Add("style", "0");
+			DLightIPD.Add("_light", "245 8 8 200");
+			DLightIPD.Add("brightness", "4");
+			DLightIPD.Add("distance", "48");
+
+			EntityCreator::Create("env_spritetrail", pEntity.GetAbsOrigin(), QAngle(0, 0, 0), SPRTrailIPD);
+			EntityCreator::Create("env_sprite", pEntity.GetAbsOrigin(), QAngle(0, 0, 0), SpriteIPD);
+			EntityCreator::Create("light_dynamic", pEntity.GetAbsOrigin(), QAngle(0, 0, 0), DLightIPD);
+
+			ParentTrail(iUNum, pEntity);
 		}
 	}
 
 	return HOOK_CONTINUE;
+}
+
+void ParentTrail(const int &in iNum, CBaseEntity@ pEntity)
+{
+	CBaseEntity@ pEntTrail = null;
+	CBaseEntity@ pEntSprite = null;
+	CBaseEntity@ pDLight = null;
+
+	@pEntTrail = FindEntityByName(pEntTrail, "frag-grenade-trail"+iNum);
+	@pEntSprite = FindEntityByName(pEntSprite, "frag-grenade-sprite"+iNum);
+	@pDLight = FindEntityByName(pDLight, "frag-grenade-dlight"+iNum);
+
+	if(pEntTrail !is null && pEntSprite !is null && pDLight !is null)
+	{
+		pEntTrail.SetParent(pEntity);
+		pEntSprite.SetParent(pEntity);
+		pDLight.SetParent(pEntity);
+	}
 }
 
 HookReturnCode RoundWin(const string &in strMapname, RoundWinState iWinState)
