@@ -159,14 +159,8 @@ HookReturnCode KRoundWin(const string &in strMapname, RoundWinState iWinState)
 {
 	if(bIsCSZM == true)
 	{
-		if(iWinState == STATE_HUMAN)
-		{
-			iHumanWin++;
-		}
-		if(iWinState == STATE_ZOMBIE)
-		{
-			iZombieWin++;
-		}
+		if(iWinState == STATE_HUMAN) iHumanWin++;
+		if(iWinState == STATE_ZOMBIE) iZombieWin++;
 		
 		string strHW = "\n  Humans Win - " + iHumanWin;
 		string strZW = "\n  Zombies Win - " + iZombieWin;
