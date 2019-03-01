@@ -1296,14 +1296,14 @@ void TurnToZ(const int &in iIndex)
 			RndZModel(pPlayer, pBaseEnt);
 			SetZMHealth(pBaseEnt);
 			
-			//walkaround to emit particles and fade a player screen
+			//walkaround to fade player screen
 			//cuz AS currently does not have necessary functions....
 			//and "Engine.Ent_Fire_Ent" dosen't work with player entity
 			iUNum++;
 			pBaseEnt.SetEntityName("PlrTurn"+iUNum);
 			Engine.Ent_Fire("PlrTurn"+iUNum, "AddOutput", "OnUser1 BadRed-Fade:fade:0:0:1");
-			Engine.Ent_Fire("maker_ps-turn", "ForceSpawnAtEntityOrigin", "PlrTurn"+iUNum);
 			Engine.Ent_Fire("maker_trigger", "ForceSpawnAtEntityOrigin", "PlrTurn"+iUNum);
+			EmitBloodExp(pPlayer);
 		}
 		else
 		{
@@ -1314,6 +1314,34 @@ void TurnToZ(const int &in iIndex)
 	{
 		GetRandomVictim();
 	}
+}
+
+void EmitBloodExp(CZP_Player@ pPlayer)
+{
+	if(pPlayer is null) return;
+
+	CBasePlayer@ pPlrEnt = pPlayer.opCast();
+	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+
+	CEntityData@ CameraBloodIPD = EntityCreator::EntityData();
+	CameraBloodIPD.Add("targetname", "PS-Turn-Head");
+	CameraBloodIPD.Add("flag_as_weather", "0");
+	CameraBloodIPD.Add("effect_name", "blood_impact_red_01_headshot");
+
+	CameraBloodIPD.Add("Start", "blood_impact_red_01_headshot", true);
+	CameraBloodIPD.Add("kill", "0", true);
+
+	CEntityData@ BodyBloodIPD = EntityCreator::EntityData();
+	BodyBloodIPD.Add("targetname", "PS-Turn");
+	BodyBloodIPD.Add("start_active", "0");
+	BodyBloodIPD.Add("effect_name", "blood_explode_01");
+
+	BodyBloodIPD.Add("Start", "blood_impact_red_01_headshot", true);
+	BodyBloodIPD.Add("kill", "0", true);
+
+	EntityCreator::Create("info_particle_system", pBaseEnt.EyePosition(), pBaseEnt.EyeAngles(), CameraBloodIPD);
+	EntityCreator::Create("info_particle_system", pBaseEnt.GetAbsOrigin(), pBaseEnt.GetAbsAngles(), BodyBloodIPD);
+	Engine.EmitSoundEntity(pBaseEnt, "Flesh.HeadshotExplode");
 }
 
 void GetRandomVictim()
