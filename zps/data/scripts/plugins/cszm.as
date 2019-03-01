@@ -419,7 +419,7 @@ void OnProcessRound()
 					float y = pBaseEnt.GetAbsVelocity().y;
 					float z = pBaseEnt.GetAbsVelocity().z;
 					
-					if(z == 0 || z >= 150)
+					if(pBaseEnt.IsGrounded() == true)
 					{
 						x = pBaseEnt.GetAbsVelocity().x / (flBaseSDMult + g_flSDMulti[i]);
 						y = pBaseEnt.GetAbsVelocity().y / (flBaseSDMult + g_flSDMulti[i]);
@@ -718,6 +718,7 @@ HookReturnCode OnPlayerSpawn(CZP_Player@ pPlayer)
 		if(pBaseEnt.GetTeamNumber() == 0)
 		{
 			pBaseEnt.SetModel("models/cszm/lobby_guy.mdl");
+			pPlayer.SetVoice(eugene);
 			if(bAllowWarmUp == false) lobby_hint(pPlayer);
 		}
 		
@@ -775,6 +776,7 @@ HookReturnCode OnPlayerSpawn(CZP_Player@ pPlayer)
 			}
 			PutPlrToPlayZone(pBaseEnt);
 			pBaseEnt.SetModel("models/cszm/lobby_guy.mdl");
+			pPlayer.SetVoice(eugene);
 			
 			return HOOK_HANDLED;
 		}
@@ -881,7 +883,7 @@ HookReturnCode OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageIn
 				break;
 			}
 				
-				if(pBaseEnt.GetAbsVelocity().z == 0 || bIsFall == true)
+				if(pBaseEnt.IsGrounded() == true || bIsFall == true)
 				{
 					g_flSDMulti[iIndex] += flLocalSDMult;
 					
