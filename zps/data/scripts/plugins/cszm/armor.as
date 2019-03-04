@@ -7,7 +7,11 @@ void OnEntityPickedUp(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 	
 	if(pEntity.GetClassname() == "item_armor")
 	{
-		if(g_iArmor[pBaseEnt.entindex()] < 2) g_iArmor[pBaseEnt.entindex()]++;
+		if(g_iArmor[pBaseEnt.entindex()] < 2)
+		{
+			g_iArmor[pBaseEnt.entindex()]++;
+			Utils.ScreenFade(pPlayer, Color(30, 125, 35, 75), 0.25, 0.0, fade_in);
+		}
 		
 		Chat.CenterMessagePlayer(pPlrEnt, "Infection Protection: "+g_iArmor[pBaseEnt.entindex()]);
 	}
