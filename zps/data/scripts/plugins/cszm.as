@@ -48,6 +48,7 @@ bool bAllowDebug = false;				//Allow Debug?
 CASConVar@ pSoloMode = null;
 CASConVar@ pTestMode = null;
 CASConVar@ pINGWarmUp = null;
+CASConVar@ pFriendlyFire  = null;
 int iUNum;
 int iMaxPlayers;
 int iDoorsState;
@@ -195,6 +196,10 @@ void OnPluginInit()
 	@pINGWarmUp = ConVar::Find("sv_zps_warmup");
 	if(pINGWarmUp !is null) ConVar::Register(pINGWarmUp, "ConVar_WarmUpTime");
 
+	//Find 'mp_friendlyfire' ConVar
+	@pFriendlyFire = ConVar::Find("sv_zps_warmup");
+	if(pFriendlyFire !is null) ConVar::Register(pFriendlyFire, "ConVar_FriendlyFire");
+
 	//Events
 	Events::Player::OnPlayerInfected.Hook(@OnPlayerInfected);
 	Events::Player::OnPlayerConnected.Hook(@OnPlayerConnected);
@@ -225,14 +230,11 @@ void OnMapInit()
 		Log.PrintToServerConsole( LOGTYPE_INFO, "CSZM", "[CSZM] Current map is valid for 'Counter-Strike Zombie Mode'" );
 		bIsCSZM = true;
 		
-		//Set 'sv_zps_solo' to 0
+		//Set some ConVar to 0
 		pSoloMode.SetValue("0");
-
-		//Set 'sv_testmode' to 0
 		pTestMode.SetValue("0");
-
-		//Set 'sv_zps_warmup' to 0
 		pINGWarmUp.SetValue("0");
+		pFriendlyFire.SetValue("0");
 		
 		//Cache
 		CacheModels();
@@ -809,7 +811,7 @@ HookReturnCode OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageIn
 		{
 			if(pPlayer.IsCarrier() != true)
 			{
-				g_flIdleTime[iIndex] += 0.40f;
+				g_flIdleTime[iIndex] += 0.82f;
 				Engine.EmitSoundEntity(pBaseEnt, "CSPlayer_Z.Pain" + g_iCVSIndex[iIndex]);
 			}
 
