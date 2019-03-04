@@ -180,7 +180,6 @@ float flIdleTimer;
 float flSloDTimer;
 float flSloDRecoreTime;
 float flHPRegenTime;
-float flCITime;
 
 void OnPluginInit()
 {
@@ -197,6 +196,7 @@ void OnPluginInit()
 	if(pINGWarmUp !is null) ConVar::Register(pINGWarmUp, "ConVar_WarmUpTime");
 
 	//Events
+	Events::Player::OnPlayerInfected.Hook(@OnPlayerInfected);
 	Events::Player::OnPlayerConnected.Hook(@OnPlayerConnected);
 	Events::Player::OnPlayerSpawn.Hook(@OnPlayerSpawn);
 	Events::Entities::OnEntityCreation.Hook(@OnEntityCreation);
@@ -270,7 +270,6 @@ void OnMapInit()
 		flIdleTimer = Globals.GetCurrentTime() + 0.10f;
 		flSloDTimer = Globals.GetCurrentTime() + 0.01f;
 		flHPRegenTime = Globals.GetCurrentTime() + 0.15f;
-		flCITime = Globals.GetCurrentTime() + 0.5f;
 		flSloDRecoreTime = Globals.GetCurrentTime() + flBaseRecoverTime;
 		
 		//Set Doors Filter to 0 (any team)
@@ -492,26 +491,6 @@ void OnProcessRound()
 			}
 		}
 		
-		if(flCITime <= Globals.GetCurrentTime())
-		{
-			flCITime = Globals.GetCurrentTime() + 0.5f;
-			
-			for(int i = 1; i <= iMaxPlayers; i++) 
-			{
-				CZP_Player@ pPlayer = ToZPPlayer(i);
-
-				if(pPlayer is null) continue;
-
-				CBasePlayer@ pPlrEnt = pPlayer.opCast();
-				CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
-				
-				if(pPlayer.IsInfected() == true)
-				{
-					TurnToZ(pBaseEnt.entindex());
-				}
-			}
-		}
-		
 		if(flExtendTime <= Globals.GetCurrentTime())
 		{
 			flExtendTime = Globals.GetCurrentTime() + 1.00f;
@@ -541,7 +520,6 @@ void OnNewRound()
 		flIdleTimer = Globals.GetCurrentTime() + 0.10f;
 		flSloDTimer = Globals.GetCurrentTime() + 0.01f;
 		flHPRegenTime = Globals.GetCurrentTime() + 0.15f;
-		flCITime = Globals.GetCurrentTime() + 0.5f;
 		flSloDRecoreTime = Globals.GetCurrentTime() + flBaseRecoverTime;
 		
 		ShowRTL(0, 0, 300);
@@ -902,6 +880,13 @@ HookReturnCode OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageIn
 	return HOOK_CONTINUE;
 }
 
+HookReturnCode OnPlayerInfected(CZP_Player@ pPlayer, InfectionState iState)
+{
+	if(iState != state_none) pPlayer.SetInfection(false, 1.0f);
+
+	return HOOK_CONTINUE;
+}
+
 HookReturnCode OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageInfo) 
 {
 	if(bIsCSZM == true)
@@ -935,12 +920,22 @@ HookReturnCode OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageInf
 
 		else
 		{
+			if(iVicTeam == 3)
+			{
+				pBaseEnt.ChangeTeam(2);
+				Schedule::Task(0.0f, "MovePlrToZombieTeam");	
+			}
 			pPlayer.AddScore(-5);
 			return HOOK_HANDLED;
 		}
 
 		if(iVicIndex == iAttIndex)
 		{
+			if(iVicTeam == 3)
+			{
+				pBaseEnt.ChangeTeam(2);
+				Schedule::Task(0.0f, "MovePlrToZombieTeam");	
+			}
 			pPlayer.AddScore(-5);
 			return HOOK_HANDLED;
 		}
@@ -951,11 +946,8 @@ HookReturnCode OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageInf
 			
 			pPlrAttacker.AddScore(1);
 			
-			if(Utils.GetNumPlayers(zombie, false) >= 2)
-			{
-				pBaseEnt.ChangeTeam(2);
-				Schedule::Task(0.001f, "MovePlrToZombieTeam");
-			}
+			pBaseEnt.ChangeTeam(2);
+			Schedule::Task(0.0f, "MovePlrToZombieTeam");
 		}
 		
 		if(iVicTeam == 2 && iAttTeam == 3)
@@ -1005,7 +997,6 @@ HookReturnCode OnPlayerDisonnected(CZP_Player@ pPlayer)
 		
 		if(pBaseEnt.GetTeamNumber() == 3 && Utils.GetNumPlayers(zombie, false) <= 1)
 		{
-			flCITime = Globals.GetCurrentTime() + 40.0f;
 			Engine.EmitSound("common/warning.wav");
 			RoundManager.SetWinState(STATE_STALEMATE);
 			SD(strLastZLeave);
@@ -1295,14 +1286,7 @@ void TurnToZ(const int &in iIndex)
 
 			RndZModel(pPlayer, pBaseEnt);
 			SetZMHealth(pBaseEnt);
-			
-			//walkaround to fade player screen
-			//cuz AS currently does not have necessary functions....
-			//and "Engine.Ent_Fire_Ent" dosen't work with player entity
-			iUNum++;
-			pBaseEnt.SetEntityName("PlrTurn"+iUNum);
-			Engine.Ent_Fire("PlrTurn"+iUNum, "AddOutput", "OnUser1 BadRed-Fade:fade:0:0:1");
-			Engine.Ent_Fire("maker_trigger", "ForceSpawnAtEntityOrigin", "PlrTurn"+iUNum);
+
 			EmitBloodExp(pPlayer);
 		}
 		else
@@ -1319,6 +1303,8 @@ void TurnToZ(const int &in iIndex)
 void EmitBloodExp(CZP_Player@ pPlayer)
 {
 	if(pPlayer is null) return;
+
+	Utils.ScreenFade(pPlayer, Color(125, 35, 30, 145), 0.375, 0.0, fade_in);
 
 	CBasePlayer@ pPlrEnt = pPlayer.opCast();
 	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
