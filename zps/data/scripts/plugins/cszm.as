@@ -1022,7 +1022,7 @@ HookReturnCode OnEntityCreation(const string &in strClassname, CBaseEntity@ pEnt
 			SPRTrailIPD.Add("rendercolor", "245 16 16");
 			SPRTrailIPD.Add("rendermode", "5");
 			SPRTrailIPD.Add("spritename", "sprites/lgtning.vmt");
-			SPRTrailIPD.Add("startwidth", "4");
+			SPRTrailIPD.Add("startwidth", "3.85");
 
 			CEntityData@ SpriteIPD = EntityCreator::EntityData();
 			SpriteIPD.Add("targetname", "frag-grenade-sprite"+iUNum);
@@ -1278,16 +1278,16 @@ void TurnToZ(const int &in iIndex)
 				MakeThemAbuser();
 			}
 			
-			Engine.EmitSoundEntity(pBaseEnt, "CSPlayer.Mute");
-			
+			EmitBloodExp(pPlayer);
+
 			pPlayer.CompleteInfection();
+
+			Engine.EmitSoundEntity(pBaseEnt, "CSPlayer.Mute");
 			Engine.EmitSoundEntity(pBaseEnt, "Flesh.HeadshotExplode");
 			Engine.EmitSoundEntity(pBaseEnt, "CSPlayer.Turn");
 
 			RndZModel(pPlayer, pBaseEnt);
 			SetZMHealth(pBaseEnt);
-
-			EmitBloodExp(pPlayer);
 		}
 		else
 		{
