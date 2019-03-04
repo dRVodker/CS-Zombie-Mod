@@ -243,7 +243,7 @@ HookReturnCode OnKPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageI
 				g_iVictims[iAttIndex]++;
 				g_iSVictims[iAttIndex]++;
 				ShowKills(pPlrAttacker, g_iVictims[iAttIndex], true);
-				KillFeed(pPlrAttacker.GetPlayerName(), pEntityAttacker.GetTeamNumber(), pPlayer.GetPlayerName(), pBaseEnt.GetTeamNumber(), true, false);
+				KillFeed(pPlrAttacker.GetPlayerName(), pEntityAttacker.GetTeamNumber(), pPlayer.GetPlayerName(), true, false);
 			}
 			
 			return HOOK_HANDLED;
@@ -340,7 +340,7 @@ HookReturnCode OnKPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageIn
 		}
 		else
 		{
-			KillFeed("", 0, strVicName, iVicTeam, false, true);
+			KillFeed("", 0, strVicName, false, true);
 			return HOOK_HANDLED;
 		}
 		
@@ -348,7 +348,7 @@ HookReturnCode OnKPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageIn
 
 		if(iAttIndex == iVicIndex || pEntityAttacker.IsPlayer() == false)
 		{
-			KillFeed("", 0, strVicName, iVicTeam, false, true);
+			KillFeed("", 0, strVicName, false, true);
 			return HOOK_HANDLED;
 		}
 		if(iAttTeam == 2)
@@ -356,7 +356,7 @@ HookReturnCode OnKPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageIn
 			g_iKills[iAttIndex]++;
 			g_iSKills[iAttIndex]++;
 			ShowKills(pPlrAttacker, g_iKills[iAttIndex], false);
-			KillFeed(strAttName, iAttTeam, strVicName, iVicTeam, false, false);
+			KillFeed(strAttName, iAttTeam, strVicName, false, false);
 			
 			return HOOK_HANDLED;
 		}
@@ -365,7 +365,7 @@ HookReturnCode OnKPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageIn
 			g_iVictims[iAttIndex]++;
 			g_iSVictims[iAttIndex]++;
 			ShowKills(pPlrAttacker, g_iVictims[iAttIndex], true);
-			KillFeed(strAttName, iAttTeam, strVicName, iVicTeam, false, false);
+			KillFeed(strAttName, iAttTeam, strVicName, false, false);
 			
 			return HOOK_HANDLED;
 		}
@@ -398,41 +398,23 @@ void ShowKills(CZP_Player@ pPlayer, const int &in iKills,const bool &in bIsVicti
 	SendGameTextPlayer(pPlayer, strMsgToShow + iKills, 5, 0.00f, -1, 0.65f, 0.00f, 0.125f, 2.00f, Color(iR, iG, iB), Color(255, 95, 5));
 }
 
-void KillFeed(const string &in strAttName, const int &in iAttTeam, const string &in strVicName, const int &in iVicTeam, const bool &in bIsInfect, const bool &in bIsSuicide)
+void KillFeed(const string &in strAttName, const int &in iAttTeam, const string &in strVicName, const bool &in bIsInfect, const bool &in bIsSuicide)
 {
 	string VicColoe = "white";
 	string AttColoe = "white";
 	
-	switch(iAttTeam)
+	if(iAttTeam == 2)
 	{
-		case 2:
-			AttColoe = "blue";
-		break;
-		
-		case 3:
-			AttColoe = "red";
-		break;
-		
-		default:
-			AttColoe = "grey";
-		break;
+		AttColoe = "blue";
+		VicColoe = "red";
 	}
-	
-	switch(iVicTeam)
+
+	else if(iAttTeam == 3)
 	{
-		case 2:
-			VicColoe = "blue";
-		break;
-	
-		case 3:
-			VicColoe = "red";
-		break;
-		
-		default:
-			VicColoe = "grey";
-		break;
+		AttColoe = "red";
+		VicColoe = "blue";
 	}
-	
+
 	if(bIsSuicide == false)
 	{
 		string strKill = "killed";
