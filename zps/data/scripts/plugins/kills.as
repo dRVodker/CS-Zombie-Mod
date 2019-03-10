@@ -300,16 +300,16 @@ void Score(const int &in iPlrIndex)
 	float flSCDmg = g_flScoreDamage[iPlrIndex];
 	float flTimes = 0;
 	
-	if(g_flScoreDamage[iPlrIndex] >= 80 && g_flScoreDamage[iPlrIndex] < 160)
+	if(g_flScoreDamage[iPlrIndex] >= 100 && g_flScoreDamage[iPlrIndex] < 200)
 	{
-		pPlayer.AddScore(1);
-		g_flScoreDamage[iPlrIndex] -= 80.00f;
+		pPlayer.AddScore(1, null);
+		g_flScoreDamage[iPlrIndex] -= 100.0f;
 	}
 	else if(g_flScoreDamage[iPlrIndex] > 80)
 	{
-		flTimes = floor(flSCDmg / 80.00f);
-		pPlayer.AddScore(int(flTimes));
-		g_flScoreDamage[iPlrIndex] -= (80.00f * flTimes);
+		flTimes = floor(flSCDmg / 100.0f);
+		pPlayer.AddScore(int(flTimes), null);
+		g_flScoreDamage[iPlrIndex] -= (100.0f * flTimes);
 	}
 }
 

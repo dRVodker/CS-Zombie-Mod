@@ -176,7 +176,6 @@ int iFZTurningTime = 0;
 int iFZIndex = 0;
 int iRND_CVS_PV;
 int iWUSeconds = iWUTime;
-float flExtendTime;
 float flIdleTimer;
 float flSloDTimer;
 float flSloDRecoreTime;
@@ -210,7 +209,7 @@ void OnPluginInit()
 	Events::Player::OnPlayerDisonnected.Hook(@OnPlayerDisonnected);
 	Events::Rounds::RoundWin.Hook(@RoundWin);
 	Events::Player::OnPlayerRagdollCreated.Hook(@OnPlayerRagdollCreated);
-	Events::Player::PlayerSay.Hook(@PlayerSay);
+	Events::Player::OnConCommand.Hook(@OnConCommand);
 }
 
 HookReturnCode OnPlayerRagdollCreated(CZP_Player@ pPlayer, bool &in bHeadshot, bool &out bExploded)
@@ -492,12 +491,8 @@ void OnProcessRound()
 				}
 			}
 		}
-		
-		if(flExtendTime <= Globals.GetCurrentTime())
-		{
-			flExtendTime = Globals.GetCurrentTime() + 1.00f;
-			Engine.ExtendGame(2, 1);
-		}
+
+		RoundManager.SetCurrentRoundTime(300.f + Globals.GetCurrentTime());
 	}
 }
 
@@ -557,6 +552,7 @@ void OnMatchBegin()
 	{
 		Schedule::Task(0.50f, "LocknLoad");
 		Schedule::Task((iGearUpTime - 5.00f), "FirstInfectedHP");
+		
 		ComparePlr();
 		if(iWUSeconds == 0)
 		{
@@ -573,7 +569,8 @@ void LocknLoad()
 	
 	iSeconds = iRoundTime;
 	
-	Engine.ExtendGame(2, 9999);
+	RoundManager.SetRounds(10);
+	RoundManager.SetCurrentRoundTime(2700);
 
 	RoundTimeLeft();
 	Engine.EmitSound("CS_MatchBeginRadio");
@@ -651,11 +648,11 @@ HookReturnCode OnPlayerConnected(CZP_Player@ pPlayer)
 	return HOOK_CONTINUE;
 }
 
-HookReturnCode PlayerSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
+HookReturnCode OnConCommand(CZP_Player@ pPlayer, CASCommand@ pArgs)
 {
 	if(bIsCSZM == true)
 	{
-		if(Utils.StrEql("!infect", pArgs.Arg(1)))
+		if(Utils.StrEql("choose2", pArgs.Arg(0)))
 		{
 			CBasePlayer@ pPlrEnt = pPlayer.opCast();
 			CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
@@ -671,10 +668,6 @@ HookReturnCode PlayerSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 					Chat.PrintToChatPlayer(pPlrEnt, strChooseToPlayFI);
 					if(g_bIsVolunteer[pBaseEnt.entindex()] != true) g_bIsVolunteer[pBaseEnt.entindex()] = true;
 				}
-			}
-			else
-			{
-				Chat.PrintToChatPlayer(pPlrEnt, strOnlyInLobby);
 			}
 			
 			return HOOK_HANDLED;
@@ -798,6 +791,7 @@ HookReturnCode OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageIn
 				CBasePlayer@ pBasePlrA = pAttacker.opCast();
 				CBaseEntity@ pBaseEntA = pBasePlrA.opCast();
 				
+
 				GotVictim(pAttacker, pBaseEntA);
 				TurnToZ(iIndex);
 			}
@@ -906,6 +900,15 @@ HookReturnCode OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageInf
 		const int iAttIndex = pEntityAttacker.entindex();
 		const int iAttTeam = pEntityAttacker.GetTeamNumber();
 		
+		if(pEntityAttacker.IsPlayer() == true) @pPlrAttacker = ToZPPlayer(iAttIndex);
+
+		if(g_bIsFirstInfected[iVicIndex] == true)
+		{
+			pBaseEnt.SetEntityName("");
+			Engine.Ent_Fire("FI-Bleed", "kill");
+			Engine.Ent_Fire("FI-DLight", "kill");
+		}
+
 		if(g_bIsVolunteer[iVicIndex] == true) g_bIsVolunteer[iVicIndex] = false;
 		
 		if(iVicTeam == 3 && pPlayer.IsCarrier() != true)
@@ -915,11 +918,6 @@ HookReturnCode OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageInf
 			g_flSDMulti[iVicIndex] = 0.0f;
 		}
 		
-		if(pEntityAttacker.IsPlayer() == true)
-		{
-			@pPlrAttacker = ToZPPlayer(iVicIndex);
-		}
-
 		else
 		{
 			if(iVicTeam == 3)
@@ -927,7 +925,7 @@ HookReturnCode OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageInf
 				pBaseEnt.ChangeTeam(2);
 				Schedule::Task(0.0f, "MovePlrToZombieTeam");	
 			}
-			pPlayer.AddScore(-5);
+//			pPlayer.AddScore(-5, null);
 			return HOOK_HANDLED;
 		}
 
@@ -938,7 +936,7 @@ HookReturnCode OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageInf
 				pBaseEnt.ChangeTeam(2);
 				Schedule::Task(0.0f, "MovePlrToZombieTeam");	
 			}
-			pPlayer.AddScore(-5);
+//			pPlayer.AddScore(-5, null);
 			return HOOK_HANDLED;
 		}
 		
@@ -946,16 +944,11 @@ HookReturnCode OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageInf
 		{
 			if(g_iZMDeathCount[iAttIndex] < iMaxDeath && g_bIsFirstInfected[iVicIndex] == false) g_iZMDeathCount[iVicIndex]++;
 			
-			pPlrAttacker.AddScore(1);
-			
 			pBaseEnt.ChangeTeam(2);
 			Schedule::Task(0.0f, "MovePlrToZombieTeam");
 		}
 		
-		if(iVicTeam == 2 && iAttTeam == 3)
-		{
-			GotVictim(pPlrAttacker, pEntityAttacker);
-		}
+		if(iVicTeam == 2 && iAttTeam == 3) GotVictim(pPlrAttacker, pEntityAttacker);
 	}
 
 	return HOOK_CONTINUE;
@@ -968,8 +961,9 @@ void GotVictim(CZP_Player@ pAttacker, CBaseEntity@ pBaseEntA)
 	if(bAllowDebug == true) SD("g_iZMDeathCount: " + g_iZMDeathCount[pBaseEntA.entindex()]);
 		
 	if(pBaseEntA.IsAlive() == true) pBaseEntA.SetHealth(pBaseEntA.GetHealth() + iHPReward);
-	pAttacker.AddScore(5);
 	
+	pAttacker.AddScore(5, null);
+
 	AddTime(iInfectionATSec);
 }
 
@@ -995,6 +989,13 @@ HookReturnCode OnPlayerDisonnected(CZP_Player@ pPlayer)
 		CBasePlayer@ pPlrEnt = pPlayer.opCast();
 		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 		
+		if(g_bIsFirstInfected[pBaseEnt.entindex()] == true) 
+		{
+			g_bIsFirstInfected[pBaseEnt.entindex()] = false;
+			Engine.Ent_Fire("FI-Bleed", "kill");
+			Engine.Ent_Fire("FI-DLight", "kill");
+		}
+
 		if(iFZIndex == pBaseEnt.entindex()) iFZIndex = 0;
 		
 		if(pBaseEnt.GetTeamNumber() == 3 && Utils.GetNumPlayers(zombie, false) <= 1)
@@ -1270,6 +1271,15 @@ void TurnToZ(const int &in iIndex)
 
 			if(bIsFirstITurns != true)
 			{
+				CBaseEntity@ pBleeder = null;
+
+				while ((@pBleeder = FindEntityByName(pBleeder, "TG-FirstInfected")) !is null)
+				{
+					pBleeder.SetEntityName("");
+				}
+
+				pBaseEnt.SetEntityName("TG-FirstInfected");
+				Schedule::Task(0.15f, "FIBleed");
 				pSoloMode.SetValue("0");
 				bAllowZS = true;
 				bIsFirstITurns = true;
@@ -1301,6 +1311,61 @@ void TurnToZ(const int &in iIndex)
 		GetRandomVictim();
 	}
 }
+
+void FIBleed()
+{
+	CBaseEntity@ pBleeder = null;
+
+	@pBleeder = FindEntityByName(pBleeder, "TG-FirstInfected");
+
+	if(pBleeder is null) return;
+
+	CZP_Player@ pPlayer = ToZPPlayer(pBleeder);
+
+	CBasePlayer@ pPlrEnt = pPlayer.opCast();
+	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+
+	CEntityData@ FIBleed = EntityCreator::EntityData();
+	FIBleed.Add("targetname", "FI-Bleed");
+	FIBleed.Add("flag_as_weather", "0");
+	FIBleed.Add("start_active", "1");
+	FIBleed.Add("cpoint1", "TG-FirstInfected");
+	FIBleed.Add("effect_name", "blood_antlionguard_injured_heavy_tiny");
+
+//	FIBleed.Add("Start", "1", true);
+
+	EntityCreator::Create("info_particle_system", pBaseEnt.GetAbsOrigin(), pBaseEnt.GetAbsAngles(), FIBleed);
+
+	FIDlight(pBaseEnt);
+}
+
+
+void FIDlight(CBaseEntity@ pEntPlayer)
+{
+	CEntityData@ DLightIPD = EntityCreator::EntityData();
+	DLightIPD.Add("targetname", "FI-DLight");
+
+	DLightIPD.Add("_cone", "0");
+	DLightIPD.Add("_inner_cone", "0");
+	DLightIPD.Add("pitch", "0");
+	DLightIPD.Add("spotlight_radius", "0");
+	DLightIPD.Add("style", "0");
+	DLightIPD.Add("_light", "245 16 16 200");
+	DLightIPD.Add("brightness", "8");
+	DLightIPD.Add("distance", "16");
+
+	DLightIPD.Add("addoutput", "spawnflags 1", true);
+
+	EntityCreator::Create("light_dynamic", pEntPlayer.EyePosition(), QAngle(0, 0, 0), DLightIPD);
+
+	CBaseEntity@ pDlight = FindEntityByName(pDlight, "FI-DLight");
+
+	pDlight.SetParent(pEntPlayer);
+	pDlight.SetParentAttachment("anim_attachment_head", false);
+//	pDlight.SetParentAttachment("forward", false);
+//	pDlight.SetParentAttachment("eyes", false);
+}
+
 
 void EmitBloodExp(CZP_Player@ pPlayer)
 {
