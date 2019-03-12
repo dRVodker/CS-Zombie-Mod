@@ -208,11 +208,11 @@ void OnPluginInit()
 	Events::Player::OnPlayerKilled.Hook(@OnPlayerKilled);
 	Events::Player::OnPlayerDisonnected.Hook(@OnPlayerDisonnected);
 	Events::Rounds::RoundWin.Hook(@RoundWin);
-	Events::Player::OnPlayerRagdollCreated.Hook(@OnPlayerRagdollCreated);
+	Events::Player::OnPlayerRagdollCreate.Hook(@OnPlayerRagdollCreate);
 	Events::Player::OnConCommand.Hook(@OnConCommand);
 }
 
-HookReturnCode OnPlayerRagdollCreated(CZP_Player@ pPlayer, bool &in bHeadshot, bool &out bExploded)
+HookReturnCode OnPlayerRagdollCreate(CZP_Player@ pPlayer, bool &in bHeadshot, bool &out bExploded)
 {
 	CBasePlayer@ pPlrEnt = pPlayer.opCast();
 	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
@@ -905,7 +905,6 @@ HookReturnCode OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageInf
 		if(g_bIsFirstInfected[iVicIndex] == true)
 		{
 			pBaseEnt.SetEntityName("");
-			Engine.Ent_Fire("FI-Bleed", "kill");
 			Engine.Ent_Fire("FI-DLight", "kill");
 		}
 
@@ -992,7 +991,6 @@ HookReturnCode OnPlayerDisonnected(CZP_Player@ pPlayer)
 		if(g_bIsFirstInfected[pBaseEnt.entindex()] == true) 
 		{
 			g_bIsFirstInfected[pBaseEnt.entindex()] = false;
-			Engine.Ent_Fire("FI-Bleed", "kill");
 			Engine.Ent_Fire("FI-DLight", "kill");
 		}
 
@@ -1271,21 +1269,13 @@ void TurnToZ(const int &in iIndex)
 
 			if(bIsFirstITurns != true)
 			{
-				CBaseEntity@ pBleeder = null;
-
-				while ((@pBleeder = FindEntityByName(pBleeder, "TG-FirstInfected")) !is null)
-				{
-					pBleeder.SetEntityName("");
-				}
-
-				pBaseEnt.SetEntityName("TG-FirstInfected");
-				Schedule::Task(0.15f, "FIBleed");
 				pSoloMode.SetValue("0");
 				bAllowZS = true;
 				bIsFirstITurns = true;
 				Engine.EmitSound("CS_FirstTurn");
 				g_bWasFirstInfected[iIndex] = true;
 				g_bIsFirstInfected[iIndex] = true;
+				Schedule::Task(0.1f, "FirstInfDistinctive");
 				Schedule::Task(flBlockZSTime, "AllowZSProgress");
 				MakeThemAbuser();
 			}
@@ -1312,60 +1302,45 @@ void TurnToZ(const int &in iIndex)
 	}
 }
 
-void FIBleed()
+void FirstInfDistinctive()
 {
-	CBaseEntity@ pBleeder = null;
+	CBaseEntity@ pCosMerge = null;
 
-	@pBleeder = FindEntityByName(pBleeder, "TG-FirstInfected");
+	@pCosMerge = FindEntityByClassname(pCosMerge, "cos_merge");
 
-	if(pBleeder is null) return;
+	if(pCosMerge is null) return;
 
-	CZP_Player@ pPlayer = ToZPPlayer(pBleeder);
+	pCosMerge.SetEntityName("FirstKnife");
 
-	CBasePlayer@ pPlrEnt = pPlayer.opCast();
-	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+	CBaseEntity@ pParent = null;
 
-	CEntityData@ FIBleed = EntityCreator::EntityData();
-	FIBleed.Add("targetname", "FI-Bleed");
-	FIBleed.Add("flag_as_weather", "0");
-	FIBleed.Add("start_active", "1");
-	FIBleed.Add("cpoint1", "TG-FirstInfected");
-	FIBleed.Add("effect_name", "blood_antlionguard_injured_heavy_tiny");
+	@pParent = pCosMerge.GetParent();
 
-//	FIBleed.Add("Start", "1", true);
+	if(pParent !is null)
+	{
+		CEntityData@ DLightIPD = EntityCreator::EntityData();
+		DLightIPD.Add("targetname", "FI-DLight");
 
-	EntityCreator::Create("info_particle_system", pBaseEnt.GetAbsOrigin(), pBaseEnt.GetAbsAngles(), FIBleed);
+		DLightIPD.Add("_cone", "0");
+		DLightIPD.Add("_inner_cone", "0");
+		DLightIPD.Add("pitch", "0");
+		DLightIPD.Add("spotlight_radius", "0");
+		DLightIPD.Add("style", "0");
+		DLightIPD.Add("_light", "245 32 16 200");
+		DLightIPD.Add("brightness", "8");
+		DLightIPD.Add("distance", "20");
+		DLightIPD.Add("spawnflags", "1");
 
-	FIDlight(pBaseEnt);
+		DLightIPD.Add("addoutput", "spawnflags 1", true);
+
+		EntityCreator::Create("light_dynamic", pParent.EyePosition(), QAngle(0, 0, 0), DLightIPD);
+
+		CBaseEntity@ pDlight = FindEntityByName(pDlight, "FI-DLight");
+
+		pDlight.SetParent(pParent);
+		pDlight.SetParentAttachment("anim_attachment_RH", false);
+	}
 }
-
-
-void FIDlight(CBaseEntity@ pEntPlayer)
-{
-	CEntityData@ DLightIPD = EntityCreator::EntityData();
-	DLightIPD.Add("targetname", "FI-DLight");
-
-	DLightIPD.Add("_cone", "0");
-	DLightIPD.Add("_inner_cone", "0");
-	DLightIPD.Add("pitch", "0");
-	DLightIPD.Add("spotlight_radius", "0");
-	DLightIPD.Add("style", "0");
-	DLightIPD.Add("_light", "245 16 16 200");
-	DLightIPD.Add("brightness", "8");
-	DLightIPD.Add("distance", "16");
-
-	DLightIPD.Add("addoutput", "spawnflags 1", true);
-
-	EntityCreator::Create("light_dynamic", pEntPlayer.EyePosition(), QAngle(0, 0, 0), DLightIPD);
-
-	CBaseEntity@ pDlight = FindEntityByName(pDlight, "FI-DLight");
-
-	pDlight.SetParent(pEntPlayer);
-	pDlight.SetParentAttachment("anim_attachment_head", false);
-//	pDlight.SetParentAttachment("forward", false);
-//	pDlight.SetParentAttachment("eyes", false);
-}
-
 
 void EmitBloodExp(CZP_Player@ pPlayer)
 {
@@ -1379,18 +1354,18 @@ void EmitBloodExp(CZP_Player@ pPlayer)
 	CEntityData@ CameraBloodIPD = EntityCreator::EntityData();
 	CameraBloodIPD.Add("targetname", "PS-Turn-Head");
 	CameraBloodIPD.Add("flag_as_weather", "0");
+	CameraBloodIPD.Add("start_active", "1");
 	CameraBloodIPD.Add("effect_name", "blood_impact_red_01_headshot");
 
-	CameraBloodIPD.Add("Start", "blood_impact_red_01_headshot", true);
-	CameraBloodIPD.Add("kill", "0", true);
+	CameraBloodIPD.Add("kill", "0", true, "0.01");
 
 	CEntityData@ BodyBloodIPD = EntityCreator::EntityData();
 	BodyBloodIPD.Add("targetname", "PS-Turn");
-	BodyBloodIPD.Add("start_active", "0");
+	BodyBloodIPD.Add("flag_as_weather", "0");
+	BodyBloodIPD.Add("start_active", "1");
 	BodyBloodIPD.Add("effect_name", "blood_explode_01");
 
-	BodyBloodIPD.Add("Start", "blood_impact_red_01_headshot", true);
-	BodyBloodIPD.Add("kill", "0", true);
+	BodyBloodIPD.Add("kill", "0", true, "0.01");
 
 	EntityCreator::Create("info_particle_system", pBaseEnt.EyePosition(), pBaseEnt.EyeAngles(), CameraBloodIPD);
 	EntityCreator::Create("info_particle_system", pBaseEnt.GetAbsOrigin(), pBaseEnt.GetAbsAngles(), BodyBloodIPD);
@@ -1426,36 +1401,39 @@ void RndZModel(CZP_Player@ pPlayer, CBaseEntity@ pEntPlr)
 
 	g_iCVSIndex[pEntPlr.entindex()] = iRND_CVS;
 	
-	uint iMCount = 0;
+	iRND_CVS_PV = iRND_CVS;
 	
-	for(uint i = 0; i <= g_strModels.length() - 1; i++)
-	{
-		if(g_bAModels[i] == false) iMCount++;
-	}
-	
-	if(iMCount == g_strModels.length() - 1)
-	{
-		iMCount = 0;
-		
+	if(g_bIsFirstInfected[pEntPlr.entindex()] == true) pEntPlr.SetModel(g_strModels[6]);
+	else 
+	{	
+		uint iMCount = 0;
 		for(uint i = 0; i <= g_strModels.length() - 1; i++)
 		{
-			if(g_bAModels[i] == false) g_bAModels[i] = true;
+			if(g_bAModels[i] == false) iMCount++;
 		}
+		
+		if(iMCount == g_strModels.length() - 1)
+		{
+			iMCount = 0;
+			
+			for(uint i = 0; i <= g_strModels.length() - 1; i++)
+			{
+				if(g_bAModels[i] == false) g_bAModels[i] = true;
+			}
+		}
+		
+		int iRND_MDL = 0;
+		
+		for(int i = 0; iRND_MDL == 0; i++)
+		{
+			iRND_MDL = Math::RandomInt(1, g_strModels.length() - 1);
+			if(g_bAModels[iRND_MDL] == false) iRND_MDL = 0;
+			else g_bAModels[iRND_MDL] = false;
+		}
+		
+		if(pPlayer.IsCarrier() == true) pEntPlr.SetModel(g_strModels[0]);
+		else pEntPlr.SetModel(g_strModels[iRND_MDL]);
 	}
-	
-	int iRND_MDL = 0;
-	
-	for(int i = 0; iRND_MDL == 0; i++)
-	{
-		iRND_MDL = Math::RandomInt(1, g_strModels.length() - 1);
-		if(g_bAModels[iRND_MDL] == false) iRND_MDL = 0;
-		else g_bAModels[iRND_MDL] = false;
-	}
-	
-	if(pPlayer.IsCarrier() == true) pEntPlr.SetModel(g_strModels[0]);
-	else pEntPlr.SetModel(g_strModels[iRND_MDL]);
-	
-	iRND_CVS_PV = iRND_CVS;
 }
 
 void SetZMHealth(CBaseEntity@ pEntPlr)
