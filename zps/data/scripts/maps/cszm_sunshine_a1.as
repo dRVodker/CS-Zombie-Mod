@@ -90,7 +90,7 @@ HookReturnCode OnEntityCreation(const string &in strClassname, CBaseEntity@ pEnt
 }
 
 
-HookReturnCode OnEndTouch(const string &in strEntityName, CBaseEntity@ pEntity)
+HookReturnCode OnEndTouch(CBaseEntity@ pTrigger, const string &in strEntityName, CBaseEntity@ pEntity)
 {
 	if(strEntityName == "bob_trigger" && pEntity.GetClassname() == "npc_grenade_frag")
 	{	

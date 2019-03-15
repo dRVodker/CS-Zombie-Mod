@@ -73,7 +73,7 @@ HookReturnCode OnPlayerSpawn(CZP_Player@ pPlayer)
 	return HOOK_HANDLED;
 }
 
-HookReturnCode OnStartTouch(const string &in strEntityName, CBaseEntity@ pEntity)
+HookReturnCode OnStartTouch(CBaseEntity@ pTrigger, const string &in strEntityName, CBaseEntity@ pEntity)
 {
 	if(pEntity.GetTeamNumber() == 0 && pEntity.IsPlayer() == true && strEntityName == "fog_volume_lobby")
 	{

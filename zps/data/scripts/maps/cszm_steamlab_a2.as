@@ -7,13 +7,13 @@ void SD(const string &in strMSG)
 
 void OnMapInit()
 {	
-	SetUpStuff();
+	Schedule::Task(0.05f, "SetUpStuff");
 	OverrideLimits();
 }
 
 void OnNewRound()
 {
-	SetUpStuff();
+	Schedule::Task(0.05f, "SetUpStuff");
 }
 
 void OnMatchBegin() 

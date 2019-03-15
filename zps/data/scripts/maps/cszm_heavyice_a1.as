@@ -21,6 +21,7 @@ void OnMapInit()
 	Events::Trigger::OnEndTouch.Hook(@OnEndTouch);
 	
 	Schedule::Task(0.01f, "SetUpStuff");
+	OverrideLimits();
 }
 
 int CalculateHealthPoints(int &in iMulti)
@@ -74,7 +75,7 @@ void SetUpStuff()
 	}
 }
 
-HookReturnCode OnEndTouch(const string &in strEntityName, CBaseEntity@ pEntity)
+HookReturnCode OnEndTouch(CBaseEntity@ pTrigger, const string &in strEntityName, CBaseEntity@ pEntity)
 {
 	if(strEntityName == "bob_trigger" && pEntity.GetClassname() == "npc_grenade_frag")
 	{	

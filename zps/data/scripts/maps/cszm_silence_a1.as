@@ -113,7 +113,7 @@ void DoorHP(int &in iWoodDoorHP, int &in iMetalDoorHP)
 	Engine.Ent_Fire("CrematoryDoors", "SetDoorHealth", "" + iMetalDoorHP);
 }
 
-HookReturnCode OnStartTouch(const string &in strEntityName, CBaseEntity@ pEntity)
+HookReturnCode OnStartTouch(CBaseEntity@ pTrigger, const string &in strEntityName, CBaseEntity@ pEntity)
 {
 	if (pEntity is null) return HOOK_CONTINUE;
 	
@@ -131,7 +131,7 @@ HookReturnCode OnStartTouch(const string &in strEntityName, CBaseEntity@ pEntity
 	return HOOK_CONTINUE;
 }
 
-HookReturnCode OnEndTouch(const string &in strEntityName, CBaseEntity@ pEntity)
+HookReturnCode OnEndTouch(CBaseEntity@ pTrigger, const string &in strEntityName, CBaseEntity@ pEntity)
 {
 	if (pEntity is null) return HOOK_CONTINUE;
 	

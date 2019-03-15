@@ -69,7 +69,7 @@ void SetUpStuff()
 	TurnOnFan1();
 }
 
-HookReturnCode OnStartTouch(const string &in strEntityName, CBaseEntity@ pEntity)
+HookReturnCode OnStartTouch(CBaseEntity@ pTrigger, const string &in strEntityName, CBaseEntity@ pEntity)
 {
 	if(strEntityName == "hurt_toxic1" || strEntityName == "hurt_toxic2")
 	{
