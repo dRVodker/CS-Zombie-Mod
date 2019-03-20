@@ -1,0 +1,83 @@
+// All lines starting by double forward slashes are comments and are ignored
+// by Zombie Panic! Source.
+//
+// Use this file to specify which Angelscript server plugin(s) you would like
+// to enable on your server.
+//
+// Do NOT add Angelscript plugins for maps here!
+//
+// For each plugin, add one object in the "plugins" array that must contain the
+// following fields:
+// "name" = The name of the plugin to show when listing them.
+// "author" = The author of the plugin.
+// "version" = The version of the plugin.
+// "script" = The main plugin's script file (relative to the
+// "data/plugins/scripts" folder).
+// "lifetime" = Either "SERVER" if the plugin must not be reloaded in order
+// to function properly or "HOTRELOADABLE" otherwise.
+//
+// If the plugin uses multiple files (also known as includes), do NOT add them!
+// Just add the main plugin's script only and the rest will be added as well!
+//
+// If you have more than one plugin, remember to add a colon (,) at the end of
+// every object except the last one.
+{
+	"plugins": [
+		{
+			"name": "Spray Checker",
+			"author": "JonnyBoy0719",
+			"version": "1.0.0.0",
+			"script": "SprayChecker.as",
+			"lifetime": "HOTRELOADABLE"
+		},
+		{
+			"name": "VooDoo",
+			"author": "dR.Vodker",
+			"version": "1.0.0.0",
+			"script": "voodoo.as",
+			"lifetime": "HOTRELOADABLE"
+		},
+		{
+			"name": "Show Damage",
+			"author": "dR.Vodker",
+			"version": "1.0.0.0",
+			"script": "kills.as",
+			"lifetime": "HOTRELOADABLE"
+		},
+		{
+			"name": "CS Zombie Mod",
+			"author": "dR.Vodker",
+			"version": "1.0.0.0",
+			"script": "cszm.as",
+			"lifetime": "HOTRELOADABLE"
+		},
+		{
+			"name": "CS ZM - Broadcaster",
+			"author": "dR.Vodker",
+			"version": "1.0.0.0",
+			"script": "cszm-bc.as",
+			"lifetime": "HOTRELOADABLE"
+		},
+		{
+			"name": "Item Respawner",
+			"author": "dR.Vodker",
+			"version": "1.0.0.0",
+			"script": "itemrespawn.as",
+			"lifetime": "HOTRELOADABLE"
+		},
+		{
+			"name": "Remove Props",
+			"author": "dR.Vodker",
+			"version": "1.0.0.0",
+			"script": "removeprop.as",
+			"lifetime": "HOTRELOADABLE"
+		},
+		{
+			"name": "Show Props HP",
+			"author": "dR.Vodker",
+			"version": "1.0.0.0",
+			"script": "showhp.as",
+			"lifetime": "HOTRELOADABLE"
+		}
+	]
+}
