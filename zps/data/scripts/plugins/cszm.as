@@ -899,6 +899,8 @@ HookReturnCode OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageInf
 		
 		const int iAttIndex = pEntityAttacker.entindex();
 		const int iAttTeam = pEntityAttacker.GetTeamNumber();
+
+		RoundManager.SetZombieLives(32);
 		
 		if(pEntityAttacker.IsPlayer() == true) @pPlrAttacker = ToZPPlayer(iAttIndex);
 
@@ -910,43 +912,18 @@ HookReturnCode OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageInf
 
 		if(g_bIsVolunteer[iVicIndex] == true) g_bIsVolunteer[iVicIndex] = false;
 		
-		if(iVicTeam == 3 && pPlayer.IsCarrier() != true)
-		{
-			Engine.EmitSoundEntity(pBaseEnt, "CSPlayer_Z.Die" + g_iCVSIndex[iVicIndex]);
-			g_flSDTime[iVicIndex] = 0.0f;
-			g_flSDMulti[iVicIndex] = 0.0f;
-		}
-		
-		else
-		{
-			if(iVicTeam == 3)
-			{
-				pBaseEnt.ChangeTeam(2);
-				Schedule::Task(0.0f, "MovePlrToZombieTeam");	
-			}
-//			pPlayer.AddScore(-5, null);
-			return HOOK_HANDLED;
-		}
-
-		if(iVicIndex == iAttIndex)
-		{
-			if(iVicTeam == 3)
-			{
-				pBaseEnt.ChangeTeam(2);
-				Schedule::Task(0.0f, "MovePlrToZombieTeam");	
-			}
-//			pPlayer.AddScore(-5, null);
-			return HOOK_HANDLED;
-		}
-		
 		if(iVicTeam == 3)
 		{
+			if(pPlayer.IsCarrier() != true)
+			{
+				Engine.EmitSoundEntity(pBaseEnt, "CSPlayer_Z.Die" + g_iCVSIndex[iVicIndex]);
+				g_flSDTime[iVicIndex] = 0.0f;
+				g_flSDMulti[iVicIndex] = 0.0f;
+			}
+
 			if(g_iZMDeathCount[iAttIndex] < iMaxDeath && g_bIsFirstInfected[iVicIndex] == false) g_iZMDeathCount[iVicIndex]++;
-			
-			pBaseEnt.ChangeTeam(2);
-			Schedule::Task(0.0f, "MovePlrToZombieTeam");
 		}
-		
+
 		if(iVicTeam == 2 && iAttTeam == 3) GotVictim(pPlrAttacker, pEntityAttacker);
 	}
 
@@ -964,21 +941,6 @@ void GotVictim(CZP_Player@ pAttacker, CBaseEntity@ pBaseEntA)
 	pAttacker.AddScore(5, null);
 
 	AddTime(iInfectionATSec);
-}
-
-void MovePlrToZombieTeam()
-{
-	for( int i = 1; i <= iMaxPlayers; i++ )
-	{
-		CZP_Player@ pPlayer = ToZPPlayer(i);
-		
-		if(pPlayer is null) continue;
-		
-		CBasePlayer@ pPlrEnt = pPlayer.opCast();
-		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
-		
-		if(pBaseEnt.GetTeamNumber() == 2 && pBaseEnt.IsAlive() == false) pBaseEnt.ChangeTeam(3);
-	}
 }
 
 HookReturnCode OnPlayerDisonnected(CZP_Player@ pPlayer)

@@ -1,3 +1,13 @@
+"CS.ItemMaterialize"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"0.675"
+	"soundlevel" 	"SNDLVL_75dB"
+	"pitch"			"150"
+
+	"wave"	"items/suitchargeok1.wav"
+}
+
 "BaseExplosionEffect.Sound"
 {
 	"channel"		"CHAN_WEAPON"
@@ -309,6 +319,106 @@
 
 }
 
+"CS_FVox10"
+{
+	"channel"		"CHAN_USER_BASE"
+	"volume"		"0.725"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"		"@cszm_fx/fvox/fv10.wav"
+}
+
+"CS_FVox9"
+{
+	"channel"		"CHAN_USER_BASE"
+	"volume"		"0.725"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"		"@cszm_fx/fvox/fv9.wav"
+}
+
+"CS_FVox8"
+{
+	"channel"		"CHAN_USER_BASE"
+	"volume"		"0.725"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"		"@cszm_fx/fvox/fv8.wav"
+}
+
+"CS_FVox7"
+{
+	"channel"		"CHAN_USER_BASE"
+	"volume"		"0.725"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"		"@cszm_fx/fvox/fv7.wav"
+}
+
+"CS_FVox6"
+{
+	"channel"		"CHAN_USER_BASE"
+	"volume"		"0.725"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"		"@cszm_fx/fvox/fv6.wav"
+}
+
+"CS_FVox5"
+{
+	"channel"		"CHAN_USER_BASE"
+	"volume"		"0.725"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"		"@cszm_fx/fvox/fv5.wav"
+}
+
+"CS_FVox4"
+{
+	"channel"		"CHAN_USER_BASE"
+	"volume"		"0.725"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"		"@cszm_fx/fvox/fv4.wav"
+}
+
+"CS_FVox3"
+{
+	"channel"		"CHAN_USER_BASE"
+	"volume"		"0.725"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"		"@cszm_fx/fvox/fv3.wav"
+}
+
+"CS_FVox2"
+{
+	"channel"		"CHAN_USER_BASE"
+	"volume"		"0.725"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"		"@cszm_fx/fvox/fv2.wav"
+}
+
+"CS_FVox1"
+{
+	"channel"		"CHAN_USER_BASE"
+	"volume"		"0.725"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"		"@cszm_fx/fvox/fv1.wav"
+}
+
 "CS_MatchBeginRadio"
 {
 	"channel"		"CHAN_ITEM"
@@ -329,7 +439,7 @@
 "CSPlayer_Z.Pain1"
 {
 	"channel"		"CHAN_VOICE"
-	"volume"		"0.95"
+	"volume"		"0.8"
 	"pitch"			"95, 105"
 
 	"soundlevel"	"SNDLVL_80dB"
@@ -364,7 +474,7 @@
 "CSPlayer.Idle1"
 {
 	"channel"		"CHAN_VOICE"
-	"volume"		"0.40, 0.95"
+	"volume"		"0.35, 0.75"
 	"pitch"			"90, 105"
 
 	"soundlevel"	"SNDLVL_80dB"
@@ -391,7 +501,7 @@
 "CSPlayer_Z.Pain2"
 {
 	"channel"		"CHAN_VOICE"
-	"volume"		"1"
+	"volume"		"0.9"
 	"pitch"			"95, 105"
 
 	"soundlevel"	"SNDLVL_80dB"
@@ -426,7 +536,7 @@
 "CSPlayer.Idle2"
 {
 	"channel"		"CHAN_VOICE"
-	"volume"		"0.95, 1"
+	"volume"		"0.5, 0.75"
 	"pitch"			"90, 105"
 
 	"soundlevel"	"SNDLVL_80dB"
@@ -448,7 +558,7 @@
 "CSPlayer_Z.Pain3"
 {
 	"channel"		"CHAN_VOICE"
-	"volume"		"1"
+	"volume"		"0.85"
 	"pitch"			"95, 105"
 
 	"soundlevel"	"SNDLVL_80dB"
@@ -483,7 +593,7 @@
 "CSPlayer.Idle3"
 {
 	"channel"		"CHAN_VOICE"
-	"volume"		"0.95, 1"
+	"volume"		"0.45, 0.7"
 	"pitch"			"90, 105"
 
 	"soundlevel"	"SNDLVL_80dB"
@@ -503,7 +613,7 @@
 "CSPlayer.Turn"
 {
 	"channel"		"CHAN_USER_BASE1"
-	"volume"		"1"
+	"volume"		"0.95"
 	"pitch"			"90, 105"
 
 	"soundlevel"	"SNDLVL_GUNFIRE"
