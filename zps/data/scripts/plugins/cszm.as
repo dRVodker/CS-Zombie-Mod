@@ -7,7 +7,9 @@
 
 #include "../SendGameText"
 #include "./cszm/cache.as"
-#include "./cszm/armor.as"
+#include "./cszm/antidote.as"
+#include "./cszm/spawnad.as"
+#include "./cszm/modelchange.as"
 
 //MyDebugFunc
 void SD(const string &in strMSG)
@@ -243,7 +245,7 @@ void OnMapInit()
 		iMaxPlayers = Globals.GetMaxClients();
 		
 		//Entities
-		Entities::RegisterPickup("item_armor");
+		Entities::RegisterUse("item_pills");
 		
 		//Resize
 		g_flIdleTime.resize(iMaxPlayers + 1);
@@ -258,7 +260,7 @@ void OnMapInit()
 		g_iInfectDelay.resize(iMaxPlayers + 1);
 		g_iZMDeathCount.resize(iMaxPlayers + 1);
 		g_bIsSpawned.resize(iMaxPlayers + 1);
-		g_iArmor.resize(iMaxPlayers + 1);
+		g_iAntidote.resize(iMaxPlayers + 1);
 		
 		g_bAModels.resize(g_strModels.length());
 		
@@ -298,7 +300,7 @@ void OnMapShutdown()
 	
 	iUNum = 0;
 	
-	Entities::RemoveRegisterPickup("item_armor");
+	Entities::RemoveRegisterUse("item_pills");
 	
 	bAllowCD = false;
 	bIsFirstITurns = false;
@@ -319,7 +321,7 @@ void OnMapShutdown()
 	ClearIntArray(g_iCVSIndex);
 	ClearIntArray(g_iInfectDelay);
 	ClearIntArray(g_iZMDeathCount);
-	ClearIntArray(g_iArmor);
+	ClearIntArray(g_iAntidote);
 	ClearFloatArray(g_flHPRDelay);
 	ClearFloatArray(g_flSDMulti);
 	ClearFloatArray(g_flSDTime);
@@ -523,7 +525,7 @@ void OnNewRound()
 		
 		for ( int i = 1; i <= iMaxPlayers; i++ ) 
 		{
-			g_iArmor[i] = 0;
+			g_iAntidote[i] = 0;
 			g_flSDTime[i] = 0.0f;
 			g_flSDMulti[i] = 0.0f;
 			g_iZMDeathCount[i] = -1;
@@ -631,7 +633,7 @@ HookReturnCode OnPlayerConnected(CZP_Player@ pPlayer)
 		g_flSDTime[pBaseEnt.entindex()] = 0.0f;
 		g_flSDMulti[pBaseEnt.entindex()] = 0.0f;
 		g_iInfectDelay[pBaseEnt.entindex()] = 0;
-		g_iArmor[pBaseEnt.entindex()] = 0;
+		g_iAntidote[pBaseEnt.entindex()] = 0;
 		g_iZMDeathCount[pBaseEnt.entindex()] = -1;
 		g_flHPRDelay[pBaseEnt.entindex()] = 0.00f;
 		g_iCVSIndex[pBaseEnt.entindex()] = Math::RandomInt(1, 3);
@@ -705,8 +707,9 @@ HookReturnCode OnPlayerSpawn(CZP_Player@ pPlayer)
 			
 			if(pBaseEnt.GetTeamNumber() == 2)
 			{
-				if(g_iArmor[iIndex] > 0) g_iArmor[iIndex] = 0;
+				if(g_iAntidote[iIndex] > 0) g_iAntidote[iIndex] = 0;
 				if(g_iInfectDelay[iIndex] > 0) g_iInfectDelay[iIndex]--;
+				pBaseEnt.SetMaxHealth(1);
 				return HOOK_HANDLED;
 			}
 			
@@ -778,14 +781,14 @@ HookReturnCode OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageIn
 		
 		if(iTeamNum == 2 && iDamageType == 8196 && flDamage > 20)
 		{
-			if(g_iArmor[iIndex] > 2) g_iArmor[iIndex] = 1;
+			if(g_iAntidote[iIndex] > 2) g_iAntidote[iIndex] = 1;
 			
-			if(g_iArmor[iIndex] > 0)
+			if(g_iAntidote[iIndex] > 0)
 			{
-				g_iArmor[iIndex]--;
+				g_iAntidote[iIndex]--;
 				return HOOK_HANDLED;
 			}
-			else if(g_iArmor[iIndex] <= 0)
+			else if(g_iAntidote[iIndex] <= 0)
 			{
 				CZP_Player@ pAttacker = ToZPPlayer(DamageInfo.GetAttacker());
 				CBasePlayer@ pBasePlrA = pAttacker.opCast();
@@ -958,7 +961,7 @@ HookReturnCode OnPlayerDisonnected(CZP_Player@ pPlayer)
 
 		if(iFZIndex == pBaseEnt.entindex()) iFZIndex = 0;
 		
-		if(pBaseEnt.GetTeamNumber() == 3 && Utils.GetNumPlayers(zombie, false) <= 1)
+		if(pBaseEnt.GetTeamNumber() == 3 && Utils.GetNumPlayers(zombie, false) <= 1 && RoundManager.IsRoundOngoing(false) == true)
 		{
 			Engine.EmitSound("common/warning.wav");
 			RoundManager.SetWinState(STATE_STALEMATE);
@@ -1018,6 +1021,14 @@ HookReturnCode OnEntityCreation(const string &in strClassname, CBaseEntity@ pEnt
 
 			ParentTrail(iUNum, pEntity);
 		}
+
+		else if(strClassname == "item_armor")
+		{
+			SpawnAntidote(pEntity.GetAbsOrigin(), pEntity.GetAbsAngles());
+			pEntity.SUB_Remove();
+		}
+
+		else if(strClassname == "item_pills") Schedule::Task(0.0f, "ModelChange");
 	}
 
 	return HOOK_CONTINUE;

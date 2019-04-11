@@ -1,5 +1,8 @@
 void CacheModels()
 {   
+    //ZM Antidote Model
+     Engine.PrecacheFile(model, "models/healthvial.mdl");
+
     //ZM Player Models
     Engine.PrecacheFile(model, "models/cszm/carrier.mdl");
     Engine.PrecacheFile(model, "models/cszm/zombie_classic.mdl");
@@ -19,6 +22,9 @@ void CacheModels()
 
 void CacheSounds()
 {
+    //Antidote PickUp
+    Engine.PrecacheFile(sound, "items/smallmedkit1.wav");
+
     //Boom HeadShot
     Engine.PrecacheFile(sound, ")impacts/flesh_impact_headshot-01.wav");
 	

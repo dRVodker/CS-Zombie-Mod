@@ -1,5 +1,4 @@
 #include "../SendGameText"
-#include "./cszm/armor.as"
 
 //some data
 int iMaxPlayers;
@@ -9,6 +8,7 @@ float flWaitTime;
 int iHumanWin;
 int iZombieWin;
 
+array<int> g_iAntidote;
 array<int> g_iKills;
 array<int> g_iHits;
 array<int> g_iVictims;
@@ -40,7 +40,7 @@ void OnMapInit()
 		bIsCSZM = true;
 		iMaxPlayers = Globals.GetMaxClients();
 		
-		Entities::RegisterPickup("item_armor");
+		Entities::RegisterUse("item_pills");
 		
 		g_iKills.resize(iMaxPlayers + 1);
 		g_iHits.resize(iMaxPlayers + 1);
@@ -51,7 +51,7 @@ void OnMapInit()
 		g_flShowDamage.resize(iMaxPlayers + 1);
 		g_flScoreDamage.resize(iMaxPlayers + 1);
 		g_flSDTimer.resize(iMaxPlayers + 1);
-		g_iArmor.resize(iMaxPlayers + 1);
+		g_iAntidote.resize(iMaxPlayers + 1);
 		
 		flWaitTime = Globals.GetCurrentTime() + 0.10f;
 	}
@@ -64,7 +64,7 @@ void OnNewRound()
 		for(int i = 1; i <= iMaxPlayers; i++) 
 		{
 			g_iHits[i] = 0;
-			g_iArmor[i] = 0;
+			g_iAntidote[i] = 0;
 			g_iKills[i] = 0;
 			g_iVictims[i] = 0;
 			g_flDamage[i] = 0.0f;
@@ -94,14 +94,14 @@ void OnMapShutdown()
 	
 	flWaitTime = 0.0f;
 	
-	Entities::RemoveRegisterPickup("item_armor");
+	Entities::RemoveRegisterUse("item_pills");
 	
 	ClearIntArray(g_iKills);
 	ClearIntArray(g_iHits);
 	ClearIntArray(g_iVictims);
 	ClearIntArray(g_iSVictims);
 	ClearIntArray(g_iSKills);
-	ClearIntArray(g_iArmor);
+	ClearIntArray(g_iAntidote);
 	ClearFloatArray(g_flDamage);
 	ClearFloatArray(g_flShowDamage);
 	ClearFloatArray(g_flScoreDamage);
@@ -178,7 +178,7 @@ HookReturnCode OnKPlayerConnected(CZP_Player@ pPlayer)
 		CBasePlayer@ pPlrEnt = pPlayer.opCast();
 		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 		
-		g_iArmor[pBaseEnt.entindex()] = 0;
+		g_iAntidote[pBaseEnt.entindex()] = 0;
 		g_iKills[pBaseEnt.entindex()] = 0;
 		g_iHits[pBaseEnt.entindex()] = 0;
 		g_iVictims[pBaseEnt.entindex()] = 0;
@@ -208,6 +208,7 @@ HookReturnCode OnKPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageI
 		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 
 		const int iVicIndex = pBaseEnt.entindex();
+		const int iVicTeam = pBaseEnt.GetTeamNumber();
 		
 		CBaseEntity@ pEntityAttacker = DamageInfo.GetAttacker();
 		
@@ -231,11 +232,11 @@ HookReturnCode OnKPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageI
 		{
 			if(pBaseEnt.GetTeamNumber() == 0 || pBaseEnt.GetTeamNumber() == 1) return HOOK_HANDLED;
 			
-			if(g_iArmor[iVicIndex] > 2) g_iArmor[iVicIndex] = 2;
+			if(g_iAntidote[iVicIndex] > 2) g_iAntidote[iVicIndex] = 2;
 			
-			if(g_iArmor[iVicIndex] > 0)
+			if(g_iAntidote[iVicIndex] > 0)
 			{
-				g_iArmor[iVicIndex]--;
+				g_iAntidote[iVicIndex]--;
 				return HOOK_HANDLED;
 			}
 			else
@@ -243,7 +244,7 @@ HookReturnCode OnKPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageI
 				g_iVictims[iAttIndex]++;
 				g_iSVictims[iAttIndex]++;
 				ShowKills(pPlrAttacker, g_iVictims[iAttIndex], true);
-				KillFeed(pPlrAttacker.GetPlayerName(), pEntityAttacker.GetTeamNumber(), pPlayer.GetPlayerName(), pBaseEnt.GetTeamNumber(), true, false);
+				KillFeed(pPlrAttacker.GetPlayerName(), pEntityAttacker.GetTeamNumber(), pPlayer.GetPlayerName(), iVicTeam, true, false);
 			}
 			
 			return HOOK_HANDLED;
@@ -325,6 +326,7 @@ HookReturnCode OnKPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageIn
 		
 		const int iVicIndex = pBaseEnt.entindex();
 		const int iVicTeam = pBaseEnt.GetTeamNumber();
+
 		const string strVicName = pPlayer.GetPlayerName();
 		
 		CBaseEntity@ pEntityAttacker = DamageInfo.GetAttacker();
@@ -467,4 +469,12 @@ void ShowStatsEnd()
 		
 		SendGameTextPlayer(pPlr, strSStats, 3, 0.00f, 0, 0.40f, 0.25f, 0.00f, 10.10f, Color(220, 205, 205), Color(255, 95, 5));
 	}
+}
+
+void OnEntityUsed(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
+{
+	CBasePlayer@ pPlrEnt = pPlayer.opCast();
+	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+
+	if(pEntity.GetClassname() == "item_pills" && pBaseEnt.GetTeamNumber() == 2 && g_iAntidote[pBaseEnt.entindex()] < 2) g_iAntidote[pBaseEnt.entindex()]++;
 }

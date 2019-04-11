@@ -1,3 +1,5 @@
+#include "./cszm/spawnad.as"
+
 //some data
 bool bIsCSZM = false;
 bool bAllowEvents = false;
@@ -28,7 +30,7 @@ array<string> g_strCName =
 	"item_ammo_rifle", //2
 	"item_ammo_shotgun", //3
 	"item_ammo_revolver", //4
-	"item_armor" //5
+	"item_pills" //5
 };
 
 array<float> g_flSTime =
@@ -38,7 +40,7 @@ array<float> g_flSTime =
 	20.0f, //2
 	25.0f, //3
 	35.0f, //4
-	40.0f //5
+	43.0f //5
 };
 
 array<float> g_flSpawnTime = {0.0f};
@@ -74,7 +76,6 @@ void OnMapInit()
 		Entities::RegisterPickup("item_ammo_revolver");
 		Entities::RegisterPickup("item_ammo_rifle");
 		Entities::RegisterPickup("item_ammo_shotgun");
-		Entities::RegisterPickup("item_armor");
 		
 		Engine.PrecacheFile(sound, "items/suitchargeok1.wav");
 		
@@ -103,7 +104,6 @@ void OnMapShutdown()
 	Entities::RemoveRegisterPickup("item_ammo_revolver");
 	Entities::RemoveRegisterPickup("item_ammo_rifle");
 	Entities::RemoveRegisterPickup("item_ammo_shotgun");
-	Entities::RemoveRegisterPickup("item_armor");
 }
 
 void OnMatchBegin()
@@ -251,10 +251,7 @@ void OnEntityPickedUp(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 {
 	if(bIsCSZM == true)
 	{
-		if(Utils.StrContains("item_ammo", pEntity.GetClassname()) || Utils.StrContains("item_armor", pEntity.GetClassname()))
-		{
-			pEntity.SUB_Remove();
-		}
+		if(Utils.StrContains("item_ammo", pEntity.GetClassname())) pEntity.SUB_Remove();
 	}
 }
 
