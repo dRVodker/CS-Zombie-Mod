@@ -89,6 +89,7 @@ void OnNewRound()
 	{
 		iUNum = 0;
 		ClearArrays();
+		bAllowEvents = false;
 	}
 }
 
@@ -108,12 +109,17 @@ void OnMapShutdown()
 
 void OnMatchBegin()
 {
+	if(bIsCSZM == true) Schedule::Task(0.5f, "AllowEvents"); 
+}
+
+void AllowEvents()
+{
 	bAllowEvents = true;
 }
 
 void OnMatchEnded()
 {
-	bAllowEvents = false;
+	if(bIsCSZM == true) bAllowEvents = false;
 }
 
 void OnProcessRound()
@@ -141,27 +147,26 @@ void OnProcessRound()
 
 void SpawnItem(const int &in iID)
 {
-	CEntityData@ inputdata = EntityCreator::EntityData();
-	inputdata.Add("targetname", "item-respawned");
+	CEntityData@ ItemIPD = EntityCreator::EntityData();
+	ItemIPD.Add("targetname", "item-respawned");
 
-	inputdata.Add("DisableDamageForces", "1", true);
+	ItemIPD.Add("DisableDamageForces", "1", true);
 
-	EntityCreator::Create(g_strClassname[iID], g_vecOrigin[iID], g_angAngles[iID], inputdata);
-}
+	EntityCreator::Create(g_strClassname[iID], g_vecOrigin[iID], g_angAngles[iID], ItemIPD);
 
-void EnvSpark(const Vector &in vecOrigin)
-{
-	CEntityData@ inputdata = EntityCreator::EntityData();
-	inputdata.Add("targetname", "item-respawn-spark");
-	inputdata.Add("spawnflags", "896");
-	inputdata.Add("Magnitude", "1");
-	inputdata.Add("TrailLength", "1");
-	inputdata.Add("MaxDelay", "0");
+	CEntityData@ SparkIPD = EntityCreator::EntityData();
+	SparkIPD.Add("targetname", "item-respawn-spark");
+	SparkIPD.Add("spawnflags", "896");
+	SparkIPD.Add("magnitude", "1");
+	SparkIPD.Add("trailLength", "1");
+	SparkIPD.Add("maxdelay", "0");
 
-	inputdata.Add("SparkOnce", "0", true);
-	inputdata.Add("kill", "0", true);
+	SparkIPD.Add("SparkOnce", "0", true);
+	SparkIPD.Add("kill", "0", true);
 
-	EntityCreator::Create("env_spark", vecOrigin, QAngle(-90, 0, 0), inputdata);	
+	EntityCreator::Create("env_spark", g_vecOrigin[iID], QAngle(-90, 0, 0), SparkIPD);	
+
+	Engine.EmitSoundPosition(0, "CS.ItemMaterialize", g_vecOrigin[iID], 0.675f, 65, Math::RandomInt(140, 160));
 }
 
 HookReturnCode OnEntityCreation(const string &in strClassname, CBaseEntity@ pEntity)
@@ -191,18 +196,6 @@ HookReturnCode OnEntityCreation(const string &in strClassname, CBaseEntity@ pEnt
 			}
 
 			return HOOK_HANDLED;
-		}
-		
-		if(Utils.StrContains("item-respawned", pEntity.GetEntityName()))
-		{
-			for(uint i = 1; i <= g_strCName.length(); i++)
-			{
-				if(strClassname == g_strCName[i])
-				{
-					Engine.EmitSoundEntity(pEntity, "CS.ItemMaterialize");
-					EnvSpark(pEntity.GetAbsOrigin());
-				}
-			}
 		}
 	}
 	
@@ -264,7 +257,7 @@ void RemoveExtraClip(const uint &in iUnit)
 	{
 		while((@pAmmoEntity = FindEntityByClassname(pAmmoEntity, g_strAmmoClass[ui])) !is null)
 		{
-				g_pAmmoEntity.insertLast(pAmmoEntity);
+			g_pAmmoEntity.insertLast(pAmmoEntity);
 		}
 	}
 

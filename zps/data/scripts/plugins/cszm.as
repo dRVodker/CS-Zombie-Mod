@@ -240,7 +240,7 @@ void OnMapInit()
 		//Cache
 		CacheModels();
 		CacheSounds();
-		
+
 		//Get MaxPlayers
 		iMaxPlayers = Globals.GetMaxClients();
 		
@@ -692,6 +692,7 @@ HookReturnCode OnPlayerSpawn(CZP_Player@ pPlayer)
 		
 		if(pBaseEnt.GetTeamNumber() == 0)
 		{
+			if(bAllowWarmUp == true) pBaseEnt.ChangeTeam(1);
 			pBaseEnt.SetModel("models/cszm/lobby_guy.mdl");
 			pPlayer.SetVoice(eugene);
 			if(bAllowWarmUp == false) lobby_hint(pPlayer);
@@ -743,16 +744,19 @@ HookReturnCode OnPlayerSpawn(CZP_Player@ pPlayer)
 		}
 		else
 		{
-			if(g_bIsSpawned[iIndex] == true) pBaseEnt.ChangeTeam(1);
-			else Schedule::Task(0.00f, "MakeThemSpec");
-			if(pPlrEnt.IsBot() == true) pBaseEnt.ChangeTeam(1);	//Delete me
+			if(pPlrEnt.IsBot() == true)							//Delete me
+			{													//This is for debug purposes with bots
+				pBaseEnt.ChangeTeam(1);							//Unused in actual gameplay
+				pBaseEnt.SetModel("models/cszm/lobby_guy.mdl");
+				pPlayer.SetVoice(eugene);
+			}
+
+			PutPlrToPlayZone(pBaseEnt);
+
 			if(CountPlrs(0) <= 2 || CountPlrs(1) <= 2)
 			{
 				if(iWUSeconds == iWUTime) Schedule::Task(0.00f, "WarmUpTimer");
 			}
-			PutPlrToPlayZone(pBaseEnt);
-			pBaseEnt.SetModel("models/cszm/lobby_guy.mdl");
-			pPlayer.SetVoice(eugene);
 			
 			return HOOK_HANDLED;
 		}
@@ -907,12 +911,6 @@ HookReturnCode OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageInf
 		
 		if(pEntityAttacker.IsPlayer() == true) @pPlrAttacker = ToZPPlayer(iAttIndex);
 
-		if(g_bIsFirstInfected[iVicIndex] == true)
-		{
-			pBaseEnt.SetEntityName("");
-			Engine.Ent_Fire("FI-DLight", "kill");
-		}
-
 		if(g_bIsVolunteer[iVicIndex] == true) g_bIsVolunteer[iVicIndex] = false;
 		
 		if(iVicTeam == 3)
@@ -953,12 +951,6 @@ HookReturnCode OnPlayerDisonnected(CZP_Player@ pPlayer)
 		CBasePlayer@ pPlrEnt = pPlayer.opCast();
 		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 		
-		if(g_bIsFirstInfected[pBaseEnt.entindex()] == true) 
-		{
-			g_bIsFirstInfected[pBaseEnt.entindex()] = false;
-			Engine.Ent_Fire("FI-DLight", "kill");
-		}
-
 		if(iFZIndex == pBaseEnt.entindex()) iFZIndex = 0;
 		
 		if(pBaseEnt.GetTeamNumber() == 3 && Utils.GetNumPlayers(zombie, false) <= 1 && RoundManager.IsRoundOngoing(false) == true)
@@ -1022,13 +1014,23 @@ HookReturnCode OnEntityCreation(const string &in strClassname, CBaseEntity@ pEnt
 			ParentTrail(iUNum, pEntity);
 		}
 
+		else if(strClassname == "item_healthkit")
+		{
+			SpawnAntidote(pEntity.GetAbsOrigin(), pEntity.GetAbsAngles());
+			pEntity.SUB_Remove();
+		}
+
 		else if(strClassname == "item_armor")
 		{
 			SpawnAntidote(pEntity.GetAbsOrigin(), pEntity.GetAbsAngles());
 			pEntity.SUB_Remove();
 		}
 
-		else if(strClassname == "item_pills") Schedule::Task(0.0f, "ModelChange");
+		else if(strClassname == "item_pills")
+		{
+			pEntity.SetEntityName("antidote");
+			Schedule::Task(0.0f, "ModelChange");
+		}
 	}
 
 	return HOOK_CONTINUE;
@@ -1248,7 +1250,6 @@ void TurnToZ(const int &in iIndex)
 				Engine.EmitSound("CS_FirstTurn");
 				g_bWasFirstInfected[iIndex] = true;
 				g_bIsFirstInfected[iIndex] = true;
-				Schedule::Task(0.1f, "FirstInfDistinctive");
 				Schedule::Task(flBlockZSTime, "AllowZSProgress");
 				MakeThemAbuser();
 			}
@@ -1272,46 +1273,6 @@ void TurnToZ(const int &in iIndex)
 	else
 	{
 		GetRandomVictim();
-	}
-}
-
-void FirstInfDistinctive()
-{
-	CBaseEntity@ pCosMerge = null;
-
-	@pCosMerge = FindEntityByClassname(pCosMerge, "cos_merge");
-
-	if(pCosMerge is null) return;
-
-	pCosMerge.SetEntityName("FirstKnife");
-
-	CBaseEntity@ pParent = null;
-
-	@pParent = pCosMerge.GetParent();
-
-	if(pParent !is null)
-	{
-		CEntityData@ DLightIPD = EntityCreator::EntityData();
-		DLightIPD.Add("targetname", "FI-DLight");
-
-		DLightIPD.Add("_cone", "0");
-		DLightIPD.Add("_inner_cone", "0");
-		DLightIPD.Add("pitch", "0");
-		DLightIPD.Add("spotlight_radius", "0");
-		DLightIPD.Add("style", "0");
-		DLightIPD.Add("_light", "245 32 16 200");
-		DLightIPD.Add("brightness", "8");
-		DLightIPD.Add("distance", "20");
-		DLightIPD.Add("spawnflags", "1");
-
-		DLightIPD.Add("addoutput", "spawnflags 1", true);
-
-		EntityCreator::Create("light_dynamic", pParent.EyePosition(), QAngle(0, 0, 0), DLightIPD);
-
-		CBaseEntity@ pDlight = FindEntityByName(pDlight, "FI-DLight");
-
-		pDlight.SetParent(pParent);
-		pDlight.SetParentAttachment("anim_attachment_RH", false);
 	}
 }
 
@@ -1376,7 +1337,8 @@ void RndZModel(CZP_Player@ pPlayer, CBaseEntity@ pEntPlr)
 	
 	iRND_CVS_PV = iRND_CVS;
 	
-	if(g_bIsFirstInfected[pEntPlr.entindex()] == true) pEntPlr.SetModel(g_strModels[6]);
+	if(g_bIsFirstInfected[pEntPlr.entindex()] == true) pEntPlr.SetModel("models/cszm/zombie_morgue.mdl");
+
 	else 
 	{	
 		uint iMCount = 0;
@@ -1650,29 +1612,6 @@ void lobby_hint(CZP_Player@ pPlayer)
 void spec_hint(CZP_Player@ pPlayer)
 {
 	SendGameTextPlayer(pPlayer, strHintF4, 3, 0.00f, 0.05f, 0.10f, 0.00f, 2.00f, 15.00f, Color(64, 255, 128), Color(255, 95, 5));
-}
-
-void MakeThemSpec()
-{
-	for(int i = 1; i <= iMaxPlayers; i++)
-	{
-		CZP_Player@ pPlayer = ToZPPlayer(i);
-	
-		if(pPlayer is null)
-		{
-			g_bIsSpawned[i] = false;
-			continue;
-		}
-			
-		CBasePlayer@ pPlrEnt = pPlayer.opCast();
-		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
-
-		if(pBaseEnt.GetTeamNumber() == 0 && g_bIsSpawned[i] == false)
-		{
-			g_bIsSpawned[i] = true;
-			pBaseEnt.ChangeTeam(1);
-		}
-	}
 }
 
 void MakeThemAbuser()

@@ -438,7 +438,11 @@ void KillFeed(const string &in strAttName, const int &in iAttTeam, const string 
 	if(bIsSuicide == false)
 	{
 		string strKill = "killed";
-		if(bIsInfect == true) strKill = "infected";
+		if(bIsInfect == true)
+		{
+			strKill = "infected";
+			VicColor = "blue";
+		}
 		Chat.PrintToChat(all, "{"+VicColor+"}" + strVicName + " {default}" + strKill + " by {"+AttColor+"}" + strAttName +"{default}.");
 	}
 	

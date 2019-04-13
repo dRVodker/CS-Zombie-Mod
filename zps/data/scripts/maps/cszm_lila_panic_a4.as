@@ -35,7 +35,7 @@ array<string> g_strClassnames =
 	"item_ammo_rifle_clip", //14
 	"item_ammo_shotgun_clip", //15
 	"item_ammo_revolver_clip", //16
-	"weapon_inoculator_delay" //17
+	"item_pills" //17
 };
 
 //Other Data (Don't even touch this)
@@ -287,7 +287,7 @@ void RandomizePropCrate()
 				
 				if(iRND_Class == 11 || iRND_Class == 12) iRND_Count = Math::RandomInt(3, 4);	//Count of frag and ied
 				if(iRND_Class >= 13 && iRND_Class <= 16) iRND_Count = Math::RandomInt(1, 3);	//Count of ammo
-				if(iRND_Class == 17) iRND_Count = Math::RandomInt(1, 2);	//Count of armor
+				if(iRND_Class == 17) iRND_Count = 1;											//Count of pills
 				
 				Engine.Ent_Fire_Ent(pEntity, "AddOutput", "ItemCount "+iRND_Count);
 				Engine.Ent_Fire_Ent(pEntity, "AddOutput", "ItemClass "+g_strClassnames[iRND_Class]);
