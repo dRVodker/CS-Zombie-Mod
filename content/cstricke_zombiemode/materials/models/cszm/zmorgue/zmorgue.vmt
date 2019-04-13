@@ -1,0 +1,19 @@
+VertexLitGeneric
+{
+	"$basetexture"				"models/cszm/zmorgue/zmorgue_d"
+	"$bumpmap"					"models/cszm/zmorgue/zmorgue_n"
+	"$ambientocclusion"			"models/cszm/zmorgue/zmorgue_h"
+	
+	"$detail"					"detail/plaster_detail_01"
+	"$detailscale"				"3.5"
+	"$detailblendfactor"		"0.75"
+	"$detailblendmode"			"0"
+	
+	"$phong"					"1"
+
+	"$phongexponent"			"1"
+	"$phongboost"				"5"
+	"$phongfresnelranges"		"[0.02 0.02 0.02]"
+
+	"$halflambert"				"1"
+}
