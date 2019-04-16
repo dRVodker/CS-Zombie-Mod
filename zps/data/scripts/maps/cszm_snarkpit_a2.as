@@ -1,4 +1,5 @@
 #include "cszm_random_def"
+#include "cszm_doorset"
 
 void SD(const string &in strMSG)
 {
@@ -260,24 +261,3 @@ void PropsHP()
 		}
 	}
 }
-
-void PropDoorHP()
-{
-	CBaseEntity@ pEntity;
-	while ((@pEntity = FindEntityByClassname(pEntity, "prop_door_rotating")) !is null)
-	{
-		Engine.Ent_Fire_Ent(pEntity, "SetDoorHealth", "" + CalculateHealthPoints(5));
-	}
-}
-
-/*
-void BreakableHP()
-{
-	CBaseEntity@ pEntity;
-	while ((@pEntity = FindEntityByClassname(pEntity, "func_breakable")) !is null)
-	{
-		pEntity.SetMaxHealth(pEntity.GetHealth() + CalculateHealthPoints(25));
-		pEntity.SetHealth(pEntity.GetHealth() + CalculateHealthPoints(25));
-	}
-}
-*/

@@ -36,11 +36,11 @@ array<string> g_strCName =
 array<float> g_flSTime =
 {
 	0.0f, //0
-	5.5f, //1
-	20.0f, //2
-	25.0f, //3
-	35.0f, //4
-	43.0f //5
+	8.0f, //1
+	25.0f, //2
+	30.0f, //3
+	40.0f, //4
+	60.0f //5
 };
 
 array<float> g_flSpawnTime = {0.0f};
@@ -109,7 +109,7 @@ void OnMapShutdown()
 
 void OnMatchBegin()
 {
-	if(bIsCSZM == true) Schedule::Task(0.5f, "AllowEvents"); 
+	if(bIsCSZM == true) Schedule::Task(1.25f, "AllowEvents"); 
 }
 
 void AllowEvents()
@@ -166,7 +166,7 @@ void SpawnItem(const int &in iID)
 
 	EntityCreator::Create("env_spark", g_vecOrigin[iID], QAngle(-90, 0, 0), SparkIPD);	
 
-	Engine.EmitSoundPosition(0, "CS.ItemMaterialize", g_vecOrigin[iID], 0.675f, 65, Math::RandomInt(140, 160));
+	Engine.EmitSoundPosition(0, "items/suitchargeok1.wav", g_vecOrigin[iID], 0.675f, 65, Math::RandomInt(135, 165));
 }
 
 HookReturnCode OnEntityCreation(const string &in strClassname, CBaseEntity@ pEntity)

@@ -1,4 +1,5 @@
 #include "cszm_random_def"
+#include "cszm_doorset"
 
 int iSurvInBasement;
 bool bIsBZSEnabled;
@@ -28,7 +29,7 @@ void OnMatchBegin()
 	Engine.Ent_Fire("zs_inside_pvs*", "EnableSpawn");
 	Engine.Ent_Fire("zs_basement_ns_pvs*", "EnableSpawn");
 	Engine.Ent_Fire("_temp_humanclip", "ForceSpawn");
-	SetUpDoorHP();
+	PropDoorHP();
 	PropsSettings();
 }
 
@@ -65,43 +66,6 @@ void PropsSettings()
 			pEntity.SetMaxHealth(pEntity.GetHealth() + PlrCountHP(10));
 			pEntity.SetHealth(pEntity.GetHealth() + PlrCountHP(10));
 		}
-	}
-}
-
-void SetUpDoorHP()
-{
-	int iWoodDoorHP;
-	int iMetalDoorHP;
-	int iPlrNum = Utils.GetNumPlayers(any, true);
-	if (iPlrNum >= 24)
-	{
-		iWoodDoorHP = 75;
-		iMetalDoorHP = 100;
-		DoorHP(iWoodDoorHP, iMetalDoorHP);
-	}
-	else if (iPlrNum >= 18)
-	{
-		iWoodDoorHP = 65;
-		iMetalDoorHP = 85;
-		DoorHP(iWoodDoorHP, iMetalDoorHP);
-	}
-	else if (iPlrNum >= 12)
-	{
-		iWoodDoorHP = 40;
-		iMetalDoorHP = 75;
-		DoorHP(iWoodDoorHP, iMetalDoorHP);
-	}		
-	else if (iPlrNum >= 6)
-	{
-		iWoodDoorHP = 25;
-		iMetalDoorHP = 60;
-		DoorHP(iWoodDoorHP, iMetalDoorHP);
-	}	
-	else if (iPlrNum >= 1)
-	{
-		iWoodDoorHP = 10;
-		iMetalDoorHP = 30;
-		DoorHP(iWoodDoorHP, iMetalDoorHP);
 	}
 }
 

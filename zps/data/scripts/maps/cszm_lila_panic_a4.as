@@ -1,4 +1,5 @@
 #include "cszm_random_def"
+#include "cszm_doorset"
 
 //MyDebugFunc
 void SD(const string &in strMSG)
@@ -133,23 +134,6 @@ void VMSkins()
 	for(int i = 1; i <= 10; i++)
 	{
 		Engine.Ent_Fire("vm"+i, "Skin", ""+Math::RandomInt(0, 2));
-	}
-}
-
-//Setiing HP of 'prop_door_rotating'
-void PropDoorHP()
-{
-	CBaseEntity@ pEntity;
-	while ((@pEntity = FindEntityByClassname(pEntity, "prop_door_rotating")) !is null)
-	{
-		if(Utils.StrContains("doormainmetal01.mdl", pEntity.GetModelName()))
-		{
-			Engine.Ent_Fire_Ent(pEntity, "SetDoorHealth", ""+PlrCountHP(7));
-		}
-		if(Utils.StrContains("doormain01.mdl", pEntity.GetModelName()))
-		{
-			Engine.Ent_Fire_Ent(pEntity, "SetDoorHealth", ""+PlrCountHP(6));
-		}
 	}
 }
 
@@ -306,17 +290,6 @@ void RandomizePropCrate()
 			Engine.Ent_Fire_Ent(pEntity, "AddOutput", "ItemClass "+g_strClassnames[iRND_Class]);
 		}	
 	}
-}
-
-//Calculate HP from the players count
-int PlrCountHP(int &in iMulti)
-{
-	int iHP = 0;
-	int iSurvNum = Utils.GetNumPlayers(survivor, true);
-	if(iSurvNum < 4) iSurvNum = 5;
-	iHP = iSurvNum * iMulti;
-	
-	return iHP;
 }
 
 //Make a spectator the Firefly

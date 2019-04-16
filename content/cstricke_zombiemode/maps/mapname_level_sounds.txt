@@ -477,7 +477,7 @@
 "CSPlayer.Idle1"
 {
 	"channel"		"CHAN_VOICE"
-	"volume"		"0.35, 0.75"
+	"volume"		"0.35, 0.475"
 	"pitch"			"90, 105"
 
 	"soundlevel"	"SNDLVL_80dB"
@@ -539,7 +539,7 @@
 "CSPlayer.Idle2"
 {
 	"channel"		"CHAN_VOICE"
-	"volume"		"0.5, 0.75"
+	"volume"		"0.35, 0.475"
 	"pitch"			"90, 105"
 
 	"soundlevel"	"SNDLVL_80dB"
@@ -596,7 +596,7 @@
 "CSPlayer.Idle3"
 {
 	"channel"		"CHAN_VOICE"
-	"volume"		"0.45, 0.7"
+	"volume"		"0.35, 0.47"
 	"pitch"			"90, 105"
 
 	"soundlevel"	"SNDLVL_80dB"

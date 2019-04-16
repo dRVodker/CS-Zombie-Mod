@@ -1,4 +1,5 @@
 #include "cszm_random_def"
+#include "cszm_doorset"
 
 //MyDebugFunc
 void SD(const string &in strMSG)
@@ -235,19 +236,6 @@ void PropsSettings()
 		{
 			pEntity.SetMaxHealth(pEntity.GetHealth() + PlrCountHP(25));
 			pEntity.SetHealth(pEntity.GetHealth() + PlrCountHP(25));
-		}
-	}
-}
-
-void PropDoorHP()
-{
-	CBaseEntity@ pEntity;
-	while ((@pEntity = FindEntityByClassname(pEntity, "prop_door_rotating")) !is null)
-	{
-		if(Utils.StrContains("doormainmetal01.mdl", pEntity.GetModelName()))
-		{
-			if("security_door" == pEntity.GetEntityName()) Engine.Ent_Fire_Ent(pEntity, "SetDoorHealth", ""+PlrCountHP(11));
-			else Engine.Ent_Fire_Ent(pEntity, "SetDoorHealth", ""+PlrCountHP(6));
 		}
 	}
 }

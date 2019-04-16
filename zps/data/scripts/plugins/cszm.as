@@ -9,7 +9,7 @@
 #include "./cszm/cache.as"
 #include "./cszm/antidote.as"
 #include "./cszm/spawnad.as"
-#include "./cszm/modelchange.as"
+#include "./cszm/pills.as"
 
 //MyDebugFunc
 void SD(const string &in strMSG)
@@ -88,7 +88,7 @@ const float flSDTimeEXP = 2.0f;
 
 //Other Consts
 const float flHPRDelay = 0.42f;			//Amount of time you have to wait to start HP Regeneration. (Custom HP Regeneration)
-const float flSpawnDelay = 3.00f;		//Zombies spawn delay.
+const float flSpawnDelay = 5.00f;		//Zombies spawn delay.
 const int iFirstInfectedHPMult = 125;	//HP multiplier of first infected.
 const int iZombieMaxHP = 200;			//Additional HP to Max Health of a zombie.
 const int iHPReward = 125;				//Give that amount of HP as reward of successful infection.
@@ -150,7 +150,7 @@ array<string> g_strModels =
 	"models/cszm/zombie_eugene.mdl"
 };
 
-array<bool> g_bAModels;
+array<bool> g_bIsModelNotUsed;
 
 //Other arrays (Don't even touch this)
 array<float> g_flIdleTime;
@@ -262,11 +262,11 @@ void OnMapInit()
 		g_bIsSpawned.resize(iMaxPlayers + 1);
 		g_iAntidote.resize(iMaxPlayers + 1);
 		
-		g_bAModels.resize(g_strModels.length());
+		g_bIsModelNotUsed.resize(g_strModels.length());
 		
 		for(uint i = 0; i <= g_strModels.length() - 1; i++)
 		{
-			g_bAModels[i] = true;
+			g_bIsModelNotUsed[i] = true;
 		}
 		
 		//Set Wait Time
@@ -317,7 +317,7 @@ void OnMapShutdown()
 	ClearBoolArray(g_bIsAbuser);
 	ClearBoolArray(g_bIsVolunteer);
 	ClearBoolArray(g_bIsSpawned);
-	ClearBoolArray(g_bAModels);
+	ClearBoolArray(g_bIsModelNotUsed);
 	ClearIntArray(g_iCVSIndex);
 	ClearIntArray(g_iInfectDelay);
 	ClearIntArray(g_iZMDeathCount);
@@ -552,8 +552,9 @@ void OnMatchBegin()
 {
 	if(bIsCSZM == true)
 	{
-		Schedule::Task(0.50f, "LocknLoad");
-		Schedule::Task((iGearUpTime - 5.00f), "FirstInfectedHP");
+		Schedule::Task(0.5f, "LocknLoad");
+		Schedule::Task((0.5f), "RemoveExtraPills");
+		Schedule::Task((iGearUpTime - 5.0f), "FirstInfectedHP");
 		
 		ComparePlr();
 		if(iWUSeconds == 0)
@@ -685,6 +686,8 @@ HookReturnCode OnPlayerSpawn(CZP_Player@ pPlayer)
 	{
 		CBasePlayer@ pPlrEnt = pPlayer.opCast();
 		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+
+		RemoveProp(pBaseEnt);
 		
 		int iIndex = pBaseEnt.entindex();
 		
@@ -692,9 +695,9 @@ HookReturnCode OnPlayerSpawn(CZP_Player@ pPlayer)
 		
 		if(pBaseEnt.GetTeamNumber() == 0)
 		{
-			if(bAllowWarmUp == true) pBaseEnt.ChangeTeam(1);
 			pBaseEnt.SetModel("models/cszm/lobby_guy.mdl");
 			pPlayer.SetVoice(eugene);
+			if(bAllowWarmUp == true) pBaseEnt.ChangeTeam(1);
 			if(bAllowWarmUp == false) lobby_hint(pPlayer);
 		}
 		
@@ -1036,6 +1039,36 @@ HookReturnCode OnEntityCreation(const string &in strClassname, CBaseEntity@ pEnt
 	return HOOK_CONTINUE;
 }
 
+void RemoveProp(CBaseEntity@ pPlayer)
+{
+	CBaseEntity@ pProp;
+
+	while ((@pProp = FindEntityByClassname(pProp, "prop_physics_override")) !is null)
+	{
+		if(pProp.Intersects(pPlayer) == true) pProp.SUB_Remove();
+	}
+
+	while ((@pProp = FindEntityByClassname(pProp, "prop_physics_multiplayer")) !is null)
+	{
+		if(pProp.Intersects(pPlayer) == true) pProp.SUB_Remove();
+	}
+
+	while ((@pProp = FindEntityByClassname(pProp, "prop_physics")) !is null)
+	{
+		if(pProp.Intersects(pPlayer) == true) pProp.SUB_Remove();
+	}
+
+	while ((@pProp = FindEntityByClassname(pProp, "func_physbox")) !is null)
+	{
+		if(pProp.Intersects(pPlayer) == true) pProp.SUB_Remove();
+	}
+
+	while ((@pProp = FindEntityByClassname(pProp, "prop_ragdoll")) !is null)
+	{
+		if(pProp.Intersects(pPlayer) == true) pProp.SUB_Remove();
+	}
+}
+
 void ParentTrail(const int &in iNum, CBaseEntity@ pEntity)
 {
 	CBaseEntity@ pEntTrail = null;
@@ -1341,33 +1374,40 @@ void RndZModel(CZP_Player@ pPlayer, CBaseEntity@ pEntPlr)
 
 	else 
 	{	
-		uint iMCount = 0;
-		for(uint i = 0; i <= g_strModels.length() - 1; i++)
+		if(pPlayer.IsCarrier() == true) pEntPlr.SetModel(g_strModels[0]);
+
+		else
 		{
-			if(g_bAModels[i] == false) iMCount++;
-		}
-		
-		if(iMCount == g_strModels.length() - 1)
-		{
-			iMCount = 0;
-			
+			uint iMCount = 0;
+
 			for(uint i = 0; i <= g_strModels.length() - 1; i++)
 			{
-				if(g_bAModels[i] == false) g_bAModels[i] = true;
+				if(g_bIsModelNotUsed[i] == false) iMCount++;
+			}
+			
+			if(iMCount == g_strModels.length() - 1)
+			{
+				for(uint i = 0; i <= g_strModels.length() - 1; i++)
+				{
+					if(g_bIsModelNotUsed[i] == false) g_bIsModelNotUsed[i] = true;
+				}
+			}
+			
+			int iRND_MDL = 0;
+			
+			for(int i = 0; iRND_MDL == 0; i++)
+			{
+				iRND_MDL = Math::RandomInt(1, g_strModels.length() - 1);
+
+				if(g_bIsModelNotUsed[iRND_MDL] == false) iRND_MDL = 0;
+
+				else
+				{
+					g_bIsModelNotUsed[iRND_MDL] = false;
+					pEntPlr.SetModel(g_strModels[iRND_MDL]);
+				}
 			}
 		}
-		
-		int iRND_MDL = 0;
-		
-		for(int i = 0; iRND_MDL == 0; i++)
-		{
-			iRND_MDL = Math::RandomInt(1, g_strModels.length() - 1);
-			if(g_bAModels[iRND_MDL] == false) iRND_MDL = 0;
-			else g_bAModels[iRND_MDL] = false;
-		}
-		
-		if(pPlayer.IsCarrier() == true) pEntPlr.SetModel(g_strModels[0]);
-		else pEntPlr.SetModel(g_strModels[iRND_MDL]);
 	}
 }
 

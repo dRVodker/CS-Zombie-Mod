@@ -1,4 +1,5 @@
 #include "cszm_random_def"
+#include "cszm_doorset"
 
 int CalculateHealthPoints(int &in iMulti)
 {
@@ -59,15 +60,6 @@ void PropsHP()
 	{
 		pEntity.SetMaxHealth(pEntity.GetHealth() + CalculateHealthPoints(25));
 		pEntity.SetHealth(pEntity.GetHealth() + CalculateHealthPoints(25));
-	}
-}
-
-void PropDoorHP()
-{
-	CBaseEntity@ pEntity;
-	while ((@pEntity = FindEntityByClassname(pEntity, "prop_door_rotating")) !is null)
-	{
-		Engine.Ent_Fire_Ent(pEntity, "SetDoorHealth", "" + CalculateHealthPoints(6));
 	}
 }
 

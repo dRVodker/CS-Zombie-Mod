@@ -11,6 +11,7 @@ void OnEntityUsed(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 		{
 			g_iAntidote[pBaseEnt.entindex()]++;
 			Utils.ScreenFade(pPlayer, Color(30, 125, 35, 75), 0.25, 0.0, fade_in);
+			pBaseEnt.SetHealth(pBaseEnt.GetHealth() + Math::RandomInt(15, 75));
 			Engine.EmitSoundEntity(pBaseEnt, "HealthKit.Touch");
 			pEntity.SUB_Remove();
 			Chat.CenterMessagePlayer(pPlrEnt, "You picked up an antidote!\nInfectionResist: "+g_iAntidote[pBaseEnt.entindex()]);

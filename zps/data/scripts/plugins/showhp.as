@@ -13,7 +13,6 @@ void OnPluginInit()
 {
 	//Events
 	Events::Player::OnPlayerConnected.Hook(@OnPlayerConnected);
-//	Events::Player::OnPlayerSpawn.Hook(@OnPlayerSpawn);
 }
 
 void OnMapInit()
@@ -24,9 +23,12 @@ void OnMapInit()
 	g_iEntIndex.resize(iMaxPlayers + 1);
 
 	//Entities
+	Entities::RegisterDamaged("prop_door_rotating");
 	Entities::RegisterDamaged("prop_physics_multiplayer");
 	Entities::RegisterDamaged("prop_physics_override");
 	Entities::RegisterDamaged("prop_physics_");
+	Entities::RegisterDamaged("func_door_rotating");
+	Entities::RegisterDamaged("func_door");
 	Entities::RegisterDamaged("func_breakable");
 	Entities::RegisterDamaged("func_physbox");
 	Entities::RegisterDamaged("prop_barricade");
@@ -34,9 +36,12 @@ void OnMapInit()
 
 void OnMapShutdown()
 {
+	Entities::RemoveRegisterDamaged("prop_door_rotating");
 	Entities::RemoveRegisterDamaged("prop_physics_multiplayer");
 	Entities::RemoveRegisterDamaged("prop_physics_override");
 	Entities::RemoveRegisterDamaged("prop_physics_");
+	Entities::RemoveRegisterDamaged("func_door_rotating");
+	Entities::RemoveRegisterDamaged("func_door");
 	Entities::RemoveRegisterDamaged("func_breakable");
 	Entities::RemoveRegisterDamaged("func_physbox");
 	Entities::RemoveRegisterDamaged("prop_barricade");
@@ -78,6 +83,14 @@ void ShowHPLeft()
 		
 		if(g_iEntIndex[i] > 0 && pBaseEnt.GetTeamNumber() == 3)
 		{
+			while ((@pEntity = FindEntityByClassname(pEntity, "prop_door_rotating")) !is null)
+			{
+				if(pEntity.entindex() == g_iEntIndex[i])
+				{
+					ValidEntity(i, pEntity, pPlrEnt);
+				}
+			}
+
 			while ((@pEntity = FindEntityByClassname(pEntity, "prop_physics_multiplayer")) !is null)
 			{
 				if(pEntity.entindex() == g_iEntIndex[i])
@@ -95,6 +108,22 @@ void ShowHPLeft()
 			}
 				
 			while ((@pEntity = FindEntityByClassname(pEntity, "prop_physics")) !is null)
+			{
+				if(pEntity.entindex() == g_iEntIndex[i])
+				{
+					ValidEntity(i, pEntity, pPlrEnt);
+				}
+			}
+
+			while ((@pEntity = FindEntityByClassname(pEntity, "func_door_rotating")) !is null)
+			{
+				if(pEntity.entindex() == g_iEntIndex[i])
+				{
+					ValidEntity(i, pEntity, pPlrEnt);
+				}
+			}
+
+			while ((@pEntity = FindEntityByClassname(pEntity, "func_door")) !is null)
 			{
 				if(pEntity.entindex() == g_iEntIndex[i])
 				{
