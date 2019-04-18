@@ -1,13 +1,13 @@
 #include "./cszm/spawnad.as"
 
-//some data
-bool bIsCSZM = false;
-bool bAllowEvents = false;
-
 void SD(const string &in strMSG)
 {
 	Chat.PrintToChat(all, strMSG);
 }
+
+//some data
+bool bIsCSZM = false;
+bool bAllowEvents = false;
 
 float flWaitSpawnTime = 0;
 
@@ -35,24 +35,12 @@ array<string> g_strAllowedCN =
 array<float> g_flRespawnTime =
 {
 	0.0f, //0
-	2.0f, //1
-	3.0f, //2
-	3.0f, //3
-	3.0f, //4
-	4.0f //5
-};
-
-/*
-array<float> g_flRespawnTime =
-{
-	0.0f, //0
 	8.0f, //1
 	25.0f, //2
 	30.0f, //3
 	40.0f, //4
 	60.0f //5
 };
-*/
 
 array<float> g_flSpawnTime;
 array<int> g_iIndex;
@@ -107,7 +95,7 @@ void OnMapInit()
 	if(Utils.StrContains("cszm", Globals.GetCurrentMapName()))
 	{
 		flWaitSpawnTime = 0;
-		iDroppedAmmoCount =0;
+		iDroppedAmmoCount = 0;
 		bIsCSZM = true;
 
 		RegisterPickup();
@@ -254,10 +242,36 @@ HookReturnCode OnEntityCreation(const string &in strClassname, CBaseEntity@ pEnt
 	return HOOK_CONTINUE;
 }
 
+void OnEntityPickedUp(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
+{
+	if(bIsCSZM == true)
+	{
+		pEntity.SetHealth(-1);
+
+		for(uint ui = 1; ui <= g_strAllowedCN.length(); ui++)
+		{
+			if(pEntity.GetClassname() == g_strAllowedCN[ui])
+			{
+				int iIndex = pEntity.entindex();
+
+				for(uint i = 0; i <= g_strClassname.length(); i++)
+				{
+					if(g_iIndex[i] != iIndex) continue;
+
+					g_flSpawnTime[i] = Globals.GetCurrentTime() + g_flRespawnTime[ui];
+					pEntity.SUB_Remove();
+				}
+			}
+		}
+	}
+}
+
 HookReturnCode OnEntityDestruction(const string &in strClassname, CBaseEntity@ pEntity)
 {
 	if(bIsCSZM == true)
 	{
+		RemoveIndex(pEntity.entindex(), pEntity.GetHealth(), strClassname);
+
 		if(Utils.StrContains("clip", strClassname) && strClassname != "item_ammo_barricade_clip")
 		{
 			uint iType = 0;
@@ -278,24 +292,19 @@ HookReturnCode OnEntityDestruction(const string &in strClassname, CBaseEntity@ p
 	return HOOK_CONTINUE;
 }
 
-void OnEntityPickedUp(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
+void RemoveIndex(const int &in iRIndex, const int &in iRHealth, const string strClassname)
 {
-	if(bIsCSZM == true)
+	if(iRHealth != -1)
 	{
-		for(uint ui = 1; ui <= g_strAllowedCN.length(); ui++)
+		for(uint ui = 0; ui < g_iIndex.length(); ui++)
 		{
-			if(pEntity.GetClassname() == g_strAllowedCN[ui])
+			if(g_iIndex[ui] == iRIndex && g_strClassname[ui] == strClassname)
 			{
-				int iIndex = pEntity.entindex();
-
-				for(uint i = 0; i <= g_strClassname.length(); i++)
-				{
-					if(g_iIndex[i] != iIndex) continue;
-
-					g_flSpawnTime[i] = Globals.GetCurrentTime() + g_flRespawnTime[ui];
-					SD("-=Item Has Been Picked Up=-\nClass: "+g_strClassname[i]+"\nRespawn Time: "+g_flRespawnTime[ui]+" sec.");
-					pEntity.SUB_Remove();
-				}
+				g_flSpawnTime.removeAt(ui);
+				g_iIndex.removeAt(ui);
+				g_strClassname.removeAt(ui);
+				g_vecOrigin.removeAt(ui);
+				g_angAngles.removeAt(ui);
 			}
 		}
 	}

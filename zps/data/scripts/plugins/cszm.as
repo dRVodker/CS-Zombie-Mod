@@ -10,7 +10,7 @@
 #include "./cszm/antidote.as"
 #include "./cszm/spawnad.as"
 #include "./cszm/pills.as"
-#include "./cszm/arms.as"
+
 
 //MyDebugFunc
 void SD(const string &in strMSG)
@@ -696,7 +696,8 @@ HookReturnCode OnPlayerSpawn(CZP_Player@ pPlayer)
 		
 		Engine.EmitSoundEntity(pBaseEnt, "CSPlayer.Mute");
 
-		Schedule::Task(0.15f, "SetCSSArms");
+		if(pBaseEnt.GetTeamNumber() != 3) pPlayer.SetArmModel("models/cszm/weapons/c_css_arms.mdl");
+		else pPlayer.SetArmModel("models/cszm/weapons/c_css_zombie_arms.mdl");
 		
 		if(pBaseEnt.GetTeamNumber() == 0)
 		{
@@ -1294,7 +1295,7 @@ void TurnToZ(const int &in iIndex)
 				MakeThemAbuser();
 			}
 			
-			Schedule::Task(0.15f, "SetCSSArms");
+			pPlayer.SetArmModel("models/cszm/weapons/c_css_zombie_arms.mdl");
 
 			EmitBloodExp(pPlayer);
 
