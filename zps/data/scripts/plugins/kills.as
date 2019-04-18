@@ -40,7 +40,7 @@ void OnMapInit()
 		bIsCSZM = true;
 		iMaxPlayers = Globals.GetMaxClients();
 		
-		Entities::RegisterUse("item_pills");
+		Entities::RegisterPickup("item_pills");
 		
 		g_iKills.resize(iMaxPlayers + 1);
 		g_iHits.resize(iMaxPlayers + 1);
@@ -94,7 +94,7 @@ void OnMapShutdown()
 	
 	flWaitTime = 0.0f;
 	
-	Entities::RemoveRegisterUse("item_pills");
+	Entities::RemoveRegisterPickup("item_pills");
 	
 	ClearIntArray(g_iKills);
 	ClearIntArray(g_iHits);
@@ -475,7 +475,7 @@ void ShowStatsEnd()
 	}
 }
 
-void OnEntityUsed(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
+void OnEntityPickedUp(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 {
 	CBasePlayer@ pPlrEnt = pPlayer.opCast();
 	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();

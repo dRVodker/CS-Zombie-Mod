@@ -10,6 +10,7 @@
 #include "./cszm/antidote.as"
 #include "./cszm/spawnad.as"
 #include "./cszm/pills.as"
+#include "./cszm/arms.as"
 
 //MyDebugFunc
 void SD(const string &in strMSG)
@@ -245,6 +246,7 @@ void OnMapInit()
 		iMaxPlayers = Globals.GetMaxClients();
 		
 		//Entities
+		Entities::RegisterPickup("item_pills");
 		Entities::RegisterUse("item_pills");
 		
 		//Resize
@@ -300,6 +302,7 @@ void OnMapShutdown()
 	
 	iUNum = 0;
 	
+	Entities::RemoveRegisterPickup("item_pills");
 	Entities::RemoveRegisterUse("item_pills");
 	
 	bAllowCD = false;
@@ -692,6 +695,8 @@ HookReturnCode OnPlayerSpawn(CZP_Player@ pPlayer)
 		int iIndex = pBaseEnt.entindex();
 		
 		Engine.EmitSoundEntity(pBaseEnt, "CSPlayer.Mute");
+
+		Schedule::Task(0.15f, "SetCSSArms");
 		
 		if(pBaseEnt.GetTeamNumber() == 0)
 		{
@@ -713,7 +718,7 @@ HookReturnCode OnPlayerSpawn(CZP_Player@ pPlayer)
 			{
 				if(g_iAntidote[iIndex] > 0) g_iAntidote[iIndex] = 0;
 				if(g_iInfectDelay[iIndex] > 0) g_iInfectDelay[iIndex]--;
-				pBaseEnt.SetMaxHealth(1);
+				pBaseEnt.SetMaxHealth(9999);
 				return HOOK_HANDLED;
 			}
 			
@@ -793,6 +798,8 @@ HookReturnCode OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageIn
 			if(g_iAntidote[iIndex] > 0)
 			{
 				g_iAntidote[iIndex]--;
+				if(g_iAntidote[iIndex] <= 1) pBaseEnt.SetMaxHealth(9999);
+
 				return HOOK_HANDLED;
 			}
 			else if(g_iAntidote[iIndex] <= 0)
@@ -1287,6 +1294,8 @@ void TurnToZ(const int &in iIndex)
 				MakeThemAbuser();
 			}
 			
+			Schedule::Task(0.15f, "SetCSSArms");
+
 			EmitBloodExp(pPlayer);
 
 			pPlayer.CompleteInfection();

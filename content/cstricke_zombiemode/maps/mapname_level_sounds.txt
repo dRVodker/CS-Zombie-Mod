@@ -206,6 +206,15 @@
 	"wave"	")cszm_fx/items/armorpickup1.wav"
 }
 
+"ZP_HealthVial.Touch"
+{
+	"channel"	"CHAN_USER_BASE3"
+	"volume"	"0.8"
+	"soundlevel"  "SNDLVL_65dB"
+
+	"wave"	")items/smallmedkit1.wav"
+}
+
 "ZPlayer.AmmoPickup"
 {
 	"channel"	"CHAN_USER_BASE3"
