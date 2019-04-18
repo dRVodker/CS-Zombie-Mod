@@ -12,7 +12,7 @@ bool bAllowEvents = false;
 float flWaitSpawnTime = 0;
 
 int iDroppedAmmoCount = 0;
-const int iMaxDroppedAmmo = 45;
+const int iMaxDroppedAmmo = 32;
 
 array<string> g_strAmmoClass =
 {
@@ -35,13 +35,23 @@ array<string> g_strAllowedCN =
 array<float> g_flRespawnTime =
 {
 	0.0f, //0
+	2.0f, //1
+	2.0f, //2
+	2.0f, //3
+	2.0f, //4
+	2.0f //5
+};
+/*
+array<float> g_flRespawnTime =
+{
+	0.0f, //0
 	8.0f, //1
 	25.0f, //2
 	30.0f, //3
 	40.0f, //4
 	60.0f //5
 };
-
+*/
 array<float> g_flSpawnTime;
 array<int> g_iIndex;
 array<string> g_strClassname;
@@ -76,7 +86,7 @@ void OnPluginInit()
 
 void RegisterPickup()
 {
-	for(uint i = 1; i <= g_strAllowedCN.length(); i++)
+	for(uint i = 1; i <= g_strAllowedCN.length() - 1; i++)
 	{
 		Entities::RegisterPickup(g_strAllowedCN[i]);
 	}
@@ -84,7 +94,7 @@ void RegisterPickup()
 
 void RemoveRegisterPickup()
 {
-	for(uint i = 1; i <= g_strAllowedCN.length(); i++)
+	for(uint i = 1; i <= g_strAllowedCN.length() - 1; i++)
 	{
 		Entities::RemoveRegisterPickup(g_strAllowedCN[i]);
 	}
@@ -195,28 +205,18 @@ HookReturnCode OnEntityCreation(const string &in strClassname, CBaseEntity@ pEnt
 {
 	if(bIsCSZM == true)
 	{
-		for(uint ui = 1; ui <= g_strAllowedCN.length(); ui++)
+		if(pEntity.GetEntityName() == "cszm_respawned_item")
 		{
-			if(strClassname == g_strAllowedCN[ui])
-			{
-				int iIndex = pEntity.GetHealth();
-
-				if(iIndex == 0) return HOOK_HANDLED;
-
-				for(uint i = 0; i <= g_strClassname.length(); i++)
-				{
-					if(i == uint(iIndex))
-					{
-						g_iIndex[i] = pEntity.entindex();
-					}
-				}
-			}
+			g_iIndex[pEntity.GetHealth()] = pEntity.entindex();
+			pEntity.SetEntityName("");
 		}
 
 		if(Utils.StrContains("weapon", strClassname) || Utils.StrContains("item", strClassname)) Engine.Ent_Fire_Ent(pEntity, "DisableDamageForces");
 
 		if(Utils.StrContains("clip", strClassname) && strClassname != "item_ammo_barricade_clip")
 		{
+			pEntity.SetEntityName("dropped_ammo");
+
 			uint iType = 0;
 
 			for(uint ui = 0; ui < g_strAmmoClass.length(); ui++)
@@ -248,7 +248,7 @@ void OnEntityPickedUp(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 	{
 		pEntity.SetHealth(-1);
 
-		for(uint ui = 1; ui <= g_strAllowedCN.length(); ui++)
+		for(uint ui = 1; ui <= g_strAllowedCN.length() - 1; ui++)
 		{
 			if(pEntity.GetClassname() == g_strAllowedCN[ui])
 			{
@@ -259,6 +259,7 @@ void OnEntityPickedUp(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 					if(g_iIndex[i] != iIndex) continue;
 
 					g_flSpawnTime[i] = Globals.GetCurrentTime() + g_flRespawnTime[ui];
+					g_iIndex[i] = -2;
 					pEntity.SUB_Remove();
 				}
 			}
@@ -313,6 +314,7 @@ void RemoveIndex(const int &in iRIndex, const int &in iRHealth, const string str
 void SpawnItem(const int &in iID)
 {
 	CEntityData@ ItemIPD = EntityCreator::EntityData();
+	ItemIPD.Add("targetname", "cszm_respawned_item");
 	ItemIPD.Add("health", "" + iID);
 
 	ItemIPD.Add("DisableDamageForces", "1", true);
@@ -338,13 +340,24 @@ void RemoveExtraClip(const uint &in iUnit)
 	array<CBaseEntity@> g_pAmmoEntity;
 	CBaseEntity@ pAmmoEntity;
 
-	for(uint ui = 0; ui < g_strAmmoClass.length(); ui++)
+	while((@pAmmoEntity = FindEntityByName(pAmmoEntity, "dropped_ammo")) !is null)
 	{
-		while((@pAmmoEntity = FindEntityByClassname(pAmmoEntity, g_strAmmoClass[ui])) !is null)
-		{
-			g_pAmmoEntity.insertLast(pAmmoEntity);
-		}
+		g_pAmmoEntity.insertLast(pAmmoEntity);
 	}
+/*
+	while((@pAmmoEntity = FindEntityByClassname(pAmmoEntity, "item_ammo_rifle_clip")) !is null)
+	{
+		g_pAmmoEntity.insertLast(pAmmoEntity);
+	}
+	while((@pAmmoEntity = FindEntityByClassname(pAmmoEntity, "item_ammo_revolver_clip")) !is null)
+	{
+		g_pAmmoEntity.insertLast(pAmmoEntity);
+	}
+	while((@pAmmoEntity = FindEntityByClassname(pAmmoEntity, "item_ammo_shotgun_clip")) !is null)
+	{
+		g_pAmmoEntity.insertLast(pAmmoEntity);
+	}
+*/
 
 	if(iUnit == 1) g_pAmmoEntity[0].SUB_Remove();
 	else
