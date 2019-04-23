@@ -847,7 +847,7 @@ void AddSlowdown(const int &in iIndex, const float &in flDamage, const int &in i
 	g_flRecoverTime[iIndex] = 0.0f;
 
 	int iSpeed = int(floor((flDamage / 5.0f) * 2));
-//	float flSlowTime = (flDamage / 9.0f) * 0.035f;
+
 	float flSlowTime = 0.15f;
 
 	g_flAddTime[iIndex] += flSlowTime;
@@ -877,14 +877,12 @@ void AddSlowdown(const int &in iIndex, const float &in flDamage, const int &in i
 		break;
 
 		case 536879106:	//buckshot 
-			iSpeed += Math::RandomInt(1, 5);
-			g_flAddTime[iIndex] += Math::RandomFloat(0.05f, 0.25f);
+			iSpeed += Math::RandomInt(2, 6);
+			g_flAddTime[iIndex] += Math::RandomFloat(0.05f, 0.30f);
 		break;
 	}
 
 	if(flDamage >= 75) g_flAddTime[iIndex] += 0.25f;
-
-	CD("iSpeed: " +iSpeed+ "\nflAddTime: " + g_flAddTime[iIndex]);
 
 	if(g_iSlowSpeed[iIndex] == 0)
 	{
