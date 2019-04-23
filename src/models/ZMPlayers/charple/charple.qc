@@ -2,6 +2,7 @@ $modelname "cszm/zombie_charple.mdl"
 
 $include "../bones.qci"
 $include "../ruleshierarchy.qci"
+$include "../hitboxs.qci"
 
 $model "charple" "charple01.smd" 
 
@@ -243,27 +244,6 @@ $attachment "anim_attachment_RH" "ValveBiped.Anim_Attachment_RH" 0 0 0 rotate -9
 $attachment "anim_attachment_LH" "ValveBiped.Anim_Attachment_LH" 0 0 0 rotate -90 -90 0
 $attachment "anim_attachment_head" "ValveBiped.Bip01_Head1" 0 0 0 rotate -90 -90 0
 
-$hboxset "default"
-
-$hbox 1 "ValveBiped.Bip01_Head1"	    -1.50   -6.50   -3.19     8.00    3.50    3.31
-$hbox 4 "ValveBiped.Bip01_L_UpperArm"	     0.00   -2.75   -2.75    12.51    1.75    2.25
-$hbox 4 "ValveBiped.Bip01_L_Forearm"	     0.00   -2.19   -2.38    13.00    1.81    1.62
-$hbox 4 "ValveBiped.Bip01_L_Hand"	     0.06   -2.00   -1.50     4.06    1.00    2.50
-$hbox 5 "ValveBiped.Bip01_R_UpperArm"	     0.00   -3.00   -2.25    12.39    2.00    2.75
-$hbox 5 "ValveBiped.Bip01_R_Forearm"	    -0.50   -2.20   -1.55    12.50    1.80    2.45
-$hbox 5 "ValveBiped.Bip01_R_Hand"	     0.06   -2.00   -2.50     4.06    1.00    1.50
-$hbox 6 "ValveBiped.Bip01_L_Thigh"	     0.00   -3.75   -3.25    17.85    3.75    3.25
-$hbox 6 "ValveBiped.Bip01_L_Calf"	     0.00   -3.51   -3.28    15.64    3.49    2.72
-$hbox 6 "ValveBiped.Bip01_L_Foot"	    -1.07   -2.00   -2.84     5.04    5.00    2.16
-$hbox 6 "ValveBiped.Bip01_L_Toe0"	    -0.50   -3.00   -2.19     2.50    0.00    2.46
-$hbox 7 "ValveBiped.Bip01_R_Thigh"	     0.00   -3.75   -3.25    17.85    3.75    3.25
-$hbox 7 "ValveBiped.Bip01_R_Calf"	     0.00   -3.51   -2.82    15.64    3.49    3.18
-$hbox 7 "ValveBiped.Bip01_R_Foot"	    -1.06   -2.01   -2.28     5.05    4.99    2.72
-$hbox 7 "ValveBiped.Bip01_R_Toe0"	    -0.50   -3.00   -2.60     2.50    0.00    2.10
-$hbox 3 "ValveBiped.Bip01_Pelvis"	    -7.50   -5.50   -6.00     7.50    8.50    5.00
-$hbox 2 "ValveBiped.Bip01_Spine2"	    -2.50   -2.50   -7.00    13.50    7.50    7.00
-$skipboneinbbox
-
 $bbox -16 -16 0 16 16 74
 
 $definebone "ValveBiped.Bip01_Pelvis" "" -0.000005 -0.533615 38.566917 0 0 89.999983 0 0 0 0 0 0
@@ -345,7 +325,7 @@ $ikautoplaylock "rfoot" 1 0.1
 $ikautoplaylock "lfoot" 1 0.1
 
 $sequence "ragdoll" {
-	"charple_anims\ragdoll.smd"
+	"charple_physics.smd"
 	activity "ACT_DIERAGDOLL" 1
 	fps 30
 	ikrule "rhand" release
