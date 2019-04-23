@@ -32,10 +32,10 @@ array<string> g_strClassnames =
 	"weapon_870", //10
 	"weapon_frag", //11
 	"weapon_ied", //12
-	"item_ammo_pistol_clip", //13
-	"item_ammo_rifle_clip", //14
-	"item_ammo_shotgun_clip", //15
-	"item_ammo_revolver_clip", //16
+	"item_ammo_pistol", //13
+	"item_ammo_rifle", //14
+	"item_ammo_shotgun", //15
+	"item_ammo_revolver", //16
 	"item_pills" //17
 };
 
