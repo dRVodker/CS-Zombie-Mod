@@ -35,23 +35,13 @@ array<string> g_strAllowedCN =
 array<float> g_flRespawnTime =
 {
 	0.0f, //0
-	2.0f, //1
-	2.0f, //2
-	2.0f, //3
-	2.0f, //4
-	2.0f //5
-};
-/*
-array<float> g_flRespawnTime =
-{
-	0.0f, //0
 	8.0f, //1
 	25.0f, //2
 	30.0f, //3
 	40.0f, //4
 	60.0f //5
 };
-*/
+
 array<float> g_flSpawnTime;
 array<int> g_iIndex;
 array<string> g_strClassname;
