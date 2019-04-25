@@ -70,6 +70,10 @@ void OnProcessRound()
 
 void OnPluginInit()
 {
+	PluginData::SetVersion( "1.0" );
+	PluginData::SetAuthor( "dR.Vodker" );
+	PluginData::SetName( "CSZM - Items Respawn" );
+
 	Events::Entities::OnEntityCreation.Hook(@OnEntityCreation);
 	Events::Entities::OnEntityDestruction.Hook(@OnEntityDestruction);
 }
@@ -322,7 +326,7 @@ void SpawnItem(const int &in iID)
 
 	EntityCreator::Create("env_spark", g_vecOrigin[iID], QAngle(-90, 0, 0), SparkIPD);	
 
-	Engine.EmitSoundPosition(0, "items/suitchargeok1.wav", g_vecOrigin[iID], 0.675f, 65, Math::RandomInt(135, 165));
+	Engine.EmitSoundPosition(0, "items/suitchargeok1.wav", g_vecOrigin[iID], 0.695f, 75, Math::RandomInt(135, 165));
 }
 
 void RemoveExtraClip(const uint &in iUnit)
@@ -334,20 +338,6 @@ void RemoveExtraClip(const uint &in iUnit)
 	{
 		g_pAmmoEntity.insertLast(pAmmoEntity);
 	}
-/*
-	while((@pAmmoEntity = FindEntityByClassname(pAmmoEntity, "item_ammo_rifle_clip")) !is null)
-	{
-		g_pAmmoEntity.insertLast(pAmmoEntity);
-	}
-	while((@pAmmoEntity = FindEntityByClassname(pAmmoEntity, "item_ammo_revolver_clip")) !is null)
-	{
-		g_pAmmoEntity.insertLast(pAmmoEntity);
-	}
-	while((@pAmmoEntity = FindEntityByClassname(pAmmoEntity, "item_ammo_shotgun_clip")) !is null)
-	{
-		g_pAmmoEntity.insertLast(pAmmoEntity);
-	}
-*/
 
 	if(iUnit == 1) g_pAmmoEntity[0].SUB_Remove();
 	else

@@ -38,45 +38,38 @@
 			"lifetime": "HOTRELOADABLE"
 		},
 		{
-			"name": "Show Damage",
-			"author": "dR.Vodker",
-			"version": "1.0.0.0",
-			"script": "kills.as",
-			"lifetime": "HOTRELOADABLE"
-		},
-		{
 			"name": "CS Zombie Mod",
 			"author": "dR.Vodker",
 			"version": "1.0.0.0",
-			"script": "cszm.as",
+			"script": "CSZM-Core.as",
 			"lifetime": "HOTRELOADABLE"
 		},
 		{
-			"name": "CS ZM - Broadcaster",
+			"name": "Show Damage",
 			"author": "dR.Vodker",
 			"version": "1.0.0.0",
-			"script": "cszm-bc.as",
+			"script": "CSZM-Kills.as",
+			"lifetime": "HOTRELOADABLE"
+		},
+		{
+			"name": "CS ZM - ChatSpammer",
+			"author": "dR.Vodker",
+			"version": "1.0.0.0",
+			"script": "CSZM-ChatSpamer.as",
 			"lifetime": "HOTRELOADABLE"
 		},
 		{
 			"name": "Item Respawner",
 			"author": "dR.Vodker",
 			"version": "1.0.0.0",
-			"script": "itemrespawn.as",
-			"lifetime": "HOTRELOADABLE"
-		},
-		{
-			"name": "Remove Props",
-			"author": "dR.Vodker",
-			"version": "1.0.0.0",
-			"script": "removeprop.as",
+			"script": "CSZM-ItemRespawn.as",
 			"lifetime": "HOTRELOADABLE"
 		},
 		{
 			"name": "Show Props HP",
 			"author": "dR.Vodker",
 			"version": "1.0.0.0",
-			"script": "showhp.as",
+			"script": "CSZM-ShowHP.as",
 			"lifetime": "HOTRELOADABLE"
 		}
 	]

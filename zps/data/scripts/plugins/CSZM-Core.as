@@ -1,7 +1,7 @@
 /*
 ///////////////////////////////////////////////////////////////////
 /////////////////| Counter-Strike Zombie Mode  |///////////////////
-/////////////////|        Alpha Version        |///////////////////
+/////////////////|         Core Script         |///////////////////
 ///////////////////////////////////////////////////////////////////
 */
 
@@ -96,7 +96,7 @@ const float flHPRDelay = 0.42f;			//Amount of time you have to wait to start HP 
 const float flSpawnDelay = 5.00f;		//Zombies spawn delay.
 const int iFirstInfectedHPMult = 125;	//HP multiplier of first infected.
 const int iZombieMaxHP = 200;			//Additional HP to Max Health of a zombie.
-const int iWeakZombieHP = 105;			//Health of weak zombies
+const int iWeakZombieHP = 105;			//Health of the weak zombies
 const int iHPReward = 125;				//Give that amount of HP as reward of successful infection.
 const int iGearUpTime = 40;				//Time to gear up and find a good spot.
 const int iTurningTime = 20;			//Turning time.
@@ -184,10 +184,12 @@ int iFZIndex = 0;
 int iRND_CVS_PV;
 int iWUSeconds = iWUTime;
 
-float flHPRegenTime;
-
 void OnPluginInit()
 {
+	PluginData::SetVersion( "1.0" );
+	PluginData::SetAuthor( "dR.Vodker" );
+	PluginData::SetName( "Counter-Strike Zombie Mode" );
+
 	//Find 'sv_zps_solo' ConVar
 	@pSoloMode = ConVar::Find("sv_zps_solo");
 	if(pSoloMode !is null) ConVar::Register(pSoloMode, "ConVar_SoloMode");
@@ -279,9 +281,6 @@ void OnMapInit()
 			g_bIsModelNotUsed[i] = true;
 		}
 		
-		//Set Wait Time
-		flHPRegenTime = Globals.GetCurrentTime() + 0.15f;
-		
 		//Set Doors Filter to 0 (any team)
 		if(bAllowWarmUp == true) SetDoorFilter(0);
 	
@@ -294,48 +293,51 @@ void OnMapInit()
 
 void OnMapShutdown()
 {
-	pSoloMode.SetValue("0");
+	if(bIsCSZM == true)
+	{
+		pSoloMode.SetValue("0");
 
-	bIsCSZM = false;
-	iSeconds = 0;
-	iSAt = 0;
-	iFZTurningTime = 0;
-	iFZIndex = 0;
-	iTimeHPBonus = 0;
-	iTimeHPBonusSeconds = iDefaultTHPSeconds;
-	iWUSeconds = iWUTime;
-	
-	iUNum = 0;
-	
-	Entities::RemoveRegisterPickup("item_pills");
-	Entities::RemoveRegisterUse("item_pills");
-	
-	bAllowCD = false;
-	bIsFirstITurns = false;
-	bSpawnWeak = true;
-	bAllowZombieSpawn = false;
-	bAllowFZColor = false;
-	bETimeHP = false;
-	bAllowWarmUp = true;
-	
-	ClearBoolArray(g_bWasFirstInfected);
-	ClearBoolArray(g_bIsFirstInfected);
-	ClearBoolArray(g_bIsAbuser);
-	ClearBoolArray(g_bIsWeakZombie);
-	ClearBoolArray(g_bIsVolunteer);
-	ClearBoolArray(g_bIsSpawned);
-	ClearBoolArray(g_bIsModelNotUsed);
-	ClearIntArray(g_iCVSIndex);
-	ClearIntArray(g_iInfectDelay);
-	ClearIntArray(g_iZMDeathCount);
-	ClearIntArray(g_iAntidote);
-	ClearIntArray(g_iDefSpeed);
-	ClearIntArray(g_iSlowSpeed);
-	ClearFloatArray(g_flHPRDelay);
-	ClearFloatArray(g_flSlowTime);
-	ClearFloatArray(g_flRecoverTime);
-	ClearFloatArray(g_flAddTime);
-	ClearFloatArray(g_flIdleTime);
+		bIsCSZM = false;
+		iSeconds = 0;
+		iSAt = 0;
+		iFZTurningTime = 0;
+		iFZIndex = 0;
+		iTimeHPBonus = 0;
+		iTimeHPBonusSeconds = iDefaultTHPSeconds;
+		iWUSeconds = iWUTime;
+		
+		iUNum = 0;
+		
+		Entities::RemoveRegisterPickup("item_pills");
+		Entities::RemoveRegisterUse("item_pills");
+		
+		bAllowCD = false;
+		bIsFirstITurns = false;
+		bSpawnWeak = true;
+		bAllowZombieSpawn = false;
+		bAllowFZColor = false;
+		bETimeHP = false;
+		bAllowWarmUp = true;
+		
+		ClearBoolArray(g_bWasFirstInfected);
+		ClearBoolArray(g_bIsFirstInfected);
+		ClearBoolArray(g_bIsAbuser);
+		ClearBoolArray(g_bIsWeakZombie);
+		ClearBoolArray(g_bIsVolunteer);
+		ClearBoolArray(g_bIsSpawned);
+		ClearBoolArray(g_bIsModelNotUsed);
+		ClearIntArray(g_iCVSIndex);
+		ClearIntArray(g_iInfectDelay);
+		ClearIntArray(g_iZMDeathCount);
+		ClearIntArray(g_iAntidote);
+		ClearIntArray(g_iDefSpeed);
+		ClearIntArray(g_iSlowSpeed);
+		ClearFloatArray(g_flHPRDelay);
+		ClearFloatArray(g_flSlowTime);
+		ClearFloatArray(g_flRecoverTime);
+		ClearFloatArray(g_flAddTime);
+		ClearFloatArray(g_flIdleTime);
+	}
 }
 
 void ClearIntArray(array<int> &iTarget)
@@ -455,8 +457,6 @@ void OnNewRound()
 		iTimeHPBonusSeconds = iDefaultTHPSeconds;
 		iSAt = 0;
 		
-		flHPRegenTime = Globals.GetCurrentTime() + 0.15f;
-		
 		ShowRTL(0, 0, 300);
 		
 		for ( int i = 1; i <= iMaxPlayers; i++ ) 
@@ -490,10 +490,7 @@ void OnMatchBegin()
 	if(bIsCSZM == true)
 	{
 		Schedule::Task(0.5f, "LocknLoad");
-		Schedule::Task((0.5f), "RemoveExtraPills");
-		Schedule::Task((iGearUpTime - 5.0f), "FirstInfectedHP");
-		
-		ComparePlr();
+		Schedule::Task((0.75f), "RemoveExtraPills");
 
 		if(iWUSeconds == 0)
 		{
@@ -535,30 +532,6 @@ void FirstInfectedHP()
 	int iSurvCount = Utils.GetNumPlayers(survivor, true);
 	if(iSurvCount < 4) iSurvCount = 4;
 	iFirstInfectedHP = iFirstInfectedHPMult * iSurvCount;
-}
-
-void ComparePlr()
-{
-	int iPlrWasFZ = 0;
-	int iPlr = 0;
-	
-	for( int i = 1; i <= iMaxPlayers; i++ )
-	{
-		CZP_Player@ pPlayer = ToZPPlayer(i);
-		
-		if(pPlayer is null) continue;
-		
-		iPlr++;
-		if(g_bWasFirstInfected[i] == true) iPlrWasFZ++;
-	}
-	
-	if(iPlrWasFZ >= iPlr)
-	{
-		for(int i = 1; i <= iMaxPlayers; i++ )
-		{
-			g_bWasFirstInfected[i] = false;
-		}
-	}
 }
 
 HookReturnCode OnPlayerConnected(CZP_Player@ pPlayer) 
@@ -687,18 +660,12 @@ HookReturnCode OnPlayerSpawn(CZP_Player@ pPlayer)
 				return HOOK_HANDLED;
 			}
 			
-/*			if(pBaseEnt.GetTeamNumber() == 3 && bSpawnWeak == false && g_bIsAbuser[iIndex] == true)
-			{
-				Chat.PrintToChatPlayer(pBaseEnt, strCannotJoinZT1);
-				MovePlrToSpec(pBaseEnt);
-					
-				return HOOK_HANDLED;
-			}*/
-			
 			if(pBaseEnt.GetTeamNumber() == 3 && bAllowZombieSpawn == true)
 			{
 				g_flIdleTime[iIndex] = Globals.GetCurrentTime() + 0.1f;
 				g_flHPRDelay[iIndex] = Globals.GetCurrentTime() + 0.25f;
+
+				EmitBloodExp(pPlayer, true);
 
 				if(bSpawnWeak == true && g_bIsWeakZombie[iIndex]) SpawnWeakZombie(pPlayer);
 				
@@ -778,6 +745,8 @@ HookReturnCode OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageIn
 		{
 			if(pPlayer.IsCarrier() != true) Engine.EmitSoundEntity(pBaseEnt, "CSPlayer_Z.Pain" + g_iCVSIndex[iIndex]);
 
+			g_flIdleTime[iIndex] = Globals.GetCurrentTime() + Math::RandomFloat(4.85f, 9.95f);
+
 			AddSlowdown(iIndex, flDamage, iDamageType);
 
 			return HOOK_HANDLED;
@@ -789,7 +758,7 @@ HookReturnCode OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageIn
 
 HookReturnCode OnPlayerInfected(CZP_Player@ pPlayer, InfectionState iState)
 {
-	if(iState != state_none) pPlayer.SetInfection(false, 1.0f);
+	if(iState != state_none) pPlayer.SetInfection(false, 0.0f);
 
 	return HOOK_CONTINUE;
 }
@@ -849,6 +818,8 @@ void AddSlowdown(const int &in iIndex, const float &in flDamage, const int &in i
 	int iSpeed = int(floor((flDamage / 5.0f) * 2));
 
 	float flSlowTime = 0.15f;
+
+	if(flDamage < 5) iSpeed = 1;
 
 	g_flAddTime[iIndex] += flSlowTime;
 
@@ -1110,7 +1081,7 @@ void RoundTimeLeft()
 		if(iSeconds == 0)
 		{
 			bAllowCD = false;
-			Schedule::Task(1.00f, "TimesUp");
+			Schedule::Task(1.00f, "CSZMTimeUp");
 		}	
 		
 		iSeconds--;
@@ -1151,7 +1122,7 @@ void ShowRTL(float &in fShowMin, float &in fShowSec, float &in flHoldTime)
 	SendGameText(any, "| " + TimerText + " |", 0, 1, -1, 0, 0, 0, flHoldTime, Color(235, 235, 235), Color(0, 0, 0));
 }
 
-void TimesUp()
+void CSZMTimeUp()
 {
 	if(iSeconds > 0)
 	{
@@ -1197,6 +1168,7 @@ void FirstInfected()
 		if(iFZIndex != 0)
 		{	
 			CZP_Player@ pPlayer = ToZPPlayer(iFZIndex);
+
 			CBasePlayer@ pPlrEnt = pPlayer.opCast();
 			CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 
@@ -1259,6 +1231,7 @@ void TurnToZ(const int &in iIndex)
 				g_bWasFirstInfected[iIndex] = true;
 				g_bIsFirstInfected[iIndex] = true;
 				Schedule::Task(flBlockZSTime, "DisallowWeakZombie");
+				FirstInfectedHP();
 			}
 
 			g_bIsWeakZombie[iIndex] = false;
@@ -1271,7 +1244,7 @@ void TurnToZ(const int &in iIndex)
 
 			pPlayer.SetArmModel("models/cszm/weapons/c_css_zombie_arms.mdl");
 
-			EmitBloodExp(pPlayer);
+			EmitBloodExp(pPlayer, false);
 
 			pPlayer.CompleteInfection();
 
@@ -1310,7 +1283,7 @@ void SpawnWeakZombie(CZP_Player@ pPlayer)
 	Chat.PrintToChatPlayer(pPlrEnt, strWeakZombie);
 }
 
-void EmitBloodExp(CZP_Player@ pPlayer)
+void EmitBloodExp(CZP_Player@ pPlayer, const bool &in bIsSilent)
 {
 	if(pPlayer is null) return;
 
@@ -1337,7 +1310,7 @@ void EmitBloodExp(CZP_Player@ pPlayer)
 
 	EntityCreator::Create("info_particle_system", pBaseEnt.EyePosition(), pBaseEnt.EyeAngles(), CameraBloodIPD);
 	EntityCreator::Create("info_particle_system", pBaseEnt.GetAbsOrigin(), pBaseEnt.GetAbsAngles(), BodyBloodIPD);
-	Engine.EmitSoundEntity(pBaseEnt, "Flesh.HeadshotExplode");
+	if(bIsSilent == false) Engine.EmitSoundEntity(pBaseEnt, "Flesh.HeadshotExplode");
 }
 
 void GetRandomVictim()
@@ -1381,14 +1354,14 @@ void RndZModel(CZP_Player@ pPlayer, CBaseEntity@ pEntPlr)
 		{
 			uint iMCount = 0;
 
-			for(uint i = 0; i <= g_strModels.length() - 1; i++)
+			for(uint i = 1; i <= g_strModels.length() - 1; i++)
 			{
 				if(g_bIsModelNotUsed[i] == false) iMCount++;
 			}
 			
 			if(iMCount == g_strModels.length() - 1)
 			{
-				for(uint i = 0; i <= g_strModels.length() - 1; i++)
+				for(uint i = 1; i <= g_strModels.length() - 1; i++)
 				{
 					if(g_bIsModelNotUsed[i] == false) g_bIsModelNotUsed[i] = true;
 				}
@@ -1416,6 +1389,7 @@ void SetZMHealth(CBaseEntity@ pEntPlr)
 {
 	int iZombCount = Utils.GetNumPlayers(zombie, false);
 	float flMultiplier = 0.5;
+	
 	switch(iZombCount)
 	{
 		case 1:
@@ -1518,6 +1492,8 @@ int ChooseVolunteer()
 
 int ChooseFirstInfected()
 {
+	CheckPlr();
+
 	int iCount = 0;
 	int iChoosenIndex = 0;
 	int iRND;
@@ -1532,6 +1508,7 @@ int ChooseFirstInfected()
 		
 		CBasePlayer@ pPlrEnt = pPlayer.opCast();
 		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+
 		if(g_bWasFirstInfected[i] == false && pBaseEnt.IsAlive() == true && g_iInfectDelay[i] < 2)
 		{
 			iCount++;
@@ -1552,10 +1529,35 @@ int ChooseFirstInfected()
 		CZP_Player@ pVictim = GetRandomPlayer(survivor, true);
 		CBasePlayer@ pVPlrEnt = pVictim.opCast();
 		CBaseEntity@ pVBaseEnt = pVPlrEnt.opCast();
+
 		iChoosenIndex = pVBaseEnt.entindex();
 	}
 	
 	return iChoosenIndex;
+}
+
+void CheckPlr()
+{
+	int iPlrWasFZ = 0;
+	int iPlr = 0;
+	
+	for( int i = 1; i <= iMaxPlayers; i++ )
+	{
+		CZP_Player@ pPlayer = ToZPPlayer(i);
+		
+		if(pPlayer is null) continue;
+		
+		iPlr++;
+		if(g_bWasFirstInfected[i] == true) iPlrWasFZ++;
+	}
+	
+	if(iPlrWasFZ >= iPlr)
+	{
+		for(int i = 1; i <= iMaxPlayers; i++ )
+		{
+			g_bWasFirstInfected[i] = false;
+		}
+	}
 }
 
 void MovePlrToSpec(CBaseEntity@ pEntPlr)

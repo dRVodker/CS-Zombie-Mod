@@ -26,6 +26,10 @@ void SD(const string &in strMSG)
 
 void OnPluginInit()
 {
+	PluginData::SetVersion( "1.0" );
+	PluginData::SetAuthor( "dR.Vodker" );
+	PluginData::SetName( "CSZM - Show Damage and Stats" );
+
 	//Events
 	Events::Player::OnPlayerConnected.Hook(@OnKPlayerConnected);
 	Events::Player::OnPlayerDamaged.Hook(@OnKPlayerDamaged);
@@ -87,25 +91,28 @@ void OnMatchEnded()
 
 void OnMapShutdown()
 {
-	bIsCSZM = false;
-	
-	iHumanWin = 0;
-	iZombieWin = 0;
-	
-	flWaitTime = 0.0f;
-	
-	Entities::RemoveRegisterPickup("item_pills");
-	
-	ClearIntArray(g_iKills);
-	ClearIntArray(g_iHits);
-	ClearIntArray(g_iVictims);
-	ClearIntArray(g_iSVictims);
-	ClearIntArray(g_iSKills);
-	ClearIntArray(g_iAntidote);
-	ClearFloatArray(g_flDamage);
-	ClearFloatArray(g_flShowDamage);
-	ClearFloatArray(g_flScoreDamage);
-	ClearFloatArray(g_flSDTimer);
+	if(bIsCSZM == true)
+	{
+		bIsCSZM = false;
+		
+		iHumanWin = 0;
+		iZombieWin = 0;
+		
+		flWaitTime = 0.0f;
+		
+		Entities::RemoveRegisterPickup("item_pills");
+		
+		ClearIntArray(g_iKills);
+		ClearIntArray(g_iHits);
+		ClearIntArray(g_iVictims);
+		ClearIntArray(g_iSVictims);
+		ClearIntArray(g_iSKills);
+		ClearIntArray(g_iAntidote);
+		ClearFloatArray(g_flDamage);
+		ClearFloatArray(g_flShowDamage);
+		ClearFloatArray(g_flScoreDamage);
+		ClearFloatArray(g_flSDTimer);
+	}
 }
 
 void OnProcessRound()

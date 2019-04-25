@@ -25,6 +25,9 @@ array<bool> g_bIsShown;
 
 void OnPluginInit()
 {
+	PluginData::SetVersion( "1.0" );
+	PluginData::SetAuthor( "dR.Vodker" );
+	PluginData::SetName( "CSZM - Chat Spammer" );
 	Events::Player::PlayerSay.Hook(@PlayerSay);
 }
 
