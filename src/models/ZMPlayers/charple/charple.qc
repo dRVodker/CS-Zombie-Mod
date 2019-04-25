@@ -6,7 +6,7 @@ $include "../hitboxs.qci"
 
 $model "charple" "charple01.smd" 
 
-$lod 9
+$lod 36
 {
 	replacemodel "charple01.smd" "charple01_lod1.smd"
 	replacebone "ValveBiped.forward" "ValveBiped.Bip01_Head1"
@@ -45,7 +45,7 @@ $lod 9
 	replacebone "ValveBiped.Physgun_attachment" "ValveBiped.Bip01_R_Hand"
 	nofacial
 }
-$lod 18
+$lod 72
 {
 	replacemodel "charple01.smd" "charple01_lod2.smd"
 	replacebone "ValveBiped.forward" "ValveBiped.Bip01_Head1"
@@ -84,7 +84,7 @@ $lod 18
 	replacebone "ValveBiped.Physgun_attachment" "ValveBiped.Bip01_R_Hand"
 	nofacial
 }
-$lod 32
+$lod 128
 {
 	replacemodel "charple01.smd" "charple01_lod3.smd"
 	replacebone "ValveBiped.forward" "ValveBiped.Bip01_Head1"
@@ -129,7 +129,7 @@ $lod 32
 	replacebone "ValveBiped.Physgun_attachment" "ValveBiped.Bip01_R_Hand"
 	nofacial
 }
-$lod 48
+$lod 192
 {
 	replacemodel "charple01.smd" "charple01_lod4.smd"
 	replacebone "ValveBiped.forward" "ValveBiped.Bip01_Head1"

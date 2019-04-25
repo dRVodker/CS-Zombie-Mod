@@ -6,14 +6,14 @@ $include "../hitboxs.qci"
 
 $model "ClassicZombie" "classic_Zombie_reference.smd" 
 
-$lod 20
+$lod 50
 {
 	replacemodel "classic_Zombie_reference.smd" "classic_Zombie_reference_lod1.smd"
 	bonetreecollapse "ValveBiped.Bip01_L_Hand"
 	bonetreecollapse "ValveBiped.Bip01_R_Hand"
 	nofacial
 }
-$lod 30
+$lod 60
 {
 	replacemodel "classic_Zombie_reference.smd" "classic_Zombie_reference_lod2.smd"
 	replacebone "ValveBiped.Bip01_L_Finger31" "ValveBiped.Bip01_L_Finger3"
@@ -34,7 +34,7 @@ $lod 30
 	replacebone "ValveBiped.Bip01_L_Finger02" "ValveBiped.Bip01_L_Finger01"
 	nofacial
 }
-$lod 45
+$lod 75
 {
 	replacemodel "classic_Zombie_reference.smd" "classic_Zombie_reference_lod3.smd"
 	replacebone "ValveBiped.Bip01_L_Toe0" "ValveBiped.Bip01_L_Foot"
@@ -65,7 +65,7 @@ $lod 45
 	replacebone "ValveBiped.Bip01_L_Finger02" "ValveBiped.Bip01_L_Finger01"
 	nofacial
 }
-$lod 70
+$lod 90
 {
 	replacemodel "classic_Zombie_reference.smd" "classic_Zombie_reference_lod4.smd"
 	replacebone "ValveBiped.Bip01_L_Foot" "ValveBiped.Bip01_L_Calf"
@@ -100,7 +100,7 @@ $lod 70
 	replacebone "ValveBiped.Bip01_L_Finger02" "ValveBiped.Bip01_L_Finger01"
 	nofacial
 }
-$lod 100
+$lod 130
 {
 	replacemodel "classic_Zombie_reference.smd" "classic_Zombie_reference_lod5.smd"
 	replacebone "ValveBiped.Bip01_L_Foot" "ValveBiped.Bip01_L_Calf"

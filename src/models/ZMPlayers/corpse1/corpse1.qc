@@ -6,7 +6,7 @@ $include "../hitboxs.qci"
 
 $model "male_Cheaple" "corpse1_reference.smd" 
 
-$lod 6
+$lod 24
 {
 	replacemodel "corpse1_reference.smd" "corpse1_reference_lod1.smd"
 	replacebone "ValveBiped.forward" "ValveBiped.Bip01_Head1"
@@ -32,7 +32,7 @@ $lod 6
 	replacebone "ValveBiped.Bip01_R_Finger02" "ValveBiped.Bip01_R_Finger01"
 	nofacial
 }
-$lod 18
+$lod 72
 {
 	replacemodel "corpse1_reference.smd" "corpse1_reference_lod2.smd"
 	replacebone "ValveBiped.forward" "ValveBiped.Bip01_Head1"
@@ -70,7 +70,7 @@ $lod 18
 	replacebone "ValveBiped.Bip01_R_Finger02" "ValveBiped.Bip01_R_Finger01"
 	nofacial
 }
-$lod 32
+$lod 128
 {
 	replacemodel "corpse1_reference.smd" "corpse1_reference_lod3.smd"
 	replacebone "ValveBiped.forward" "ValveBiped.Bip01_Head1"
@@ -114,7 +114,7 @@ $lod 32
 	replacebone "ValveBiped.Bip01_R_Finger02" "ValveBiped.Bip01_R_Finger01"
 	nofacial
 }
-$lod 48
+$lod 192
 {
 	replacemodel "corpse1_reference.smd" "corpse1_reference_lod4.smd"
 	replacebone "ValveBiped.forward" "ValveBiped.Bip01_Head1"

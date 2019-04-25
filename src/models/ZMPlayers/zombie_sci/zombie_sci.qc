@@ -6,13 +6,13 @@ $include "../hitboxs.qci"
 
 $model "ZombieSci" "zombie_sci_ref.smd" 
 
-$lod 15
+$lod 55
 {
 	replacemodel "zombie_sci_ref.smd" "zombie_sci_ref_lod1.smd"
 	replacebone "ValveBiped.Anim_Attachment_RH" "ValveBiped.Bip01_R_Hand"
 	nofacial
 }
-$lod 25
+$lod 75
 {
 	replacemodel "zombie_sci_ref.smd" "zombie_sci_ref_lod2.smd"
 	replacebone "ValveBiped.Anim_Attachment_RH" "ValveBiped.Bip01_R_Hand"
@@ -21,7 +21,7 @@ $lod 25
 	replacebone "ValveBiped.Bip01_L_Wrist" "ValveBiped.Bip01_L_Forearm"
 	nofacial
 }
-$lod 35
+$lod 85
 {
 	replacemodel "zombie_sci_ref.smd" "zombie_sci_ref_lod3.smd"
 	replacebone "ValveBiped.Bip01_R_Foot" "ValveBiped.Bip01_R_Calf"
