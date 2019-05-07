@@ -8,13 +8,13 @@ void SD(const string &in strMSG)
 }
 
 //Some Data
+int iMaxPlayers;
 int iUNum;
 int iFireflyIndex;
-
 int iSSCount;
-
-bool bAllowFirefly;
 bool bIsFireflyPikedUp;
+
+array<bool> g_bIsFireFly;
 
 //List of item and weapon classnames
 array<string> g_strClassnames =
@@ -36,7 +36,8 @@ array<string> g_strClassnames =
 	"item_ammo_rifle", //14
 	"item_ammo_shotgun", //15
 	"item_ammo_revolver", //16
-	"item_pills" //17
+	"item_pills", //17
+	"item_healthkit" //18
 };
 
 //Other Data (Don't even touch this)
@@ -44,9 +45,16 @@ bool bAllowSPB = false;
 
 void OnMapInit()
 {
+	iMaxPlayers = Globals.GetMaxClients();
+
 	Events::Player::OnPlayerSpawn.Hook(@OnPlayerSpawn);
 	Events::Trigger::OnStartTouch.Hook(@OnStartTouch);
+
 	Entities::RegisterUse("spec_button");
+
+	Engine.PrecacheFile(sound, ")items/ammo_pickup.wav");
+
+	g_bIsFireFly.resize(iMaxPlayers + 1);
 
 	Engine.Ent_Fire("breencrate", "FireUser1", "", "0.01");
 	Schedule::Task(0.05f, "SetUpStuff");
@@ -57,21 +65,26 @@ HookReturnCode OnPlayerSpawn(CZP_Player@ pPlayer)
 {
 	CBasePlayer@ pPlrEnt = pPlayer.opCast();
 	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
-	
-	if(pBaseEnt.entindex() == iFireflyIndex && pBaseEnt.GetTeamNumber() != 1 || pBaseEnt.GetTeamNumber() != 0)
-	{
-		iFireflyIndex = 0;
-		Engine.Ent_Fire("spec_sprite", "kill");
-	}
-	
-	if(pBaseEnt.GetTeamNumber() != 0)
+
+	int iIndex = pBaseEnt.entindex();
+	int iTeamNum = pBaseEnt.GetTeamNumber();
+
+	if(iTeamNum != 0)
 	{
 		iUNum++;
 		pBaseEnt.SetEntityName("FOGGUY"+iUNum);
 		Engine.Ent_Fire("FOGGUY"+iUNum, "SetFogController", "main_insta_fog");
 	}
-	
-	return HOOK_HANDLED;
+
+	if(g_bIsFireFly[iIndex] == true && iTeamNum == 1)
+	{
+		SpawnFirefly(pBaseEnt, iIndex);
+		g_bIsFireFly[iIndex] = false;	
+	}
+
+	else if(g_bIsFireFly[iIndex] == false) RemoveFireFly(iIndex);
+
+	return HOOK_CONTINUE;
 }
 
 HookReturnCode OnStartTouch(CBaseEntity@ pTrigger, const string &in strEntityName, CBaseEntity@ pEntity)
@@ -88,22 +101,32 @@ HookReturnCode OnStartTouch(CBaseEntity@ pTrigger, const string &in strEntityNam
 
 void OnEntityUsed(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 {
+	if(pPlayer is null) return;
+	if(pEntity is null) return;
+
 	CBasePlayer@ pPlrEnt = pPlayer.opCast();
 	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 
-	if(pEntity.GetEntityName() == "spec_button" && pBaseEnt.GetTeamNumber() == 0 && bAllowFirefly == true)
+	int iIndex = pBaseEnt.entindex();
+	
+	if(Utils.StrEql(pEntity.GetEntityName(), "spec_button") && g_bIsFireFly[iIndex] == false)
 	{
-		Firefly(pBaseEnt);
-		pEntity.SUB_Remove();
+		Chat.PrintToChatPlayer(pPlrEnt, "{cornflowerblue}*You picked up a firefly.");
+		g_bIsFireFly[iIndex] = true;
 	}
 }
 
 void OnNewRound()
 {
 	iSSCount = 0;
-	bAllowFirefly = false;
 	bIsFireflyPikedUp = false;
 	iFireflyIndex = 0;
+
+	for ( int i = 1; i <= iMaxPlayers; i++ ) 
+	{
+		g_bIsFireFly[i] = false;
+	}
+
 	Schedule::Task(0.05f, "SetUpStuff");
 }
 
@@ -112,12 +135,6 @@ void OnMatchBegin()
 	PropDoorHP();
 	BreakableHP();
 	PropsHP();
-	Schedule::Task(0.50f, "AllowFirefly");
-}
-
-void AllowFirefly()
-{
-	bAllowFirefly = true;
 }
 
 void SetUpStuff()
@@ -260,31 +277,49 @@ void RandomizePropCrate()
 		{
 			if(pEntity.GetEntityName() != "breencrate")
 			{
-				int iRND_Type = Math::RandomInt(1, 10);
+				int iRND_Type = Math::RandomInt(0, 10);
 
-				if(iRND_Type < 5) iRND_Class = Math::RandomInt(0, 10);
-				else if(iRND_Type == 1) iRND_Class = Math::RandomInt(0, 17);
-				else iRND_Class = Math::RandomInt(11, 17);
-				iRND_Count = Math::RandomInt(1, 3);	//Count of weapons
-				
-				if(iRND_Class < 13) iRND_Class = Math::RandomInt(3, 16);
-				
-				if(iRND_Class == 11 || iRND_Class == 12) iRND_Count = Math::RandomInt(3, 4);	//Count of frag and ied
-				if(iRND_Class >= 13 && iRND_Class <= 16) iRND_Count = Math::RandomInt(1, 3);	//Count of ammo
-				if(iRND_Class == 17) iRND_Count = 1;											//Count of pills
+				//Default Class and Count
+				iRND_Class = 13;
+				iRND_Count = 1;	
+
+				if(iRND_Type <= 2) 
+				{
+					iRND_Class = Math::RandomInt(0, 10);
+					iRND_Count = Math::RandomInt(2, 4);		//Amout of weapons
+				}
+				else if(iRND_Type >= 3 && iRND_Type <= 6)
+				{
+					iRND_Class = Math::RandomInt(13, 16);
+					iRND_Count = Math::RandomInt(1, 3);		//Amout of ammo
+				}
+				else if(iRND_Type >= 7 && iRND_Type <= 8) 
+				{
+					iRND_Class = Math::RandomInt(11, 12);
+					iRND_Count = Math::RandomInt(3, 4);		//Amout of frag and ied
+				}
+				else if(iRND_Type > 8)
+				{
+					iRND_Class = Math::RandomInt(17, 18);
+					iRND_Count = Math::RandomInt(1, 3);		//Amout of adrenaline and antidote
+				}
 				
 				Engine.Ent_Fire_Ent(pEntity, "AddOutput", "ItemCount "+iRND_Count);
 				Engine.Ent_Fire_Ent(pEntity, "AddOutput", "ItemClass "+g_strClassnames[iRND_Class]);
 			}
 		}
+		
 		else
 		{
 			if(pEntity.GetEntityName() != "breencrate") pEntity.SUB_Remove();
 		}
+
 		if(pEntity.GetEntityName() == "breencrate")
 		{
-			iRND_Class = Math::RandomInt(13, 16);
+			//BreenCrate contains only ammo and medicine
+			iRND_Class = Math::RandomInt(13, 18);
 			iRND_Count = Math::RandomInt(2, 5);
+			if(iRND_Class > 16) iRND_Count = Math::RandomInt(1, 3);
 			
 			Engine.Ent_Fire_Ent(pEntity, "AddOutput", "ItemCount "+iRND_Count);
 			Engine.Ent_Fire_Ent(pEntity, "AddOutput", "ItemClass "+g_strClassnames[iRND_Class]);
@@ -292,23 +327,54 @@ void RandomizePropCrate()
 	}
 }
 
-//Make a spectator the Firefly
-void Firefly(CBaseEntity@ pEntity)
+void SpawnFirefly(CBaseEntity@ pEntity, const int &in iIndex)
 {
-	if(bIsFireflyPikedUp == false)
-	{
-		bIsFireflyPikedUp == true;
-		iUNum++;
-		iFireflyIndex = pEntity.entindex();
-		
-		pEntity.SetAbsOrigin(Vector(3040, -1952, 0));
-		pEntity.SetEntityName("FireflyGuy"+iUNum);
-		
-		Engine.EmitSoundEntity(pEntity, "Player.PickupWeapon");
-		
-		Engine.Ent_Fire("spec_ornament", "SetAttached", "FireflyGuy"+iUNum);
-		Engine.Ent_Fire("spec_sprite", "SetParent", "FireflyGuy"+iUNum, "0.05");
-		Engine.Ent_Fire("spec_sprite", "ShowSprite", "", "0.10");
-		Engine.Ent_Fire("spec_ornament", "Kill", "0", "0.10");
-	}
+	const int iR = Math::RandomInt(128, 255);
+	const int iG = Math::RandomInt(128, 255);
+	const int iB = Math::RandomInt(128, 255);
+
+	CEntityData@ FFSpriteIPD = EntityCreator::EntityData();
+
+	FFSpriteIPD.Add("targetname", iIndex + "firefly_sprite");
+	FFSpriteIPD.Add("model", "sprites/light_glow01.vmt");
+	FFSpriteIPD.Add("rendercolor", iR + " " + iG + " " + iB);
+	FFSpriteIPD.Add("rendermode", "5");
+	FFSpriteIPD.Add("renderamt", "240");
+	FFSpriteIPD.Add("scale", "0.25");
+	FFSpriteIPD.Add("spawnflags", "1");
+	FFSpriteIPD.Add("framerate", "0");
+
+	CEntityData@ FFTrailIPD = EntityCreator::EntityData();
+
+	FFTrailIPD.Add("targetname", iIndex + "firefly_trail");
+	FFTrailIPD.Add("endwidth", "12");
+	FFTrailIPD.Add("lifetime", "0.145");
+	FFTrailIPD.Add("rendercolor", iR + " " + iG + " " + iB);
+	FFTrailIPD.Add("rendermode", "5");
+	FFTrailIPD.Add("renderamt", "84");
+	FFTrailIPD.Add("spritename", "sprites/xbeam2.vmt");
+	FFTrailIPD.Add("startwidth", "3");
+
+	EntityCreator::Create("env_spritetrail", pEntity.GetAbsOrigin(), pEntity.GetAbsAngles(), FFTrailIPD);
+	EntityCreator::Create("env_sprite", pEntity.GetAbsOrigin(), pEntity.GetAbsAngles(), FFSpriteIPD);
+
+	CBaseEntity@ pSpriteEnt = null;
+	CBaseEntity@ pTrailEnt = null;
+
+	@pSpriteEnt = FindEntityByName(pSpriteEnt, iIndex + "firefly_sprite");
+	@pTrailEnt = FindEntityByName(pTrailEnt, iIndex + "firefly_trail");
+
+	pTrailEnt.SetParent(pSpriteEnt);
+	pSpriteEnt.SetParent(pEntity);
+
+	Engine.EmitSoundPosition(iIndex, ")items/ammo_pickup.wav", pEntity.GetAbsOrigin(), 0.75F, 80, 105);
+}
+
+void RemoveFireFly(const int &in iIndex)
+{
+	CBaseEntity@ pSpriteEnt = null;
+
+	@pSpriteEnt = FindEntityByName(pSpriteEnt, iIndex + "firefly_sprite");
+
+	if(pSpriteEnt !is null) pSpriteEnt.SUB_Remove();
 }
