@@ -1,5 +1,3 @@
-#include "./cszm/spawnad.as"
-
 void SD(const string &in strMSG)
 {
 	Chat.PrintToChat(all, strMSG);
@@ -7,7 +5,6 @@ void SD(const string &in strMSG)
 
 //some data
 bool bIsCSZM = false;
-bool bAllowEvents = false;
 
 float flWaitSpawnTime = 0;
 
@@ -28,8 +25,7 @@ array<string> g_strAllowedCN =
 	"item_ammo_pistol", //1
 	"item_ammo_rifle", //2
 	"item_ammo_shotgun", //3
-	"item_ammo_revolver", //4
-	"item_pills" //5
+	"item_ammo_revolver" //4
 };
 
 array<float> g_flRespawnTime =
@@ -38,8 +34,7 @@ array<float> g_flRespawnTime =
 	8.0f, //1
 	25.0f, //2
 	30.0f, //3
-	40.0f, //4
-	60.0f //5
+	40.0f //4
 };
 
 array<float> g_flSpawnTime;
@@ -50,18 +45,21 @@ array<QAngle> g_angAngles;
 
 void OnProcessRound()
 {
-	if(flWaitSpawnTime <= Globals.GetCurrentTime())
+	if(bIsCSZM == true)
 	{
-		flWaitSpawnTime = Globals.GetCurrentTime() + 0.01f;
-
-		for(uint i = 0; i <= g_flSpawnTime.length(); i++)
+		if(flWaitSpawnTime <= Globals.GetCurrentTime())
 		{
-			if(g_flSpawnTime[i] == -1) continue;
+			flWaitSpawnTime = Globals.GetCurrentTime() + 0.01f;
 
-			if(g_flSpawnTime[i] <= Globals.GetCurrentTime())
+			for(uint i = 0; i <= g_flSpawnTime.length(); i++)
 			{
-				g_flSpawnTime[i] = -1;
-				SpawnItem(i);
+				if(g_flSpawnTime[i] == -1) continue;
+
+				if(g_flSpawnTime[i] <= Globals.GetCurrentTime())
+				{
+					g_flSpawnTime[i] = -1;
+					SpawnItem(i);
+				}
 			}
 		}
 	}
@@ -167,11 +165,6 @@ void FindItems()
 	}
 
 	while ((@pEntity = FindEntityByClassname(pEntity, "item_ammo_revolver")) !is null)
-	{
-		InsertValues(pEntity.entindex(), pEntity.GetClassname(), pEntity.GetAbsOrigin(), pEntity.GetAbsAngles());
-	}
-
-	while ((@pEntity = FindEntityByClassname(pEntity, "item_pills")) !is null)
 	{
 		InsertValues(pEntity.entindex(), pEntity.GetClassname(), pEntity.GetAbsOrigin(), pEntity.GetAbsAngles());
 	}
