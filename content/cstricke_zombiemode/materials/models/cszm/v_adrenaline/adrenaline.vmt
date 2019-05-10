@@ -1,0 +1,12 @@
+VertexLitGeneric
+{
+"$baseTexture"  "models/cszm/v_adrenaline/adrenaline"
+"$bumpmap"      "engine/flat"
+
+"$phongboost" "1"
+"$phongexponent" "10"
+"$phongfresnelranges" "[0.25 0.5 0.25]"
+"$BASEMAPLUMINANCEPHONGMASK" "1"
+"$halflambert" "1"
+"$phong" "1"
+}

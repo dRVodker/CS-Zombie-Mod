@@ -1,0 +1,6 @@
+VertexLitGeneric
+{
+    "$basetexture"      "models/items/inoculator_g_diff_liquid"
+    "$selfillum"        "1"
+    "$selfillumtint"    "[0 10 0]"
+}
