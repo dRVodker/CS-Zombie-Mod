@@ -28,10 +28,8 @@ void OnPluginInit()
 	PluginData::SetVersion( "1.0" );
 	PluginData::SetAuthor( "dR.Vodker" );
 	PluginData::SetName( "CSZM - Chat Spammer" );
-	Events::Player::PlayerSay.Hook(@PlayerSay);
 }
 
-//Funcs below
 void OnMapInit()
 {
 	if(Utils.StrContains("cszm", Globals.GetCurrentMapName()))
@@ -50,27 +48,6 @@ void OnMapShutdown()
 {
 	bIsCSZM = false;
 	flMsgWaitTime = 0.0f;
-}
-
-HookReturnCode PlayerSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
-{
-	if(bIsCSZM == true)
-	{
-		CBasePlayer@ pBasePlayer = pPlayer.opCast();
-		
-		if(Utils.StrEql("!arr2", pArgs.Arg(1)))
-		{
-			for(uint i = 0; i <= g_bIsShown.length() - 1; i++)
-			{
-				Chat.PrintToChatPlayer(pBasePlayer, "g_bIsShown["+i+"] = " + g_bIsShown[i]);
-			}
-			
-			return HOOK_HANDLED;
-		}
-
-	}
-	
-	return HOOK_CONTINUE;
 }
 
 void OnProcessRound()
