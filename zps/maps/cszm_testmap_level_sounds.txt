@@ -1,11 +1,25 @@
-"CS.ItemMaterialize"
+"Adrenaline.CapOff"
 {
-	"channel"		"CHAN_WEAPON"
-	"volume"		"0.675"
-	"soundlevel" 	"SNDLVL_75dB"
-	"pitch"			"150"
+	"channel"		"CHAN_ITEM"
+	"soundlevel"	"SNDLVL_NORM"
+    "volume"		"0.65"
+	"wave"		")cszm_fx/weapons/adrenaline_cap_off.wav"
+}
 
-	"wave"	"items/suitchargeok1.wav"
+"Adrenaline.NeedleOpen"
+{
+	"channel"		"CHAN_STATIC"
+	"soundlevel"	"SNDLVL_NORM"
+    "volume"		"0.65"
+	"wave"		")cszm_fx/weapons/adrenaline_needle_open.wav"
+}
+
+"Adrenaline.NeedleIn"
+{
+	"channel"		"CHAN_ITEM"
+	"soundlevel"	"SNDLVL_NORM"
+    "volume"		"0.65"
+	"wave"		")cszm_fx/weapons/adrenaline_needle_in.wav"
 }
 
 "BaseExplosionEffect.Sound"
