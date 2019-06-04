@@ -11,7 +11,7 @@ const int iAdrenalineSpeed = 100;
 
 array<float> g_flAdrenalineTime;
 
-void OnPluginInit( )
+void OnPluginInit()
 {
 	PluginData::SetVersion( "1.0" );
 	PluginData::SetAuthor( "dR.Vodker" );
@@ -25,9 +25,9 @@ void OnPluginInit( )
 	Events::Player::OnPlayerKilled.Hook( @OnPlayerKilled );
 }
 
-void OnMapInit( )
+void OnMapInit()
 {
-	if ( Utils.StrContains( "cszm", Globals.GetCurrentMapName( ) ) )
+	if ( Utils.StrContains( "cszm", Globals.GetCurrentMapName() ) )
 	{
 		bIsCSZM = true;
 
@@ -35,18 +35,18 @@ void OnMapInit( )
 		Entities::RegisterDrop( "item_adrenaline" );
 		Entities::RegisterPickup( "item_adrenaline" );
 
-		iMaxPlayers = Globals.GetMaxClients( );
+		iMaxPlayers = Globals.GetMaxClients();
 
 		g_flAdrenalineTime.resize( iMaxPlayers + 1 );
 	}
 }
 
-void OnMapShutdown( )
+void OnMapShutdown()
 {
 	if ( bIsCSZM == true ) bIsCSZM = false;
 }
 
-void OnNewRound( )
+void OnNewRound()
 {
 	if ( bIsCSZM == true )
 	{
@@ -57,7 +57,7 @@ void OnNewRound( )
 	}	
 }
 
-void OnProcessRound( )
+void OnProcessRound()
 {
 	if ( bIsCSZM == true )
 	{
@@ -65,14 +65,14 @@ void OnProcessRound( )
 		{
 			CZP_Player@ pPlayer = ToZPPlayer( i );
 
-			CBasePlayer@ pPlrEnt = pPlayer.opCast( );
-			CBaseEntity@ pBaseEnt = pPlrEnt.opCast( );
+			CBasePlayer@ pPlrEnt = pPlayer.opCast();
+			CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 								
 			if ( pPlayer is null ) continue;
 
-			if ( g_flAdrenalineTime[i] <= Globals.GetCurrentTime( ) && g_flAdrenalineTime[i] != 0 )
+			if ( g_flAdrenalineTime[i] <= Globals.GetCurrentTime() && g_flAdrenalineTime[i] != 0 )
 			{
-				if ( pBaseEnt.GetTeamNumber( ) == 2 ) pPlayer.SetMaxSpeed( iHumanSpeed );
+				if ( pBaseEnt.GetTeamNumber() == 2 ) pPlayer.SetMaxSpeed( iHumanSpeed );
 				pPlayer.DoPlayerDSP( 0 );
 				g_flAdrenalineTime[i] = 0;
 			}
@@ -93,10 +93,10 @@ HookReturnCode OnPlayerConnected( CZP_Player@ pPlayer )
 {
 	if ( bIsCSZM == true )
 	{
-		CBasePlayer@ pPlrEnt = pPlayer.opCast( );
-		CBaseEntity@ pBaseEnt = pPlrEnt.opCast( );
+		CBasePlayer@ pPlrEnt = pPlayer.opCast();
+		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 
-		g_flAdrenalineTime[pBaseEnt.entindex( )] = 0.0f;
+		g_flAdrenalineTime[pBaseEnt.entindex()] = 0.0f;
 	}
 	return HOOK_CONTINUE;
 }
@@ -107,10 +107,10 @@ HookReturnCode OnPlayerKilled( CZP_Player@ pPlayer, CTakeDamageInfo &in DamageIn
 
 	if ( pPlayer is null ) return HOOK_HANDLED;
 
-	CBasePlayer@ pPlrEnt = pPlayer.opCast( );
-	CBaseEntity@ pBaseEnt = pPlrEnt.opCast( );
+	CBasePlayer@ pPlrEnt = pPlayer.opCast();
+	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 
-	int iIndex = pBaseEnt.entindex( );
+	int iIndex = pBaseEnt.entindex();
 
 	if ( g_flAdrenalineTime[iIndex] != 0 ) g_flAdrenalineTime[iIndex] = 0;
 	pPlayer.DoPlayerDSP( 0 );
@@ -124,21 +124,21 @@ void OnItemDeliverUsed( CZP_Player@ pPlayer, CBaseEntity@ pEntity, int &in iEnti
     if ( pEntity is null ) return;
 	if ( bIsCSZM == false ) return;
 
-	CBasePlayer@ pPlrEnt = pPlayer.opCast( );
-	CBaseEntity@ pBaseEnt = pPlrEnt.opCast( );
+	CBasePlayer@ pPlrEnt = pPlayer.opCast();
+	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 	
-	int iIndex = pBaseEnt.entindex( );
+	int iIndex = pBaseEnt.entindex();
 
-	if ( pEntity.GetEntityName( ) == "item_adrenaline" ) AdrenalineInjection( iIndex, pPlayer, pEntity );
+	if ( pEntity.GetEntityName() == "item_adrenaline" ) AdrenalineInjection( iIndex, pPlayer, pEntity );
 }
 
 void OnEntityDropped( CZP_Player@ pPlayer, CBaseEntity@ pEntity )
 {
 	if ( bIsCSZM == false ) return;
 
-	if ( Utils.StrContains( "used", pEntity.GetEntityName( ) ) )
+	if ( Utils.StrContains( "used", pEntity.GetEntityName() ) )
 	{
-		pEntity.SUB_Remove( );
+		pEntity.SUB_Remove();
 		return;
 	}
 }
@@ -153,7 +153,7 @@ void AdrenalineInjection( const int &in iIndex, CZP_Player@ pPlayer, CBaseEntity
 
 	pPlayer.SetMaxSpeed( iSetSpeed );
 
-	g_flAdrenalineTime[iIndex] = Globals.GetCurrentTime( ) + 12.0f;
+	g_flAdrenalineTime[iIndex] = Globals.GetCurrentTime() + 12.0f;
 	pPlayer.DoPlayerDSP( 34 );
 	Utils.ScreenFade( pPlayer, Color( 8, 16, 64, 50 ), 0.25f, 11.75f, fade_in );
 	Engine.EmitSoundPlayer( pPlayer, "ZPlayer.Panic" );
@@ -166,7 +166,7 @@ void SpawnAdrenaline( CBaseEntity@ pEntity )
 {
 	if ( bIsCSZM == false ) return;
 
-	CEntityData@ AdrenalineIPD = EntityCreator::EntityData( );
+	CEntityData@ AdrenalineIPD = EntityCreator::EntityData();
 
 	AdrenalineIPD.Add( "targetname", "item_adrenaline" );
 	AdrenalineIPD.Add( "delivername", "Adrenaline" );
@@ -178,7 +178,7 @@ void SpawnAdrenaline( CBaseEntity@ pEntity )
 	AdrenalineIPD.Add( "sound_pickup", "Deliver.PickupGeneric" );
 	AdrenalineIPD.Add( "weight", "0" );
 
-	EntityCreator::Create( "item_deliver", pEntity.GetAbsOrigin( ), pEntity.GetAbsAngles( ), AdrenalineIPD );
+	EntityCreator::Create( "item_deliver", pEntity.GetAbsOrigin(), pEntity.GetAbsAngles(), AdrenalineIPD );
 
-	pEntity.SUB_Remove( );
+	pEntity.SUB_Remove();
 }
