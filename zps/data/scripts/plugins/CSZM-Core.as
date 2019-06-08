@@ -202,8 +202,6 @@ void OnPluginInit()
 	PluginData::SetAuthor( "dR.Vodker");
 	PluginData::SetName( "Counter-Strike Zombie Mode");
 
-	Engine.EnableCustomSettings( true );
-
 	//Find 'sv_zps_solo' ConVar
 	@pSoloMode = ConVar::Find( "sv_zps_solo" );
 	if ( pSoloMode !is null ) ConVar::Register( pSoloMode, "ConVar_SoloMode" );
@@ -250,6 +248,8 @@ void OnMapInit()
 	{
 		Log.PrintToServerConsole( LOGTYPE_INFO, "CSZM", "[CSZM] Current map is valid for 'Counter-Strike Zombie Mode'");
 		bIsCSZM = true;
+
+		Engine.EnableCustomSettings( true );
 		
 		//Set some ConVar to 0
 		pSoloMode.SetValue( "0" );
@@ -317,6 +317,7 @@ void OnMapShutdown()
 		pSoloMode.SetValue( "0" );
 
 		bIsCSZM = false;
+		Engine.EnableCustomSettings( false );
 		iSeconds = 0;
 		iSAt = 0;
 		iFZTurningTime = 0;
