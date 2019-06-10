@@ -240,7 +240,7 @@ $sequence "Idle" "anims/Idle_lower.smd"{
 	fps 30
 	addlayer stand_knife
 	addlayer aim_knife
-	activity "ACT_ZP_IDLE_MELEE" 1
+	activity "ACT_ZP_IDLE_MELEE_ZOMBIE" 1
 }
 
 $sequence "CrouchIdle" "anims/Crouch_Idle_Lower.smd"{
@@ -248,7 +248,7 @@ $sequence "CrouchIdle" "anims/Crouch_Idle_Lower.smd"{
 	fps 30
 	addlayer crouch_knife
 	addlayer aim_crouch_knife
-	activity "ACT_ZP_IDLE_CROUCH_MELEE" 1
+	activity "ACT_ZP_IDLE_CROUCH_MELEE_ZOMBIE" 1
 }
 
 $sequence "Run" {
@@ -257,7 +257,7 @@ $sequence "Run" {
 	a_runW a_runSW a_runS
 	blendwidth 9
 	blend "move_yaw" -180 180
-	"ACT_ZP_RUN_MELEE" 1
+	"ACT_ZP_RUN_MELEE_ZOMBIE" 1
 	addlayer stand_knife
 	addlayer aim_knife
 }
@@ -268,20 +268,20 @@ $sequence "CrouchWalk" {
 	a_CwalkW a_CwalkSW a_CwalkS
 	blendwidth 9
 	blend "move_yaw" -180 180
-	"ACT_ZP_WALK_CROUCH_MELEE" 1
+	"ACT_ZP_WALK_CROUCH_MELEE_ZOMBIE" 1
 	addlayer crouch_knife
 	addlayer aim_crouch_knife
 }
 
 $sequence "Jump" {
 	"anims/jump.smd"
-	"ACT_ZP_JUMP_MELEE" 1
+	"ACT_ZP_JUMP_MELEE_ZOMBIE" 1
 	addlayer stand_knife
 	addlayer aim_knife
 }
 
 $animation a_attack "anims/shoot_knife" subtract a_attack 0 weightlist "AttackBones"
-$sequence Attack a_attack activity ACT_ZP_GESTURE_RANGE_ATTACK_MELEE 1 looping fps 45 {
+$sequence Attack a_attack activity ACT_ZP_GESTURE_RANGE_ATTACK_MELEE_ZOMBIE 1 looping fps 45 {
   iklock lfoot 1 0 iklock rfoot 1 0
   delta
   addlayer attack_aim_knife
