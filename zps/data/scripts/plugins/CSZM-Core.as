@@ -9,44 +9,8 @@
 #include "./cszm/cache.as"
 #include "./cszm/antidote.as"
 #include "./cszm/killfeed.as"
-
-//MyDebugFunc
-void SD( const string &in strMSG )
-{
-	Chat.PrintToChat( all, strMSG );
-}
-
-void CD( const string &in strMsg )
-{
-	Chat.CenterMessage( all, strMsg );
-}
-
-void ShowChatMsg( const string &in strMsg, const int &in iTeamNum )
-{
-	if ( iTeamNum != -1 )
-	{
-		for ( int i = 1; i <= iMaxPlayers; i++ )
-		{
-			CZP_Player@ pPlayer = ToZPPlayer( i );
-
-			if ( pPlayer is null ) continue;
-
-			CBasePlayer@ pPlrEnt = pPlayer.opCast();
-			CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
-			
-			if ( pBaseEnt.GetTeamNumber() == iTeamNum )
-			{
-				Chat.PrintToChatPlayer( pPlrEnt, strMsg );
-			}
-		}
-	}
-	else Chat.PrintToChat( all, strMsg );
-}
-
-void EmitCountdownSound( const int &in iNumber )
-{
-	Engine.EmitSound( "CS_FVox" + iNumber );
-}
+#include "./cszm/chat.as"
+#include "./cszm/rprop.as"
 
 bool bAllowDebug = false;				//Allow Debug?
 
@@ -55,6 +19,8 @@ CASConVar@ pSoloMode = null;
 CASConVar@ pTestMode = null;
 CASConVar@ pINGWarmUp = null;
 CASConVar@ pFriendlyFire  = null;
+CASConVar@ pInfectionRate   = null;
+
 int iMaxPlayers;
 int iDoorsState;
 
@@ -73,7 +39,6 @@ int iHumanWin;
 int iZombieWin;
 
 //GamePlay Consts
-
 //Player Speed
 const int iDefSpeed = 210;
 const int iHumanSpeed = 197; 
@@ -82,20 +47,11 @@ const int iCarrierSpeed = 189;
 const int iWeakSpeed = 251;
 const int iMinSpeed = 80;
 
-/*
-	"default"			"200"
-	"human"				"188"
-	"zombie"			"155"
-	"carrier"			"162"
-	"minimum_zombie"	"80"
-	"minimum"			"45"
-*/
-
-//Slowdown
+//Damage Slowdown
 const float flMaxSlowTime = 1.0f;
 const float flRecoverUnit = 0.09f;
 
-//Slowdown arrays
+//Damage Slowdown arrays
 array<int> g_iDefSpeed;
 array<int> g_iSlowSpeed;
 array<float> g_flSlowTime;
@@ -103,36 +59,34 @@ array<float> g_flAddTime;
 array<float> g_flRecoverTime;
 
 //Other Consts
-const float flHPRDelay = 0.42f;			//Amount of time you have to wait to start HP Regeneration. ( Custom HP Regeneration )
-const float flSpawnDelay = 5.00f;		//Zombies spawn delay.
-const int iFirstInfectedHPMult = 125;	//HP multiplier of first infected.
-const int iZombieMaxHP = 200;			//Additional HP to Max Health of a zombie.
-const int iWeakZombieHP = 125;			//Health of the weak zombies
-const int iHPReward = 125;				//Give that amount of HP as reward of successful infection.
-const int iGearUpTime = 40;				//Time to gear up and find a good spot.
-const int iTurningTime = 20;			//Turning time.
-const int iInfectDelay = 3;				//Amount of rounds you have to wait to be the First Infected again.
-const int iWUTime = 4;					//Time of the warmup in seconds.		( default value is 76 )
+const float flHPRDelay = 0.42f;									//Amount of time you have to wait to start HP Regeneration. ( Custom HP Regeneration )
+const float flSpawnDelay = 5.00f;								//Zombies spawn delay.
+const int iFirstInfectedHPMult = 125;							//HP multiplier of first infected.
+const int iZombieMaxHP = 200;									//Additional HP to Max Health of a zombie.
+const int iWeakZombieHP = 125;									//Health of the weak zombies
+const int iHPReward = 125;										//Give that amount of HP as reward of successful infection.
+const int iGearUpTime = 40;										//Time to gear up and find a good spot.
+const int iTurningTime = 20;									//Turning time.
+const int iInfectDelay = 3;										//Amount of rounds you have to wait to be the First Infected again.
+const int iWUTime = 4;											//Time of the warmup in seconds.		( default value is 76 )
 
 //New Consts
-const bool bAllowTimeHP = true;			//Allow Time HP Bonus
-const float flBlockZSTime = 35.00f;		//Amount of time in seconds which abusers must wait to join the zombie team.
-const float flCSDDivider = 4.00f;		//Slowdown divider of the carrier.
-const float flFISDDivider = 1.85f;		//Slowdown divider of the first infected.
-const int iSubtractDeath = 2;			//Amount of units subtract from the death counter
-const int iInfectionATSec = 15;			//Amount of time in seconds add to the round time in case of successful infection
-const int iCarrierMaxHP = 0;			//Additional HP to Max Health of the carrier.	( Currently equal 0 because the carrier is too OP )
-const int iDHPBonus = 100;				//Multiplier of death hp bonus.
-const int iTHPBonus = 45;				//Multiplier of time hp bonus.
-const int iMaxDeath = 7;				//Maximum amount of death to boost up the max health.
-const int iDefaultTHPSeconds = 30;		//Amount of time in seconds to increase amount of the time hp bonus.
-
+const bool bAllowTimeHP = true;									//Allow Time HP Bonus
+const float flBlockZSTime = 35.00f;								//Amount of time in seconds which abusers must wait to join the zombie team.
+const float flCSDDivider = 4.00f;								//Damage Slowdown divider of the carrier.
+const float flFISDDivider = 1.85f;								//Damage Slowdown divider of the first infected.
+const int iSubtractDeath = 2;									//Amount of units subtract from the death counter
+const int iInfectionATSec = 15;									//Amount of time in seconds add to the round time in case of successful infection
+const int iCarrierMaxHP = 0;									//Additional HP to Max Health of the carrier.	( Currently equal 0 because the carrier is too OP )
+const int iDHPBonus = 100;										//Multiplier of death hp bonus.
+const int iTHPBonus = 45;										//Multiplier of time hp bonus.
+const int iMaxDeath = 7;										//Maximum amount of death to boost up the max health.
+const int iDefaultTHPSeconds = 30;								//Amount of time in seconds to increase amount of the time hp bonus.
 const int iRoundTime = 300 + iGearUpTime;						//Round time in seconds.
-const int iSoT = iRoundTime - iGearUpTime + iTurningTime;		//Second at which the turning time start countdown. don't touch this.
-
-const float flBaseSDMult = 1.01f;		//Base value of slowdown
-const float flMaxSDMult = 0.25f;		//Maximum value of slowdown
-const float flBaseRecoverTime = 0.055f;	//Base recover Time
+const int iSoT = iRoundTime - iGearUpTime + iTurningTime;		//Second of the turning time start countdown. DON'T TOUCH THIS!!!!
+const float flBaseSDMult = 1.01f;								//Base value of the damage slowdown
+const float flMaxSDMult = 0.25f;								//Maximum value of the damage slowdown
+const float flBaseRecoverTime = 0.055f;							//Base recover Time
 
 //Some text over here
 const string strRoundBegun = "{default}Round has begun, you have {lightgreen}"+iGearUpTime+" seconds{default} to gear up before the {lightseagreen}first infected{default} turns.";
@@ -196,6 +150,8 @@ int iFZIndex = 0;
 int iRND_CVS_PV;
 int iWUSeconds = iWUTime;
 
+#include "./cszm/misc.as"
+
 void OnPluginInit()
 {
 	PluginData::SetVersion( "1.0");
@@ -215,8 +171,12 @@ void OnPluginInit()
 	if ( pINGWarmUp !is null ) ConVar::Register( pINGWarmUp, "ConVar_WarmUpTime" );
 
 	//Find 'mp_friendlyfire' ConVar
-	@pFriendlyFire = ConVar::Find( "sv_zps_warmup" );
+	@pFriendlyFire = ConVar::Find( "mp_friendlyfire" );
 	if ( pFriendlyFire !is null ) ConVar::Register( pFriendlyFire, "ConVar_FriendlyFire" );
+
+	//Find 'sv_zps_infectionrate' ConVar
+	@pInfectionRate = ConVar::Find( "sv_zps_infectionrate" );
+	if ( pInfectionRate !is null ) ConVar::Register( pInfectionRate, "ConVar_InfectionRate" ); 
 
 	//Events
 	Events::Player::OnPlayerInfected.Hook( @OnPlayerInfected );
@@ -229,17 +189,6 @@ void OnPluginInit()
 	Events::Rounds::RoundWin.Hook( @RoundWin );
 	Events::Player::OnPlayerRagdollCreate.Hook( @OnPlayerRagdollCreate );
 	Events::Player::OnConCommand.Hook( @OnConCommand );
-	Events::Rounds::RoundWin.Hook( @KRoundWin );
-}
-
-HookReturnCode OnPlayerRagdollCreate( CZP_Player@ pPlayer, bool &in bHeadshot, bool &out bExploded )
-{
-	CBasePlayer@ pPlrEnt = pPlayer.opCast();
-	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
-
-	if ( Utils.StrContains( "cszm", pBaseEnt.GetModelName() ) ) bHeadshot = false;	//Disabled headshots cuz it fucked up in the game
-
-	return HOOK_CONTINUE;
 }
 
 void OnMapInit()
@@ -256,6 +205,7 @@ void OnMapInit()
 		pTestMode.SetValue( "0" );
 		pINGWarmUp.SetValue( "0" );
 		pFriendlyFire.SetValue( "0" );
+		pInfectionRate.SetValue( "0" );
 		
 		//Cache
 		CacheModels();
@@ -285,8 +235,7 @@ void OnMapInit()
 		g_iKills.resize( iMaxPlayers + 1 );
 		g_iVictims.resize( iMaxPlayers + 1 );
 
-
-		//Resize Slowdown arrays
+		//Resize Damage Slowdown arrays
 		g_iDefSpeed.resize( iMaxPlayers + 1 );
 		g_iSlowSpeed.resize( iMaxPlayers + 1 );
 		g_flSlowTime.resize( iMaxPlayers + 1 );
@@ -364,28 +313,435 @@ void OnMapShutdown()
 	}
 }
 
-void ClearIntArray( array<int> &iTarget )
+
+HookReturnCode OnPlayerRagdollCreate( CZP_Player@ pPlayer, bool &in bHeadshot, bool &out bExploded )
 {
-    while ( iTarget.length() > 0 )
-    {
-        iTarget.removeAt( 0 );
-    }
+	CBasePlayer@ pPlrEnt = pPlayer.opCast();
+	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+
+	if ( Utils.StrContains( "cszm", pBaseEnt.GetModelName() ) ) bHeadshot = false;
+
+	return HOOK_CONTINUE;
 }
 
-void ClearFloatArray( array<float> &iTarget )
+HookReturnCode RoundWin( const string &in strMapname, RoundWinState iWinState )
 {
-    while ( iTarget.length() > 0 )
-    {
-        iTarget.removeAt( 0 );
-    }
+	if ( bIsCSZM == true )
+	{
+		bAllowCD = false;
+		ShowRTL( 0, 0, 15 );
+
+		if ( iWinState == STATE_HUMAN ) Engine.EmitSound( "CS_HumanWin" );
+		if ( iWinState == STATE_ZOMBIE ) Engine.EmitSound( "CS_ZombieWin" );
+
+		if ( iWinState == STATE_HUMAN ) iHumanWin++;
+		if ( iWinState == STATE_ZOMBIE ) iZombieWin++;
+		
+		string strHW = "\n  Humans Win - " + iHumanWin;
+		string strZW = "\n  Zombies Win - " + iZombieWin;
+		
+		SendGameText( any, "-=Win Counter=-" + strHW + strZW, 4, 0.00f, 0, 0.35f, 0.25f, 0.00f, 10.10f, Color( 235, 235, 235 ), Color( 255, 95, 5 ) );
+
+		return HOOK_HANDLED;
+	}
+
+	return HOOK_CONTINUE;
 }
 
-void ClearBoolArray( array<bool> &iTarget )
+HookReturnCode OnPlayerConnected( CZP_Player@ pPlayer ) 
 {
-    while ( iTarget.length() > 0 )
-    {
-        iTarget.removeAt( 0 );
-    }
+	if ( bIsCSZM == true )
+	{
+		CBasePlayer@ pPlrEnt = pPlayer.opCast();
+		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+
+        const int iIndex = pBaseEnt.entindex();
+		
+		g_flIdleTime[iIndex] = 0.0f;
+		g_iInfectDelay[iIndex] = 0;
+		g_iAntidote[iIndex] = 0;
+		g_iZMDeathCount[iIndex] = -1;
+		g_flHPRDelay[iIndex] = 0.0f;
+		g_iCVSIndex[iIndex] = Math::RandomInt( 1, 3 );
+
+		g_iKills[iIndex] = 0;
+		g_iVictims[iIndex] = 0;
+			
+		g_bWasFirstInfected[iIndex] = false;
+		g_bIsFirstInfected[iIndex] = false;
+		g_bIsAbuser[iIndex] = false;
+		g_bIsWeakZombie[iIndex] = true;
+		g_bIsVolunteer[iIndex] = false;
+		g_bIsSpawned[iIndex] = false;
+
+		ZeroingSlowdown( iIndex, true );
+	}
+	
+	return HOOK_CONTINUE;
+}
+
+HookReturnCode OnConCommand( CZP_Player@ pPlayer, CASCommand@ pArgs )
+{
+	if ( bIsCSZM == true )
+	{
+		CBasePlayer@ pPlrEnt = pPlayer.opCast();
+		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+
+		if ( RoundManager.IsRoundOngoing( false ) == false )
+		{
+			if ( Utils.StrContains( "choose", pArgs.Arg( 0 ) ) && bAllowWarmUp == true ) 
+			{
+				if ( Utils.StrEql( "choose4", pArgs.Arg( 0 ) ) ) PutPlrToPlayZone( pBaseEnt );
+				return HOOK_HANDLED;
+			}
+
+			if ( Utils.StrEql( "choose2", pArgs.Arg( 0 ) ) )
+			{
+				if ( pBaseEnt.GetTeamNumber() == 0 )
+				{
+					if ( g_iInfectDelay[pBaseEnt.entindex()] > 0 )
+					{
+						Chat.PrintToChatPlayer( pPlrEnt, strCannotPlayFI );
+						return HOOK_HANDLED;
+					}
+					else
+					{
+						Chat.PrintToChatPlayer( pPlrEnt, strChooseToPlayFI );
+						if ( g_bIsVolunteer[pBaseEnt.entindex()] != true ) g_bIsVolunteer[pBaseEnt.entindex()] = true;
+					}
+				}
+			}
+		}
+
+		else
+		{
+			if ( Utils.StrEql( "choose1", pArgs.Arg( 0 ) ) || Utils.StrEql( "choose2", pArgs.Arg( 0 ) ) )
+			{
+				if ( bAllowZombieSpawn == false )
+				{
+					pBaseEnt.ChangeTeam(2);
+					pPlayer.ForceRespawn();
+					pPlayer.SetHudVisibility(true);
+					return HOOK_HANDLED;
+				}
+			}
+		}
+	}
+	
+	return HOOK_CONTINUE;
+}
+
+HookReturnCode OnPlayerSpawn( CZP_Player@ pPlayer )
+{
+	if ( bIsCSZM == true )
+	{
+		CBasePlayer@ pPlrEnt = pPlayer.opCast();
+		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+
+		RemoveProp( pBaseEnt );
+		
+		int iIndex = pBaseEnt.entindex();
+		
+		Engine.EmitSoundEntity( pBaseEnt, "CSPlayer.Mute" );
+
+		ZeroingSlowdown( iIndex, false );
+
+		switch( pBaseEnt.GetTeamNumber() )
+		{
+			case 2:
+				g_iDefSpeed[iIndex] = iHumanSpeed;
+			break;
+			
+			case 3:
+				if ( pPlayer.IsCarrier() == true ) g_iDefSpeed[iIndex] = iCarrierSpeed;
+				else g_iDefSpeed[iIndex] = iZombieSpeed;
+			break;
+			
+			default:
+				g_iDefSpeed[iIndex] = iDefSpeed;
+			break;
+		}
+
+		pPlayer.SetMaxSpeed( g_iDefSpeed[iIndex] );
+
+		if ( pBaseEnt.GetTeamNumber() != 3 ) pPlayer.SetArmModel( "models/cszm/weapons/c_css_arms.mdl" );
+		else pPlayer.SetArmModel( "models/cszm/weapons/c_css_zombie_arms.mdl" );
+		
+		if ( pBaseEnt.GetTeamNumber() == 0 )
+		{
+			pBaseEnt.SetModel( "models/cszm/lobby_guy.mdl" );
+			pPlayer.SetVoice( eugene );
+			if ( bAllowWarmUp == false ) lobby_hint( pPlayer );
+			else lobby_hint_wu( pPlayer );
+		}
+		
+		if ( pBaseEnt.GetTeamNumber() == 1 && bAllowWarmUp == false ) spec_hint( pPlayer );
+		
+		if ( bAllowWarmUp == false )
+		{
+			if ( g_bIsFirstInfected[iIndex] == true ) g_bIsFirstInfected[iIndex] = false;
+		
+			if ( pBaseEnt.GetTeamNumber() != 3 && g_iZMDeathCount[iIndex] < 0 ) g_iZMDeathCount[iIndex] = -1;
+			
+			if ( pBaseEnt.GetTeamNumber() == 2 )
+			{
+				if ( g_iAntidote[iIndex] > 0 ) g_iAntidote[iIndex] = 0;
+				if ( g_iInfectDelay[iIndex] > 0 ) g_iInfectDelay[iIndex]--;
+				return HOOK_HANDLED;
+			}
+			
+			if ( pBaseEnt.GetTeamNumber() == 3 && bAllowZombieSpawn == false )
+			{				
+				Chat.PrintToChatPlayer( pBaseEnt, strCannotJoinZT0 );
+				MovePlrToSpec( pBaseEnt );
+					
+				return HOOK_HANDLED;
+			}
+			
+			if ( pBaseEnt.GetTeamNumber() == 3 && bAllowZombieSpawn == true )
+			{
+				g_flIdleTime[iIndex] = Globals.GetCurrentTime() + 0.1f;
+				g_flHPRDelay[iIndex] = Globals.GetCurrentTime() + 0.25f;
+
+				EmitBloodExp( pPlayer, true );
+
+				if ( bSpawnWeak == true && g_bIsWeakZombie[iIndex] ) SpawnWeakZombie( pPlayer );
+				
+				else
+				{
+					RndZModel( pPlayer, pBaseEnt );
+					SetZMHealth( pBaseEnt );
+				}
+				
+				return HOOK_HANDLED;
+			}
+		}
+		else
+		{
+			if ( pPlrEnt.IsBot() == true )							//Delete me
+			{														//This is for debug purposes with bots
+				pBaseEnt.ChangeTeam( 0 );							//Unused in actual gameplay
+				pPlayer.ForceRespawn();
+				pBaseEnt.SetModel( "models/cszm/lobby_guy.mdl" );
+			}
+
+			PutPlrToPlayZone( pBaseEnt );
+
+			if ( CountPlrs( 0 ) <= 2 && iWUSeconds == iWUTime ) Schedule::Task( 0.00f, "WarmUpTimer" );
+			
+			return HOOK_HANDLED;
+		}
+	}
+	
+	return HOOK_CONTINUE;
+}
+
+HookReturnCode OnPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &in DamageInfo )
+{
+	if ( bIsCSZM == true )
+	{
+		CZP_Player@ pPlrAttacker = null;
+		string strAN = "";
+
+		const float flDamage = DamageInfo.GetDamage();
+		const int iDamageType = DamageInfo.GetDamageType();
+
+		CBasePlayer@ pPlrEnt = pPlayer.opCast();
+		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+		
+		const int iVicIndex = pBaseEnt.entindex();
+		const int iVicTeam = pBaseEnt.GetTeamNumber();
+        const string strVicName = pPlayer.GetPlayerName();
+
+        CBaseEntity@ pEntityAttacker = DamageInfo.GetAttacker();
+
+		const int iAttIndex = pEntityAttacker.entindex();
+		const int iAttTeam = pEntityAttacker.GetTeamNumber();
+
+		if ( pEntityAttacker.IsPlayer() == true ) 
+		{
+			@pPlrAttacker = ToZPPlayer( iAttIndex );
+			strAN = pPlrAttacker.GetPlayerName();
+		}
+
+        const string strAttName = strAN;
+
+		if ( iVicTeam == 2 && iDamageType == 8196 && flDamage > 20 )
+		{
+			if ( g_iAntidote[iVicIndex] > 2 ) g_iAntidote[iVicIndex] = 2;
+			
+			if ( g_iAntidote[iVicIndex] > 0 )
+			{
+				g_iAntidote[iVicIndex]--;
+				if ( g_iAntidote[iVicIndex] <= 1 ) SetAntidoteState( iVicIndex, 1 );
+
+				return HOOK_HANDLED;
+			}
+			else if ( g_iAntidote[iVicIndex] <= 0 )
+			{
+				g_iVictims[iAttIndex]++;
+				ShowKills( pPlrAttacker, g_iVictims[iAttIndex], true );
+                KillFeed( strAttName, iAttTeam, strVicName, iVicTeam, true, false );
+				GotVictim( pPlrAttacker, pEntityAttacker );
+				TurnToZ( iVicIndex );
+			}
+			
+			return HOOK_HANDLED;
+		}
+
+		if ( iVicTeam == 3 ) g_flHPRDelay[iVicIndex] = Globals.GetCurrentTime() + 2.14f;
+		
+		if ( iVicTeam == 3 && pBaseEnt.IsAlive() == true )
+		{
+			if ( pPlayer.IsCarrier() != true && flDamage > 0)
+			{
+				Engine.EmitSoundEntity( pBaseEnt, "CSPlayer_Z.Pain" + g_iCVSIndex[iVicIndex] );
+				g_flIdleTime[iVicIndex] = Globals.GetCurrentTime() + Math::RandomFloat( 4.85f, 9.95f );
+			}
+
+			AddSlowdown( iVicIndex, flDamage, iDamageType );
+
+			return HOOK_HANDLED;
+		}
+	}
+
+	return HOOK_CONTINUE;
+}
+
+HookReturnCode OnPlayerInfected( CZP_Player@ pPlayer, InfectionState iState )
+{
+	if ( iState != state_none ) pPlayer.SetInfection( false, 0.0f );
+
+	return HOOK_CONTINUE;
+}
+
+HookReturnCode OnPlayerKilled( CZP_Player@ pPlayer, CTakeDamageInfo &in DamageInfo ) 
+{
+	if ( bIsCSZM == true )
+	{
+		CZP_Player@ pPlrAttacker = null;
+		string strAN = "";
+	
+		CBasePlayer@ pPlrEnt = pPlayer.opCast();
+		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+		
+		const int iVicIndex = pBaseEnt.entindex();
+		const int iVicTeam = pBaseEnt.GetTeamNumber();
+		const string strVicName = pPlayer.GetPlayerName();
+		
+		CBaseEntity@ pEntityAttacker = DamageInfo.GetAttacker();
+		
+		const int iAttIndex = pEntityAttacker.entindex();
+		const int iAttTeam = pEntityAttacker.GetTeamNumber();
+
+		ZeroingSlowdown( iVicIndex, false );
+		
+		if ( pEntityAttacker.IsPlayer() == true ) 
+		{
+			@pPlrAttacker = ToZPPlayer( iAttIndex );
+			strAN = pPlrAttacker.GetPlayerName();
+		}
+
+		const string strAttName = strAN;
+
+		if ( iAttIndex == iVicIndex || pEntityAttacker.IsPlayer() == false ) KillFeed( "", 0, strVicName, iVicTeam, false, true );
+		else if ( iAttIndex != iVicIndex ) KillFeed( strAttName, iAttTeam, strVicName, iVicTeam, false, false );
+
+		if ( g_bIsVolunteer[iVicIndex] == true ) g_bIsVolunteer[iVicIndex] = false;
+		
+		if ( iVicTeam == 3 )
+		{
+			if ( pPlayer.IsCarrier() != true ) Engine.EmitSoundEntity( pBaseEnt, "CSPlayer_Z.Die" + g_iCVSIndex[iVicIndex] );
+
+			if ( g_iZMDeathCount[iAttIndex] < iMaxDeath && g_bIsFirstInfected[iVicIndex] == false ) g_iZMDeathCount[iVicIndex]++;
+
+			g_iKills[iAttIndex]++;
+
+			if ( iAttTeam != 3 ) ShowKills( pPlrAttacker, g_iKills[iAttIndex], false );
+		}
+
+		if ( iVicTeam == 2 && iAttTeam == 3 )
+		{
+			g_iVictims[iAttIndex]++;
+			ShowKills( pPlrAttacker, g_iVictims[iAttIndex], true );
+			g_bIsWeakZombie[iVicIndex] == false;
+			GotVictim( pPlrAttacker, pEntityAttacker );
+		}
+	}
+
+	return HOOK_CONTINUE;
+}
+
+HookReturnCode OnPlayerDisonnected( CZP_Player@ pPlayer )
+{
+	if ( bIsCSZM == true )
+	{
+		CBasePlayer@ pPlrEnt = pPlayer.opCast();
+		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+		
+		if ( iFZIndex == pBaseEnt.entindex() ) iFZIndex = 0;
+		
+		if ( pBaseEnt.GetTeamNumber() == 3 && Utils.GetNumPlayers( zombie, false ) <= 1 && RoundManager.IsRoundOngoing( false ) == true )
+		{
+			Engine.EmitSound( "common/warning.wav" );
+			RoundManager.SetWinState( STATE_STALEMATE );
+			SD( strLastZLeave );
+		}
+	}
+	
+	return HOOK_CONTINUE;
+}
+
+HookReturnCode OnEntityCreation( const string &in strClassname, CBaseEntity@ pEntity )
+{
+	if ( bIsCSZM == true )
+	{
+		if ( strClassname == "npc_grenade_frag" )
+		{
+			CEntityData@ SPRTrailIPD = EntityCreator::EntityData();
+			SPRTrailIPD.Add( "lifetime", "0.25" );
+			SPRTrailIPD.Add( "renderamt", "255" );
+			SPRTrailIPD.Add( "rendercolor", "245 16 16" );
+			SPRTrailIPD.Add( "rendermode", "5" );
+			SPRTrailIPD.Add( "spritename", "sprites/lgtning.vmt" );
+			SPRTrailIPD.Add( "startwidth", "3.85" );
+
+			CEntityData@ SpriteIPD = EntityCreator::EntityData();
+			SpriteIPD.Add( "spawnflags", "1" );
+			SpriteIPD.Add( "GlowProxySize", "4" );
+			SpriteIPD.Add( "scale", "0.35" );
+			SpriteIPD.Add( "rendermode", "9" );
+			SpriteIPD.Add( "rendercolor", "245 16 16" );
+			SpriteIPD.Add( "renderamt", "255" );
+			SpriteIPD.Add( "model", "sprites/light_glow01.vmt" );
+			SpriteIPD.Add( "renderfx", "0" );
+
+			CEntityData@ DLightIPD = EntityCreator::EntityData();
+			DLightIPD.Add( "_cone", "0" );
+			DLightIPD.Add( "_inner_cone", "0" );
+			DLightIPD.Add( "pitch", "0" );
+			DLightIPD.Add( "spawnflags", "0" );
+			DLightIPD.Add( "spotlight_radius", "0" );
+			DLightIPD.Add( "style", "0" );
+			DLightIPD.Add( "_light", "245 8 8 200" );
+			DLightIPD.Add( "brightness", "4" );
+			DLightIPD.Add( "distance", "48" );
+
+			CBaseEntity @pEntTrail = EntityCreator::Create( "env_spritetrail", pEntity.GetAbsOrigin(), QAngle( 0, 0, 0 ), SPRTrailIPD );
+			CBaseEntity @pEntSprite = EntityCreator::Create( "env_sprite", pEntity.GetAbsOrigin(), QAngle( 0, 0, 0 ), SpriteIPD );
+			CBaseEntity @pDLight = EntityCreator::Create( "light_dynamic", pEntity.GetAbsOrigin(), QAngle( 0, 0, 0 ), DLightIPD );
+
+			pEntTrail.SetParent( pEntity );
+			pEntSprite.SetParent( pEntity );
+			pDLight.SetParent( pEntity );
+		}
+
+		else if ( strClassname == "item_healthkit" ) SpawnAntidote( pEntity );
+
+		else if ( strClassname == "item_armor" ) pEntity.SUB_Remove();				//Armor is not allowed
+	}
+
+	return HOOK_CONTINUE;
 }
 
 //CSZM Related Funcs
@@ -563,344 +919,6 @@ void OnMatchEnded()
 	}
 }
 
-
-HookReturnCode KRoundWin( const string &in strMapname, RoundWinState iWinState )
-{
-	if ( bIsCSZM == true )
-	{
-		if ( iWinState == STATE_HUMAN ) iHumanWin++;
-		if ( iWinState == STATE_ZOMBIE ) iZombieWin++;
-		
-		string strHW = "\n  Humans Win - " + iHumanWin;
-		string strZW = "\n  Zombies Win - " + iZombieWin;
-		
-		SendGameText( any, "-=Win Counter=-" + strHW + strZW, 4, 0.00f, 0, 0.35f, 0.25f, 0.00f, 10.10f, Color( 235, 235, 235 ), Color( 255, 95, 5 ) );
-	}
-
-	return HOOK_CONTINUE;
-}
-
-HookReturnCode OnPlayerConnected( CZP_Player@ pPlayer ) 
-{
-	if ( bIsCSZM == true )
-	{
-		CBasePlayer@ pPlrEnt = pPlayer.opCast();
-		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
-
-        const int iIndex = pBaseEnt.entindex();
-		
-		g_flIdleTime[iIndex] = 0.0f;
-		g_iInfectDelay[iIndex] = 0;
-		g_iAntidote[iIndex] = 0;
-		g_iZMDeathCount[iIndex] = -1;
-		g_flHPRDelay[iIndex] = 0.0f;
-		g_iCVSIndex[iIndex] = Math::RandomInt( 1, 3 );
-
-		g_iKills[iIndex] = 0;
-		g_iVictims[iIndex] = 0;
-			
-		g_bWasFirstInfected[iIndex] = false;
-		g_bIsFirstInfected[iIndex] = false;
-		g_bIsAbuser[iIndex] = false;
-		g_bIsWeakZombie[iIndex] = true;
-		g_bIsVolunteer[iIndex] = false;
-		g_bIsSpawned[iIndex] = false;
-
-		ZeroingSlowdown( iIndex, true );
-	}
-	
-	return HOOK_CONTINUE;
-}
-
-HookReturnCode OnConCommand( CZP_Player@ pPlayer, CASCommand@ pArgs )
-{
-	if ( bIsCSZM == true )
-	{
-		CBasePlayer@ pPlrEnt = pPlayer.opCast();
-		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
-
-		if ( RoundManager.IsRoundOngoing( false ) == false )
-		{
-			if ( Utils.StrContains( "choose", pArgs.Arg( 0 ) ) && bAllowWarmUp == true ) 
-			{
-				if ( Utils.StrEql( "choose4", pArgs.Arg( 0 ) ) ) PutPlrToPlayZone( pBaseEnt );
-				return HOOK_HANDLED;
-			}
-
-			if ( Utils.StrEql( "choose2", pArgs.Arg( 0 ) ) )
-			{
-				if ( pBaseEnt.GetTeamNumber() == 0 )
-				{
-					if ( g_iInfectDelay[pBaseEnt.entindex()] > 0 )
-					{
-						Chat.PrintToChatPlayer( pPlrEnt, strCannotPlayFI );
-						return HOOK_HANDLED;
-					}
-					else
-					{
-						Chat.PrintToChatPlayer( pPlrEnt, strChooseToPlayFI );
-						if ( g_bIsVolunteer[pBaseEnt.entindex()] != true ) g_bIsVolunteer[pBaseEnt.entindex()] = true;
-					}
-				}
-			}
-		}
-
-		else
-		{
-			if ( Utils.StrEql( "choose1", pArgs.Arg( 0 ) ) || Utils.StrEql( "choose2", pArgs.Arg( 0 ) ) )
-			{
-				if ( bAllowZombieSpawn == false )
-				{
-					pBaseEnt.ChangeTeam(2);
-					pPlayer.ForceRespawn();
-					pPlayer.SetHudVisibility(true);
-					return HOOK_HANDLED;
-				}
-			}
-		}
-	}
-	
-	return HOOK_CONTINUE;
-}
-
-HookReturnCode OnPlayerSpawn( CZP_Player@ pPlayer )
-{
-	if ( bIsCSZM == true )
-	{
-		CBasePlayer@ pPlrEnt = pPlayer.opCast();
-		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
-
-		RemoveProp( pBaseEnt );
-		
-		int iIndex = pBaseEnt.entindex();
-		
-		Engine.EmitSoundEntity( pBaseEnt, "CSPlayer.Mute" );
-
-		ZeroingSlowdown( iIndex, false );
-
-		switch( pBaseEnt.GetTeamNumber() )
-		{
-			case 2:
-				g_iDefSpeed[iIndex] = iHumanSpeed;
-			break;
-			
-			case 3:
-				if ( pPlayer.IsCarrier() == true ) g_iDefSpeed[iIndex] = iCarrierSpeed;
-				else g_iDefSpeed[iIndex] = iZombieSpeed;
-			break;
-			
-			default:
-				g_iDefSpeed[iIndex] = iDefSpeed;
-			break;
-		}
-
-		pPlayer.SetMaxSpeed( g_iDefSpeed[iIndex] );
-
-		if ( pBaseEnt.GetTeamNumber() != 3 ) pPlayer.SetArmModel( "models/cszm/weapons/c_css_arms.mdl" );
-		else pPlayer.SetArmModel( "models/cszm/weapons/c_css_zombie_arms.mdl" );
-		
-		if ( pBaseEnt.GetTeamNumber() == 0 )
-		{
-			pBaseEnt.SetModel( "models/cszm/lobby_guy.mdl" );
-			pPlayer.SetVoice( eugene );
-			if ( bAllowWarmUp == false ) lobby_hint( pPlayer );
-			else lobby_hint_wu( pPlayer );
-		}
-		
-		if ( pBaseEnt.GetTeamNumber() == 1 && bAllowWarmUp == false ) spec_hint( pPlayer );
-		
-		if ( bAllowWarmUp == false )
-		{
-			if ( g_bIsFirstInfected[iIndex] == true ) g_bIsFirstInfected[iIndex] = false;
-		
-			if ( pBaseEnt.GetTeamNumber() != 3 && g_iZMDeathCount[iIndex] < 0 ) g_iZMDeathCount[iIndex] = -1;
-			
-			if ( pBaseEnt.GetTeamNumber() == 2 )
-			{
-				if ( g_iAntidote[iIndex] > 0 ) g_iAntidote[iIndex] = 0;
-				if ( g_iInfectDelay[iIndex] > 0 ) g_iInfectDelay[iIndex]--;
-				return HOOK_HANDLED;
-			}
-			
-			if ( pBaseEnt.GetTeamNumber() == 3 && bAllowZombieSpawn == false )
-			{				
-				Chat.PrintToChatPlayer( pBaseEnt, strCannotJoinZT0 );
-				MovePlrToSpec( pBaseEnt );
-					
-				return HOOK_HANDLED;
-			}
-			
-			if ( pBaseEnt.GetTeamNumber() == 3 && bAllowZombieSpawn == true )
-			{
-				g_flIdleTime[iIndex] = Globals.GetCurrentTime() + 0.1f;
-				g_flHPRDelay[iIndex] = Globals.GetCurrentTime() + 0.25f;
-
-				EmitBloodExp( pPlayer, true );
-
-				if ( bSpawnWeak == true && g_bIsWeakZombie[iIndex] ) SpawnWeakZombie( pPlayer );
-				
-				else
-				{
-					RndZModel( pPlayer, pBaseEnt );
-					SetZMHealth( pBaseEnt );
-				}
-				
-				return HOOK_HANDLED;
-			}
-		}
-		else
-		{
-			if ( pPlrEnt.IsBot() == true )							//Delete me
-			{													//This is for debug purposes with bots
-				pBaseEnt.ChangeTeam( 0 );							//Unused in actual gameplay
-				pPlayer.ForceRespawn();
-				pBaseEnt.SetModel( "models/cszm/lobby_guy.mdl" );
-			}
-
-			PutPlrToPlayZone( pBaseEnt );
-
-			if ( CountPlrs( 0 ) <= 2 && iWUSeconds == iWUTime ) Schedule::Task( 0.00f, "WarmUpTimer" );
-			
-			return HOOK_HANDLED;
-		}
-	}
-	
-	return HOOK_CONTINUE;
-}
-
-HookReturnCode OnPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &in DamageInfo )
-{
-	if ( bIsCSZM == true )
-	{
-		CZP_Player@ pPlrAttacker = null;
-		string strAN = "";
-
-		const float flDamage = DamageInfo.GetDamage();
-		const int iDamageType = DamageInfo.GetDamageType();
-
-		CBasePlayer@ pPlrEnt = pPlayer.opCast();
-		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
-		
-		const int iVicIndex = pBaseEnt.entindex();
-		const int iVicTeam = pBaseEnt.GetTeamNumber();
-        const string strVicName = pPlayer.GetPlayerName();
-
-        CBaseEntity@ pEntityAttacker = DamageInfo.GetAttacker();
-
-		const int iAttIndex = pEntityAttacker.entindex();
-		const int iAttTeam = pEntityAttacker.GetTeamNumber();
-
-		if ( pEntityAttacker.IsPlayer() == true ) 
-		{
-			@pPlrAttacker = ToZPPlayer( iAttIndex );
-			strAN = pPlrAttacker.GetPlayerName();
-		}
-
-        const string strAttName = strAN;
-
-		if ( iVicTeam == 2 && iDamageType == 8196 && flDamage > 20 )
-		{
-			if ( g_iAntidote[iVicIndex] > 2 ) g_iAntidote[iVicIndex] = 2;
-			
-			if ( g_iAntidote[iVicIndex] > 0 )
-			{
-				g_iAntidote[iVicIndex]--;
-				if ( g_iAntidote[iVicIndex] <= 1 ) SetAntidoteState( iVicIndex, 1 );
-
-				return HOOK_HANDLED;
-			}
-			else if ( g_iAntidote[iVicIndex] <= 0 )
-			{
-				g_iVictims[iAttIndex]++;
-				ShowKills( pPlrAttacker, g_iVictims[iAttIndex], true );
-                KillFeed( strAttName, iAttTeam, strVicName, iVicTeam, true, false );
-				GotVictim( pPlrAttacker, pEntityAttacker );
-				TurnToZ( iVicIndex );
-			}
-			
-			return HOOK_HANDLED;
-		}
-
-		if ( iVicTeam == 3 ) g_flHPRDelay[iVicIndex] = Globals.GetCurrentTime() + 2.14f;
-		
-		if ( iVicTeam == 3 && pBaseEnt.IsAlive() == true )
-		{
-			if ( pPlayer.IsCarrier() != true ) Engine.EmitSoundEntity( pBaseEnt, "CSPlayer_Z.Pain" + g_iCVSIndex[iVicIndex] );
-
-			g_flIdleTime[iVicIndex] = Globals.GetCurrentTime() + Math::RandomFloat( 4.85f, 9.95f );
-
-			AddSlowdown( iVicIndex, flDamage, iDamageType );
-
-			return HOOK_HANDLED;
-		}
-	}
-
-	return HOOK_CONTINUE;
-}
-
-HookReturnCode OnPlayerInfected( CZP_Player@ pPlayer, InfectionState iState )
-{
-	if ( iState != state_none ) pPlayer.SetInfection( false, 0.0f );
-
-	return HOOK_CONTINUE;
-}
-
-HookReturnCode OnPlayerKilled( CZP_Player@ pPlayer, CTakeDamageInfo &in DamageInfo ) 
-{
-	if ( bIsCSZM == true )
-	{
-		CZP_Player@ pPlrAttacker = null;
-		string strAN = "";
-	
-		CBasePlayer@ pPlrEnt = pPlayer.opCast();
-		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
-		
-		const int iVicIndex = pBaseEnt.entindex();
-		const int iVicTeam = pBaseEnt.GetTeamNumber();
-		const string strVicName = pPlayer.GetPlayerName();
-		
-		CBaseEntity@ pEntityAttacker = DamageInfo.GetAttacker();
-		
-		const int iAttIndex = pEntityAttacker.entindex();
-		const int iAttTeam = pEntityAttacker.GetTeamNumber();
-
-		ZeroingSlowdown( iVicIndex, false );
-		
-		if ( pEntityAttacker.IsPlayer() == true ) 
-		{
-			@pPlrAttacker = ToZPPlayer( iAttIndex );
-			strAN = pPlrAttacker.GetPlayerName();
-		}
-
-		const string strAttName = strAN;
-
-		if ( iAttIndex == iVicIndex || pEntityAttacker.IsPlayer() == false ) KillFeed( "", 0, strVicName, iVicTeam, false, true );
-		else if ( iAttIndex != iVicIndex ) KillFeed( strAttName, iAttTeam, strVicName, iVicTeam, false, false );
-
-		if ( g_bIsVolunteer[iVicIndex] == true ) g_bIsVolunteer[iVicIndex] = false;
-		
-		if ( iVicTeam == 3 )
-		{
-			if ( pPlayer.IsCarrier() != true ) Engine.EmitSoundEntity( pBaseEnt, "CSPlayer_Z.Die" + g_iCVSIndex[iVicIndex] );
-
-			if ( g_iZMDeathCount[iAttIndex] < iMaxDeath && g_bIsFirstInfected[iVicIndex] == false ) g_iZMDeathCount[iVicIndex]++;
-
-			g_iKills[iAttIndex]++;
-			if ( iAttTeam != 3 ) ShowKills( pPlrAttacker, g_iKills[iAttIndex], false );
-		}
-
-		if ( iVicTeam == 2 && iAttTeam == 3 )
-		{
-			g_iVictims[iAttIndex]++;
-			ShowKills( pPlrAttacker, g_iVictims[iAttIndex], true );
-			g_bIsWeakZombie[iVicIndex] == false;
-			GotVictim( pPlrAttacker, pEntityAttacker );
-		}
-	}
-
-	return HOOK_CONTINUE;
-}
-
 void AddSlowdown( const int &in iIndex, const float &in flDamage, const int &in iDamageType )
 {
 	CZP_Player@ pPlayer = ToZPPlayer( iIndex );
@@ -922,27 +940,27 @@ void AddSlowdown( const int &in iIndex, const float &in flDamage, const int &in 
 
 	switch( iDamageType )
 	{
-		case 8320:	//melee
+		case 8320:							//melee
 			iSpeed = 100;
 			g_flAddTime[iIndex] = 2.15f;
 		break;
 
-		case 32:	//fall
+		case 32:							//fall
 			iSpeed = 60;
 			g_flAddTime[iIndex] = 0.78f;
 		break;
 
-		case 64:	//blast
+		case 64:							//blast
 			iSpeed = 75;
 			g_flAddTime[iIndex] = 2.35f;
 		break;
 
-		case 134217792:	//explosive barrels and other
+		case 134217792:						//explosive barrels and other
 			iSpeed = 65;
 			g_flAddTime[iIndex] = 1.35f;
 		break;
 
-		case 536879106:	//buckshot 
+		case 536879106:						//buckshot 
 			iSpeed += Math::RandomInt( 2, 6 );
 			g_flAddTime[iIndex] += Math::RandomFloat( 0.05f, 0.30f );
 		break;
@@ -952,10 +970,6 @@ void AddSlowdown( const int &in iIndex, const float &in flDamage, const int &in 
 
 	g_iSlowSpeed[iIndex] = pPlayer.GetMaxSpeed() - iSpeed;
 
-/*	if ( g_iSlowSpeed[iIndex] == 0 ) g_iSlowSpeed[iIndex] = g_iDefSpeed[iIndex] - iSpeed;
-
-	else g_iSlowSpeed[iIndex] -= iSpeed;
-*/
 	g_flSlowTime[iIndex] = Globals.GetCurrentTime() + g_flAddTime[iIndex];
 
 	if ( g_iSlowSpeed[iIndex] < iMinSpeed ) g_iSlowSpeed[iIndex] = iMinSpeed;
@@ -983,124 +997,7 @@ void GotVictim( CZP_Player@ pAttacker, CBaseEntity@ pBaseEntA )
 	AddTime( iInfectionATSec );
 }
 
-HookReturnCode OnPlayerDisonnected( CZP_Player@ pPlayer )
-{
-	if ( bIsCSZM == true )
-	{
-		CBasePlayer@ pPlrEnt = pPlayer.opCast();
-		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
-		
-		if ( iFZIndex == pBaseEnt.entindex() ) iFZIndex = 0;
-		
-		if ( pBaseEnt.GetTeamNumber() == 3 && Utils.GetNumPlayers( zombie, false ) <= 1 && RoundManager.IsRoundOngoing( false ) == true )
-		{
-			Engine.EmitSound( "common/warning.wav" );
-			RoundManager.SetWinState( STATE_STALEMATE );
-			SD( strLastZLeave );
-		}
-	}
-	
-	return HOOK_CONTINUE;
-}
-
-HookReturnCode OnEntityCreation( const string &in strClassname, CBaseEntity@ pEntity )
-{
-	if ( bIsCSZM == true )
-	{
-		if ( strClassname == "npc_grenade_frag" )
-		{
-			CEntityData@ SPRTrailIPD = EntityCreator::EntityData();
-			SPRTrailIPD.Add( "lifetime", "0.25" );
-			SPRTrailIPD.Add( "renderamt", "255" );
-			SPRTrailIPD.Add( "rendercolor", "245 16 16" );
-			SPRTrailIPD.Add( "rendermode", "5" );
-			SPRTrailIPD.Add( "spritename", "sprites/lgtning.vmt" );
-			SPRTrailIPD.Add( "startwidth", "3.85" );
-
-			CEntityData@ SpriteIPD = EntityCreator::EntityData();
-			SpriteIPD.Add( "spawnflags", "1" );
-			SpriteIPD.Add( "GlowProxySize", "4" );
-			SpriteIPD.Add( "scale", "0.35" );
-			SpriteIPD.Add( "rendermode", "9" );
-			SpriteIPD.Add( "rendercolor", "245 16 16" );
-			SpriteIPD.Add( "renderamt", "255" );
-			SpriteIPD.Add( "model", "sprites/light_glow01.vmt" );
-			SpriteIPD.Add( "renderfx", "0" );
-
-			CEntityData@ DLightIPD = EntityCreator::EntityData();
-			DLightIPD.Add( "_cone", "0" );
-			DLightIPD.Add( "_inner_cone", "0" );
-			DLightIPD.Add( "pitch", "0" );
-			DLightIPD.Add( "spawnflags", "0" );
-			DLightIPD.Add( "spotlight_radius", "0" );
-			DLightIPD.Add( "style", "0" );
-			DLightIPD.Add( "_light", "245 8 8 200" );
-			DLightIPD.Add( "brightness", "4" );
-			DLightIPD.Add( "distance", "48" );
-
-			CBaseEntity @pEntTrail = EntityCreator::Create( "env_spritetrail", pEntity.GetAbsOrigin(), QAngle( 0, 0, 0 ), SPRTrailIPD );
-			CBaseEntity @pEntSprite = EntityCreator::Create( "env_sprite", pEntity.GetAbsOrigin(), QAngle( 0, 0, 0 ), SpriteIPD );
-			CBaseEntity @pDLight = EntityCreator::Create( "light_dynamic", pEntity.GetAbsOrigin(), QAngle( 0, 0, 0 ), DLightIPD );
-
-			pEntTrail.SetParent( pEntity );
-			pEntSprite.SetParent( pEntity );
-			pDLight.SetParent( pEntity );
-		}
-
-		else if ( strClassname == "item_healthkit" ) SpawnAntidote( pEntity );
-
-		else if ( strClassname == "item_armor" ) pEntity.SUB_Remove();		//Armor is not allowed yet
-	}
-
-	return HOOK_CONTINUE;
-}
-
-void RemoveProp( CBaseEntity@ pPlayer )
-{
-	CBaseEntity@ pProp;
-
-	while ( ( @pProp = FindEntityByClassname( pProp, "prop_physics_override" ) ) !is null )
-	{
-		if ( pProp.Intersects( pPlayer ) == true ) pProp.SUB_Remove();
-	}
-
-	while ( ( @pProp = FindEntityByClassname( pProp, "prop_physics_multiplayer" ) ) !is null )
-	{
-		if ( pProp.Intersects( pPlayer ) == true ) pProp.SUB_Remove();
-	}
-
-	while ( ( @pProp = FindEntityByClassname( pProp, "prop_physics" ) ) !is null )
-	{
-		if ( pProp.Intersects( pPlayer ) == true ) pProp.SUB_Remove();
-	}
-
-	while ( ( @pProp = FindEntityByClassname( pProp, "func_physbox" ) ) !is null )
-	{
-		if ( pProp.Intersects( pPlayer ) == true ) pProp.SUB_Remove();
-	}
-
-	while ( ( @pProp = FindEntityByClassname( pProp, "prop_ragdoll" ) ) !is null )
-	{
-		if ( pProp.Intersects( pPlayer ) == true ) pProp.SUB_Remove();
-	}
-}
-
-HookReturnCode RoundWin( const string &in strMapname, RoundWinState iWinState )
-{
-	if ( bIsCSZM == true )
-	{
-		bAllowCD = false;
-		ShowRTL( 0, 0, 15 );
-
-		if ( iWinState == STATE_HUMAN ) Engine.EmitSound( "CS_HumanWin" );
-		if ( iWinState == STATE_ZOMBIE ) Engine.EmitSound( "CS_ZombieWin" );
-
-		return HOOK_HANDLED;
-	}
-
-	return HOOK_CONTINUE;
-}
-
+//Need to rewrite RoundTimeLeft function
 void RoundTimeLeft()
 {
 	if ( Utils.GetNumPlayers( survivor, false ) == 0 ) RoundManager.SetWinState( STATE_STALEMATE );
@@ -1150,8 +1047,6 @@ void TimeHPBonus()
 		{
 			iTimeHPBonusSeconds = iDefaultTHPSeconds;
 			iTimeHPBonus += iTHPBonus;
-
-//			SD( "{Default}Time Health Bonus: {cyan}"+iTimeHPBonus+" HP" );
 		}
 	}
 }
@@ -1204,6 +1099,7 @@ void AddTime( const int &in iTime )
 	}
 }
 
+//Need to rewrite FZColor and FirstInfected functions
 void FZColor()
 {
 	if ( bAllowFZColor == true && bIsFirstITurns != true )
@@ -1370,19 +1266,6 @@ void EmitBloodExp( CZP_Player@ pPlayer, const bool &in bIsSilent )
 	EntityCreator::Create( "info_particle_system", pBaseEnt.EyePosition(), pBaseEnt.EyeAngles(), CameraBloodIPD );
 	EntityCreator::Create( "info_particle_system", pBaseEnt.GetAbsOrigin(), pBaseEnt.GetAbsAngles(), BodyBloodIPD );
 	if ( bIsSilent == false ) Engine.EmitSoundEntity( pBaseEnt, "Flesh.HeadshotExplode" );
-}
-
-void GetRandomVictim()
-{
-	CZP_Player@ pVictim = GetRandomPlayer( survivor, true );
-	CBasePlayer@ pVPlrEnt = pVictim.opCast();
-	CBaseEntity@ pVBaseEnt = pVPlrEnt.opCast();
-	TurnToZ( pVBaseEnt.entindex() );
-}
-
-void DisallowWeakZombie()
-{
-	bSpawnWeak = false;
 }
 
 void RndZModel( CZP_Player@ pPlayer, CBaseEntity@ pEntPlr )
@@ -1619,13 +1502,6 @@ void CheckPlr()
 	}
 }
 
-void MovePlrToSpec( CBaseEntity@ pEntPlr )
-{
-	pEntPlr.ChangeTeam( 0 );
-	CZP_Player@ pPlayer = ToZPPlayer( pEntPlr);
-	pPlayer.ForceRespawn();
-}
-
 //WarmUp Related Funcs
 void WarmUpTimer()
 {
@@ -1660,28 +1536,6 @@ void WarmUpEnd()
 
 	SendGameText( any, strHintF1, 3, 0.00f, 0.05f, 0.10f, 0.00f, 2.00f, 120.00f, Color( 64, 128, 255 ), Color( 255, 95, 5 ) );
 	SendGameText( any, "\n\n" + strHintF3, 4, 0.00f, 0.05f, 0.085f, 0.00f, 2.00f, 120.00f, Color( 255, 255, 255 ), Color( 255, 95, 5 ) );
-}
-
-int CountPlrs( const int &in iTeamNum )
-{
-	int iCount = 0;
-	
-	for ( int i = 1; i <= iMaxPlayers; i++ )
-	{
-		CZP_Player@ pPlayer = ToZPPlayer( i );
-	
-		if ( pPlayer is null ) continue;
-			
-		CBasePlayer@ pPlrEnt = pPlayer.opCast();
-		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
-
-		if ( pBaseEnt.GetTeamNumber() == iTeamNum )
-		{
-			iCount++;
-		}
-	}
-	
-	return iCount;
 }
 
 void lobby_hint( CZP_Player@ pPlayer )
@@ -1778,18 +1632,4 @@ void PutPlrToPlayZone( CBaseEntity@ pEntPlayer )
 	{
 		pEntPlayer.SetAbsOrigin( g_pOtherSpawn[Math::RandomInt( 1, iLength )].GetAbsOrigin() );
 	}
-}
-
-void SetDoorFilter( const int &in iFilter )
-{
-	CBaseEntity@ pEntity;
-	while ( ( @pEntity = FindEntityByClassname( pEntity, "prop_door_rotating" ) ) !is null )
-	{
-		Engine.Ent_Fire_Ent( pEntity, "AddOutput", "doorfilter " + iFilter );
-	}
-}
-
-void AddSpeed( CZP_Player@ pPlayer, int &in iSpeed )
-{
-	pPlayer.SetMaxSpeed( pPlayer.GetMaxSpeed() + iSpeed );
 }
