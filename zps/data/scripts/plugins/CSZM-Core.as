@@ -1230,6 +1230,7 @@ void SpawnWeakZombie( CZP_Player@ pPlayer )
 
 	if ( pPlayer.IsCarrier() == true ) pBaseEnt.SetModel( g_strModels[0] );
 	else pBaseEnt.SetModel( "models/cszm/zombie_charple.mdl" );
+	Utils.CosmeticWear( pPlayer, "models/cszm/weapons/w_knife_t.mdl" );
 	pBaseEnt.SetMaxHealth( 1 );
 	pBaseEnt.SetHealth( iWeakZombieHP );
 	pPlayer.SetMaxSpeed( iWeakSpeed );
