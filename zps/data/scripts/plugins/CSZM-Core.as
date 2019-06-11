@@ -610,7 +610,7 @@ HookReturnCode OnPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &in DamageI
 
 HookReturnCode OnPlayerInfected( CZP_Player@ pPlayer, InfectionState iState )
 {
-	if ( iState != state_none ) pPlayer.SetInfection( false, 0.0f );
+	if ( iState != state_none && bIsCSZM == true ) pPlayer.SetInfection( false, 0.0f );
 
 	return HOOK_CONTINUE;
 }
