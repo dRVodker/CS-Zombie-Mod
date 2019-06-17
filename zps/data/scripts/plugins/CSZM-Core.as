@@ -72,7 +72,7 @@ const int iWUTime = 4;											//Time of the warmup in seconds.		( default val
 
 //New Consts
 const bool bAllowTimeHP = true;									//Allow Time HP Bonus
-const float flBlockZSTime = 35.00f;								//Amount of time in seconds which abusers must wait to join the zombie team.
+const float flBlockZSTime = 45.00f;								//Amount of time in seconds which abusers must wait to join the zombie team.
 const float flCSDDivider = 4.00f;								//Damage Slowdown divider of the carrier.
 const float flFISDDivider = 1.85f;								//Damage Slowdown divider of the first infected.
 const int iSubtractDeath = 2;									//Amount of units subtract from the death counter
@@ -1336,11 +1336,11 @@ void SetZMHealth( CBaseEntity@ pEntPlr )
 	switch( iZombCount )
 	{
 		case 1:
-			flMultiplier = 1.75f;
+			flMultiplier = 1.85f;
 		break;
 		
 		case 2:
-			flMultiplier = 0.75f;
+			flMultiplier = 0.85f;
 		break;
 		
 		default:
