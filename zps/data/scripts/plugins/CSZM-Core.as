@@ -417,7 +417,7 @@ HookReturnCode OnConCommand( CZP_Player@ pPlayer, CASCommand@ pArgs )
 		{
 			if ( Utils.StrEql( "choose1", pArgs.Arg( 0 ) ) || Utils.StrEql( "choose2", pArgs.Arg( 0 ) ) )
 			{
-				if ( bAllowZombieSpawn == false )
+				if ( bAllowZombieSpawn == false && pBaseEnt.GetTeamNumber() == 0)
 				{
 					pBaseEnt.ChangeTeam(2);
 					pPlayer.ForceRespawn();
