@@ -1,0 +1,17 @@
+VertexLitGeneric
+{
+	"$basetexture"				"models/cszm/w_minefrag/minefrag"
+	"$bumpmap"					"models/cszm/w_minefrag/minefrag_n"
+	
+	"$detail"					"detail/metal_detail_01"
+	"$detailscale"				"2.85"
+	"$detailblendfactor"		"1.45"
+	"$detailblendmode"			"0"
+	
+	"$phong"					"1"
+	"$phongexponent"			"2"
+	"$phongboost"				"4"
+	"$phongfresnelranges"		"[0.115 0.115 0.115]"
+
+	"$halflambert"				"1"
+}

@@ -1,0 +1,5 @@
+VertexLitGeneric
+{
+	"$basetexture"				"models/cszm/w_minefrag/minefrag"
+	"$bumpmap"					"models/cszm/w_minefrag/minefrag_n"
+}
