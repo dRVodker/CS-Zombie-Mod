@@ -9,32 +9,32 @@ array<float> g_flDamage;
 array<float> g_flShowDamage;
 array<float> g_flSDTimer;
 
-void SD(const string &in strMSG)
+void SD( const string &in strMSG )
 {
-	Chat.PrintToChat(all, strMSG);
+	Chat.PrintToChat( all, strMSG );
 }
 
 void OnPluginInit()
 {
-	PluginData::SetVersion( "1.0" );
-	PluginData::SetAuthor( "dR.Vodker" );
-	PluginData::SetName( "CSZM - Show Damage" );
+	PluginData::SetVersion( "1.0");
+	PluginData::SetAuthor( "dR.Vodker");
+	PluginData::SetName( "CSZM - Show Damage");
 
 	//Events
-	Events::Player::OnPlayerConnected.Hook(@OnKPlayerConnected);
-	Events::Player::OnPlayerDamaged.Hook(@OnKPlayerDamaged);
+	Events::Player::OnPlayerConnected.Hook( @OnKPlayerConnected );
+	Events::Player::OnPlayerDamaged.Hook( @OnKPlayerDamaged );
 }
 
 void OnMapInit()
 {		
-	if(Utils.StrContains("cszm", Globals.GetCurrentMapName()))
+	if ( Utils.StrContains( "cszm", Globals.GetCurrentMapName() ) )
 	{
 		bIsCSZM = true;
 		iMaxPlayers = Globals.GetMaxClients();
 				
-		g_flDamage.resize(iMaxPlayers + 1);
-		g_flShowDamage.resize(iMaxPlayers + 1);
-		g_flSDTimer.resize(iMaxPlayers + 1);
+		g_flDamage.resize( iMaxPlayers + 1 );
+		g_flShowDamage.resize( iMaxPlayers + 1 );
+		g_flSDTimer.resize( iMaxPlayers + 1 );
 		
 		flWaitTime = Globals.GetCurrentTime() + 0.10f;
 	}
@@ -42,9 +42,9 @@ void OnMapInit()
 
 void OnNewRound()
 {
-	if(bIsCSZM == true)
+	if ( bIsCSZM == true )
 	{
-		for(int i = 1; i <= iMaxPlayers; i++) 
+		for ( int i = 1; i <= iMaxPlayers; i++ ) 
 		{
 			g_flDamage[i] = 0.0f;
 			g_flShowDamage[i] = 0.0f;
@@ -57,41 +57,41 @@ void OnNewRound()
 
 void OnMapShutdown()
 {
-	if(bIsCSZM == true)
+	if ( bIsCSZM == true )
 	{
 		bIsCSZM = false;
 		
 		flWaitTime = 0.0f;
 		
-		ClearFloatArray(g_flDamage);
-		ClearFloatArray(g_flShowDamage);
-		ClearFloatArray(g_flSDTimer);
+		ClearFloatArray( g_flDamage );
+		ClearFloatArray( g_flShowDamage );
+		ClearFloatArray( g_flSDTimer );
 	}
 }
 
 void OnProcessRound()
 {
-	if(bIsCSZM == true)
+	if ( bIsCSZM == true )
 	{
-		if(flWaitTime <= Globals.GetCurrentTime())
+		if ( flWaitTime <= Globals.GetCurrentTime() )
 		{
 			flWaitTime = Globals.GetCurrentTime() + 0.10f;
 			
-			for(int i = 1; i <= iMaxPlayers; i++)
+			for ( int i = 1; i <= iMaxPlayers; i++ )
 			{
-				CZP_Player@ pPlayer = ToZPPlayer(i);
+				CZP_Player@ pPlayer = ToZPPlayer( i );
 
-				if(pPlayer is null) continue;
+				if ( pPlayer is null ) continue;
 
 				CBasePlayer@ pPlrEnt = pPlayer.opCast();
 				CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 
-				if(g_flSDTimer[i] > 0)
+				if ( g_flSDTimer[i] > 0 )
 				{
 					g_flSDTimer[i] -= 0.1f;
 				}
 				
-				if(g_flSDTimer[i] <= 0 && g_flShowDamage[i] > 0)
+				if ( g_flSDTimer[i] <= 0 && g_flShowDamage[i] > 0 )
 				{
 					g_flShowDamage[i] = 0;
 				}
@@ -100,25 +100,25 @@ void OnProcessRound()
 	}
 }
 
-void ClearIntArray(array<int> &iTarget)
+void ClearIntArray( array<int> &iTarget )
 {
-    while (iTarget.length() > 0)
-    {
-        iTarget.removeAt(0);
-    }
+	while ( iTarget.length() > 0 )
+	{
+		iTarget.removeAt( 0 );
+	}
 }
 
-void ClearFloatArray(array<float> &iTarget)
+void ClearFloatArray( array<float> &iTarget )
 {
-    while (iTarget.length() > 0)
-    {
-        iTarget.removeAt(0);
-    }
+	while ( iTarget.length() > 0 )
+	{
+		iTarget.removeAt( 0 );
+	}
 }
 
-HookReturnCode OnKPlayerConnected(CZP_Player@ pPlayer)
+HookReturnCode OnKPlayerConnected( CZP_Player@ pPlayer )
 {
-	if(bIsCSZM == true)
+	if ( bIsCSZM == true )
 	{
 		CBasePlayer@ pPlrEnt = pPlayer.opCast();
 		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
@@ -133,9 +133,9 @@ HookReturnCode OnKPlayerConnected(CZP_Player@ pPlayer)
 	return HOOK_CONTINUE;
 }
 
-HookReturnCode OnKPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageInfo)
+HookReturnCode OnKPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &in DamageInfo )
 {
-	if(bIsCSZM == true)
+	if ( bIsCSZM == true )
 	{
 		CZP_Player@ pPlrAttacker = null;
 		CBasePlayer@ pBPlrAttacker = null;
@@ -153,24 +153,28 @@ HookReturnCode OnKPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageI
 		const int iAttIndex = pEntityAttacker.entindex();
 		const bool bIsAttPlayer = pEntityAttacker.IsPlayer();
 		
-		if(bIsAttPlayer == true)
+		if ( bIsAttPlayer == true )
 		{
-			@pPlrAttacker = ToZPPlayer(iAttIndex);
-			@pBPlrAttacker = ToBasePlayer(iAttIndex);
+			@pPlrAttacker = ToZPPlayer( iAttIndex );
+			@pBPlrAttacker = ToBasePlayer( iAttIndex );
 		}
 		else return HOOK_HANDLED;
 
-		if(iAttIndex == iVicIndex) return HOOK_HANDLED;
+		if ( iAttIndex == iVicIndex ) return HOOK_HANDLED;
+
+		if ( iVicTeam == pEntityAttacker.GetTeamNumber() ) return HOOK_HANDLED;
+
+		if ( iVicTeam == 0 || iVicTeam == 1 ) return HOOK_HANDLED;
 		
-		if(pEntityAttacker.GetTeamNumber() == 2)
+		if ( pEntityAttacker.GetTeamNumber() == 2 )
 		{
 			g_flSDTimer[iAttIndex] = 0.8f;
 			
 			float flHPD = 0;
 			float flHP = pBaseEnt.GetHealth();
-			float flDMG = floor(DamageInfo.GetDamage());
+			float flDMG = floor( DamageInfo.GetDamage() );
 			
-			if(flHP < flDMG)
+			if ( flHP < flDMG )
 			{
 				flHPD = flHP - flDMG;
 				flHPD = flDMG + flHPD;
@@ -179,7 +183,7 @@ HookReturnCode OnKPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageI
 				g_flShowDamage[iAttIndex] += flHPD;
 			}
 			
-			else if(DamageInfo.GetDamage() >= pBaseEnt.GetMaxHealth() && pBaseEnt.GetHealth() <= pBaseEnt.GetMaxHealth())
+			else if ( DamageInfo.GetDamage() >= pBaseEnt.GetMaxHealth() && pBaseEnt.GetHealth() <= pBaseEnt.GetMaxHealth() )
 			{
 				g_flDamage[iAttIndex] += pBaseEnt.GetMaxHealth();
 				g_flShowDamage[iAttIndex] += pBaseEnt.GetMaxHealth();
@@ -187,11 +191,11 @@ HookReturnCode OnKPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageI
 			
 			else
 			{
-				g_flDamage[iAttIndex] += floor(DamageInfo.GetDamage());
-				g_flShowDamage[iAttIndex] += floor(DamageInfo.GetDamage());
+				g_flDamage[iAttIndex] += floor( DamageInfo.GetDamage() );
+				g_flShowDamage[iAttIndex] += floor( DamageInfo.GetDamage() );
 			}
 			
-			if(g_flShowDamage[iAttIndex] > 0) Chat.CenterMessagePlayer(pBPlrAttacker, "- "+g_flShowDamage[iAttIndex]+" HP");
+			if ( g_flShowDamage[iAttIndex] > 0 ) Chat.CenterMessagePlayer( pBPlrAttacker, "- "+g_flShowDamage[iAttIndex]+" HP" );
 
 			return HOOK_HANDLED;
 		}
