@@ -63,6 +63,8 @@ void SetUpStuff()
 	Engine.Ent_Fire("screenoverlay", "StartOverlays");
 	Engine.Ent_Fire("Precache", "Kill");
 	Engine.Ent_Fire("vrad*", "Kill");
+
+	Engine.Ent_Fire("hurt_toxic1", "Addoutput", "damage 3000");
 	
 	Engine.Ent_Fire("tonemap", "SetBloomScale", "0.375");
 	RemoveAmmoBar();
@@ -76,7 +78,7 @@ HookReturnCode OnStartTouch(CBaseEntity@ pTrigger, const string &in strEntityNam
 	{
 		if(pEntity.IsPlayer() == false)
 		{
-			if(Utils.StrContains("prop_", pEntity.GetClassname())) Engine.Ent_Fire_Ent(pEntity, "break", "0", "0.75");
+//			if(Utils.StrContains("prop_", pEntity.GetClassname())) Engine.Ent_Fire_Ent(pEntity, "break", "0", "0.75");
 			if(Utils.StrContains("weapon_", pEntity.GetClassname()) || Utils.StrContains("item_", pEntity.GetClassname())) pEntity.SUB_Remove();
 		}
 	}
