@@ -32,12 +32,13 @@ array<string> g_strClassnames =
 	"weapon_870", //10
 	"weapon_frag", //11
 	"weapon_ied", //12
-	"item_ammo_pistol", //13
-	"item_ammo_rifle", //14
-	"item_ammo_shotgun", //15
-	"item_ammo_revolver", //16
-	"item_pills", //17
-	"item_healthkit" //18
+	"weapon_machete", //13
+	"item_ammo_pistol", //14
+	"item_ammo_rifle", //15
+	"item_ammo_shotgun", //16
+	"item_ammo_revolver", //17
+	"item_pills", //18
+	"item_healthkit" //19
 };
 
 //Other Data (Don't even touch this)
@@ -290,17 +291,17 @@ void RandomizePropCrate()
 				}
 				else if(iRND_Type >= 3 && iRND_Type <= 6)
 				{
-					iRND_Class = Math::RandomInt(13, 16);
+					iRND_Class = Math::RandomInt(14, 17);
 					iRND_Count = Math::RandomInt(1, 3);		//Amout of ammo
 				}
 				else if(iRND_Type >= 7 && iRND_Type <= 8) 
 				{
-					iRND_Class = Math::RandomInt(11, 12);
+					iRND_Class = Math::RandomInt(11, 13);
 					iRND_Count = Math::RandomInt(3, 4);		//Amout of frag and ied
 				}
 				else if(iRND_Type > 8)
 				{
-					iRND_Class = Math::RandomInt(17, 18);
+					iRND_Class = Math::RandomInt(18, 19);
 					iRND_Count = Math::RandomInt(1, 3);		//Amout of adrenaline and antidote
 				}
 				
