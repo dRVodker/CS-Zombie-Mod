@@ -465,7 +465,7 @@ HookReturnCode OnPlayerSpawn( CZP_Player@ pPlayer )
 		pPlayer.SetMaxSpeed( g_iDefSpeed[iIndex] );
 
 		if ( pBaseEnt.GetTeamNumber() != 3 ) pPlayer.SetArmModel( "models/cszm/weapons/c_css_arms.mdl" );
-		else pPlayer.SetArmModel( "models/cszm/weapons/c_css_zombie_arms.mdl" );
+		else if ( pPlayer.IsCarrier() == false ) pPlayer.SetArmModel( "models/cszm/weapons/c_css_zombie_arms.mdl" );
 		
 		if ( pBaseEnt.GetTeamNumber() == 0 )
 		{

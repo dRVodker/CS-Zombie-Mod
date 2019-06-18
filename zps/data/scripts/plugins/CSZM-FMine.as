@@ -3,9 +3,15 @@ void SD( const string &in strMSG )
 	Chat.PrintToChat( all, strMSG );
 }
 
+void CD( const string &in strMsg )
+{
+	Chat.CenterMessage( all, strMsg );
+}
+
 int iMaxPlayers;
 bool bIsCSZM = false;
 float flWaitTime;
+float flWaitTimeTL;
 
 void OnPluginInit()
 {
@@ -23,16 +29,19 @@ void OnMapInit()
 		bIsCSZM = true;
 
 		flWaitTime = Globals.GetCurrentTime() + 0.05f;
+		flWaitTimeTL = Globals.GetCurrentTime() + 0.01f;
 
 		iMaxPlayers = Globals.GetMaxClients();
 
-		Entities::RegisterUse( "weapon_fragmine" );
-		Entities::RegisterOutput( "OnTakeDamage", "test_fragmine_active" );
-		Entities::RegisterOutput( "OnTakeDamage", "test_fragmine_inactive" );
+		Entities::RegisterUse( "item_deliver" );
+		Entities::RegisterDrop( "item_deliver" );
+		Entities::RegisterDamaged( "test_fragmine_active" );
+		Entities::RegisterDamaged( "test_fragmine_inactive" );
 
 		Engine.PrecacheFile( sound, "weapons/slam/throw.wav" );
 		Engine.PrecacheFile( sound, "weapons/slam/mine_mode.wav" );
 		Engine.PrecacheFile( sound, "weapons/slam/buttonclick.wav" );
+		Engine.PrecacheFile( sound, "weapons/357/357_reload3.wav" );
 
 		Engine.PrecacheFile( model, "models/cszm/weapons/w_minefrag.mdl" );
 		Engine.PrecacheFile( model, "models/cszm/weapons/v_minefrag.mdl" );
@@ -44,8 +53,69 @@ void OnMapShutdown()
 	if ( bIsCSZM == true ) 
 	{
 		bIsCSZM = false;
-		Entities::RemoveRegisterUse( "weapon_fragmine" );
+		Entities::RemoveRegisterUse( "item_deliver" );
+		Entities::RemoveRegisterDrop( "item_deliver" );
 		Entities::RemoveRegisterOutput( "OnTakeDamage", "test_fragmine_active" );
+
+		flWaitTime = 0.0f;
+		flWaitTimeTL = 0.0f;
+	}
+}
+
+void OnProcessRound()
+{
+	if ( bIsCSZM == true )
+	{
+		if ( flWaitTime <= Globals.GetCurrentTime() )
+		{
+			flWaitTime = Globals.GetCurrentTime() + 0.05f;
+			FragMineThink();
+		}
+
+		if ( flWaitTimeTL <= Globals.GetCurrentTime() )
+		{
+			flWaitTimeTL = Globals.GetCurrentTime() + 0.01f;
+
+			for ( int i = 1; i <= iMaxPlayers; i++ )
+			{
+				CZP_Player@ pPlayer = ToZPPlayer( i );
+								
+				if ( pPlayer is null ) continue;
+
+				CBasePlayer@ pPlrEnt = pPlayer.opCast();
+				CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+
+				if ( pPlayer.m_afButtonPressed == 32 && pBaseEnt.IsGrounded() && pBaseEnt.GetTeamNumber() == 2 )
+				{
+					Vector Forward = pBaseEnt.EyePosition();
+					Vector StartPos;
+					Vector EndPos;
+
+					Globals.AngleVectors( pBaseEnt.EyeAngles(), Forward );
+
+					StartPos = pBaseEnt.EyePosition() + Forward * 32;
+					EndPos = StartPos + Forward * 48;
+
+					CGameTrace trace;
+
+					Utils.TraceLine( StartPos, EndPos, MASK_ALL, null, COLLISION_GROUP_NONE, trace );
+
+					if ( trace.DidHitNonWorldEntity() )
+					{
+						CBaseEntity@ pTEntity = trace.m_pEnt;
+
+						if ( pTEntity !is null )
+						{
+							if ( Utils.StrContains( "test_fragmine", pTEntity.GetEntityName() ) ) 
+							{
+								if ( pTEntity.GetOwner() is pBaseEnt || pTEntity.GetOwner() is null ) DefuseFragMine( pTEntity, pPlayer );
+								else Chat.PrintToChatPlayer( pPlrEnt, "This frag mine is not yours, you can't disarm and pick it up!");
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -54,39 +124,35 @@ HookReturnCode FM_OnEntityCreation( const string &in strClassname, CBaseEntity@ 
 	if ( bIsCSZM == false ) return HOOK_HANDLED;
 
 	if ( Utils.StrContains( "weapon_machete", strClassname ) ) SpawnWepFragMine( pEntity );
-/*
-	if ( Utils.StrEql( pEntity.GetEntityName(), "fmine_explode" ) && Utils.StrEql( strClassname, "env_explosion" ) )
-	{
-		Engine.Ent_Fire_Ent( pEntity, "Addoutput", "classname weapon_fragmine" );
-		Engine.Ent_Fire_Ent( pEntity, "Explode" );
-	}
-*/
+
 	return HOOK_CONTINUE;
 }
 
-void OnEntityOutput( const string &in strOutput, CBaseEntity@ pActivator, CBaseEntity@ pCaller )
+void OnEntityDamaged( CBaseEntity@ pAttacker, CBaseEntity@ pEntity )
 {
-	if ( Utils.StrContains( "test_fragmine", pCaller.GetEntityName() ) && Utils.StrEql( strOutput, "OnTakeDamage" )  && bIsCSZM == true )
+	if ( bIsCSZM == false ) return;
+	if ( pAttacker is null ) return;
+	if ( pEntity is null ) return;
+
+	if ( Utils.StrContains( "test_fragmine", pEntity.GetEntityName() ) )
 	{
-		bool bExplode = false;
+		bool bExplode = true;
 
-		pCaller.SetHealth( 9000000 );
-
-		if ( pActivator.GetTeamNumber() != pCaller.GetOwner().GetTeamNumber() )
+		if ( pEntity.GetOwner() !is null )
 		{
-			if ( pActivator.IsPlayer() == true )
-			{
-				pCaller.ChangeTeam( pActivator.GetTeamNumber() );
-				pCaller.SetOwner( pActivator );
-			}
-
-			bExplode = true;
+			if ( pAttacker.GetTeamNumber() == 2 && pAttacker !is pEntity.GetOwner() ) bExplode = false;
+			pEntity.ChangeTeam( 2 );
 		}
 
-		if ( pActivator is pCaller.GetOwner() ) bExplode = true;
+		else
+		{
+			pEntity.ChangeTeam( pAttacker.GetTeamNumber() );
+			pEntity.SetOwner( pAttacker );
+		}
 
-		if ( bExplode == true ) ExplodeFragMine( pCaller );
+		if ( bExplode == true ) ExplodeFragMine( pEntity );
 	}
+
 }
 
 void OnItemDeliverUsed(CZP_Player@ pPlayer, CBaseEntity@ pEntity, int &in iEntityOutput)
@@ -101,6 +167,15 @@ void OnItemDeliverUsed(CZP_Player@ pPlayer, CBaseEntity@ pEntity, int &in iEntit
 	int iIndex = pBaseEnt.entindex();
 
 	if ( Utils.StrEql( pEntity.GetEntityName(), "weapon_fragmine" ) ) ThrowMine( iIndex, pPlayer, pEntity );
+}
+
+void OnEntityDropped(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
+{
+	if ( bIsCSZM == false ) return;
+	if ( pPlayer is null ) return;
+	if ( pEntity is null ) return;
+
+	if ( Utils.StrEql( pEntity.GetEntityName(), "wf_used" ) ) pEntity.SUB_Remove();
 }
 
 void ThrowMine( const int &in iIndex, CZP_Player@ pPlayer, CBaseEntity@ pEntity )
@@ -122,7 +197,8 @@ void ThrowMine( const int &in iIndex, CZP_Player@ pPlayer, CBaseEntity@ pEntity 
 
 	FragMineIPD.Add("addoutput", "targetname test_fragmine_preactive", true, "0.98");
 
-	CBaseEntity@ pFragMine = EntityCreator::Create("prop_physics_override", Vector( 720, 1960, 108 ), QAngle(0, 0, 0), FragMineIPD);
+//	CBaseEntity@ pFragMine = EntityCreator::Create("prop_physics_override", Vector( 0, 0, 0 ), QAngle(0, 0, 0), FragMineIPD);
+	CBaseEntity@ pFragMine = EntityCreator::Create("projectile_nonhurtable", Vector( 0, 0, 0 ), QAngle(0, 0, 0), FragMineIPD);
 
 	pFragMine.SetOwner( pBaseEnt );
 	pFragMine.ChangeTeam( pBaseEnt.GetTeamNumber() );
@@ -141,9 +217,12 @@ void ThrowMine( const int &in iIndex, CZP_Player@ pPlayer, CBaseEntity@ pEntity 
 
 	Engine.EmitSoundPosition(pFragMine.entindex(), "weapons/slam/throw.wav", Vector( pBaseEnt.EyePosition().x, pBaseEnt.EyePosition().y, pBaseEnt.EyePosition().z - 12 ), 0.5f, 65, 85);
 
-	pEntity.SetEntityName( "used" + iIndex );
-	Engine.Ent_Fire( "used" + iIndex, "addoutput", "itemstate 0" );
-	Engine.Ent_Fire( "used" + iIndex, "kill", "0", "0.3" );
+	pEntity.SetRenderMode( kRenderNone );
+	pEntity.SetEntityName( "wf_used" + iIndex );
+
+	Engine.Ent_Fire( "wf_used" + iIndex, "addoutput", "itemstate 0" );
+	Engine.Ent_Fire( "wf_used" + iIndex, "addoutput", "rendermode 10" );
+	Engine.Ent_Fire( "wf_used" + iIndex, "kill", "0", "0.3" );
 }
 
 void SpawnWepFragMine( CBaseEntity@ pEntity )
@@ -164,27 +243,26 @@ void SpawnWepFragMine( CBaseEntity@ pEntity )
 	pEntity.SUB_Remove();
 }
 
-void OnProcessRound()
-{
-	if ( flWaitTime <= Globals.GetCurrentTime() && bIsCSZM == true )
-	{
-		flWaitTime = Globals.GetCurrentTime() + 0.05f;
-		FragMineThink();
-	}
-}
-
 void FragMineThink()
 {
 	CBaseEntity@ pFMine = null;
 
 	while ( ( @pFMine = FindEntityByName( pFMine, "test_fragmine_inactive" ) ) !is null )
 	{
-		if ( pFMine.GetOwner() is null || pFMine.GetOwner().GetTeamNumber() != pFMine.GetTeamNumber() || pFMine.GetOwner().IsAlive() == false ) DefuseFragMine( pFMine, null );
+		if ( pFMine.GetOwner() !is null )
+		{
+			if ( pFMine.GetTeamNumber() != pFMine.GetOwner().GetTeamNumber() || pFMine.GetOwner().IsAlive() == false )
+			{
+				pFMine.SetOwner( null );
+				pFMine.SetOutline( true, filter_team, 2, Color(245, 245, 32), 512.0f, false, true );
+			}
+		}
 	}
 
 	while ( ( @pFMine = FindEntityByName( pFMine, "test_fragmine_preactive" ) ) !is null )
 	{
-		pFMine.SetOutline( true, filter_entity, pFMine.GetOwner().entindex(), Color(245, 32, 64), 384.0f, false, true);
+		if ( pFMine.GetOwner() !is null ) pFMine.SetOutline( true, filter_entity, pFMine.GetOwner().entindex(), Color(245, 32, 64), 384.0f, false, true);
+
 		pFMine.SetEntityName( "test_fragmine_active" );
 		pFMine.SetSkin( 1 );
 		Engine.EmitSoundPosition( pFMine.entindex(), "weapons/slam/mine_mode.wav", pFMine.GetAbsOrigin(), 1.0f, 75, 105);
@@ -192,36 +270,44 @@ void FragMineThink()
 
 	while ( ( @pFMine = FindEntityByName( pFMine, "test_fragmine_active" ) ) !is null )
 	{
-		if ( pFMine.GetOwner() is null || pFMine.GetOwner().GetTeamNumber() != pFMine.GetTeamNumber() || pFMine.GetOwner().IsAlive() == false )
+		if ( pFMine.GetOwner() !is null )
 		{
-			DefuseFragMine( pFMine, null );
-			continue;
+			if ( pFMine.GetTeamNumber() != pFMine.GetOwner().GetTeamNumber() || pFMine.GetOwner().IsAlive() == false )
+			{
+				pFMine.SetOwner( null );
+				pFMine.SetOutline( true, filter_team, 2, Color(245, 245, 32), 512.0f, false, true );
+			}
 		}
 
 		for ( int i = 1; i <= iMaxPlayers; i++ )
 		{
 			CZP_Player@ pPlayer = ToZPPlayer( i );
-							
+									
 			if ( pPlayer is null ) continue;
-
-			bool bExplode = false;
 
 			CBasePlayer@ pPlrEnt = pPlayer.opCast();
 			CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 
-			if ( pBaseEnt.Intersects( pFMine ) == true )
+			if ( pBaseEnt.Intersects( pFMine ) == true && pBaseEnt.IsAlive() == true )
 			{
-				if ( pBaseEnt !is pFMine.GetOwner() && pFMine.GetTeamNumber() != pBaseEnt.GetTeamNumber() && pBaseEnt.IsAlive() == true ) bExplode = true;
-				else if ( pBaseEnt is pFMine.GetOwner() ) bExplode = true;
-			}
+				if ( pFMine.GetOwner() is pBaseEnt ) 
+				{
+					ExplodeFragMine( pFMine );
+					return;
+				}
 
-			if ( bExplode == true ) ExplodeFragMine( pFMine );
-		}
+				else if ( pBaseEnt.GetTeamNumber() == pFMine.GetTeamNumber() ) continue;
+
+				if ( pFMine.GetTeamNumber() != pBaseEnt.GetTeamNumber() ) ExplodeFragMine( pFMine );
+			}
+		}			
 	}
 }
 
 void ExplodeFragMine( CBaseEntity@ pFMine )
 {
+	pFMine.SetEntityName( "fragmine_detonation" );
+	
 	CEntityData@ ExplodeIPD = EntityCreator::EntityData();
 	ExplodeIPD.Add( "targetname", "fmine_explode" );
 	ExplodeIPD.Add( "iMagnitude", "350" );
@@ -231,9 +317,18 @@ void ExplodeFragMine( CBaseEntity@ pFMine )
 
 	CBaseEntity@ pExplode = EntityCreator::Create("env_explosion", pFMine.GetAbsOrigin(), pFMine.GetAbsAngles(), ExplodeIPD);
 
-	pExplode.SetOwner( pFMine.GetOwner() );
+	if ( pFMine.GetOwner() !is null ) 
+	{
+		pExplode.SetOwner( pFMine.GetOwner() );
+		pExplode.ChangeTeam( pFMine.GetOwner().GetTeamNumber() );
+	}
+	else 
+	{
+		pExplode.SetOwner( null );
+		pExplode.ChangeTeam( 2 );
+	}
 
-	pFMine.SUB_Remove();	
+	pFMine.SUB_Remove();
 }
 
 void DefuseFragMine( CBaseEntity@ pFMine, CZP_Player@ pPlayer )
@@ -253,7 +348,31 @@ void DefuseFragMine( CBaseEntity@ pFMine, CZP_Player@ pPlayer )
 
 	pFMine.SUB_Remove();
 
-	Engine.EmitSoundPosition(pWPM.entindex(), "weapons/slam/buttonclick.wav", pFMine.GetAbsOrigin(), 0.85f, 65, 105);
+	Engine.EmitSoundPosition(pWPM.entindex(), "weapons/slam/buttonclick.wav", pFMine.GetAbsOrigin(), 0.85f, 60, 105);
+	Engine.EmitSoundPosition(pWPM.entindex(), "weapons/357/357_reload3.wav", pFMine.GetAbsOrigin(), 0.9f, 70, 105);
 	
 	if ( pPlayer !is null ) pPlayer.PutToInventory( pWPM );
+}
+
+void CreateSPR( Vector vecOrigin )
+{
+	const int iR = 245;
+	const int iG = Math::RandomInt(32, 48);
+	const int iB = Math::RandomInt(32, 48);
+
+	CEntityData@ FFSpriteIPD = EntityCreator::EntityData();
+
+	FFSpriteIPD.Add("targetname", "test_sprite");
+	FFSpriteIPD.Add("model", "sprites/light_glow01.vmt");
+	FFSpriteIPD.Add("rendercolor", iR + " " + iG + " " + iB);
+	FFSpriteIPD.Add("rendermode", "5");
+	FFSpriteIPD.Add("renderamt", "240");
+	FFSpriteIPD.Add("scale", "0.1");
+	FFSpriteIPD.Add("spawnflags", "1");
+	FFSpriteIPD.Add("framerate", "0");
+
+
+	FFSpriteIPD.Add("kill", "0", true, "2.14");
+
+	EntityCreator::Create( "env_sprite", vecOrigin, QAngle(0, 0, 0), FFSpriteIPD );
 }
