@@ -233,6 +233,7 @@ void SpawnWepFragMine( CBaseEntity@ pEntity )
 	WepFragMineIPD.Add( "model", "models/cszm/weapons/w_minefrag.mdl" );
 	WepFragMineIPD.Add( "itemstate", "1" );
 	WepFragMineIPD.Add( "isimportant", "0" );
+	WepFragMineIPD.Add( "carrystate", "6" );
 	WepFragMineIPD.Add( "glowcolor", "0 128 245" );
 	WepFragMineIPD.Add( "delivername", "FragMine" );
 	WepFragMineIPD.Add( "sound_pickup", "Player.PickupWeapon" );
@@ -254,7 +255,7 @@ void FragMineThink()
 			if ( pFMine.GetTeamNumber() != pFMine.GetOwner().GetTeamNumber() || pFMine.GetOwner().IsAlive() == false )
 			{
 				pFMine.SetOwner( null );
-				pFMine.SetOutline( true, filter_team, 2, Color(245, 245, 32), 512.0f, false, true );
+				pFMine.SetOutline( true, filter_team, 2, Color(245, 245, 245), 512.0f, false, true );
 			}
 		}
 	}
@@ -275,7 +276,7 @@ void FragMineThink()
 			if ( pFMine.GetTeamNumber() != pFMine.GetOwner().GetTeamNumber() || pFMine.GetOwner().IsAlive() == false )
 			{
 				pFMine.SetOwner( null );
-				pFMine.SetOutline( true, filter_team, 2, Color(245, 245, 32), 512.0f, false, true );
+				pFMine.SetOutline( true, filter_team, 2, Color(245, 245, 245), 512.0f, false, true );
 			}
 		}
 
