@@ -727,9 +727,9 @@ HookReturnCode OnEntityCreation( const string &in strClassname, CBaseEntity@ pEn
 			DLightIPD.Add( "brightness", "4" );
 			DLightIPD.Add( "distance", "48" );
 
-			CBaseEntity @pEntTrail = EntityCreator::Create( "env_spritetrail", pEntity.GetAbsOrigin(), QAngle( 0, 0, 0 ), SPRTrailIPD );
-			CBaseEntity @pEntSprite = EntityCreator::Create( "env_sprite", pEntity.GetAbsOrigin(), QAngle( 0, 0, 0 ), SpriteIPD );
-			CBaseEntity @pDLight = EntityCreator::Create( "light_dynamic", pEntity.GetAbsOrigin(), QAngle( 0, 0, 0 ), DLightIPD );
+			CBaseEntity@ pEntTrail = EntityCreator::Create( "env_spritetrail", pEntity.GetAbsOrigin(), QAngle( 0, 0, 0 ), SPRTrailIPD );
+			CBaseEntity@ pEntSprite = EntityCreator::Create( "env_sprite", pEntity.GetAbsOrigin(), QAngle( 0, 0, 0 ), SpriteIPD );
+			CBaseEntity@ pDLight = EntityCreator::Create( "light_dynamic", pEntity.GetAbsOrigin(), QAngle( 0, 0, 0 ), DLightIPD );
 
 			pEntTrail.SetParent( pEntity );
 			pEntSprite.SetParent( pEntity );
