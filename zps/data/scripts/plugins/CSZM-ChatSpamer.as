@@ -18,7 +18,7 @@ array<string> g_strMsg =
 	strCSZM+"{default}Picked up ammo and {green}antidote{default} will respawn over a period of time.",
 	strCSZM+"{default}Zombies getting the {lime}HP Bonus{default} each death!",
 	strCSZM+"{default}Commiting suicide as zombie won't give you the {lime}Death HP Bonus{default}.",
-	strCSZM+"{default}Pick up an {green}antidote{default} to increase your resistance to {green}infection{default}."
+	strCSZM+"{default}Use an {green}antidote{default} to increase your resistance to {green}infection{default}."
 };
 
 array<bool> g_bIsShown;
