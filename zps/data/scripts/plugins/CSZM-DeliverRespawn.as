@@ -23,8 +23,6 @@ void OnPluginInit()
 	PluginData::SetVersion( "1.0" );
 	PluginData::SetAuthor( "dR.Vodker" );
 	PluginData::SetName( "CSZM - Deliver Respawn" );
-
-	Events::Entities::OnEntityCreation.Hook(@OnEntityCreationDR);
 }
 
 void OnMapInit()
@@ -158,23 +156,6 @@ void OnEntityPickedUp(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 	}
 }
 
-HookReturnCode OnEntityCreationDR(const string &in strClassname, CBaseEntity@ pEntity)
-{
-	if(pEntity.GetEntityName() == "respawn_iantidote") 
-	{
-		g_iIndex[pEntity.GetHealth()] = pEntity.entindex();
-		pEntity.SetEntityName("iantidote");
-	}
-
-	else if(pEntity.GetEntityName() == "respawn_item_adrenaline") 
-	{
-		g_iIndex[pEntity.GetHealth()] = pEntity.entindex();
-		pEntity.SetEntityName("item_adrenaline");
-	}
-
-	return HOOK_CONTINUE;
-}
-
 void SpawnItem(const int &in iID)
 {
 	if(g_strTargetname[iID] == "iantidote") SpawnAntidote(iID);
@@ -198,7 +179,7 @@ void SpawnAntidote(const int &in iID)
 {
 	CEntityData@ AntidoteIPD = EntityCreator::EntityData();
 
-	AntidoteIPD.Add("targetname", "respawn_iantidote");
+	AntidoteIPD.Add("targetname", "iantidote");
 	AntidoteIPD.Add("health", "" + iID);
 	AntidoteIPD.Add("delivername", "Antidote");
 	AntidoteIPD.Add("glowcolor", "5 250 121");
@@ -211,14 +192,16 @@ void SpawnAntidote(const int &in iID)
 
 	AntidoteIPD.Add("DisableDamageForces", "1", true);
 
-	EntityCreator::Create("item_deliver", g_vecOrigin[iID], g_angAngles[iID], AntidoteIPD);
+	CBaseEntity@ pItem = EntityCreator::Create("item_deliver", g_vecOrigin[iID], g_angAngles[iID], AntidoteIPD);
+
+	g_iIndex[iID] = pItem.entindex();
 }
 
 void SpawnAdrenaline(const int &in iID)
 {
 	CEntityData@ AdrenalineIPD = EntityCreator::EntityData();
 
-	AdrenalineIPD.Add("targetname", "respawn_item_adrenaline");
+	AdrenalineIPD.Add("targetname", "item_adrenaline");
 	AdrenalineIPD.Add("health", "" + iID);
 	AdrenalineIPD.Add("delivername", "Adrenaline");
 	AdrenalineIPD.Add("glowcolor", "5 250 121");
@@ -231,5 +214,7 @@ void SpawnAdrenaline(const int &in iID)
 
 	AdrenalineIPD.Add("DisableDamageForces", "1", true);
 
-	EntityCreator::Create("item_deliver", g_vecOrigin[iID], g_angAngles[iID], AdrenalineIPD);
+	CBaseEntity@ pItem = EntityCreator::Create("item_deliver", g_vecOrigin[iID], g_angAngles[iID], AdrenalineIPD);
+
+	g_iIndex[iID] = pItem.entindex();
 }
