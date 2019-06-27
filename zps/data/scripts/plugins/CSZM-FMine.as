@@ -213,7 +213,7 @@ void ThrowMine( const int &in iIndex, CZP_Player@ pPlayer, CBaseEntity@ pEntity 
 
 	pFragMine.SetOutline( true, filter_entity, pBaseEnt.entindex(), Color(32, 245, 64), 384.0f, false, true);
 
-	pFragMine.Teleport( Vector( pBaseEnt.EyePosition().x, pBaseEnt.EyePosition().y, pBaseEnt.EyePosition().z - 12 ), QAngle( angX, angY, angZ ), ( vecMVelocity * 225 ) );
+	pFragMine.Teleport( Vector( pBaseEnt.EyePosition().x, pBaseEnt.EyePosition().y, pBaseEnt.EyePosition().z - 12 ), QAngle( angX, angY, angZ ), pBaseEnt.GetAbsVelocity() + ( vecMVelocity * 225 ) );
 
 	Engine.EmitSoundPosition(pFragMine.entindex(), "weapons/slam/throw.wav", Vector( pBaseEnt.EyePosition().x, pBaseEnt.EyePosition().y, pBaseEnt.EyePosition().z - 12 ), 0.5f, 65, 85);
 
