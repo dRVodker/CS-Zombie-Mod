@@ -189,12 +189,6 @@ HookReturnCode OnEntityCreation( const string &in strClassname, CBaseEntity@ pEn
 {
 	if ( bIsCSZM == true )
 	{
-		if ( pEntity.GetEntityName() == "cszm_respawned_item" )
-		{
-			g_iIndex[pEntity.GetHealth()] = pEntity.entindex();
-			pEntity.SetEntityName( "" );
-		}
-
 		if ( Utils.StrContains( "weapon", strClassname ) || Utils.StrContains( "item", strClassname ) ) Engine.Ent_Fire_Ent( pEntity, "DisableDamageForces" );
 
 		if ( Utils.StrContains( "clip", strClassname ) && strClassname != "item_ammo_barricade_clip" )
@@ -303,7 +297,9 @@ void SpawnItem( const int &in iID )
 
 	ItemIPD.Add( "DisableDamageForces", "1", true );
 
-	EntityCreator::Create( g_strClassname[iID], g_vecOrigin[iID], g_angAngles[iID], ItemIPD );
+	CBaseEntity@ pItem = EntityCreator::Create( g_strClassname[iID], g_vecOrigin[iID], g_angAngles[iID], ItemIPD );
+
+	g_iIndex[iID] = pItem.entindex();
 
 	CEntityData@ SparkIPD = EntityCreator::EntityData();
 	SparkIPD.Add( "spawnflags", "896" );
