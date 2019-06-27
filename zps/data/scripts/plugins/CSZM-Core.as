@@ -906,7 +906,6 @@ void OnMatchEnded()
 	if ( bIsCSZM == true )
 	{
 		pSoloMode.SetValue( "0" );
-		bAllowZombieSpawn = false;
 
 		for ( int i = 1; i <= iMaxPlayers; i++ ) 
 		{
@@ -924,7 +923,7 @@ void AddSlowdown( const int &in iIndex, const float &in flDamage, const int &in 
 	CZP_Player@ pPlayer = ToZPPlayer( iIndex );
 
 	if ( pPlayer is null ) return;
-	if ( g_bIsWeakZombie[iIndex] == true && bSpawnWeak == true ) return;
+	if ( g_bIsWeakZombie[iIndex] == true ) return;
 
 	g_flRecoverTime[iIndex] = 0.0f;
 
