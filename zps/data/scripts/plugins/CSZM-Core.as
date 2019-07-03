@@ -179,16 +179,16 @@ void OnPluginInit()
 	if ( pInfectionRate !is null ) ConVar::Register( pInfectionRate, "ConVar_InfectionRate" ); 
 
 	//Events
-	Events::Player::OnPlayerInfected.Hook( @OnPlayerInfected );
-	Events::Player::OnPlayerConnected.Hook( @OnPlayerConnected );
-	Events::Player::OnPlayerSpawn.Hook( @OnPlayerSpawn );
-	Events::Entities::OnEntityCreation.Hook( @OnEntityCreation );
-	Events::Player::OnPlayerDamaged.Hook( @OnPlayerDamaged );
-	Events::Player::OnPlayerKilled.Hook( @OnPlayerKilled );
-	Events::Player::OnPlayerDisonnected.Hook( @OnPlayerDisonnected );
-	Events::Rounds::RoundWin.Hook( @RoundWin );
-	Events::Player::OnPlayerRagdollCreate.Hook( @OnPlayerRagdollCreate );
-	Events::Player::OnConCommand.Hook( @OnConCommand );
+	Events::Player::OnPlayerInfected.Hook( @ZMCore_OnPlayerInfected );
+	Events::Player::OnPlayerConnected.Hook( @ZMCore_OnPlayerConnected );
+	Events::Player::OnPlayerSpawn.Hook( @ZMCore_OnPlayerSpawn );
+	Events::Entities::OnEntityCreation.Hook( @ZMCore_OnEntityCreation );
+	Events::Custom::OnPlayerDamagedCustom.Hook( @ZMCore_OnPlayerDamaged );
+	Events::Player::OnPlayerKilled.Hook( @ZMCore_OnPlayerKilled );
+	Events::Player::OnPlayerDisonnected.Hook( @ZMCore_OnPlayerDisonnected );
+	Events::Rounds::RoundWin.Hook( @ZMCore_RoundWin );
+	Events::Player::OnPlayerRagdollCreate.Hook( @ZMCore_OnPlayerRagdollCreate );
+	Events::Player::OnConCommand.Hook( @ZMCore_OnConCommand );
 }
 
 void OnMapInit()
@@ -314,7 +314,7 @@ void OnMapShutdown()
 }
 
 
-HookReturnCode OnPlayerRagdollCreate( CZP_Player@ pPlayer, bool &in bHeadshot, bool &out bExploded )
+HookReturnCode ZMCore_OnPlayerRagdollCreate( CZP_Player@ pPlayer, bool &in bHeadshot, bool &out bExploded )
 {
 	CBasePlayer@ pPlrEnt = pPlayer.opCast();
 	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
@@ -324,7 +324,7 @@ HookReturnCode OnPlayerRagdollCreate( CZP_Player@ pPlayer, bool &in bHeadshot, b
 	return HOOK_CONTINUE;
 }
 
-HookReturnCode RoundWin( const string &in strMapname, RoundWinState iWinState )
+HookReturnCode ZMCore_RoundWin( const string &in strMapname, RoundWinState iWinState )
 {
 	if ( bIsCSZM == true )
 	{
@@ -348,7 +348,7 @@ HookReturnCode RoundWin( const string &in strMapname, RoundWinState iWinState )
 	return HOOK_CONTINUE;
 }
 
-HookReturnCode OnPlayerConnected( CZP_Player@ pPlayer ) 
+HookReturnCode ZMCore_OnPlayerConnected( CZP_Player@ pPlayer ) 
 {
 	if ( bIsCSZM == true )
 	{
@@ -380,7 +380,7 @@ HookReturnCode OnPlayerConnected( CZP_Player@ pPlayer )
 	return HOOK_CONTINUE;
 }
 
-HookReturnCode OnConCommand( CZP_Player@ pPlayer, CASCommand@ pArgs )
+HookReturnCode ZMCore_OnConCommand( CZP_Player@ pPlayer, CASCommand@ pArgs )
 {
 	if ( bIsCSZM == true )
 	{
@@ -431,7 +431,7 @@ HookReturnCode OnConCommand( CZP_Player@ pPlayer, CASCommand@ pArgs )
 	return HOOK_CONTINUE;
 }
 
-HookReturnCode OnPlayerSpawn( CZP_Player@ pPlayer )
+HookReturnCode ZMCore_OnPlayerSpawn( CZP_Player@ pPlayer )
 {
 	if ( bIsCSZM == true )
 	{
@@ -536,7 +536,7 @@ HookReturnCode OnPlayerSpawn( CZP_Player@ pPlayer )
 	return HOOK_CONTINUE;
 }
 
-HookReturnCode OnPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &in DamageInfo )
+HookReturnCode ZMCore_OnPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &out DamageInfo )
 {
 	if ( bIsCSZM == true )
 	{
@@ -568,7 +568,7 @@ HookReturnCode OnPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &in DamageI
 
 		if ( iVicTeam == 2 && iDamageType == 8196 && flDamage > 20 )
 		{
-			if ( g_iAntidote[iVicIndex] > 2 ) g_iAntidote[iVicIndex] = 2;
+			if ( g_iAntidote[iVicIndex] > 2 ) g_iAntidote[iVicIndex] = 1;
 			
 			if ( g_iAntidote[iVicIndex] > 0 )
 			{
@@ -579,6 +579,7 @@ HookReturnCode OnPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &in DamageI
 			}
 			else if ( g_iAntidote[iVicIndex] <= 0 )
 			{
+				DamageInfo.SetDamage( 0 );
 				g_iVictims[iAttIndex]++;
 				ShowKills( pPlrAttacker, g_iVictims[iAttIndex], true );
                 KillFeed( strAttName, iAttTeam, strVicName, iVicTeam, true, false );
@@ -593,7 +594,7 @@ HookReturnCode OnPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &in DamageI
 		
 		if ( iVicTeam == 3 && pBaseEnt.IsAlive() == true )
 		{
-			if ( pPlayer.IsCarrier() != true && flDamage > 0)
+			if ( pPlayer.IsCarrier() != true && flDamage > 0 && flDamage < pBaseEnt.GetHealth() )
 			{
 				Engine.EmitSoundEntity( pBaseEnt, "CSPlayer_Z.Pain" + g_iCVSIndex[iVicIndex] );
 				g_flIdleTime[iVicIndex] = Globals.GetCurrentTime() + Math::RandomFloat( 4.85f, 9.95f );
@@ -605,17 +606,17 @@ HookReturnCode OnPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &in DamageI
 		}
 	}
 
-	return HOOK_CONTINUE;
+	return HOOK_HANDLED;
 }
 
-HookReturnCode OnPlayerInfected( CZP_Player@ pPlayer, InfectionState iState )
+HookReturnCode ZMCore_OnPlayerInfected( CZP_Player@ pPlayer, InfectionState iState )
 {
 	if ( iState != state_none && bIsCSZM == true ) pPlayer.SetInfection( false, 0.0f );
 
-	return HOOK_CONTINUE;
+	return HOOK_HANDLED;
 }
 
-HookReturnCode OnPlayerKilled( CZP_Player@ pPlayer, CTakeDamageInfo &in DamageInfo ) 
+HookReturnCode ZMCore_OnPlayerKilled( CZP_Player@ pPlayer, CTakeDamageInfo &in DamageInfo ) 
 {
 	if ( bIsCSZM == true )
 	{
@@ -672,7 +673,7 @@ HookReturnCode OnPlayerKilled( CZP_Player@ pPlayer, CTakeDamageInfo &in DamageIn
 	return HOOK_CONTINUE;
 }
 
-HookReturnCode OnPlayerDisonnected( CZP_Player@ pPlayer )
+HookReturnCode ZMCore_OnPlayerDisonnected( CZP_Player@ pPlayer )
 {
 	if ( bIsCSZM == true )
 	{
@@ -692,7 +693,7 @@ HookReturnCode OnPlayerDisonnected( CZP_Player@ pPlayer )
 	return HOOK_CONTINUE;
 }
 
-HookReturnCode OnEntityCreation( const string &in strClassname, CBaseEntity@ pEntity )
+HookReturnCode ZMCore_OnEntityCreation( const string &in strClassname, CBaseEntity@ pEntity )
 {
 	if ( bIsCSZM == true )
 	{
