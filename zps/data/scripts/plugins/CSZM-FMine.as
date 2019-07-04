@@ -94,7 +94,7 @@ void OnProcessRound()
 					Globals.AngleVectors( pBaseEnt.EyeAngles(), Forward );
 
 					StartPos = pBaseEnt.EyePosition() + Forward * 32;
-					EndPos = StartPos + Forward * 48;
+					EndPos = StartPos + Forward * 40;
 
 					CGameTrace trace;
 
@@ -238,6 +238,7 @@ void SpawnWepFragMine( CBaseEntity@ pEntity )
 	WepFragMineIPD.Add( "delivername", "FragMine" );
 	WepFragMineIPD.Add( "sound_pickup", "Player.PickupWeapon" );
 	WepFragMineIPD.Add( "printname", "vgui/images/fragmine" );
+	WepFragMineIPD.Add( "weight", "5" );
 
 	CBaseEntity@ pWPM = EntityCreator::Create("item_deliver", pEntity.GetAbsOrigin(), pEntity.GetAbsAngles(), WepFragMineIPD);
 
@@ -354,7 +355,7 @@ void DefuseFragMine( CBaseEntity@ pFMine, CZP_Player@ pPlayer )
 	
 	if ( pPlayer !is null ) pPlayer.PutToInventory( pWPM );
 }
-
+/*
 void CreateSPR( Vector vecOrigin )
 {
 	const int iR = 245;
@@ -377,3 +378,4 @@ void CreateSPR( Vector vecOrigin )
 
 	EntityCreator::Create( "env_sprite", vecOrigin, QAngle(0, 0, 0), FFSpriteIPD );
 }
+*/
