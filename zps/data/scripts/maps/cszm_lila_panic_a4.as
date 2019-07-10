@@ -38,7 +38,8 @@ array<string> g_strClassnames =
 	"item_ammo_shotgun", //16
 	"item_ammo_revolver", //17
 	"item_pills", //18
-	"item_healthkit" //19
+	"item_healthkit", //19
+	"item_armor" //20
 };
 
 //Other Data (Don't even touch this)
@@ -231,8 +232,9 @@ void PropsHP()
 		
 		else if("phys_cars" == pEntity.GetEntityName())
 		{
-			pEntity.SetMaxHealth(999999);
-			pEntity.SetHealth(999999);
+			pEntity.SetEntityName( "unbrk_cars" );
+//			pEntity.SetMaxHealth(999999);
+//			pEntity.SetHealth(999999);
 		}
 		
 		else
@@ -301,7 +303,7 @@ void RandomizePropCrate()
 				}
 				else if(iRND_Type > 8)
 				{
-					iRND_Class = Math::RandomInt(18, 19);
+					iRND_Class = Math::RandomInt(18, 20);
 					iRND_Count = Math::RandomInt(1, 3);		//Amout of adrenaline and antidote
 				}
 				
