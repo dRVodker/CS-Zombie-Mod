@@ -87,8 +87,9 @@ void PropsSettings()
 		}
 		else if(Utils.StrContains("bluebarrel001", pEntity.GetModelName()) || Utils.StrContains("Wheebarrow01a", pEntity.GetModelName()) || Utils.StrContains("trashdumpster01a", pEntity.GetModelName()))
 		{
-			pEntity.SetMaxHealth(99999);
-			pEntity.SetHealth(99999);
+			pEntity.SetEntityName( "unbrk" );
+//			pEntity.SetMaxHealth(99999);
+//			pEntity.SetHealth(99999);
 		}
 		else
 		{
