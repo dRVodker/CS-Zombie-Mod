@@ -15,7 +15,7 @@ void MovePlrToSpec( CBaseEntity@ pEntPlr )
 {
 	pEntPlr.ChangeTeam( 0 );
 	CZP_Player@ pPlayer = ToZPPlayer( pEntPlr);
-	pPlayer.ForceRespawn();
+	pPlayer.ConsoleCommand("choose3");
 }
 
 int CountPlrs( const int &in iTeamNum )
