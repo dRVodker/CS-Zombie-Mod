@@ -177,6 +177,8 @@ void SpawnAdrenaline( CBaseEntity@ pEntity )
 	AdrenalineIPD.Add( "printname", "vgui/images/adrenaline" );
 	AdrenalineIPD.Add( "sound_pickup", "Deliver.PickupGeneric" );
 	AdrenalineIPD.Add( "weight", "0" );
+	
+	AdrenalineIPD.Add( "DisableDamageForces", "0", true );
 
 	EntityCreator::Create( "item_deliver", pEntity.GetAbsOrigin(), pEntity.GetAbsAngles(), AdrenalineIPD );
 
