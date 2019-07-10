@@ -1,9 +1,5 @@
 //some data
-int iMaxPlayers;
 bool bIsCSZM = false;
-
-array<int> g_iEntIndex;
-array<int> g_iPropHP;
 
 array<string> g_strEntities = 
 {
@@ -18,9 +14,9 @@ array<string> g_strEntities =
 	"prop_barricade" //8
 };
 
-void SD(const string &in strMSG)
+void SD( const string &in strMSG )
 {
-	Chat.PrintToChat(all, strMSG);
+	Chat.PrintToChat( all, strMSG );
 }
 
 void OnPluginInit()
@@ -30,118 +26,107 @@ void OnPluginInit()
 	PluginData::SetName( "CSZM - Show HP of Breakables" );
 
 	//Events
-	Events::Player::OnPlayerConnected.Hook(@OnPlayerConnected);
+	Events::Custom::OnEntityDamaged.Hook( @CSZM_OnEntDamaged );
 }
 
 void OnMapInit()
 {	
-	if(Utils.StrContains("cszm", Globals.GetCurrentMapName()))
-	{	
-		bIsCSZM = true;
-		iMaxPlayers = Globals.GetMaxClients();
-		
-		g_iPropHP.resize(iMaxPlayers + 1);
-		g_iEntIndex.resize(iMaxPlayers + 1);
-
-		//Entities
-		RegisterDamaged();
-	}
+	if( Utils.StrContains( "cszm", Globals.GetCurrentMapName() ) ) bIsCSZM = true;
 }
 
-void OnMapShutdown()
+HookReturnCode CSZM_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out DamageInfo )
 {
-	if(bIsCSZM == true)
+	if ( bIsCSZM == false ) return HOOK_HANDLED;
+
+	bool bIsUnbreakable = false; 
+
+	if ( Utils.StrContains( "unbrk", pEntity.GetEntityName() ) || Utils.StrContains( "unbreakable", pEntity.GetEntityName() ) ) bIsUnbreakable = true;
+
+	//Show HP
+	CBaseEntity@ pAttacker = DamageInfo.GetAttacker();
+	if ( pAttacker.IsPlayer() && pAttacker.GetTeamNumber() == 3 && bIsUnbreakable != true )
 	{
-		bIsCSZM = false;
+		int iSlot = pAttacker.entindex();
+		bool bIsValid = false;
 
-		RemoveRegisterDamaged();
-	}
-}
-
-void RegisterDamaged()
-{
-	for(uint i = 0; i <= g_strEntities.length(); i++)
-	{
-		Entities::RegisterDamaged(g_strEntities[i]);
-	}
-}
-
-void RemoveRegisterDamaged()
-{
-	for(uint i = 0; i <= g_strEntities.length(); i++)
-	{
-		Entities::RemoveRegisterDamaged(g_strEntities[i]);
-	}
-}
-
-HookReturnCode OnPlayerConnected(CZP_Player@ pPlayer) 
-{
-	if(bIsCSZM == true)
-	{
-		CBasePlayer@ pPlrEnt = pPlayer.opCast();
-		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
-			
-		g_iPropHP[pBaseEnt.entindex()] = 0;
-		g_iEntIndex[pBaseEnt.entindex()] = 0;
-	}
-
-	return HOOK_CONTINUE;
-}
-
-void OnEntityDamaged(CBaseEntity@ pAttacker, CBaseEntity@ pEntity)
-{	
-	if(bIsCSZM == true)
-	{
-		if(pAttacker.GetTeamNumber() == 3)
+		for ( uint i = 0; i < g_strEntities.length(); i++ )
 		{
-			g_iPropHP[pAttacker.entindex()] = pEntity.GetHealth();
-			g_iEntIndex[pAttacker.entindex()] = pEntity.entindex();
-			Schedule::Task(0.001f, "ShowHPLeft");
+			if ( bIsValid ) continue;
+			if ( Utils.StrEql( pEntity.GetClassname(), g_strEntities[i] ) ) bIsValid = true;
+		}
+
+		if ( bIsValid )
+		{
+			bool bLeft = false;
+			float flDMG = DamageInfo.GetDamage();
+			float flHP = pEntity.GetHealth();
+			float flResult = flHP - flDMG;
+
+			if ( flDMG > 0 ) bLeft = true;
+
+			if ( flResult > 0 ) ShowHP( ToBasePlayer( iSlot ), int( flResult ), bLeft, false );
+			else ShowHP( ToBasePlayer( iSlot ), int( flResult ), bLeft, true );
 		}
 	}
-}
 
-void ShowHPLeft()
-{
-	CBaseEntity@ pEntity;
-	
-	for(int i = 1; i <= iMaxPlayers; i++)
+	//Other stuff
+	if ( Utils.StrContains( "physics", pEntity.GetClassname() ) )
 	{
-		CZP_Player@ pPlayer = ToZPPlayer(i);
-				
-		if(pPlayer is null) continue;
-			
-		CBasePlayer@ pPlrEnt = pPlayer.opCast();
-		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
-		
-		if(g_iEntIndex[i] > 0 && pBaseEnt.GetTeamNumber() == 3)
+		string MDLName = pEntity.GetModelName();
+		int DMGType = DamageInfo.GetDamageType();
+		float DMG = DamageInfo.GetDamage();
+		if ( pAttacker.IsPlayer() && pAttacker.GetTeamNumber() == 2 )
 		{
-			for(uint ui = 0; ui <= g_strEntities.length(); ui++)
+			if ( DMGType == ( 1<<12 ) + ( 1<<23 ) + ( 1<<1 ) || DMGType == ( 1<<13 ) + ( 1<<23 ) + ( 1<<1 ) || DMGType == ( 1<<12 ) + (1<<29) + ( 1<<23 ) + ( 1<<1 ) )
 			{
-				while ((@pEntity = FindEntityByClassname(pEntity, g_strEntities[ui])) !is null)
-				{
-					if(pEntity.entindex() == g_iEntIndex[i])
-					{
-						ValidEntity(i, pEntity, pPlrEnt);
-					}
-				}
+				if ( 
+					Utils.StrContains( "propanecanister001a", MDLName ) ||
+					Utils.StrContains( "oildrum001_explosive", MDLName ) ||
+					Utils.StrContains( "propane_tank001a", MDLName ) ||
+					Utils.StrContains( "gascan001a", MDLName ) ) return HOOK_HANDLED;
+				
+				DamageInfo.SetDamage( DMG * 0.021f );
 			}
 		}
 	}
+
+	//Break "prop_itemcrate" if punt
+	if ( Utils.StrEql( pEntity.GetClassname(), "prop_itemcrate" ) && DamageInfo.GetDamageType() == (1<<23) )
+	{
+		DamageInfo.SetDamageType( 1<<13 );
+		DamageInfo.SetDamage( pEntity.GetHealth() );
+		return HOOK_HANDLED;
+	}
+
+	//50% of damage resist for "prop_barricade"
+	if ( Utils.StrEql( pEntity.GetClassname(), "prop_barricade" ) )
+	{
+		DamageInfo.SetDamage( DamageInfo.GetDamage() * 0.5f );
+		return HOOK_HANDLED;
+	}
+
+	//Don't deal any damage if unbreakable
+	if ( bIsUnbreakable )
+	{
+		DamageInfo.SetDamageType( 1<<23 );
+		DamageInfo.SetDamage( 0 );
+		return HOOK_HANDLED;
+	}
+
+	return HOOK_HANDLED;
 }
 
-void ValidEntity(const int &in i, CBaseEntity@ pEntity, CBasePlayer@ pPlrEnt)
+void ShowHP( CBasePlayer@ pBasePlayer, const int &in iHP, const bool &in bLeft, const bool &in bHide )
 {
-	if(g_iPropHP[i] == pEntity.GetHealth()) 
+	if ( bHide )
 	{
-		Chat.CenterMessagePlayer(pPlrEnt, pEntity.GetHealth() + " HP");
-		g_iEntIndex[i] = 0;
-		g_iPropHP[i] = 0;
+		Chat.CenterMessagePlayer( pBasePlayer, "" );
+		return;
 	}
 	else
 	{
-		Chat.CenterMessagePlayer(pPlrEnt, pEntity.GetHealth() + " HP Left");
-		g_iEntIndex[i] = 0;
-		g_iPropHP[i] = 0;
+		string strLeft = "";
+		if ( bLeft ) strLeft = " Left";
+		Chat.CenterMessagePlayer( pBasePlayer, iHP + " HP" + strLeft );
 	}
 }
