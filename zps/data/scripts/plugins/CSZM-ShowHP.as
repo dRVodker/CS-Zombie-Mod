@@ -1,4 +1,9 @@
 //some data
+void SD( const string &in strMSG )
+{
+	Chat.PrintToChat( all, strMSG );
+}
+
 bool bIsCSZM = false;
 
 array<string> g_strEntities = 
@@ -14,10 +19,8 @@ array<string> g_strEntities =
 	"prop_barricade" //8
 };
 
-void SD( const string &in strMSG )
-{
-	Chat.PrintToChat( all, strMSG );
-}
+array<int> g_PhysTPIndex;
+array<int> g_PhysTPOwner;
 
 void OnPluginInit()
 {
@@ -27,6 +30,7 @@ void OnPluginInit()
 
 	//Events
 	Events::Custom::OnEntityDamaged.Hook( @CSZM_OnEntDamaged );
+	Events::Custom::OnPlayerDamagedCustom.Hook( @CSZM_OnPlrDamaged );
 }
 
 void OnMapInit()
@@ -34,16 +38,58 @@ void OnMapInit()
 	if( Utils.StrContains( "cszm", Globals.GetCurrentMapName() ) ) bIsCSZM = true;
 }
 
+void OnMapShutdown()
+{
+	if ( bIsCSZM == true )
+	{
+		bIsCSZM = false;
+		OnNewRound();	
+	}
+}
+
+void OnNewRound()
+{
+	g_PhysTPIndex.removeRange( 0, g_PhysTPIndex.length() );
+	g_PhysTPOwner.removeRange( 0, g_PhysTPOwner.length() );
+}
+
+HookReturnCode CSZM_OnPlrDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &out DamageInfo )
+{
+	CBaseEntity@ pAttacker = DamageInfo.GetAttacker();
+	CBasePlayer@ pPlrEnt = pPlayer.opCast();
+	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+
+	if ( Utils.StrContains( "physics", pAttacker.GetClassname() ) || Utils.StrContains( "physbox", pAttacker.GetClassname() ) )
+	{
+		for ( uint i = 0; i < g_PhysTPIndex.length(); i++ )
+		{
+			if ( pAttacker.entindex() == g_PhysTPIndex[i] )
+			{
+				CBaseEntity@ pNewAttacker = FindEntityByEntIndex( g_PhysTPOwner[i] );
+				if ( pNewAttacker !is null ) 
+				{
+					DamageInfo.SetInflictor( pNewAttacker );
+					DamageInfo.SetAttacker( pNewAttacker );
+				}
+			}
+		}
+
+		return HOOK_HANDLED;
+	}
+	
+	return HOOK_HANDLED;
+}
+
 HookReturnCode CSZM_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out DamageInfo )
 {
 	if ( bIsCSZM == false ) return HOOK_HANDLED;
 
+	CBaseEntity@ pAttacker = DamageInfo.GetAttacker();
 	bool bIsUnbreakable = false; 
 
 	if ( Utils.StrContains( "unbrk", pEntity.GetEntityName() ) || Utils.StrContains( "unbreakable", pEntity.GetEntityName() ) ) bIsUnbreakable = true;
 
 	//Show HP
-	CBaseEntity@ pAttacker = DamageInfo.GetAttacker();
 	if ( pAttacker.IsPlayer() && pAttacker.GetTeamNumber() == 3 && bIsUnbreakable != true )
 	{
 		int iSlot = pAttacker.entindex();
@@ -70,6 +116,34 @@ HookReturnCode CSZM_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out Dam
 	}
 
 	//Other stuff
+	if ( Utils.StrContains( "physics", pEntity.GetClassname() ) || Utils.StrContains( "physbox", pEntity.GetClassname() ) )
+	{
+		if ( pAttacker.IsPlayer() )
+		{
+			int iIndex = pEntity.entindex();
+			bool bIsIndexValid = false;
+
+			if ( g_PhysTPIndex.length() > 0 )
+			{
+				for ( uint i = 0; i < g_PhysTPIndex.length(); i++ )
+				{
+					if ( bIsIndexValid ) continue;
+
+					if ( iIndex == g_PhysTPIndex[i] )
+					{
+						 bIsIndexValid = true;
+						g_PhysTPOwner[i] = pAttacker.entindex();
+					}
+				}
+			}
+			if ( bIsIndexValid == false )
+			{
+				g_PhysTPIndex.insertLast( iIndex );
+				g_PhysTPOwner.insertLast( pAttacker.entindex() );
+			}
+		}
+	}
+
 	if ( Utils.StrContains( "physics", pEntity.GetClassname() ) )
 	{
 		string MDLName = pEntity.GetModelName();
@@ -108,7 +182,6 @@ HookReturnCode CSZM_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out Dam
 	//Don't deal any damage if unbreakable
 	if ( bIsUnbreakable )
 	{
-		DamageInfo.SetDamageType( 1<<23 );
 		DamageInfo.SetDamage( 0 );
 		return HOOK_HANDLED;
 	}
