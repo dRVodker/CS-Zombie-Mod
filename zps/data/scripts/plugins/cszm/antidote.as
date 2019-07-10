@@ -114,6 +114,8 @@ void SpawnAntidote(CBaseEntity@ pEntity)
 	AntidoteIPD.Add("sound_pickup", "Deliver.PickupGeneric");
 	AntidoteIPD.Add("weight", "0");
 
+	AntidoteIPD.Add( "DisableDamageForces", "0", true );
+
 	EntityCreator::Create("item_deliver", pEntity.GetAbsOrigin(), pEntity.GetAbsAngles(), AntidoteIPD);
 
 	pEntity.SUB_Remove();
