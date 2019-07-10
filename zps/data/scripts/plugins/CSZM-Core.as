@@ -25,7 +25,6 @@ int iDoorsState;
 bool bIsCSZM;							//Is CSZM available? ( Depends on a map )
 
 bool bSpawnWeak = true;
-bool bAllowCD;
 bool bAllowZombieSpawn;
 bool bAllowAddTime = true;				//Allow add time for successful infection
 bool bWarmUp = true;
@@ -56,7 +55,7 @@ array<float> g_flRecoverTime;
 
 //Other Consts
 const float flHPRDelay = 0.42f;									//Amount of time you have to wait to start HP Regeneration. ( Custom HP Regeneration )
-const float flSpawnDelay = 5.00f;								//Zombies spawn delay.
+const float flSpawnDelay = 5.0f;								//Zombies spawn delay.
 const int iFirstInfectedHPMult = 125;							//HP multiplier of first infected.
 const int iZombieMaxHP = 200;									//Additional HP to Max Health of a zombie.
 const int iWeakZombieHP = 125;									//Health of the weak zombies
@@ -67,15 +66,11 @@ const int iInfectDelay = 2;										//Amount of rounds you have to wait to be t
 const int iWUTime = 10;											//Time of the warmup in seconds.		( default value is 76 )
 
 //New Consts
-const bool bAllowTimeHP = true;									//Allow Time HP Bonus
-const float flBlockZSTime = 45.00f;								//Amount of time in seconds which abusers must wait to join the zombie team.
-const float flCSDDivider = 4.00f;								//Damage Slowdown divider of the carrier.
-const float flFISDDivider = 1.85f;								//Damage Slowdown divider of the first infected.
+const float flWeakZombieTime = 45.0f;								
 const int iSubtractDeath = 2;									//Amount of units subtract from the death counter
 const int iInfectionATSec = 15;									//Amount of time in seconds add to the round time in case of successful infection
 const int iCarrierMaxHP = 0;									//Additional HP to Max Health of the carrier.	( Currently equal 0 because the carrier is too OP )
 const int iDHPBonus = 100;										//Multiplier of death hp bonus.
-const int iTHPBonus = 45;										//Multiplier of time hp bonus.
 const int iMaxDeath = 7;										//Maximum amount of death to boost up the max health.
 const int iRoundTime = 300;										//Round time in seconds.
 const int iFullRoundTime = iRoundTime + iGearUpTime;			//Round time in seconds.
@@ -145,6 +140,7 @@ float flWUWait;
 float flShowSeconds;
 float flShowMinutes;
 float flShowHours;
+float flWeakZombieWait;
 
 #include "./cszm/misc.as"
 
@@ -193,6 +189,9 @@ void OnMapInit()
 	{
 		Log.PrintToServerConsole( LOGTYPE_INFO, "CSZM", "[CSZM] Current map is valid for 'Counter-Strike Zombie Mode'" );
 		bIsCSZM = true;
+		flWeakZombieWait = 0;
+		flRTWait = 0;
+		flWUWait = 0;
 
 		Engine.EnableCustomSettings( true );
 		
@@ -256,6 +255,10 @@ void OnMapShutdown()
 		iFZIndex = 0;
 		iWUSeconds = iWUTime;
 
+		flWeakZombieWait = 0;
+		flRTWait = 0;
+		flWUWait = 0;
+
 		iHumanWin = 0;
 		iZombieWin = 0;
 		
@@ -263,7 +266,6 @@ void OnMapShutdown()
 		Entities::RemoveRegisterUse( "item_deliver" );
 		Entities::RemoveRegisterDrop( "item_deliver" );
 		
-		bAllowCD = false;
 		bSpawnWeak = true;
 		bAllowZombieSpawn = false;
 		bWarmUp = true;
@@ -304,7 +306,6 @@ HookReturnCode CSZM_RoundWin( const string &in strMapname, RoundWinState iWinSta
 {
 	if ( bIsCSZM == true )
 	{
-		bAllowCD = false;
 
 		flRTWait = 0;
 		ShowTimer( 10.25f );
@@ -318,7 +319,7 @@ HookReturnCode CSZM_RoundWin( const string &in strMapname, RoundWinState iWinSta
 		string strHW = "\n  Humans Win - " + iHumanWin;
 		string strZW = "\n  Zombies Win - " + iZombieWin;
 		
-		SendGameText( any, "-=Win Counter=-" + strHW + strZW, 4, 0.00f, 0, 0.35f, 0.25f, 0.00f, 10.10f, Color( 235, 235, 235 ), Color( 255, 95, 5 ) );
+		SendGameText( any, "-=Win Counter=-" + strHW + strZW, 4, 0.0f, 0, 0.35f, 0.25f, 0.0f, 10.10f, Color( 235, 235, 235 ), Color( 255, 95, 5 ) );
 
 		return HOOK_HANDLED;
 	}
@@ -394,21 +395,33 @@ HookReturnCode CSZM_OnConCommand( CZP_Player@ pPlayer, CASCommand@ pArgs )
 		{
 			if ( Utils.StrEql( "choose1", pArgs.Arg( 0 ) ) || Utils.StrEql( "choose2", pArgs.Arg( 0 ) ) )
 			{
-				if ( bAllowZombieSpawn == false && pBaseEnt.GetTeamNumber() == 0 )
+				if ( pBaseEnt.GetTeamNumber() == 0 )
 				{
-					if ( g_bIsAbuser[pBaseEnt.entindex()] )
+					if ( bAllowZombieSpawn == false )
 					{
-						Chat.PrintToChatPlayer( pPlrEnt, strCannotJoinGame );
-						MovePlrToSpec( pBaseEnt );
-						return HOOK_HANDLED;
+						if ( g_bIsAbuser[pBaseEnt.entindex()] )
+						{
+							Chat.PrintToChatPlayer( pPlrEnt, strCannotJoinGame );
+							Engine.EmitSoundPlayer( pPlayer, "common/wpn_denyselect.wav" );
+							return HOOK_HANDLED;
+						}
+
+						if ( g_bIsAbuser[pBaseEnt.entindex()] != true )
+						{
+							pBaseEnt.ChangeTeam( 2 );
+							pPlayer.ForceRespawn();
+							pPlayer.SetHudVisibility( true );
+							return HOOK_HANDLED;
+						}
 					}
-					else 
+
+					else if ( g_bIsAbuser[pBaseEnt.entindex()] )
 					{
-						pBaseEnt.ChangeTeam( 2 );
+						pBaseEnt.ChangeTeam( 3 );
 						pPlayer.ForceRespawn();
 						pPlayer.SetHudVisibility( true );
+						return HOOK_HANDLED;
 					}
-					return HOOK_HANDLED;
 				}
 			}
 		}
@@ -477,7 +490,8 @@ HookReturnCode CSZM_OnPlayerSpawn( CZP_Player@ pPlayer )
 			{				
 				Chat.PrintToChatPlayer( pBaseEnt, strCannotJoinZT0 );
 				MovePlrToSpec( pBaseEnt );
-					
+				Engine.EmitSoundPlayer( pPlayer, "common/wpn_denyselect.wav" );
+
 				return HOOK_HANDLED;
 			}
 			
@@ -634,7 +648,7 @@ HookReturnCode CSZM_OnPlayerKilled( CZP_Player@ pPlayer, CTakeDamageInfo &in Dam
 		if ( g_bIsVolunteer[iVicIndex] == true ) g_bIsVolunteer[iVicIndex] = false;
 		if ( g_bIsFirstInfected[iVicIndex] == true ) g_bIsFirstInfected[iVicIndex] = false;
 
-		if ( iVicTeam == 2 && iSeconds >= iRoundTime ) g_bIsAbuser[iVicIndex] = true;
+		if ( iVicTeam == 2 && bSpawnWeak ) g_bIsAbuser[iVicIndex] = true;
 
 		if ( iFZIndex == iVicIndex ) iFZIndex = 0;
 		
@@ -738,6 +752,7 @@ void OnProcessRound()
 	{
 		if ( flRTWait != 0 && flRTWait <= Globals.GetCurrentTime() ) RoundTimer();
 		if ( flWUWait != 0 && flWUWait <= Globals.GetCurrentTime() ) WarmUpTimer();
+		if ( flWeakZombieWait != 0 && flWeakZombieWait <= Globals.GetCurrentTime() ) bSpawnWeak = false;
 
 		RoundManager.SetCurrentRoundTime( 300.f + Globals.GetCurrentTime() );
 		RoundManager.SetZombieLives( 32 );
@@ -784,7 +799,7 @@ void OnProcessRound()
 					switch( g_iCVSIndex[i] )
 					{
 						case 2:
-							g_flIdleTime[i] = Globals.GetCurrentTime() + Math::RandomFloat( 3.00f, 6.65f );
+							g_flIdleTime[i] = Globals.GetCurrentTime() + Math::RandomFloat( 3.0f, 6.65f );
 						break;
 						
 						case 3:
@@ -815,12 +830,12 @@ void OnNewRound()
 {
 	if ( bIsCSZM == true )
 	{
-		bAllowCD = false;
 		bSpawnWeak = true;
 		bAllowZombieSpawn = false;
 		iFZIndex = 0;
 		flRTWait = 0;
-		flWUWait= 0;
+		flWUWait = 0;
+		flWeakZombieWait = 0;
 		
 		for ( int i = 1; i <= iMaxPlayers; i++ ) 
 		{
@@ -872,8 +887,6 @@ void OnMatchBegin()
 
 void LocknLoad()
 {
-	if ( bAllowCD != true ) bAllowCD = true;
-	
 	flRTWait = Globals.GetCurrentTime();
 	
 	RoundManager.SetRounds( 10 );
@@ -886,6 +899,15 @@ void LocknLoad()
 	ShowChatMsg( strRoundBegun, 2 );
 
 	DecideFirstInfected();
+
+	for( int i = 1; i <= iMaxPlayers; i++ )
+	{
+		CBaseEntity@ pEntPlayer = FindEntityByEntIndex( i );
+
+		if ( pEntPlayer is null ) continue;
+
+		if ( pEntPlayer.GetTeamNumber() == 2 && g_iInfectDelay[i] > 0 ) g_iInfectDelay[i]--;
+	}
 }
 
 void OnMatchEnded() 
@@ -950,7 +972,7 @@ int ChooseVictim()
 		
 		if ( pPlrEntity is null ) continue;
 		
-		if ( g_bWasFirstInfected[i] == false && pPlrEntity.IsAlive() == true && g_iInfectDelay[i] < 2 )
+		if ( g_bWasFirstInfected[i] == false && pPlrEntity.IsAlive() == true && pPlrEntity.GetTeamNumber() == 2 && g_iInfectDelay[i] < 2 )
 		{
 			iCount++;
 			p_VictimIndex.insertLast( i );
@@ -1206,6 +1228,11 @@ void AddTime( const int &in iTime )
 
 void TurnFirstInfected()
 {
+	int iSurvCount = Utils.GetNumPlayers( survivor, true );
+	if ( iSurvCount < 4 ) iSurvCount = 4;
+	iFirstInfectedHP = iFirstInfectedHPMult * iSurvCount;
+	flWeakZombieWait = Globals.GetCurrentTime() + flWeakZombieTime;
+
 	if ( iFZIndex == 0 )
 	{
 		CZP_Player@ pVictim = GetRandomPlayer( survivor, true );
@@ -1216,10 +1243,6 @@ void TurnFirstInfected()
 	}
 	else
 	{
-		int iSurvCount = Utils.GetNumPlayers( survivor, true );
-		if ( iSurvCount < 4 ) iSurvCount = 4;
-		iFirstInfectedHP = iFirstInfectedHPMult * iSurvCount;
-
 		int iInfDelay = 1;
 		if ( g_bIsVolunteer[iFZIndex] ) iInfDelay = iInfectDelay;
 		g_bIsFirstInfected[iFZIndex] = true;
@@ -1422,7 +1445,7 @@ void WarmUpTimer()
 		flWUWait = Globals.GetCurrentTime() + 1.0f;
 
 		string TimerText = "\n\n\n"+strWarmUp+"\n| "+iWUSeconds+" |";
-		SendGameText( any, TimerText, 1, 0.00f, -1, 0.00f, 0.00f, 0.00f, 1.10f, Color( 255, 175, 85 ), Color( 255, 95, 5 ) );
+		SendGameText( any, TimerText, 1, 0.0f, -1, 0.0f, 0.0f, 0.0f, 1.10f, Color( 255, 175, 85 ), Color( 255, 95, 5 ) );
 
 		if ( iWUSeconds == 0 ) WarmUpEnd();
 
@@ -1432,7 +1455,7 @@ void WarmUpTimer()
 	{
 		flWUWait = 0;
 		iWUSeconds = iWUTime;
-		SendGameText( any, strAMP, 1, 0.00f, -1, 0.00f, 0.00f, 0.00f, 600.00f, Color( 255, 255, 255 ), Color( 255, 95, 5 ) );
+		SendGameText( any, strAMP, 1, 0.0f, -1, 0.0f, 0.0f, 0.0f, 600.0f, Color( 255, 255, 255 ), Color( 255, 95, 5 ) );
 	}
 }
 
@@ -1445,28 +1468,28 @@ void WarmUpEnd()
 	Engine.EmitSound( "@buttons/button3.wav" );
 	
 	string TimerText = "\n\n\n"+strWarmUp+"\n| 0 |";
-	SendGameText( any, TimerText, 1, 0.00f, -1, 0.00f, 0.00f, 0.35f, 0.05f, Color( 255, 175, 85 ), Color( 255, 95, 5 ) );
+	SendGameText( any, TimerText, 1, 0.0f, -1, 0.0f, 0.0f, 0.35f, 0.05f, Color( 255, 175, 85 ), Color( 255, 95, 5 ) );
 
-	SendGameText( any, "", 3, 0.00f, 0.00f, 0.00f, 0.00f, 0.00f, 0.00f, Color( 0, 0, 0 ), Color( 0, 0, 0 ) );
+	SendGameText( any, "", 3, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, Color( 0, 0, 0 ), Color( 0, 0, 0 ) );
 
-	SendGameText( any, strHintF1, 3, 0.00f, 0.05f, 0.10f, 0.00f, 2.00f, 120.00f, Color( 64, 128, 255 ), Color( 255, 95, 5 ) );
-	SendGameText( any, "\n\n" + strHintF3, 4, 0.00f, 0.05f, 0.085f, 0.00f, 2.00f, 120.00f, Color( 255, 255, 255 ), Color( 255, 95, 5 ) );
+	SendGameText( any, strHintF1, 3, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color( 64, 128, 255 ), Color( 255, 95, 5 ) );
+	SendGameText( any, "\n\n" + strHintF3, 4, 0.0f, 0.05f, 0.085f, 0.0f, 2.0f, 120.0f, Color( 255, 255, 255 ), Color( 255, 95, 5 ) );
 }
 
 void lobby_hint( CZP_Player@ pPlayer )
 {
-	SendGameTextPlayer( pPlayer, strHintF1, 3, 0.00f, 0.05f, 0.10f, 0.00f, 2.00f, 120.00f, Color( 64, 128, 255 ), Color( 255, 95, 5 ) );
-	SendGameTextPlayer( pPlayer, "\n\n" + strHintF3, 4, 0.00f, 0.05f, 0.085f, 0.00f, 2.00f, 120.00f, Color( 255, 255, 255 ), Color( 255, 95, 5 ) );
+	SendGameTextPlayer( pPlayer, strHintF1, 3, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color( 64, 128, 255 ), Color( 255, 95, 5 ) );
+	SendGameTextPlayer( pPlayer, "\n\n" + strHintF3, 4, 0.0f, 0.05f, 0.085f, 0.0f, 2.0f, 120.0f, Color( 255, 255, 255 ), Color( 255, 95, 5 ) );
 }
 
 void lobby_hint_wu( CZP_Player@ pPlayer )
 {
-	SendGameTextPlayer( pPlayer, strHintF4WU, 3, 0.00f, 0.05f, 0.10f, 0.00f, 2.00f, 120.00f, Color( 64, 255, 128 ), Color( 255, 95, 5 ) );
+	SendGameTextPlayer( pPlayer, strHintF4WU, 3, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color( 64, 255, 128 ), Color( 255, 95, 5 ) );
 }
 
 void spec_hint( CZP_Player@ pPlayer )
 {
-	SendGameTextPlayer( pPlayer, strHintF4, 3, 0.00f, 0.05f, 0.10f, 0.00f, 2.00f, 15.00f, Color( 64, 255, 128 ), Color( 255, 95, 5 ) );
+	SendGameTextPlayer( pPlayer, strHintF4, 3, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 15.0f, Color( 64, 255, 128 ), Color( 255, 95, 5 ) );
 }
 
 void PutPlrToLobby( CBaseEntity@ pEntPlayer )
