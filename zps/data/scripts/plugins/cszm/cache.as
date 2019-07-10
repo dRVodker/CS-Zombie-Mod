@@ -29,10 +29,13 @@ void CacheModels()
 
 void CacheSounds()
 {
-    //Antidote PickUp
+    //Antidote PickUp Sound
     Engine.PrecacheFile(sound, "items/smallmedkit1.wav");
 
-    //Boom HeadShot
+    //Deny Choose/Spawn Sound
+    Engine.PrecacheFile(sound, "common/wpn_denyselect.wav");
+
+    //Boom HeadShot Sound
     Engine.PrecacheFile(sound, ")impacts/flesh_impact_headshot-01.wav");
 	
 	//Item Respawn Sound
