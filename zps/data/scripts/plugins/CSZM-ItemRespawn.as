@@ -32,11 +32,11 @@ array<string> g_strAllowedCN =
 array<float> g_flRespawnTime =
 {
 	0.0f, //0
-	8.0f, //1
-	25.0f, //2
-	30.0f, //3
-	40.0f, //4
-	50.0f //5
+	7.0f, //1
+	22.0f, //2
+	27.0f, //3
+	36.0f, //4
+	41.0f //5
 };
 
 array<float> g_flSpawnTime;
