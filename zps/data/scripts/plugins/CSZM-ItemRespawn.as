@@ -25,7 +25,8 @@ array<string> g_strAllowedCN =
 	"item_ammo_pistol", //1
 	"item_ammo_rifle", //2
 	"item_ammo_shotgun", //3
-	"item_ammo_revolver" //4
+	"item_ammo_revolver", //4
+	"item_armor" //5
 };
 
 array<float> g_flRespawnTime =
@@ -34,7 +35,8 @@ array<float> g_flRespawnTime =
 	8.0f, //1
 	25.0f, //2
 	30.0f, //3
-	40.0f //4
+	40.0f, //4
+	50.0f //5
 };
 
 array<float> g_flSpawnTime;
@@ -146,24 +148,14 @@ void FindItems()
 
 	CBaseEntity@ pEntity;
 
-	while ( ( @pEntity = FindEntityByClassname( pEntity, "item_ammo_pistol" ) ) !is null )
+	for ( uint i = 0; i < g_strAllowedCN.length(); i++ )
 	{
-		InsertValues( pEntity.entindex(), pEntity.GetClassname(), pEntity.GetAbsOrigin(), pEntity.GetAbsAngles() );
-	}
-	
-	while ( ( @pEntity = FindEntityByClassname( pEntity, "item_ammo_rifle" ) ) !is null )
-	{
-		InsertValues( pEntity.entindex(), pEntity.GetClassname(), pEntity.GetAbsOrigin(), pEntity.GetAbsAngles() );
-	}
+		if ( i == 0 ) continue;
 
-	while ( ( @pEntity = FindEntityByClassname( pEntity, "item_ammo_shotgun" ) ) !is null )
-	{
-		InsertValues( pEntity.entindex(), pEntity.GetClassname(), pEntity.GetAbsOrigin(), pEntity.GetAbsAngles() );
-	}
-
-	while ( ( @pEntity = FindEntityByClassname( pEntity, "item_ammo_revolver" ) ) !is null )
-	{
-		InsertValues( pEntity.entindex(), pEntity.GetClassname(), pEntity.GetAbsOrigin(), pEntity.GetAbsAngles() );
+		while ( ( @pEntity = FindEntityByClassname( pEntity, g_strAllowedCN[i] ) ) !is null )
+		{
+			InsertValues( pEntity.entindex(), pEntity.GetClassname(), pEntity.GetAbsOrigin(), pEntity.GetAbsAngles() );
+		}
 	}
 }
 
