@@ -12,7 +12,6 @@ void SD(const string &in strMSG)
 
 array<string> g_strMsg =
 {
-	"null",
 	strCSZM+"{default}Press {red}F2{default} to choose play as the {lightseagreen}First infected{default}.",
 	strCSZM+"{default}If you stuck in spectator mode, press {seagreen}F4{default} to get back to the {green}ready room{default}.",
 	strCSZM+"{default}Picked up ammo and {green}antidote{default} will respawn over a period of time.",
@@ -21,7 +20,7 @@ array<string> g_strMsg =
 	strCSZM+"{default}Use an {green}antidote{default} to increase your resistance to {green}infection{default}."
 };
 
-array<bool> g_bIsShown;
+array<string> g_strMsgToShow;
 
 void OnPluginInit()
 {
@@ -32,16 +31,7 @@ void OnPluginInit()
 
 void OnMapInit()
 {
-	if(Utils.StrContains("cszm", Globals.GetCurrentMapName()))
-	{
-		bIsCSZM = true;
-		
-		g_bIsShown.resize(g_strMsg.length());
-		for(uint i = 0; i <= g_strMsg.length() - 1; i++)
-		{
-			g_bIsShown[i] = false;
-		}
-	}
+	if(Utils.StrContains("cszm", Globals.GetCurrentMapName())) bIsCSZM = true;
 }
 
 void OnMapShutdown()
@@ -64,31 +54,16 @@ void OnProcessRound()
 
 void ShowMsg()
 {
-	int iRND = 0;
-	uint iLength = g_bIsShown.length() - 1;
-	uint iCount = 0;
-	
-	for(uint i = 0; i <= iLength; i++)
+	if ( g_strMsgToShow.length() == 0 )
 	{
-		if(g_bIsShown[i] == true) iCount++;
-	}	
-	
-	if(iCount >= iLength)
-	{
-		for(uint i = 0; i <= iLength; i++)
+		for ( uint i = 0; i < g_strMsg.length(); i++)
 		{
-			g_bIsShown[i] = false;
+			g_strMsgToShow.insertLast( g_strMsg[i] );
 		}
 	}
-	
-	while(iRND == 0)
-	{
-		iRND = Math::RandomInt(1, iLength);
-		if(g_bIsShown[iRND] == false)
-		{
-			g_bIsShown[iRND] = true;
-			SD(g_strMsg[iRND]);
-		}
-		else iRND = 0;
-	}
+
+	int iRNG = Math::RandomInt( 0, g_strMsgToShow.length() - 1 );
+
+	SD( g_strMsgToShow[iRNG] );
+	g_strMsgToShow.removeAt( iRNG );
 }
