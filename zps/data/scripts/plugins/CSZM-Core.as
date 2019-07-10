@@ -179,16 +179,16 @@ void OnPluginInit()
 	if ( pInfectionRate !is null ) ConVar::Register( pInfectionRate, "ConVar_InfectionRate" ); 
 
 	//Events
-	Events::Player::OnPlayerInfected.Hook( @ZMCore_OnPlayerInfected );
-	Events::Player::OnPlayerConnected.Hook( @ZMCore_OnPlayerConnected );
-	Events::Player::OnPlayerSpawn.Hook( @ZMCore_OnPlayerSpawn );
-	Events::Entities::OnEntityCreation.Hook( @ZMCore_OnEntityCreation );
-	Events::Custom::OnPlayerDamagedCustom.Hook( @ZMCore_OnPlayerDamaged );
-	Events::Player::OnPlayerKilled.Hook( @ZMCore_OnPlayerKilled );
-	Events::Player::OnPlayerDisonnected.Hook( @ZMCore_OnPlayerDisonnected );
-	Events::Rounds::RoundWin.Hook( @ZMCore_RoundWin );
-	Events::Player::OnPlayerRagdollCreate.Hook( @ZMCore_OnPlayerRagdollCreate );
-	Events::Player::OnConCommand.Hook( @ZMCore_OnConCommand );
+	Events::Player::OnPlayerInfected.Hook( @CSZM_OnPlayerInfected );
+	Events::Player::OnPlayerConnected.Hook( @CSZM_OnPlayerConnected );
+	Events::Player::OnPlayerSpawn.Hook( @CSZM_OnPlayerSpawn );
+	Events::Entities::OnEntityCreation.Hook( @CSZM_OnEntityCreation );
+	Events::Custom::OnPlayerDamagedCustom.Hook( @CSZM_OnPlayerDamaged );
+	Events::Player::OnPlayerKilled.Hook( @CSZM_OnPlayerKilled );
+	Events::Player::OnPlayerDisonnected.Hook( @CSZM_OnPlayerDisonnected );
+	Events::Rounds::RoundWin.Hook( @CSZM_RoundWin );
+	Events::Player::OnPlayerRagdollCreate.Hook( @CSZM_OnPlayerRagdollCreate );
+	Events::Player::OnConCommand.Hook( @CSZM_OnConCommand );
 }
 
 void OnMapInit()
@@ -314,7 +314,7 @@ void OnMapShutdown()
 }
 
 
-HookReturnCode ZMCore_OnPlayerRagdollCreate( CZP_Player@ pPlayer, bool &in bHeadshot, bool &out bExploded )
+HookReturnCode CSZM_OnPlayerRagdollCreate( CZP_Player@ pPlayer, bool &in bHeadshot, bool &out bExploded )
 {
 	CBasePlayer@ pPlrEnt = pPlayer.opCast();
 	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
@@ -324,7 +324,7 @@ HookReturnCode ZMCore_OnPlayerRagdollCreate( CZP_Player@ pPlayer, bool &in bHead
 	return HOOK_CONTINUE;
 }
 
-HookReturnCode ZMCore_RoundWin( const string &in strMapname, RoundWinState iWinState )
+HookReturnCode CSZM_RoundWin( const string &in strMapname, RoundWinState iWinState )
 {
 	if ( bIsCSZM == true )
 	{
@@ -348,7 +348,7 @@ HookReturnCode ZMCore_RoundWin( const string &in strMapname, RoundWinState iWinS
 	return HOOK_CONTINUE;
 }
 
-HookReturnCode ZMCore_OnPlayerConnected( CZP_Player@ pPlayer ) 
+HookReturnCode CSZM_OnPlayerConnected( CZP_Player@ pPlayer ) 
 {
 	if ( bIsCSZM == true )
 	{
@@ -380,7 +380,7 @@ HookReturnCode ZMCore_OnPlayerConnected( CZP_Player@ pPlayer )
 	return HOOK_CONTINUE;
 }
 
-HookReturnCode ZMCore_OnConCommand( CZP_Player@ pPlayer, CASCommand@ pArgs )
+HookReturnCode CSZM_OnConCommand( CZP_Player@ pPlayer, CASCommand@ pArgs )
 {
 	if ( bIsCSZM == true )
 	{
@@ -431,7 +431,7 @@ HookReturnCode ZMCore_OnConCommand( CZP_Player@ pPlayer, CASCommand@ pArgs )
 	return HOOK_CONTINUE;
 }
 
-HookReturnCode ZMCore_OnPlayerSpawn( CZP_Player@ pPlayer )
+HookReturnCode CSZM_OnPlayerSpawn( CZP_Player@ pPlayer )
 {
 	if ( bIsCSZM == true )
 	{
@@ -536,7 +536,7 @@ HookReturnCode ZMCore_OnPlayerSpawn( CZP_Player@ pPlayer )
 	return HOOK_CONTINUE;
 }
 
-HookReturnCode ZMCore_OnPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &out DamageInfo )
+HookReturnCode CSZM_OnPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &out DamageInfo )
 {
 	if ( bIsCSZM == true )
 	{
@@ -609,14 +609,14 @@ HookReturnCode ZMCore_OnPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &out
 	return HOOK_HANDLED;
 }
 
-HookReturnCode ZMCore_OnPlayerInfected( CZP_Player@ pPlayer, InfectionState iState )
+HookReturnCode CSZM_OnPlayerInfected( CZP_Player@ pPlayer, InfectionState iState )
 {
 	if ( iState != state_none && bIsCSZM == true ) pPlayer.SetInfection( false, 0.0f );
 
 	return HOOK_HANDLED;
 }
 
-HookReturnCode ZMCore_OnPlayerKilled( CZP_Player@ pPlayer, CTakeDamageInfo &in DamageInfo ) 
+HookReturnCode CSZM_OnPlayerKilled( CZP_Player@ pPlayer, CTakeDamageInfo &in DamageInfo ) 
 {
 	if ( bIsCSZM == true )
 	{
@@ -673,7 +673,7 @@ HookReturnCode ZMCore_OnPlayerKilled( CZP_Player@ pPlayer, CTakeDamageInfo &in D
 	return HOOK_CONTINUE;
 }
 
-HookReturnCode ZMCore_OnPlayerDisonnected( CZP_Player@ pPlayer )
+HookReturnCode CSZM_OnPlayerDisonnected( CZP_Player@ pPlayer )
 {
 	if ( bIsCSZM == true )
 	{
@@ -693,7 +693,7 @@ HookReturnCode ZMCore_OnPlayerDisonnected( CZP_Player@ pPlayer )
 	return HOOK_CONTINUE;
 }
 
-HookReturnCode ZMCore_OnEntityCreation( const string &in strClassname, CBaseEntity@ pEntity )
+HookReturnCode CSZM_OnEntityCreation( const string &in strClassname, CBaseEntity@ pEntity )
 {
 	if ( bIsCSZM == true )
 	{
