@@ -240,7 +240,9 @@ void SpawnWepFragMine( CBaseEntity@ pEntity )
 	WepFragMineIPD.Add( "printname", "vgui/images/fragmine" );
 	WepFragMineIPD.Add( "weight", "5" );
 
-	CBaseEntity@ pWPM = EntityCreator::Create("item_deliver", pEntity.GetAbsOrigin(), pEntity.GetAbsAngles(), WepFragMineIPD);
+	WepFragMineIPD.Add( "DisableDamageForces", "0", true );
+
+	EntityCreator::Create("item_deliver", pEntity.GetAbsOrigin(), pEntity.GetAbsAngles(), WepFragMineIPD);
 
 	pEntity.SUB_Remove();
 }
