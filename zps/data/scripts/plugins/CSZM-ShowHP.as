@@ -156,6 +156,7 @@ HookReturnCode CSZM_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out Dam
 				if ( 
 					Utils.StrContains( "propanecanister001a", MDLName ) ||
 					Utils.StrContains( "oildrum001_explosive", MDLName ) ||
+					Utils.StrContains( "fire_extinguisher", MDLName ) ||
 					Utils.StrContains( "propane_tank001a", MDLName ) ||
 					Utils.StrContains( "gascan001a", MDLName ) ) return HOOK_HANDLED;
 				

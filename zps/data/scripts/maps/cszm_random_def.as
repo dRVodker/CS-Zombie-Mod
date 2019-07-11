@@ -8,7 +8,7 @@ void OverrideLimits()
 	RoundManager.Limit_Random("item_ammo_pistol", 15);
 	RoundManager.Limit_Random("item_ammo_rifle", 25);
 
-	RoundManager.Limit_Random("item_armor", 6);					//Unused in actual gameplay
+	RoundManager.Limit_Random("item_armor", 6);
 
 	RoundManager.Limit_Random("item_healthkit", 2);				//Replaced with an Antidote
 	RoundManager.Limit_Random("item_pills", 4);					//Replaced with an Adrenaline

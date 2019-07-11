@@ -157,13 +157,13 @@ void GiveStartGear()
 							
 		if ( pPlayer is null ) continue;
 
-		CBasePlayer@ pPlrEnt = pPlayer.opCast();
-		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex( i );
 
-		if ( pBaseEnt.GetTeamNumber() == 2 ) 
+		if ( pPlayerEntity.GetTeamNumber() == 2 ) 
 		{
+			pPlayer.AmmoBank( add, pistol, 30 );
 			pPlayer.GiveWeapon( "weapon_barricade" );
-			pPlayer.GiveWeapon( g_strStartWeapons[ Math::RandomInt( 0, g_strStartWeapons.length() ) ] );
+			pPlayer.GiveWeapon( g_strStartWeapons[ Math::RandomInt( 0, g_strStartWeapons.length() -1 ) ] );
 		}
 	}
 }
@@ -271,7 +271,7 @@ void OnEntityOutput(const string &in strOutput, CBaseEntity@ pActivator, CBaseEn
 				{
 					BlackCross( pActivator );
 					g_iBlackCrossIndex.removeAt( i );
-					return;
+					break;
 				}
 			}
 		}
@@ -284,7 +284,7 @@ void OnEntityOutput(const string &in strOutput, CBaseEntity@ pActivator, CBaseEn
 				{
 					Engine.Ent_Fire( "SewerCap", "SetHealth", "50", "0.00" );
 					g_iSewerCapIndex.removeAt( i );
-					return;
+					break;
 				}
 			}
 		}
@@ -371,7 +371,7 @@ void SpawnCheese()
 		CheeseVoiceIPD.Add( "pitchstart", "75" );
 		CheeseVoiceIPD.Add( "spawnflags", "49" );
 		CheeseVoiceIPD.Add( "health", "10" );
-		CheeseVoiceIPD.Add( "health", "1024" );
+		CheeseVoiceIPD.Add( "radius", "1024" );
 
 		CBaseEntity@ pCheese = EntityCreator::Create( "prop_physics_multiplayer", NewOrigin, QAngle( 0, RandomYaw, 0 ), CheeseIPD );
 		CBaseEntity@ pCheeseVoice = EntityCreator::Create( "ambient_generic", NewOrigin, QAngle( 0, RandomYaw, 0 ), CheeseVoiceIPD );
