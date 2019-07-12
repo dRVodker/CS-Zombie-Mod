@@ -1,0 +1,89 @@
+bool bIsCSZM = false;
+
+void OnPluginInit()
+{
+	PluginData::SetVersion( "1.0" );
+	PluginData::SetAuthor( "dR.Vodker" );
+	PluginData::SetName( "CSZM - Set Scale" );
+
+	Events::Player::PlayerSay.Hook( @CSZM_SetS_PlrSay );
+	Events::Player::OnPlayerSpawn.Hook( @CSZM_SetS_OnPlrSpawn );
+}
+
+void OnMapInit()
+{
+	if ( Utils.StrContains( "cszm", Globals.GetCurrentMapName() ) ) bIsCSZM = true;
+}
+
+void OnMapShutdown()
+{
+	if ( bIsCSZM == true )  bIsCSZM = false;
+}
+
+HookReturnCode CSZM_SetS_OnPlrSpawn( CZP_Player@ pPlayer )
+{
+	if ( bIsCSZM == false ) return HOOK_CONTINUE;
+
+	CBasePlayer@ pPlrEnt = pPlayer.opCast();
+	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+
+	string sEntName = pBaseEnt.GetEntityName();
+
+	if ( Utils.StrEql( "", sEntName ) )
+	{
+		sEntName = ( "plr_setsize" + pBaseEnt.entindex() );
+		pBaseEnt.SetEntityName( sEntName );
+	}
+
+	Engine.Ent_Fire( sEntName, "SetModelScale", "1.0"  );
+
+	return HOOK_CONTINUE;
+}
+
+HookReturnCode CSZM_SetS_PlrSay( CZP_Player@ pPlayer, CASCommand@ pArgs )
+{
+	if ( bIsCSZM == false ) return HOOK_CONTINUE;
+	if ( pArgs is null ) return HOOK_CONTINUE;
+
+	string arg1 = pArgs.Arg( 1 );
+
+	CBasePlayer@ pPlrEnt = pPlayer.opCast();
+	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+
+	if ( Utils.StrContains( "!setscale", arg1 ) )
+	{
+		if ( pBaseEnt.GetTeamNumber() == 0 )
+		{
+			CASCommand@ pSplited = StringToArgSplit( arg1, " ");
+			string sValue = pSplited.Arg( 1 );
+			float fltest = Utils.StringToFloat( sValue );
+
+			if ( fltest == 0 || fltest < 0 ) return HOOK_HANDLED;
+
+			else
+			{
+				if ( fltest < 0.1f ) fltest = 0.1f;
+				if ( fltest > 1.0f ) fltest = 1.0f;
+
+				string sEntName = pBaseEnt.GetEntityName();
+
+				if ( Utils.StrEql( "", sEntName ) )
+				{
+					sEntName = ( "plr_setsize" + pBaseEnt.entindex() );
+					pBaseEnt.SetEntityName( sEntName );
+				}
+
+				Engine.Ent_Fire( sEntName, "SetModelScale", "" + fltest );
+			}
+
+			Chat.CenterMessagePlayer( pPlrEnt, "Your scale has been changed to " + fltest );
+			return HOOK_HANDLED;
+		}
+
+		else Chat.PrintToChatPlayer( pPlrEnt, "Command should only be used in the ready room.");
+
+		return HOOK_HANDLED;
+	}
+
+	return HOOK_CONTINUE;
+}
