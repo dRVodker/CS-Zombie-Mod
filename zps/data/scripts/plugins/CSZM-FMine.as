@@ -326,6 +326,7 @@ void ExplodeFragMine( CBaseEntity@ pFMine )
 		pExplode.SetOwner( pFMine.GetOwner() );
 		pExplode.ChangeTeam( pFMine.GetOwner().GetTeamNumber() );
 	}
+
 	else 
 	{
 		pExplode.SetOwner( null );
