@@ -555,6 +555,13 @@ HookReturnCode CSZM_OnPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &out D
 		const int iAttIndex = pEntityAttacker.entindex();
 		const int iAttTeam = pEntityAttacker.GetTeamNumber();
 
+		if ( iAttTeam == iVicTeam && pBaseEnt !is pEntityAttacker )
+		{
+			DamageInfo.SetDamageType( 0 );
+			DamageInfo.SetDamage( 0 );
+			return HOOK_HANDLED;
+		}
+
 		if ( pEntityAttacker.IsPlayer() == true ) 
 		{
 			@pPlrAttacker = ToZPPlayer( iAttIndex );

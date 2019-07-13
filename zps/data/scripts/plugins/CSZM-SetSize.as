@@ -12,7 +12,11 @@ void OnPluginInit()
 
 void OnMapInit()
 {
-	if ( Utils.StrContains( "cszm", Globals.GetCurrentMapName() ) ) bIsCSZM = true;
+	if ( Utils.StrContains( "cszm", Globals.GetCurrentMapName() ) )
+	{
+		bIsCSZM = true;
+		Engine.PrecacheFile( sound, "weapons/slam/buttonclick.wav" );
+	}
 }
 
 void OnMapShutdown()
@@ -56,6 +60,7 @@ HookReturnCode CSZM_SetS_PlrSay( CZP_Player@ pPlayer, CASCommand@ pArgs )
 		{
 			CASCommand@ pSplited = StringToArgSplit( arg1, " ");
 			string sValue = pSplited.Arg( 1 );
+			string sAddition = "";
 			float fltest = Utils.StringToFloat( sValue );
 
 			if ( fltest == 0 || fltest < 0 ) return HOOK_HANDLED;
@@ -64,6 +69,8 @@ HookReturnCode CSZM_SetS_PlrSay( CZP_Player@ pPlayer, CASCommand@ pArgs )
 			{
 				if ( fltest < 0.1f ) fltest = 0.1f;
 				if ( fltest > 1.0f ) fltest = 1.0f;
+
+				if ( fltest == 1 ) sAddition = ".0";
 
 				string sEntName = pBaseEnt.GetEntityName();
 
@@ -74,9 +81,10 @@ HookReturnCode CSZM_SetS_PlrSay( CZP_Player@ pPlayer, CASCommand@ pArgs )
 				}
 
 				Engine.Ent_Fire( sEntName, "SetModelScale", "" + fltest );
+				Engine.EmitSoundPlayer( pPlayer, "weapons/slam/buttonclick.wav" );
 			}
 
-			Chat.CenterMessagePlayer( pPlrEnt, "Your scale has been changed to " + fltest );
+			Chat.CenterMessagePlayer( pPlrEnt, "Your scale has been changed to " + fltest + sAddition );
 			return HOOK_HANDLED;
 		}
 

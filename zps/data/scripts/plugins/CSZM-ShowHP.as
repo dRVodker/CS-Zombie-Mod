@@ -29,8 +29,8 @@ void OnPluginInit()
 	PluginData::SetName( "CSZM - Show HP of Breakables" );
 
 	//Events
-	Events::Custom::OnEntityDamaged.Hook( @CSZM_OnEntDamaged );
-	Events::Custom::OnPlayerDamagedCustom.Hook( @CSZM_OnPlrDamaged );
+	Events::Custom::OnEntityDamaged.Hook( @CSZM_SHP_OnEntDamaged );
+	Events::Custom::OnPlayerDamagedCustom.Hook( @CSZM_SHP_OnPlrDamaged );
 }
 
 void OnMapInit()
@@ -53,7 +53,7 @@ void OnNewRound()
 	g_PhysTPOwner.removeRange( 0, g_PhysTPOwner.length() );
 }
 
-HookReturnCode CSZM_OnPlrDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &out DamageInfo )
+HookReturnCode CSZM_SHP_OnPlrDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &out DamageInfo )
 {
 	CBaseEntity@ pAttacker = DamageInfo.GetAttacker();
 	CBasePlayer@ pPlrEnt = pPlayer.opCast();
@@ -80,7 +80,7 @@ HookReturnCode CSZM_OnPlrDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &out Dama
 	return HOOK_HANDLED;
 }
 
-HookReturnCode CSZM_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out DamageInfo )
+HookReturnCode CSZM_SHP_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out DamageInfo )
 {
 	if ( bIsCSZM == false ) return HOOK_HANDLED;
 
