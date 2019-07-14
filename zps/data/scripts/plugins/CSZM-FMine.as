@@ -21,6 +21,8 @@ void OnPluginInit()
 
 	Events::Entities::OnEntityCreation.Hook( @CSZM_FM_OnEntityCreation );
 
+	Events::Entities::OnEntityDestruction.Hook( @CSZM_FM_OnEntityDestruction );
+
 	Events::Custom::OnEntityDamaged.Hook( @CSZM_FM_OnEntDamaged );
 }
 
@@ -128,6 +130,12 @@ HookReturnCode CSZM_FM_OnEntityCreation( const string &in strClassname, CBaseEnt
 	return HOOK_CONTINUE;
 }
 
+HookReturnCode CSZM_FM_OnEntityDestruction( const string &in strClassname, CBaseEntity@ pEntity )
+{
+//	SD("EntityDestruction Class: " + strClassname );
+	return HOOK_CONTINUE;
+}
+
 HookReturnCode CSZM_FM_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out DamageInfo )
 {
 	if ( bIsCSZM == false ) return HOOK_HANDLED;
@@ -167,10 +175,58 @@ HookReturnCode CSZM_FM_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out 
 
 		if ( bExplode == false ) DamageInfo.SetDamage( 0 );
 
-		if ( Utils.StrEql( pAttacker.GetEntityName(), ( "fragmine_detonator" + pEntity.entindex() ) ) || Utils.StrEql( pInflictor.GetEntityName(), ( "fragmine_detonator" + pEntity.entindex() ) ) )
+		else
 		{
-			pAttacker.SUB_Remove();
-			pInflictor.SUB_Remove();
+			if ( pEntityOwner is null )
+			{
+				CEntityData@ ImputData = EntityCreator::EntityData();
+
+				ImputData.Add( "targetname", "frendly_shrapnel" );
+				ImputData.Add( "model", "models/weapons/w_ppk.mdl" );
+				ImputData.Add( "spawnflags", "256" );
+				ImputData.Add( "disablebonefollowers", "1" );
+				ImputData.Add( "disableshadows", "1" );
+				ImputData.Add( "rendermode", "10" );
+				ImputData.Add( "solid", "0" );
+				ImputData.Add( "kill", "0", true, "0.02" );
+
+				@pEntityOwner = EntityCreator::Create( "prop_dynamic_override", Vector( 0, 0, 0 ), QAngle( 0, 0, 0 ), ImputData );
+
+				pEntityOwner.ChangeTeam( 1 );
+			}
+
+			int iShowerCount = Math::RandomInt( 2, 4 );
+			int iTracerCount = Math::RandomInt( 18, 24 );
+
+			for ( int i = 0; i <= iShowerCount; i++)
+			{
+				CBaseEntity@ pShower = EntityCreator::Create( "spark_shower", pEntity.GetAbsOrigin(), QAngle( 0, 0, 0 ) );
+				Vector vUP;
+				Globals.AngleVectors( QAngle( Math::RandomFloat( -55, -78 ), Math::RandomFloat( 0, 270 ), Math::RandomFloat( 0, 270 ) ), vUP );
+				pShower.SetAbsVelocity( vUP * Math::RandomInt( 247, 389 ) );
+			}
+
+			for ( int i = 0; i <= iTracerCount; i++)
+			{
+				CEntityData@ TracerIPD = EntityCreator::EntityData();
+				TracerIPD.Add( "endwidth", "" + Math::RandomFloat( 0.18, 0.27 ) );
+				TracerIPD.Add( "lifetime", "" + Math::RandomFloat( 0.09, 0.22 ) );
+				TracerIPD.Add( "renderamt", "195" );
+				TracerIPD.Add( "rendercolor", "255 155 5" );
+				TracerIPD.Add( "rendermode", "5" );
+				TracerIPD.Add( "spritename", "sprites/xbeam2.vmt" );
+				TracerIPD.Add( "startwidth", "" + Math::RandomFloat( 0.81, 1.15 ) );
+
+				TracerIPD.Add( "kill", "0", true, "0.165" );
+
+				CBaseEntity@ pTracer = EntityCreator::Create( "env_spritetrail", pEntity.GetAbsOrigin(), QAngle( 0, 0, 0 ), TracerIPD );
+				Vector vUP;
+				Globals.AngleVectors( QAngle( Math::RandomFloat( -2, -72 ), Math::RandomFloat( 0, 360 ), Math::RandomFloat( 0, 360 ) ), vUP );
+				pTracer.SetAbsVelocity( vUP * 2950 );	
+			}
+
+
+			Utils.CreateShrapnelEx( pEntityOwner, 50, pEntity.GetAbsOrigin(), 0.0f );
 		}
 
 		return HOOK_HANDLED;
@@ -214,17 +270,17 @@ void ThrowMine( const int &in iIndex, CZP_Player@ pPlayer, CBaseEntity@ pEntity 
 	CEntityData@ FragMineIPD = EntityCreator::EntityData();
 	FragMineIPD.Add( "targetname", "test_fragmine_inactive" );
 	FragMineIPD.Add( "model", "models/cszm/weapons/w_minefrag.mdl" );
-	FragMineIPD.Add( "spawnflags", "10114" );//9990
+	FragMineIPD.Add( "spawnflags", "10114" );
 	FragMineIPD.Add( "skin", "0" );
 	FragMineIPD.Add( "overridescript", "mass,60,rotdamping,10000,damping,0,inertia,0," );
 	FragMineIPD.Add( "nodamageforces", "1" );
 	FragMineIPD.Add( "ExplodeDamage", "350" );
-	FragMineIPD.Add( "ExplodeRadius", "196" );
+	FragMineIPD.Add( "ExplodeRadius", "164" );
 
+	FragMineIPD.Add( "addoutput", "classname npc_fragmine", true );
 	FragMineIPD.Add( "addoutput", "targetname test_fragmine_preactive", true, "0.98" );
 
 	CBaseEntity@ pFragMine = EntityCreator::Create( "prop_physics_override", Vector( 0, 0, 0 ), QAngle( 0, 0, 0 ), FragMineIPD );
-//	CBaseEntity@ pFragMine = EntityCreator::Create( "projectile_nonhurtable", Vector( 0, 0, 0 ), QAngle( 0, 0, 0 ), FragMineIPD );
 
 	pFragMine.SetOwner( pBaseEnt );
 	pFragMine.ChangeTeam( pBaseEnt.GetTeamNumber() );
@@ -239,7 +295,7 @@ void ThrowMine( const int &in iIndex, CZP_Player@ pPlayer, CBaseEntity@ pEntity 
 
 	pFragMine.SetOutline( true, filter_entity, pBaseEnt.entindex(), Color( 32, 245, 64 ), 384.0f, false, true );
 
-	pFragMine.Teleport( Vector( pBaseEnt.EyePosition().x, pBaseEnt.EyePosition().y, pBaseEnt.EyePosition().z - 12 ), QAngle( angX, angY, angZ ), pBaseEnt.GetAbsVelocity() + ( vecMVelocity * 225 ) );
+	pFragMine.Teleport( Vector( pBaseEnt.EyePosition().x, pBaseEnt.EyePosition().y, pBaseEnt.EyePosition().z - 12 ), QAngle( angX, angY, angZ ), ( pBaseEnt.GetAbsVelocity() * 0.5f ) + ( vecMVelocity * 200 ) );
 
 	Engine.EmitSoundPosition( pFragMine.entindex(), "weapons/slam/throw.wav", Vector( pBaseEnt.EyePosition().x, pBaseEnt.EyePosition().y, pBaseEnt.EyePosition().z - 12 ), 0.5f, 65, 85 );
 
@@ -336,49 +392,17 @@ void FragMineThink()
 
 void ExplodeFragMine( CBaseEntity@ pFMine )
 {
-	pFMine.SetEntityName( "fragmine_detonation" + pFMine.entindex() );
+	CBaseEntity@ pOwner = pFMine.GetOwner();
 
-	CEntityData@ DetonatorIPD = EntityCreator::EntityData();
+	if ( pOwner is null ) @pOwner = pFMine;
 
-	DetonatorIPD.Add( "targetname", "fragmine_detonator" + pFMine.entindex() );
-	DetonatorIPD.Add( "DamageRadius", "16" );
-	DetonatorIPD.Add( "DamageDelay", "0" );
-	DetonatorIPD.Add( "DamageType", "0" );
-	DetonatorIPD.Add( "Damage", "2" );
-	DetonatorIPD.Add( "DamageTarget", "fragmine_detonation" + pFMine.entindex() );
+	CTakeDamageInfo DamageInfo;
+	DamageInfo.SetInflictor( pOwner );
+	DamageInfo.SetAttacker( pOwner );
+	DamageInfo.SetDamage( pFMine.GetHealth() );
+	DamageInfo.SetDamageType( DMG_GENERIC );
 
-	DetonatorIPD.Add( "TurnOn", "1", true );
-	DetonatorIPD.Add( "kill", "1", true, "1" );
-
-	CBaseEntity@ pDetonator = EntityCreator::Create( "point_hurt", pFMine.GetAbsOrigin(), pFMine.GetAbsAngles(), DetonatorIPD );
-}
-
-void ExplodeFragMine_old( CBaseEntity@ pFMine )
-{
-	pFMine.SetEntityName( "fragmine_detonation" );
-	
-	CEntityData@ ExplodeIPD = EntityCreator::EntityData();
-	ExplodeIPD.Add( "targetname", "fmine_explode" );
-	ExplodeIPD.Add( "iMagnitude", "350" );
-	ExplodeIPD.Add( "iRadiusOverride", "200" );
-	ExplodeIPD.Add( "Addoutput", "classname weapon_fragmine", true );
-	ExplodeIPD.Add( "Explode", "0", true );
-
-	CBaseEntity@ pExplode = EntityCreator::Create( "env_explosion", pFMine.GetAbsOrigin(), pFMine.GetAbsAngles(), ExplodeIPD );
-
-	if ( pFMine.GetOwner() !is null ) 
-	{
-		pExplode.SetOwner( pFMine.GetOwner() );
-		pExplode.ChangeTeam( pFMine.GetOwner().GetTeamNumber() );
-	}
-
-	else 
-	{
-		pExplode.SetOwner( null );
-		pExplode.ChangeTeam( 2 );
-	}
-
-	pFMine.SUB_Remove();
+	pFMine.TakeDamage( DamageInfo );
 }
 
 void DefuseFragMine( CBaseEntity@ pFMine, CZP_Player@ pPlayer )
@@ -403,6 +427,7 @@ void DefuseFragMine( CBaseEntity@ pFMine, CZP_Player@ pPlayer )
 	
 	if ( pPlayer !is null ) pPlayer.PutToInventory( pWPM );
 }
+
 /*
 void CreateSPR( Vector vecOrigin )
 {
