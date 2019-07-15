@@ -209,20 +209,20 @@ HookReturnCode CSZM_FM_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out 
 			for ( int i = 0; i <= iTracerCount; i++)
 			{
 				CEntityData@ TracerIPD = EntityCreator::EntityData();
-				TracerIPD.Add( "endwidth", "" + Math::RandomFloat( 0.18, 0.27 ) );
-				TracerIPD.Add( "lifetime", "" + Math::RandomFloat( 0.09, 0.22 ) );
+				TracerIPD.Add( "endwidth", "" + Math::RandomFloat( 0.12, 0.19 ) );
+				TracerIPD.Add( "lifetime", "" + Math::RandomFloat( 0.021, 0.042 ) );
 				TracerIPD.Add( "renderamt", "195" );
 				TracerIPD.Add( "rendercolor", "255 155 5" );
 				TracerIPD.Add( "rendermode", "5" );
 				TracerIPD.Add( "spritename", "sprites/xbeam2.vmt" );
-				TracerIPD.Add( "startwidth", "" + Math::RandomFloat( 0.81, 1.15 ) );
+				TracerIPD.Add( "startwidth", "" + Math::RandomFloat( 1.75, 2.85 ) );
 
-				TracerIPD.Add( "kill", "0", true, "0.165" );
+				TracerIPD.Add( "kill", "0", true, "" + Math::RandomFloat( 0.185, 0.731 ) );
 
 				CBaseEntity@ pTracer = EntityCreator::Create( "env_spritetrail", pEntity.GetAbsOrigin(), QAngle( 0, 0, 0 ), TracerIPD );
 				Vector vUP;
 				Globals.AngleVectors( QAngle( Math::RandomFloat( -2, -72 ), Math::RandomFloat( 0, 360 ), Math::RandomFloat( 0, 360 ) ), vUP );
-				pTracer.SetAbsVelocity( vUP * 2950 );	
+				pTracer.SetAbsVelocity( vUP * Math::RandomInt( 1341, 2108 ) );	
 			}
 
 

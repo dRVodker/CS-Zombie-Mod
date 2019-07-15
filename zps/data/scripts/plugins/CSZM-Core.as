@@ -44,7 +44,7 @@ const int iMinSpeed = 80;
 
 //Damage Slowdown
 const float flMaxSlowTime = 1.0f;
-const float flRecoverUnit = 0.09f;
+const float flRecoverUnit = 0.124f;
 
 //Damage Slowdown arrays
 array<int> g_iDefSpeed;
@@ -62,7 +62,7 @@ const int iWeakZombieHP = 125;									//Health of the weak zombies
 const int iHPReward = 125;										//Give that amount of HP as reward of successful infection.
 const int iGearUpTime = 40;										//Time to gear up and find a good spot.
 const int iTurningTime = 20;									//Turning time.
-const int iInfectDelay = 3;										//Amount of rounds you have to wait to be the First Infected again.
+const int iInfectDelay = 2;										//Amount of rounds you have to wait to be the First Infected again.
 const int iWUTime = 10;											//Time of the warmup in seconds.		( default value is 76 )
 
 //New Consts
@@ -502,6 +502,8 @@ HookReturnCode CSZM_OnPlayerSpawn( CZP_Player@ pPlayer )
 
 				EmitBloodExp( pPlayer, true );
 
+				if ( !bSpawnWeak && g_bIsWeakZombie[iIndex] ) g_bIsWeakZombie[iIndex] = false;
+
 				if ( bSpawnWeak && g_bIsWeakZombie[iIndex] ) SpawnWeakZombie( pPlayer );
 				
 				else
@@ -605,7 +607,12 @@ HookReturnCode CSZM_OnPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &out D
 		
 		if ( iVicTeam == 3 && pBaseEnt.IsAlive() )
 		{
-			if ( !pPlayer.IsCarrier() && flDamage > 0 && flDamage < pBaseEnt.GetHealth() )
+			bool bAllowPainSound = false;
+
+			if ( pPlayer.IsCarrier() && g_bIsFirstInfected[iVicIndex] ) bAllowPainSound = true;
+			if ( !pPlayer.IsCarrier() ) bAllowPainSound = true;
+
+			if ( bAllowPainSound && flDamage > 0 && flDamage < pBaseEnt.GetHealth() )
 			{
 				Engine.EmitSoundEntity( pBaseEnt, "CSPlayer_Z.Pain" + g_iCVSIndex[iVicIndex] );
 				g_flIdleTime[iVicIndex] = Globals.GetCurrentTime() + Math::RandomFloat( 4.85f, 9.95f );
@@ -664,20 +671,28 @@ HookReturnCode CSZM_OnPlayerKilled( CZP_Player@ pPlayer, CTakeDamageInfo &in Dam
 			bSuicide = true;
 		}
 
-		else if ( iAttIndex != iVicIndex ) KillFeed( strAttName, iAttTeam, strVicName, iVicTeam, false, false );
+		else if ( iAttIndex != iVicIndex && pEntityAttacker.IsPlayer() ) KillFeed( strAttName, iAttTeam, strVicName, iVicTeam, false, false );
 
 		if ( iVicTeam == 3 )
 		{
-			if ( !pPlayer.IsCarrier() ) Engine.EmitSoundEntity( pBaseEnt, "CSPlayer_Z.Die" + g_iCVSIndex[iVicIndex] );
+			bool bAllowDieSound = false;
 
-			if ( g_iZMDeathCount[iAttIndex] < iMaxDeath && !g_bIsFirstInfected[iVicIndex] && !bSuicide ) g_iZMDeathCount[iVicIndex]++;
+			if ( pPlayer.IsCarrier() && g_bIsFirstInfected[iVicIndex] ) bAllowDieSound = true;
+			if ( !pPlayer.IsCarrier() ) bAllowDieSound = true;
 
-			g_iKills[iAttIndex]++;
+			if ( bAllowDieSound ) Engine.EmitSoundEntity( pBaseEnt, "CSPlayer_Z.Die" + g_iCVSIndex[iVicIndex] );
 
-			if ( iAttTeam != 3 ) ShowKills( pPlrAttacker, g_iKills[iAttIndex], false );
+			if ( !bSuicide )
+			{
+				if ( g_iZMDeathCount[iVicIndex] < iMaxDeath && !g_bIsFirstInfected[iVicIndex] ) g_iZMDeathCount[iVicIndex]++;
+
+				g_iKills[iAttIndex]++;
+
+				if ( iAttTeam != 3 ) ShowKills( pPlrAttacker, g_iKills[iAttIndex], false );
+			}
 		}
 
-		if ( iVicTeam == 2 && iAttTeam == 3 )
+		if ( iVicTeam == 2 && iAttTeam == 3 && pEntityAttacker.IsPlayer() )
 		{
 			g_iVictims[iAttIndex]++;
 			ShowKills( pPlrAttacker, g_iVictims[iAttIndex], true );
@@ -686,8 +701,11 @@ HookReturnCode CSZM_OnPlayerKilled( CZP_Player@ pPlayer, CTakeDamageInfo &in Dam
 		}
 
 		if ( g_bIsVolunteer[iVicIndex] ) g_bIsVolunteer[iVicIndex] = false;
+
 		if ( g_bIsFirstInfected[iVicIndex] ) g_bIsFirstInfected[iVicIndex] = false;
+
 		if ( iVicTeam == 2 && bSpawnWeak ) g_bIsAbuser[iVicIndex] = true;
+
 		if ( iFZIndex == iVicIndex ) iFZIndex = 0;
 	}
 
@@ -811,9 +829,14 @@ void OnProcessRound()
 				}
 			}
 
-			if ( pBaseEnt.GetTeamNumber() == 3 && !pPlayer.IsCarrier() && pBaseEnt.IsAlive() )
+			if ( pBaseEnt.GetTeamNumber() == 3 && pBaseEnt.IsAlive() )
 			{
-				if ( g_flIdleTime[i] <= Globals.GetCurrentTime() && g_flIdleTime[i] != 0 )
+				bool bAllowIdleSound = false;
+
+				if ( pPlayer.IsCarrier() && g_bIsFirstInfected[i] ) bAllowIdleSound = true;
+				if ( !pPlayer.IsCarrier() ) bAllowIdleSound = true;
+
+				if ( bAllowIdleSound && g_flIdleTime[i] <= Globals.GetCurrentTime() && g_flIdleTime[i] != 0 )
 				{
 					Engine.EmitSoundEntity( pBaseEnt, "CSPlayer.Idle" + g_iCVSIndex[pBaseEnt.entindex()] );
 					switch( g_iCVSIndex[i] )
@@ -837,7 +860,7 @@ void OnProcessRound()
 			{
 				g_flHPRDelay[i] = Globals.GetCurrentTime() + flHPRDelay;
 				int iRHP = 1;
-				if ( pPlayer.IsCarrier() ) iRHP = 5;
+				if ( pPlayer.IsCarrier() && !g_bIsFirstInfected[i] ) iRHP = 5;
 								
 				int iCurHP = pBaseEnt.GetHealth();
 				if ( iCurHP < pBaseEnt.GetMaxHealth() ) pBaseEnt.SetHealth( iCurHP + iRHP );
@@ -1159,7 +1182,7 @@ void AddSlowdown( const int &in iIndex, const float &in flDamage, const int &in 
 	if ( g_bIsWeakZombie[iIndex] ) return;
 
 	g_flRecoverTime[iIndex] = 0.0f;
-	float flSlowTime = 0.15f;
+	float flSlowTime = 0.175f;
 	int iSpeed;
 
 	if ( flDamage > 0 ) iSpeed = 1;
@@ -1204,18 +1227,18 @@ void AddSlowdown( const int &in iIndex, const float &in flDamage, const int &in 
 		g_flAddTime[iIndex] = 0.78f;
 	}
 
-	if ( flDamage >= 75 ) g_flAddTime[iIndex] += 0.25f;
+	if ( flDamage >= 75 && bDamageType( iDamageType, 13 ) ) g_flAddTime[iIndex] += 0.25f;
 
 	if ( g_bIsFirstInfected[iIndex] ) 
 	{
-		iSpeed = int( floor( iSpeed * 0.75f ) );
-		g_flAddTime[iIndex] = g_flAddTime[iIndex] * 0.85f;
+		iSpeed = int( floor( iSpeed * 0.76f ) );
+		g_flAddTime[iIndex] = g_flAddTime[iIndex] * 0.91f;
 	}
 
-	if ( pPlayer.IsCarrier() )
+	if ( pPlayer.IsCarrier() && !g_bIsFirstInfected[iIndex] )
 	{
-		iSpeed = int( floor( iSpeed * 0.5f ) );
-		g_flAddTime[iIndex] = g_flAddTime[iIndex] * 0.7f;
+		iSpeed = int( floor( iSpeed * 0.58f ) );
+		g_flAddTime[iIndex] = g_flAddTime[iIndex] * 0.83f;
 	}
 
 	g_iSlowSpeed[iIndex] = pPlayer.GetMaxSpeed() - iSpeed;
@@ -1280,8 +1303,12 @@ void TurnFirstInfected()
 		iFZIndex = pVBaseEnt.entindex();
 	}
 
-	int iInfDelay = 2;
-	if ( g_bIsVolunteer[iFZIndex] ) iInfDelay = iInfectDelay;
+	int iInfDelay = 1;
+	if ( g_bIsVolunteer[iFZIndex] ) 
+	{
+		g_bIsVolunteer[iFZIndex] = false;
+		iInfDelay = iInfectDelay;
+	}
 	g_bIsFirstInfected[iFZIndex] = true;
 	g_iInfectDelay[iFZIndex] += iInfDelay;
 	ShowOutbreak( iFZIndex );
@@ -1323,6 +1350,8 @@ void TurnToZ( const int &in iIndex )
 
 			pPlayer.CompleteInfection();
 
+			if ( g_bIsFirstInfected[iIndex] ) pPlayer.SetCarrier( true );
+
 			Engine.EmitSoundEntity( pBaseEnt, "CSPlayer.Mute" );
 			Engine.EmitSoundEntity( pBaseEnt, "Flesh.HeadshotExplode" );
 			Engine.EmitSoundEntity( pBaseEnt, "CSPlayer.Turn" );
@@ -1353,7 +1382,7 @@ void SpawnWeakZombie( CZP_Player@ pPlayer )
 	}
 
 	Utils.CosmeticWear( pPlayer, "models/cszm/weapons/w_knife_t.mdl" );
-	pBaseEnt.SetMaxHealth( 1 );
+	pBaseEnt.SetMaxHealth( 15 );
 	pBaseEnt.SetHealth( iWeakZombieHP );
 	pPlayer.SetMaxSpeed( iWeakSpeed );
 	g_iCVSIndex[iIndex] = 2;
@@ -1410,9 +1439,11 @@ void RndZModel( CZP_Player@ pPlayer, CBaseEntity@ pEntPlr )
 	iRND_CVS_PV = iRND_CVS;
 	
 	if ( g_bIsFirstInfected[pEntPlr.entindex()] ) pEntPlr.SetModel( "models/cszm/zombie_morgue.mdl" );
+
 	else 
 	{	
 		if ( pPlayer.IsCarrier() ) pEntPlr.SetModel( "models/cszm/carrier.mdl" );
+
 		else
 		{
 			if( g_strMDLToUse.length() == 0 )
@@ -1463,21 +1494,20 @@ void SetZMHealth( CBaseEntity@ pEntPlr )
 	
 	if ( !pPlayer.IsCarrier() )
 	{
-		if ( g_bIsFirstInfected[pEntPlr.entindex()] )
-		{
-			pEntPlr.SetMaxHealth( iFirstInfectedHP / 3 );
-			pEntPlr.SetHealth( iFirstInfectedHP + iArmor );
-		}
-		else
-		{
-			pEntPlr.SetMaxHealth( pEntPlr.GetMaxHealth() + iZombieMaxHP + iHPBonus );
-			pEntPlr.SetHealth( pEntPlr.GetHealth() + ( iZombieMaxHP / 4 ) + iHPBonus + iArmor );
-		}
+		pEntPlr.SetMaxHealth( pEntPlr.GetMaxHealth() + iZombieMaxHP + iHPBonus );
+		pEntPlr.SetHealth( pEntPlr.GetHealth() + ( iZombieMaxHP / 4 ) + iHPBonus + iArmor );
 	}
-	else
+
+	else if ( pPlayer.IsCarrier() && !g_bIsFirstInfected[pEntPlr.entindex()] )
 	{
 		pEntPlr.SetMaxHealth( pEntPlr.GetMaxHealth() + int( float( iCarrierMaxHP ) + ( float( iHPBonus ) * flMultiplier ) ) );
 		pEntPlr.SetHealth( pEntPlr.GetHealth() + int( float( iCarrierMaxHP ) + ( float( iHPBonus ) * flMultiplier ) ) + iArmor );
+	}
+
+	else
+	{
+		pEntPlr.SetMaxHealth( iFirstInfectedHP / 3 );
+		pEntPlr.SetHealth( iFirstInfectedHP + iArmor );
 	}
 }
 

@@ -198,7 +198,7 @@ HookReturnCode OnKPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &in Damage
 			
 //			if ( g_flShowDamage[iAttIndex] > 0 ) Chat.CenterMessagePlayer( pBPlrAttacker, "- "+g_flShowDamage[iAttIndex]+" HP" );
 
-			if ( g_flShowDamage[iAttIndex] > 0 ) Chat.CenterMessagePlayer( pBPlrAttacker, "Damage dealt: " + g_flShowDamage[iAttIndex] + "\nHealth Left: " + int( flVicHealth ) );
+			if ( g_flShowDamage[iAttIndex] > 0 ) Chat.CenterMessagePlayer( pBPlrAttacker, "Damage dealt: " + g_flShowDamage[iAttIndex] + "\nHealth left: " + int( flVicHealth ) );
 
 			return HOOK_HANDLED;
 		}
