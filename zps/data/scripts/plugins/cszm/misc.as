@@ -1,3 +1,12 @@
+bool bDamageType( int &in iSubjectDT, int &in iDMGNum )
+{
+	bool bIsDTValid = false;
+
+	if ( iSubjectDT & (1<<iDMGNum) == (1<<iDMGNum) ) bIsDTValid = true;
+
+	return bIsDTValid;
+}
+
 void GetRandomVictim()
 {
 	CZP_Player@ pVictim = GetRandomPlayer( survivor, true );
@@ -76,4 +85,97 @@ void ClearBoolArray( array<bool> &iTarget )
     {
         iTarget.removeAt( 0 );
     }
+}
+
+void lobby_hint( CZP_Player@ pPlayer )
+{
+	SendGameTextPlayer( pPlayer, strHintF1, 3, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color( 64, 128, 255 ), Color( 255, 95, 5 ) );
+	SendGameTextPlayer( pPlayer, "\n\n" + strHintF3, 4, 0.0f, 0.05f, 0.085f, 0.0f, 2.0f, 120.0f, Color( 255, 255, 255 ), Color( 255, 95, 5 ) );
+}
+
+void lobby_hint_wu( CZP_Player@ pPlayer )
+{
+	SendGameTextPlayer( pPlayer, strHintF4WU, 3, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color( 64, 255, 128 ), Color( 255, 95, 5 ) );
+}
+
+void spec_hint( CZP_Player@ pPlayer )
+{
+	SendGameTextPlayer( pPlayer, strHintF4, 3, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 15.0f, Color( 64, 255, 128 ), Color( 255, 95, 5 ) );
+}
+
+void PutPlrToLobby( CBaseEntity@ pEntPlayer )
+{
+	array<CBaseEntity@> g_pLobbySpawn = {null};
+	CBaseEntity@ pEntity;
+	
+	while ( ( @pEntity = FindEntityByClassname( pEntity, "info_player_commons" ) ) !is null )
+	{
+		g_pLobbySpawn.insertLast( pEntity );
+	}
+
+	int iLength = g_pLobbySpawn.length() - 1;
+	
+	if ( pEntPlayer is null )
+	{
+		for ( int i = 1; i <= iMaxPlayers; i++ )
+		{
+			CZP_Player@ pPlayer = ToZPPlayer( i );
+			
+			if ( pPlayer is null ) continue;
+			
+			CBasePlayer@ pPlrEnt = pPlayer.opCast();
+			CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+			
+			if ( pBaseEnt.GetTeamNumber() == 1 || pBaseEnt.GetTeamNumber() == 0 ) pBaseEnt.SetAbsOrigin( g_pLobbySpawn[Math::RandomInt( 1, iLength )].GetAbsOrigin() );
+		}
+	}
+	else
+	{
+		pEntPlayer.SetAbsOrigin( g_pLobbySpawn[Math::RandomInt( 1, iLength )].GetAbsOrigin() );
+	}
+}
+
+void PutPlrToPlayZone( CBaseEntity@ pEntPlayer )
+{
+	array<CBaseEntity@> g_pOtherSpawn = {null};
+	CBaseEntity@ pEntity;
+	
+	while ( ( @pEntity = FindEntityByClassname( pEntity, "info_player_human" ) ) !is null )
+	{
+		g_pOtherSpawn.insertLast( pEntity );
+	}
+	
+	while ( ( @pEntity = FindEntityByClassname( pEntity, "info_player_zombie" ) ) !is null )
+	{
+		g_pOtherSpawn.insertLast( pEntity );
+	}
+	
+	while ( ( @pEntity = FindEntityByClassname( pEntity, "info_player_start" ) ) !is null )
+	{
+		g_pOtherSpawn.insertLast( pEntity );
+	}
+
+	int iLength = g_pOtherSpawn.length() - 1;
+	
+	if ( pEntPlayer is null )
+	{
+		for ( int i = 1; i <= iMaxPlayers; i++ )
+		{
+			CZP_Player@ pPlayer = ToZPPlayer( i );
+			
+			if ( pPlayer is null ) continue;
+			
+			CBasePlayer@ pPlrEnt = pPlayer.opCast();
+			CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+			
+			if ( pBaseEnt.GetTeamNumber() == 1 || pBaseEnt.GetTeamNumber() == 0 )
+			{
+				pBaseEnt.SetAbsOrigin( g_pOtherSpawn[Math::RandomInt( 1, iLength )].GetAbsOrigin() );
+			}
+		}
+	}
+	else
+	{
+		pEntPlayer.SetAbsOrigin( g_pOtherSpawn[Math::RandomInt( 1, iLength )].GetAbsOrigin() );
+	}
 }

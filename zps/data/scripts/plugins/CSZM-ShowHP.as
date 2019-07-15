@@ -6,6 +6,15 @@ void SD( const string &in strMSG )
 
 bool bIsCSZM = false;
 
+bool bDamageType( int &in iSubjectDT, int &in iDMGNum )
+{
+	bool bIsDTValid = false;
+
+	if ( iSubjectDT & (1<<iDMGNum) == (1<<iDMGNum) ) bIsDTValid = true;
+
+	return bIsDTValid;
+}
+
 array<string> g_strEntities = 
 {
 	"prop_door_rotating", //0
@@ -116,12 +125,15 @@ HookReturnCode CSZM_SHP_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out
 	}
 
 	//Other stuff
+	//Rule to prevent TK with physics
 	if ( Utils.StrContains( "physics", pEntity.GetClassname() ) || Utils.StrContains( "physbox", pEntity.GetClassname() ) )
 	{
 		if ( pAttacker.IsPlayer() )
 		{
 			int iIndex = pEntity.entindex();
 			bool bIsIndexValid = false;
+
+			pEntity.ChangeTeam( pAttacker.GetTeamNumber() );
 
 			if ( g_PhysTPIndex.length() > 0 )
 			{
@@ -144,15 +156,32 @@ HookReturnCode CSZM_SHP_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out
 		}
 	}
 
+	//Special rule for prop_physics
 	if ( Utils.StrContains( "physics", pEntity.GetClassname() ) )
 	{
+		//Getting some important data there
 		string MDLName = pEntity.GetModelName();
 		int DMGType = DamageInfo.GetDamageType();
 		float DMG = DamageInfo.GetDamage();
+		float flMultiplier = 12.0f;
+
+		//Only for survivors
 		if ( pAttacker.IsPlayer() && pAttacker.GetTeamNumber() == 2 )
 		{
-			if ( DMGType == ( 1<<12 ) + ( 1<<23 ) + ( 1<<1 ) || DMGType == ( 1<<13 ) + ( 1<<23 ) + ( 1<<1 ) || DMGType == ( 1<<12 ) + (1<<29) + ( 1<<23 ) + ( 1<<1 ) )
+			//If Damage Type is BULLET reduce amount of damage and increase force
+			if ( bDamageType( DMGType, 1 ) )
 			{
+				//If revolver bullet
+				if ( bDamageType( DMGType, 13 ) && DMG > 30 ) flMultiplier = 8.0f;
+
+				//If buckshot
+				else if ( bDamageType( DMGType, 29 ) ) flMultiplier = 1.02f;
+
+				//Set DMG_BULLET Damage Type, otherwise it won't push
+				DamageInfo.SetDamageType( 1<<1 );
+				DamageInfo.SetDamageForce( DamageInfo.GetDamageForce() * flMultiplier );
+
+				//Do not reduce damage if explosive prop
 				if ( 
 					Utils.StrContains( "propanecanister001a", MDLName ) ||
 					Utils.StrContains( "oildrum001_explosive", MDLName ) ||
@@ -184,6 +213,14 @@ HookReturnCode CSZM_SHP_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out
 	if ( bIsUnbreakable )
 	{
 		DamageInfo.SetDamage( 0 );
+		return HOOK_HANDLED;
+	}
+
+	//Don't push weapons and items
+	if ( Utils.StrContains( "weapon", pEntity.GetClassname() ) || Utils.StrContains( "item", pEntity.GetClassname() ) )
+	{
+		DamageInfo.SetDamageType( (1<<11) );
+		DamageInfo.SetDamageForce( Vector( 0, 0, 0 ) );
 		return HOOK_HANDLED;
 	}
 

@@ -42,7 +42,7 @@ void OnMapInit()
 
 void OnNewRound()
 {
-	if ( bIsCSZM == true )
+	if ( bIsCSZM )
 	{
 		for ( int i = 1; i <= iMaxPlayers; i++ ) 
 		{
@@ -57,7 +57,7 @@ void OnNewRound()
 
 void OnMapShutdown()
 {
-	if ( bIsCSZM == true )
+	if ( bIsCSZM )
 	{
 		bIsCSZM = false;
 		
@@ -71,11 +71,11 @@ void OnMapShutdown()
 
 void OnProcessRound()
 {
-	if ( bIsCSZM == true )
+	if ( bIsCSZM )
 	{
 		if ( flWaitTime <= Globals.GetCurrentTime() )
 		{
-			flWaitTime = Globals.GetCurrentTime() + 0.10f;
+			flWaitTime = Globals.GetCurrentTime() + 0.1f;
 			
 			for ( int i = 1; i <= iMaxPlayers; i++ )
 			{
@@ -118,7 +118,7 @@ void ClearFloatArray( array<float> &iTarget )
 
 HookReturnCode OnKPlayerConnected( CZP_Player@ pPlayer )
 {
-	if ( bIsCSZM == true )
+	if ( bIsCSZM )
 	{
 		CBasePlayer@ pPlrEnt = pPlayer.opCast();
 		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
@@ -135,12 +135,10 @@ HookReturnCode OnKPlayerConnected( CZP_Player@ pPlayer )
 
 HookReturnCode OnKPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &in DamageInfo )
 {
-	if ( bIsCSZM == true )
+	if ( bIsCSZM )
 	{
 		CZP_Player@ pPlrAttacker = null;
 		CBasePlayer@ pBPlrAttacker = null;
-	
-		const int iDamageType = DamageInfo.GetDamageType();
 	
 		CBasePlayer@ pPlrEnt = pPlayer.opCast();
 		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
@@ -152,8 +150,11 @@ HookReturnCode OnKPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &in Damage
 		
 		const int iAttIndex = pEntityAttacker.entindex();
 		const bool bIsAttPlayer = pEntityAttacker.IsPlayer();
+
+		float flVicHealth = pBaseEnt.GetHealth() - DamageInfo.GetDamage();
+		if ( flVicHealth < 0 ) flVicHealth = 0;
 		
-		if ( bIsAttPlayer == true )
+		if ( bIsAttPlayer )
 		{
 			@pPlrAttacker = ToZPPlayer( iAttIndex );
 			@pBPlrAttacker = ToBasePlayer( iAttIndex );
@@ -168,7 +169,7 @@ HookReturnCode OnKPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &in Damage
 		
 		if ( pEntityAttacker.GetTeamNumber() == 2 )
 		{
-			g_flSDTimer[iAttIndex] = 0.8f;
+			g_flSDTimer[iAttIndex] = 1.0f;
 			
 			float flHPD = 0;
 			float flHP = pBaseEnt.GetHealth();
@@ -195,7 +196,9 @@ HookReturnCode OnKPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &in Damage
 				g_flShowDamage[iAttIndex] += floor( DamageInfo.GetDamage() );
 			}
 			
-			if ( g_flShowDamage[iAttIndex] > 0 ) Chat.CenterMessagePlayer( pBPlrAttacker, "- "+g_flShowDamage[iAttIndex]+" HP" );
+//			if ( g_flShowDamage[iAttIndex] > 0 ) Chat.CenterMessagePlayer( pBPlrAttacker, "- "+g_flShowDamage[iAttIndex]+" HP" );
+
+			if ( g_flShowDamage[iAttIndex] > 0 ) Chat.CenterMessagePlayer( pBPlrAttacker, "Damage dealt: " + g_flShowDamage[iAttIndex] + "\nHealth Left: " + int( flVicHealth ) );
 
 			return HOOK_HANDLED;
 		}
