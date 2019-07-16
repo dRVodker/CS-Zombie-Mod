@@ -97,7 +97,7 @@ HookReturnCode CSZM_SetS_PlrSay( CZP_Player@ pPlayer, CASCommand@ pArgs )
 
 		else
 		{
-			Chat.PrintToChatPlayer( pPlrEnt, "Command should only be used in the ready room.");
+			Chat.PrintToChatPlayer( pPlrEnt, "*Allowed only in {green}lobby team{default}!");
 			Engine.EmitSoundPlayer( pPlayer, "common/wpn_denyselect.wav" );
 		}
 
@@ -120,7 +120,7 @@ HookReturnCode CSZM_SetS_PlrSay( CZP_Player@ pPlayer, CASCommand@ pArgs )
 
 		else
 		{
-			Chat.PrintToChatPlayer( pPlrEnt, "Command should only be used in the ready room.");
+			Chat.PrintToChatPlayer( pPlrEnt, "*Allowed only in {green}lobby team{default}!");
 			Engine.EmitSoundPlayer( pPlayer, "common/wpn_denyselect.wav" );
 		}
 
