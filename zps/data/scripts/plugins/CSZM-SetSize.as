@@ -56,7 +56,7 @@ HookReturnCode CSZM_SetS_PlrSay( CZP_Player@ pPlayer, CASCommand@ pArgs )
 	CBasePlayer@ pPlrEnt = pPlayer.opCast();
 	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 
-	if ( Utils.StrContains( "!setscale", arg1 ) )
+	if ( Utils.StrContains( "!setscale", arg1 ) || Utils.StrContains( "!scale", arg1 ) )
 	{
 		if ( pBaseEnt.GetTeamNumber() == 0 )
 		{
@@ -100,12 +100,12 @@ HookReturnCode CSZM_SetS_PlrSay( CZP_Player@ pPlayer, CASCommand@ pArgs )
 		return HOOK_HANDLED;
 	}
 
-	if ( Utils.StrContains( "!dlight", arg1 ) )
+	if ( Utils.StrContains( "!dlight", arg1 ) || Utils.StrContains( "!dl", arg1 ) )
 	{
 		if ( pBaseEnt.GetTeamNumber() == 0 )
 		{
 			CBaseEntity@ pWeapon = pPlayer.GetCurrentWeapon();
-			if ( pWeapon !is null && !Utils.StrContains( "DLight_Origin", pWeapon.GetModelName() ) )
+			if ( pWeapon !is null && !Utils.StrContains( "DLight_Origin", pWeapon.GetEntityName() ) )
 			{
 				pWeapon.SetEntityName( "DLight_Origin" + pBaseEnt.entindex() );
 				Engine.EmitSoundEntity( pBaseEnt, "Buttons.snd14" );
