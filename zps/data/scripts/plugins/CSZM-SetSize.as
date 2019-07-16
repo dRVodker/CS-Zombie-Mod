@@ -16,6 +16,8 @@ void OnMapInit()
 	{
 		bIsCSZM = true;
 		Engine.PrecacheFile( sound, "weapons/slam/buttonclick.wav" );
+		Engine.PrecacheFile( sound, "buttons/lightswitch2.wav" );
+		Engine.PrecacheFile( sound, "common/wpn_denyselect.wav" );
 	}
 }
 
@@ -63,7 +65,12 @@ HookReturnCode CSZM_SetS_PlrSay( CZP_Player@ pPlayer, CASCommand@ pArgs )
 			string sAddition = "";
 			float fltest = Utils.StringToFloat( sValue );
 
-			if ( fltest == 0 || fltest < 0 ) return HOOK_HANDLED;
+			if ( fltest == 0 || fltest < 0 )
+			{
+				Chat.PrintToChatPlayer( pPlrEnt, "{red}*Invalid value!" );
+				Engine.EmitSoundPlayer( pPlayer, "common/wpn_denyselect.wav" );
+				return HOOK_HANDLED;
+			}
 
 			else
 			{
@@ -91,6 +98,20 @@ HookReturnCode CSZM_SetS_PlrSay( CZP_Player@ pPlayer, CASCommand@ pArgs )
 		else Chat.PrintToChatPlayer( pPlrEnt, "Command should only be used in the ready room.");
 
 		return HOOK_HANDLED;
+	}
+
+	if ( Utils.StrContains( "!dlight", arg1 ) )
+	{
+		if ( pBaseEnt.GetTeamNumber() == 0 )
+		{
+			CBaseEntity@ pWeapon = pPlayer.GetCurrentWeapon();
+			if ( pWeapon !is null && !Utils.StrContains( "DLight_Origin", pWeapon.GetModelName() ) )
+			{
+				pWeapon.SetEntityName( "DLight_Origin" + pBaseEnt.entindex() );
+				Engine.EmitSoundEntity( pBaseEnt, "Buttons.snd14" );
+				Engine.Ent_Fire( "DLight_Origin" + pBaseEnt.entindex(), "AddOutput", "Effects 2" );
+			}
+		}
 	}
 
 	return HOOK_CONTINUE;
