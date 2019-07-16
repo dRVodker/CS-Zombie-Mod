@@ -414,6 +414,7 @@ void SetUpStuff()
 	Engine.Ent_Fire( "lobby_*", "Disable" );
 	Engine.Ent_Fire( "shading", "StartOverlays" );
 
+	Engine.Ent_Fire( "ld_doors", "Open" );
 	Engine.Ent_Fire( "dr_vodker", "Disable" );
 	Engine.Ent_Fire( "hi_greenhouse", "Enable" );
 	Engine.Ent_Fire( "hi_greenhouse_nm", "Disable" );
