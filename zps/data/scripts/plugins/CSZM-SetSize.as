@@ -95,7 +95,11 @@ HookReturnCode CSZM_SetS_PlrSay( CZP_Player@ pPlayer, CASCommand@ pArgs )
 			return HOOK_HANDLED;
 		}
 
-		else Chat.PrintToChatPlayer( pPlrEnt, "Command should only be used in the ready room.");
+		else
+		{
+			Chat.PrintToChatPlayer( pPlrEnt, "Command should only be used in the ready room.");
+			Engine.EmitSoundPlayer( pPlayer, "common/wpn_denyselect.wav" );
+		}
 
 		return HOOK_HANDLED;
 	}
@@ -111,7 +115,16 @@ HookReturnCode CSZM_SetS_PlrSay( CZP_Player@ pPlayer, CASCommand@ pArgs )
 				Engine.EmitSoundEntity( pBaseEnt, "Buttons.snd14" );
 				Engine.Ent_Fire( "DLight_Origin" + pBaseEnt.entindex(), "AddOutput", "Effects 2" );
 			}
+			return HOOK_HANDLED;
 		}
+
+		else
+		{
+			Chat.PrintToChatPlayer( pPlrEnt, "Command should only be used in the ready room.");
+			Engine.EmitSoundPlayer( pPlayer, "common/wpn_denyselect.wav" );
+		}
+
+		return HOOK_HANDLED;
 	}
 
 	return HOOK_CONTINUE;
