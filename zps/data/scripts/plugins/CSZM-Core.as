@@ -373,33 +373,36 @@ HookReturnCode CSZM_OnConCommand( CZP_Player@ pPlayer, CASCommand@ pArgs )
 
 		if ( !RoundManager.IsRoundOngoing( false ) )
 		{
-			if ( Utils.StrContains( "choose", pArgs.Arg( 0 ) ) && bWarmUp ) 
+			if ( Utils.StrContains( "choose", pArgs.Arg( 0 ) ) && pBaseEnt.GetTeamNumber() == 0 ) 
 			{
-				if ( Utils.StrEql( "choose4", pArgs.Arg( 0 ) ) && g_flFRespawnCD[iIndex] <= Globals.GetCurrentTime() ) //PutPlrToPlayZone( pBaseEnt )
+				if ( bWarmUp )
 				{
-					g_flFRespawnCD[iIndex] = Globals.GetCurrentTime() + 0.45f;
-					pPlayer.ForceRespawn();
+					if ( Utils.StrEql( "choose4", pArgs.Arg( 0 ) ) && g_flFRespawnCD[iIndex] <= Globals.GetCurrentTime() )
+					{
+						g_flFRespawnCD[iIndex] = Globals.GetCurrentTime() + 0.45f;
+						pPlayer.ForceRespawn();
+					}
+					
+					return HOOK_HANDLED;
 				}
-
-				return HOOK_HANDLED;
-			}
-
-			if ( Utils.StrEql( "choose2", pArgs.Arg( 0 ) ) )
-			{
-				if ( pBaseEnt.GetTeamNumber() == 0 )
+				else
 				{
-					if ( g_iInfectDelay[iIndex] > 0 )
+					if ( Utils.StrEql( "choose2", pArgs.Arg( 0 ) ) )
 					{
-						Chat.PrintToChatPlayer( pPlrEnt, strCannotPlayFI );
-						return HOOK_HANDLED;
-					}
-					else
-					{
-						Chat.PrintToChatPlayer( pPlrEnt, strChooseToPlayFI );
-						if ( !g_bIsVolunteer[iIndex] ) g_bIsVolunteer[iIndex] = true;
+						if ( g_iInfectDelay[iIndex] > 0 )
+						{
+							Chat.PrintToChatPlayer( pPlrEnt, strCannotPlayFI );
+							return HOOK_HANDLED;
+						}
+						
+						else
+						{
+							Chat.PrintToChatPlayer( pPlrEnt, strChooseToPlayFI );
+							if ( !g_bIsVolunteer[iIndex] ) g_bIsVolunteer[iIndex] = true;
+						}
 					}
 				}
-			}
+			}				
 		}
 
 		else
@@ -437,7 +440,7 @@ HookReturnCode CSZM_OnConCommand( CZP_Player@ pPlayer, CASCommand@ pArgs )
 			}
 		}
 	}
-	
+
 	return HOOK_CONTINUE;
 }
 
@@ -623,7 +626,7 @@ HookReturnCode CSZM_OnPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &out D
 			if ( pPlayer.IsCarrier() && g_bIsFirstInfected[iVicIndex] ) bAllowPainSound = true;
 			if ( !pPlayer.IsCarrier() ) bAllowPainSound = true;
 
-			if ( bAllowPainSound && flDamage > 0 && flDamage < pBaseEnt.GetHealth() )
+			if ( bAllowPainSound && flDamage > 0 && flDamage < pBaseEnt.GetHealth() && flDamage > 0.5f && pBaseEnt.GetWaterLevel() != WL_Eyes )
 			{
 				Engine.EmitSoundEntity( pBaseEnt, "CSPlayer_Z.Pain" + g_iCVSIndex[iVicIndex] );
 				g_flIdleTime[iVicIndex] = Globals.GetCurrentTime() + Math::RandomFloat( 4.85f, 9.95f );
@@ -691,7 +694,7 @@ HookReturnCode CSZM_OnPlayerKilled( CZP_Player@ pPlayer, CTakeDamageInfo &in Dam
 			if ( pPlayer.IsCarrier() && g_bIsFirstInfected[iVicIndex] ) bAllowDieSound = true;
 			if ( !pPlayer.IsCarrier() ) bAllowDieSound = true;
 
-			if ( bAllowDieSound ) Engine.EmitSoundEntity( pBaseEnt, "CSPlayer_Z.Die" + g_iCVSIndex[iVicIndex] );
+			if ( bAllowDieSound && pBaseEnt.GetWaterLevel() != WL_Eyes ) Engine.EmitSoundEntity( pBaseEnt, "CSPlayer_Z.Die" + g_iCVSIndex[iVicIndex] );
 
 			if ( !bSuicide )
 			{
@@ -849,7 +852,8 @@ void OnProcessRound()
 
 				if ( bAllowIdleSound && g_flIdleTime[i] <= Globals.GetCurrentTime() && g_flIdleTime[i] != 0 )
 				{
-					Engine.EmitSoundEntity( pBaseEnt, "CSPlayer.Idle" + g_iCVSIndex[pBaseEnt.entindex()] );
+					if ( pBaseEnt.GetWaterLevel() != WL_Eyes ) Engine.EmitSoundEntity( pBaseEnt, "CSPlayer.Idle" + g_iCVSIndex[pBaseEnt.entindex()] );
+
 					switch( g_iCVSIndex[i] )
 					{
 						case 2:

@@ -58,8 +58,11 @@ HookReturnCode CSZM_SetS_OnConCommand( CZP_Player@ pPlayer, CASCommand@ pArgs )
 
 		if ( pBaseEnt.GetTeamNumber() == 0 )
 		{
-			if ( Utils.StrContains( "enhancevision", pArgs.Arg( 0 ) ) ) DLight( pPlayer, pBaseEnt, iIndex );
-			return HOOK_HANDLED;
+			if ( Utils.StrContains( "enhancevision", pArgs.Arg( 0 ) ) ) 
+			{
+				DLight( pPlayer, pBaseEnt, iIndex );
+				return HOOK_HANDLED;
+			}
 		}
 	}
 	
