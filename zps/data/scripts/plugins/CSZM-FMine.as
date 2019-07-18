@@ -21,8 +21,6 @@ void OnPluginInit()
 
 	Events::Entities::OnEntityCreation.Hook( @CSZM_FM_OnEntityCreation );
 
-	Events::Entities::OnEntityDestruction.Hook( @CSZM_FM_OnEntityDestruction );
-
 	Events::Custom::OnEntityDamaged.Hook( @CSZM_FM_OnEntDamaged );
 }
 
@@ -57,7 +55,6 @@ void OnMapShutdown()
 		bIsCSZM = false;
 		Entities::RemoveRegisterUse( "item_deliver" );
 		Entities::RemoveRegisterDrop( "item_deliver" );
-		Entities::RemoveRegisterOutput( "OnTakeDamage", "test_fragmine_active" );
 
 		flWaitTime = 0.0f;
 		flWaitTimeTL = 0.0f;
@@ -127,12 +124,6 @@ HookReturnCode CSZM_FM_OnEntityCreation( const string &in strClassname, CBaseEnt
 
 	if ( Utils.StrContains( "weapon_machete", strClassname ) ) SpawnWepFragMine( pEntity );
 
-	return HOOK_CONTINUE;
-}
-
-HookReturnCode CSZM_FM_OnEntityDestruction( const string &in strClassname, CBaseEntity@ pEntity )
-{
-//	SD("EntityDestruction Class: " + strClassname );
 	return HOOK_CONTINUE;
 }
 
@@ -209,20 +200,20 @@ HookReturnCode CSZM_FM_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out 
 			for ( int i = 0; i <= iTracerCount; i++)
 			{
 				CEntityData@ TracerIPD = EntityCreator::EntityData();
-				TracerIPD.Add( "endwidth", "" + Math::RandomFloat( 0.12, 0.19 ) );
-				TracerIPD.Add( "lifetime", "" + Math::RandomFloat( 0.021, 0.042 ) );
-				TracerIPD.Add( "renderamt", "195" );
+				TracerIPD.Add( "endwidth", "" + Math::RandomFloat( 0.21, 0.37 ) );
+				TracerIPD.Add( "lifetime", "" + Math::RandomFloat( 0.032, 0.196 ) );
+				TracerIPD.Add( "renderamt", "" + Math::RandomInt( 195, 235 ) );
 				TracerIPD.Add( "rendercolor", "255 155 5" );
 				TracerIPD.Add( "rendermode", "5" );
 				TracerIPD.Add( "spritename", "sprites/xbeam2.vmt" );
-				TracerIPD.Add( "startwidth", "" + Math::RandomFloat( 1.75, 2.85 ) );
+				TracerIPD.Add( "startwidth", "" + Math::RandomFloat( 1.85, 2.85 ) );
 
-				TracerIPD.Add( "kill", "0", true, "" + Math::RandomFloat( 0.185, 0.731 ) );
+				TracerIPD.Add( "kill", "0", true, "" + Math::RandomFloat( 0.194, 0.842 ) );
 
 				CBaseEntity@ pTracer = EntityCreator::Create( "env_spritetrail", pEntity.GetAbsOrigin(), QAngle( 0, 0, 0 ), TracerIPD );
 				Vector vUP;
 				Globals.AngleVectors( QAngle( Math::RandomFloat( -2, -72 ), Math::RandomFloat( 0, 360 ), Math::RandomFloat( 0, 360 ) ), vUP );
-				pTracer.SetAbsVelocity( vUP * Math::RandomInt( 1341, 2108 ) );	
+				pTracer.SetAbsVelocity( vUP * Math::RandomInt( 2750, 2995 ) );	
 			}
 
 

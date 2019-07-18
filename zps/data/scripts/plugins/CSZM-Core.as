@@ -115,6 +115,7 @@ array<string> g_strModels =
 array<string> g_strMDLToUse;
 
 //Other arrays ( Don't even touch this )
+array<float> g_flFRespawnCD;
 array<float> g_flIdleTime;
 array<float> g_flHPRDelay;
 array<int> g_iInfectDelay;
@@ -215,6 +216,7 @@ void OnMapInit()
 		Entities::RegisterDrop( "item_deliver" );
 		
 		//Resize
+		g_flFRespawnCD.resize( iMaxPlayers + 1 );
 		g_flIdleTime.resize( iMaxPlayers + 1 );
 		g_iCVSIndex.resize( iMaxPlayers + 1 );
 		g_bWasFirstInfected.resize( iMaxPlayers + 1 );
@@ -288,6 +290,7 @@ void OnMapShutdown()
 		ClearFloatArray( g_flRecoverTime );
 		ClearFloatArray( g_flAddTime );
 		ClearFloatArray( g_flIdleTime );
+		ClearFloatArray( g_flFRespawnCD );
 	}
 }
 
@@ -336,6 +339,7 @@ HookReturnCode CSZM_OnPlayerConnected( CZP_Player@ pPlayer )
 
         const int iIndex = pBaseEnt.entindex();
 		
+		g_flFRespawnCD[iIndex] = 0.0f;
 		g_flIdleTime[iIndex] = 0.0f;
 		g_iInfectDelay[iIndex] = 0;
 		g_iAntidote[iIndex] = 0;
@@ -365,11 +369,18 @@ HookReturnCode CSZM_OnConCommand( CZP_Player@ pPlayer, CASCommand@ pArgs )
 		CBasePlayer@ pPlrEnt = pPlayer.opCast();
 		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 
+		int iIndex = pBaseEnt.entindex();
+
 		if ( !RoundManager.IsRoundOngoing( false ) )
 		{
 			if ( Utils.StrContains( "choose", pArgs.Arg( 0 ) ) && bWarmUp ) 
 			{
-				if ( Utils.StrEql( "choose4", pArgs.Arg( 0 ) ) ) PutPlrToPlayZone( pBaseEnt );
+				if ( Utils.StrEql( "choose4", pArgs.Arg( 0 ) ) && g_flFRespawnCD[iIndex] <= Globals.GetCurrentTime() ) //PutPlrToPlayZone( pBaseEnt )
+				{
+					g_flFRespawnCD[iIndex] = Globals.GetCurrentTime() + 0.45f;
+					pPlayer.ForceRespawn();
+				}
+
 				return HOOK_HANDLED;
 			}
 
@@ -377,7 +388,7 @@ HookReturnCode CSZM_OnConCommand( CZP_Player@ pPlayer, CASCommand@ pArgs )
 			{
 				if ( pBaseEnt.GetTeamNumber() == 0 )
 				{
-					if ( g_iInfectDelay[pBaseEnt.entindex()] > 0 )
+					if ( g_iInfectDelay[iIndex] > 0 )
 					{
 						Chat.PrintToChatPlayer( pPlrEnt, strCannotPlayFI );
 						return HOOK_HANDLED;
@@ -385,7 +396,7 @@ HookReturnCode CSZM_OnConCommand( CZP_Player@ pPlayer, CASCommand@ pArgs )
 					else
 					{
 						Chat.PrintToChatPlayer( pPlrEnt, strChooseToPlayFI );
-						if ( !g_bIsVolunteer[pBaseEnt.entindex()] ) g_bIsVolunteer[pBaseEnt.entindex()] = true;
+						if ( !g_bIsVolunteer[iIndex] ) g_bIsVolunteer[iIndex] = true;
 					}
 				}
 			}
@@ -399,14 +410,14 @@ HookReturnCode CSZM_OnConCommand( CZP_Player@ pPlayer, CASCommand@ pArgs )
 				{
 					if ( !bAllowZombieSpawn )
 					{
-						if ( g_bIsAbuser[pBaseEnt.entindex()] )
+						if ( g_bIsAbuser[iIndex] )
 						{
 							Chat.PrintToChatPlayer( pPlrEnt, strCannotJoinGame );
 							Engine.EmitSoundPlayer( pPlayer, "common/wpn_denyselect.wav" );
 							return HOOK_HANDLED;
 						}
 
-						if ( !g_bIsAbuser[pBaseEnt.entindex()] )
+						if ( !g_bIsAbuser[iIndex] )
 						{
 							pBaseEnt.ChangeTeam( 2 );
 							pPlayer.ForceRespawn();
@@ -415,7 +426,7 @@ HookReturnCode CSZM_OnConCommand( CZP_Player@ pPlayer, CASCommand@ pArgs )
 						}
 					}
 
-					else if ( g_bIsAbuser[pBaseEnt.entindex()] )
+					else if ( g_bIsAbuser[iIndex] )
 					{
 						pBaseEnt.ChangeTeam( 3 );
 						pPlayer.ForceRespawn();
@@ -1418,6 +1429,7 @@ void EmitBloodExp( CZP_Player@ pPlayer, const bool &in bIsSilent )
 
 	EntityCreator::Create( "info_particle_system", pBaseEnt.EyePosition(), pBaseEnt.EyeAngles(), CameraBloodIPD );
 	EntityCreator::Create( "info_particle_system", pBaseEnt.GetAbsOrigin(), pBaseEnt.GetAbsAngles(), BodyBloodIPD );
+	
 	if ( !bIsSilent ) Engine.EmitSoundEntity( pBaseEnt, "Flesh.HeadshotExplode" );
 }
 

@@ -4,10 +4,11 @@ void OnPluginInit()
 {
 	PluginData::SetVersion( "1.0" );
 	PluginData::SetAuthor( "dR.Vodker" );
-	PluginData::SetName( "CSZM - Set Scale" );
+	PluginData::SetName( "CSZM - Chat Commands" );
 
 	Events::Player::PlayerSay.Hook( @CSZM_SetS_PlrSay );
 	Events::Player::OnPlayerSpawn.Hook( @CSZM_SetS_OnPlrSpawn );
+	Events::Player::OnConCommand.Hook( @CSZM_SetS_OnConCommand );
 }
 
 void OnMapInit()
@@ -23,12 +24,12 @@ void OnMapInit()
 
 void OnMapShutdown()
 {
-	if ( bIsCSZM == true )  bIsCSZM = false;
+	if ( bIsCSZM )  bIsCSZM = false;
 }
 
 HookReturnCode CSZM_SetS_OnPlrSpawn( CZP_Player@ pPlayer )
 {
-	if ( bIsCSZM == false ) return HOOK_CONTINUE;
+	if ( !bIsCSZM ) return HOOK_CONTINUE;
 
 	CBasePlayer@ pPlrEnt = pPlayer.opCast();
 	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
@@ -46,9 +47,28 @@ HookReturnCode CSZM_SetS_OnPlrSpawn( CZP_Player@ pPlayer )
 	return HOOK_CONTINUE;
 }
 
+HookReturnCode CSZM_SetS_OnConCommand( CZP_Player@ pPlayer, CASCommand@ pArgs )
+{
+	if ( bIsCSZM )
+	{
+		CBasePlayer@ pPlrEnt = pPlayer.opCast();
+		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+
+		int iIndex = pBaseEnt.entindex();
+
+		if ( pBaseEnt.GetTeamNumber() == 0 )
+		{
+			if ( Utils.StrContains( "enhancevision", pArgs.Arg( 0 ) ) ) DLight( pPlayer, pBaseEnt, iIndex );
+			return HOOK_HANDLED;
+		}
+	}
+	
+	return HOOK_CONTINUE;
+}
+
 HookReturnCode CSZM_SetS_PlrSay( CZP_Player@ pPlayer, CASCommand@ pArgs )
 {
-	if ( bIsCSZM == false ) return HOOK_CONTINUE;
+	if ( !bIsCSZM ) return HOOK_CONTINUE;
 	if ( pArgs is null ) return HOOK_CONTINUE;
 
 	string arg1 = pArgs.Arg( 1 );
@@ -108,13 +128,7 @@ HookReturnCode CSZM_SetS_PlrSay( CZP_Player@ pPlayer, CASCommand@ pArgs )
 	{
 		if ( pBaseEnt.GetTeamNumber() == 0 )
 		{
-			CBaseEntity@ pWeapon = pPlayer.GetCurrentWeapon();
-			if ( pWeapon !is null && !Utils.StrContains( "DLight_Origin", pWeapon.GetEntityName() ) )
-			{
-				pWeapon.SetEntityName( "DLight_Origin" + pBaseEnt.entindex() );
-				Engine.EmitSoundEntity( pBaseEnt, "Buttons.snd14" );
-				Engine.Ent_Fire( "DLight_Origin" + pBaseEnt.entindex(), "AddOutput", "Effects 2" );
-			}
+			DLight( pPlayer, pBaseEnt, pBaseEnt.entindex() );
 			return HOOK_HANDLED;
 		}
 
@@ -128,4 +142,26 @@ HookReturnCode CSZM_SetS_PlrSay( CZP_Player@ pPlayer, CASCommand@ pArgs )
 	}
 
 	return HOOK_CONTINUE;
+}
+
+void DLight( CZP_Player@ pPlayer, CBaseEntity@ pPlrEntity, const int &in iIndex )
+{
+	CBaseEntity@ pWeapon = pPlayer.GetCurrentWeapon();
+
+	if ( pWeapon !is null )
+	{
+		Engine.EmitSoundEntity( pPlrEntity, "Buttons.snd14" );
+
+		if ( !Utils.StrContains( "DLight_Origin", pWeapon.GetEntityName() ) )
+		{
+			pWeapon.SetEntityName( "DLight_Origin" + iIndex );
+			Engine.Ent_Fire( "DLight_Origin" + iIndex, "AddOutput", "Effects 2" );
+		}
+
+		else
+		{
+			pWeapon.SetEntityName( "TrurnOff-DL" + iIndex );
+			Engine.Ent_Fire( "TrurnOff-DL" + iIndex, "AddOutput", "Effects 32" );
+		}
+	}
 }
