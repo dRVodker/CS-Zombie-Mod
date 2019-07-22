@@ -92,7 +92,9 @@ const string strBecameFi = " {default}became the {lightseagreen}first infected{d
 const string strCannotJoinGame = "{default}You cannot join the game until the {lightseagreen}first infected{default} turns...";
 const string strCannotJoinZT0 = "{default}You cannot join the {red}zombie team{default} until the {lightseagreen}first infected{default} turns...";
 const string strCannotJoinZT1 = "{default}Round is already in progress, you cannot join the {red}zombie team{default} right now.";
-const string strHintF1 = "F1 - Join the game";
+const string strHintF1 = "F1 - Humans Team";
+const string strHintF2Inf = "F2 - Be The First Infected";
+const string strHintF2 = "F2 - Zombie Team";
 const string strHintF3 = "F3 - Spectate";
 const string strHintF4 = "F4 - Back to the Lobby";
 const string strHintF4WU = "F4 - Respawn";
@@ -604,6 +606,7 @@ HookReturnCode CSZM_OnPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &out D
 
 				return HOOK_HANDLED;
 			}
+
 			else if ( g_iAntidote[iVicIndex] <= 0 )
 			{
 				DamageInfo.SetDamage( 0 );
@@ -964,6 +967,12 @@ void LocknLoad()
 
 		if ( pEntPlayer is null ) continue;
 
+		if ( pEntPlayer.GetTeamNumber() == 0 )
+		{
+			lobby_hint( ToZPPlayer( i ) );
+			continue;
+		}
+
 		if ( pEntPlayer.GetTeamNumber() == 2 && g_iInfectDelay[i] > 0 ) g_iInfectDelay[i]--;
 	}
 }
@@ -1285,13 +1294,13 @@ void GotVictim( CZP_Player@ pAttacker, CBaseEntity@ pBaseEntA )
 
 void AddTime( const int &in iTime )
 {
-	if ( RoundManager.IsRoundOngoing( false ) )
+	if ( RoundManager.IsRoundOngoing( false ) && Utils.GetNumPlayers( survivor, true ) > 1 && bAllowAddTime )
 	{
 		int iOverTimeMult = 1;
 	
 		if ( iSeconds <= 0 ) iOverTimeMult = 3;
 	
-		if ( iSeconds < 41 && iTime > 0 && bAllowAddTime )
+		if ( iSeconds < 35 && iTime > 0 )
 		{
 			iSeconds += ( iTime * iOverTimeMult );
 		
@@ -1328,6 +1337,17 @@ void TurnFirstInfected()
 	g_iInfectDelay[iFZIndex] += iInfDelay;
 	ShowOutbreak( iFZIndex );
 	TurnToZ( iFZIndex );
+
+	for( int i = 1; i <= iMaxPlayers; i++ )
+	{
+		CBaseEntity@ pEntPlayer = FindEntityByEntIndex( i );
+
+		if ( pEntPlayer is null ) continue;
+
+		if ( pEntPlayer.GetTeamNumber() != 0 ) continue;
+	
+		lobby_hint( ToZPPlayer( i ) );
+	}
 }
 
 void TurnToZ( const int &in iIndex )
@@ -1566,5 +1586,10 @@ void WarmUpEnd()
 	SendGameText( any, "", 3, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, Color( 0, 0, 0 ), Color( 0, 0, 0 ) );
 
 	SendGameText( any, strHintF1, 3, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color( 64, 128, 255 ), Color( 255, 95, 5 ) );
-	SendGameText( any, "\n\n" + strHintF3, 4, 0.0f, 0.05f, 0.085f, 0.0f, 2.0f, 120.0f, Color( 255, 255, 255 ), Color( 255, 95, 5 ) );
+
+	if ( !RoundManager.IsRoundOngoing( false ) ) SendGameText( any, "\n" + strHintF2Inf, 4, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color( 255, 32, 64 ), Color( 255, 95, 5 ) );
+
+	else SendGameText( any, "\n" + strHintF2, 4, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color( 255, 32, 64 ), Color( 255, 95, 5 ) );
+
+	SendGameText( any, "\n\n" + strHintF3, 5, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color( 255, 255, 255 ), Color( 255, 95, 5 ) );
 }

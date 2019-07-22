@@ -24,7 +24,7 @@ void MovePlrToSpec( CBaseEntity@ pEntPlr )
 {
 	pEntPlr.ChangeTeam( 0 );
 	CZP_Player@ pPlayer = ToZPPlayer( pEntPlr);
-	pPlayer.ConsoleCommand("choose3");
+	pPlayer.ConsoleCommand( "choose3" );
 }
 
 int CountPlrs( const int &in iTeamNum )
@@ -89,8 +89,21 @@ void ClearBoolArray( array<bool> &iTarget )
 
 void lobby_hint( CZP_Player@ pPlayer )
 {
+	string sNextLine = "\n";
+
 	SendGameTextPlayer( pPlayer, strHintF1, 3, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color( 64, 128, 255 ), Color( 255, 95, 5 ) );
-	SendGameTextPlayer( pPlayer, "\n\n" + strHintF3, 4, 0.0f, 0.05f, 0.085f, 0.0f, 2.0f, 120.0f, Color( 255, 255, 255 ), Color( 255, 95, 5 ) );
+
+	if ( !RoundManager.IsRoundOngoing( false ) ) SendGameTextPlayer( pPlayer, "\n" + strHintF2Inf, 4, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color( 255, 32, 64 ), Color( 255, 95, 5 ) );
+
+	else if ( bAllowZombieSpawn ) SendGameTextPlayer( pPlayer, "\n" + strHintF2, 4, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color( 255, 32, 64 ), Color( 255, 95, 5 ) );
+
+	else 
+	{
+		SendGameTextPlayer( pPlayer, "", 4, 0.0f, 0.00f, 0.0f, 0.0f, 0.0f, 0.0f, Color( 0, 0, 0 ), Color( 0, 0, 0 ) );
+		sNextLine = "";
+	}
+
+	SendGameTextPlayer( pPlayer, "\n" + sNextLine + strHintF3, 5, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color( 255, 255, 255 ), Color( 255, 95, 5 ) );
 }
 
 void lobby_hint_wu( CZP_Player@ pPlayer )
