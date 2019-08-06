@@ -98,6 +98,9 @@ HookReturnCode CSZM_SHP_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out
 
 	if ( Utils.StrContains( "unbrk", pEntity.GetEntityName() ) || Utils.StrContains( "unbreakable", pEntity.GetEntityName() ) ) bIsUnbreakable = true;
 
+	//50% of damage resist for "prop_barricade"
+	if ( Utils.StrEql( pEntity.GetClassname(), "prop_barricade" ) ) DamageInfo.SetDamage( DamageInfo.GetDamage() * 0.5f );
+
 	//Show HP
 	if ( pAttacker.IsPlayer() && pAttacker.GetTeamNumber() == 3 && bIsUnbreakable != true )
 	{
@@ -186,6 +189,9 @@ HookReturnCode CSZM_SHP_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out
 					Utils.StrContains( "propanecanister001a", MDLName ) ||
 					Utils.StrContains( "oildrum001_explosive", MDLName ) ||
 					Utils.StrContains( "fire_extinguisher", MDLName ) ||
+					Utils.StrContains( "vent001", MDLName ) ||
+					Utils.StrContains( "canister01a", MDLName ) ||
+					Utils.StrContains( "canister02a", MDLName ) ||
 					Utils.StrContains( "propane_tank001a", MDLName ) ||
 					Utils.StrContains( "gascan001a", MDLName ) ) return HOOK_HANDLED;
 				
@@ -199,13 +205,6 @@ HookReturnCode CSZM_SHP_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out
 	{
 		DamageInfo.SetDamageType( 1<<13 );
 		DamageInfo.SetDamage( pEntity.GetHealth() );
-		return HOOK_HANDLED;
-	}
-
-	//50% of damage resist for "prop_barricade"
-	if ( Utils.StrEql( pEntity.GetClassname(), "prop_barricade" ) )
-	{
-		DamageInfo.SetDamage( DamageInfo.GetDamage() * 0.5f );
 		return HOOK_HANDLED;
 	}
 
@@ -234,6 +233,7 @@ void ShowHP( CBasePlayer@ pBasePlayer, const int &in iHP, const bool &in bLeft, 
 		Chat.CenterMessagePlayer( pBasePlayer, "" );
 		return;
 	}
+
 	else
 	{
 		string strLeft = "";
