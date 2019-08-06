@@ -186,7 +186,7 @@ HookReturnCode CSZM_FM_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out 
 				pEntityOwner.ChangeTeam( 1 );
 			}
 
-			int iShowerCount = Math::RandomInt( 2, 4 );
+			int iShowerCount = Math::RandomInt( 1, 3 );
 			int iTracerCount = Math::RandomInt( 18, 24 );
 
 			for ( int i = 0; i <= iShowerCount; i++)

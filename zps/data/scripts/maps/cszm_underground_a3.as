@@ -1,5 +1,5 @@
-#include "cszm_random_def"
-#include "cszm_doorset"
+#include "cszm/random_def"
+#include "cszm/doorset"
 
 //MyDebugFunc
 void SD( const string &in strMSG )
@@ -10,6 +10,12 @@ void SD( const string &in strMSG )
 int iMaxPlayers;
 const float flMaxDist = 1024;
 const float flLastRadius = 384;
+
+float flSpawnThinkTime = 0;
+
+int iLatsZSpawnIndex;
+array<int> g_ZSpawnIndex;
+array<int> g_ZSpawnState;
 
 void OnMapInit()
 {
@@ -24,6 +30,7 @@ void OnNewRound()
 	Engine.Ent_Fire( "SND_Ambient", "PlaySound" );
 
 	Schedule::Task( 0.025f, "SetUpStuff" );
+	OverrideLimits();
 }
 
 void OnMatchBegin() 
@@ -222,16 +229,6 @@ void RemoveAmmoBar()
 			pEntity.SUB_Remove();
 		}
 	}
-}
-
-int PlrCountHP( int &in iMulti )
-{
-	int iHP = 0;
-	int iSurvNum = Utils.GetNumPlayers( survivor, true );
-	if( iSurvNum < 4 ) iSurvNum = 5;
-	iHP = iSurvNum * iMulti;
-	
-	return iHP;
 }
 
 void FlickerLight1()

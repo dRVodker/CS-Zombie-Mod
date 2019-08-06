@@ -1,4 +1,4 @@
-#include "cszm_random_def"
+#include "cszm/random_def"
 
 void SD(const string &in strMSG)
 {
@@ -14,6 +14,7 @@ void OnMapInit()
 void OnNewRound()
 {
 	Schedule::Task(0.05f, "SetUpStuff");
+	OverrideLimits();
 }
 
 void OnMatchBegin() 

@@ -36,6 +36,8 @@ HookReturnCode CSZM_SetS_OnPlrSpawn( CZP_Player@ pPlayer )
 
 	string sEntName = pBaseEnt.GetEntityName();
 
+	if ( pBaseEnt.GetTeamNumber() == 1 ) pPlayer.StripWeapon( "weapon_emptyhand" );
+
 	if ( Utils.StrEql( "", sEntName ) )
 	{
 		sEntName = ( "plr_setsize" + pBaseEnt.entindex() );

@@ -1,5 +1,5 @@
-#include "cszm_random_def"
-#include "cszm_doorset"
+#include "cszm/random_def"
+#include "cszm/doorset"
 
 int CalculateHealthPoints(int &in iMulti)
 {
@@ -20,6 +20,7 @@ void OnMapInit()
 void OnNewRound()
 {	
 	Schedule::Task(0.05f, "SetUpStuff");
+	OverrideLimits();
 }
 
 void OnMatchBegin() 
@@ -34,6 +35,7 @@ void SetUpStuff()
 	Engine.Ent_Fire("Precache", "Kill");
 	
 	Engine.Ent_Fire("tonemap", "SetBloomScale", "0.475");
+	Engine.Ent_Fire("extinguisher", "Addoutput", "damagetoenablemotion 500");
 	RemoveAmmoBar();
 	VMSkins();
 	RndSpawn();

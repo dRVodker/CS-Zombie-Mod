@@ -1,5 +1,5 @@
-#include "cszm_random_def"
-#include "cszm_doorset"
+#include "cszm/random_def"
+#include "cszm/doorset"
 
 void SD( const string &in strMSG )
 {
@@ -32,6 +32,7 @@ void OnNewRound()
 	iF1SPitch = 0;
 	iF2SPitch = 0;
 	Schedule::Task( 0.05f, "SetUpStuff" );
+	OverrideLimits();
 }
 
 float flFan1FLTime = 0.0f;

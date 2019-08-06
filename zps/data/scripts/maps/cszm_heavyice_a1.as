@@ -1,4 +1,4 @@
-#include "cszm_random_def"
+#include "cszm/random_def"
 #include "../SendGameText"
 
 void SD( const string &in strMSG )
@@ -19,6 +19,8 @@ int CHP( int &in iMulti )
 int iMaxPlayers;
 int iMysticismAttackerIndex = 0;
 float flExpBarrelsWaitTime = 0;
+
+array<float> g_TeleportDelay;
 
 array<string> g_strStartWeapons =
 {
@@ -153,6 +155,8 @@ void OnMapInit()
 	Engine.PrecacheFile( sound, "ambient/levels/labs/electric_explosion1.wav" );
 	Engine.PrecacheFile( sound, "weapons/crossbow/fire1.wav" );
 	Engine.PrecacheFile( sound, "heavyice_ambient/vo/hello1.wav" );
+	Engine.PrecacheFile( sound, "doors/default_stop.wav" );
+	Engine.PrecacheFile( sound, "doors/default_move.wav" );
 //	Engine.PrecacheFile( sound, "" );
 //	Engine.PrecacheFile( sound, "" );
 
@@ -163,6 +167,8 @@ void OnMapInit()
 	Entities::RegisterOutput( "OnAwakened", "heavy_props1" );
 	Entities::RegisterOutput( "OnAwakened", "heavy_props2" );
 
+	Entities::RegisterUse( "teleport_door" );
+
 	Events::Trigger::OnEndTouch.Hook( @HI_OnEndTouch );
 	Events::Trigger::OnStartTouch.Hook( @HI_OnStartTouch );
 
@@ -170,12 +176,15 @@ void OnMapInit()
 	Events::Player::OnPlayerSpawn.Hook( @HI_OnPlrSpawn );
 	
 	Schedule::Task( 0.01f, "SetUpStuff" );
+
+	g_TeleportDelay.resize( iMaxPlayers + 1 );
 	OverrideLimits();
 }
 
 void OnNewRound()
 {
 	Schedule::Task( 0.01f, "SetUpStuff" );
+	OverrideLimits();
 }
 
 void OnMatchBegin()
@@ -195,6 +204,27 @@ void OnProcessRound()
 			{
 				g_ExpBarrelRecover[i] = 0.0f;
 				RespawnExpBarrel( i );
+			}
+		}
+	}
+
+	for ( int i = 1; i <= iMaxPlayers; i++ )
+	{
+		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex( i );
+		CZP_Player@ pPlayer = ToZPPlayer( i );
+
+		if ( pPlayerEntity is null ) continue;
+
+		if ( g_TeleportDelay[i] != 0 && g_TeleportDelay[i] <= Globals.GetCurrentTime() )
+		{
+			g_TeleportDelay[i] = 0;
+
+			if ( pPlayerEntity.GetTeamNumber() == 0 )
+			{
+				Utils.ScreenFade( pPlayer, Color( 0, 0, 0, 255 ), 0.175f, 0.01f, fade_in );
+				pPlayerEntity.SetMoveType( MOVETYPE_WALK );
+				pPlayerEntity.Teleport( Vector( 544, -480, 385 ), QAngle( 0, 45, 0 ), Vector( 0, 0, 0 ) );
+				Engine.EmitSoundPosition( i, "doors/default_stop.wav", pPlayerEntity.EyePosition(), 1.0f, 60, 105);
 			}
 		}
 	}
@@ -280,7 +310,38 @@ HookReturnCode HI_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out Damag
 	return HOOK_HANDLED;
 }
 
-void OnEntityOutput(const string &in strOutput, CBaseEntity@ pActivator, CBaseEntity@ pCaller)
+void OnEntityUsed( CZP_Player@ pPlayer, CBaseEntity@ pEntity )
+{
+	CBasePlayer@ pPlrEnt = pPlayer.opCast();
+	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+
+	int iIndex = pBaseEnt.entindex();
+
+	if ( Utils.StrEql( pEntity.GetEntityName(), "teleport_door" ) && g_TeleportDelay[iIndex] == 0 )
+	{
+		Vector Start = pBaseEnt.GetAbsOrigin();
+		Vector End;
+		Vector Down;
+
+		Globals.AngleVectors( QAngle( 90, 0, 0 ), Down );
+
+		End = Start + Down * 256;
+
+		CGameTrace trace;
+
+		Utils.TraceLine( Start, End, MASK_ALL, pBaseEnt, COLLISION_GROUP_NONE, trace );
+
+		pBaseEnt.Teleport( trace.endpos, pBaseEnt.EyeAngles(), Vector( 0, 0, 0 ) );
+
+		pBaseEnt.SetAbsVelocity( Vector( 0, 0, 0) );
+		g_TeleportDelay[iIndex] = Globals.GetCurrentTime() + 1.485f;
+		Utils.ScreenFade( pPlayer, Color( 0, 0, 0, 255 ), 1.175f, 0.395f, fade_out );
+		pBaseEnt.SetMoveType( MOVETYPE_NONE );
+		Engine.EmitSoundPosition( iIndex, "doors/default_move.wav", pBaseEnt.EyePosition(), 1.0f, 60, 105);
+	}
+}
+
+void OnEntityOutput( const string &in strOutput, CBaseEntity@ pActivator, CBaseEntity@ pCaller )
 {
 	if ( Utils.StrEql( strOutput, "OnBreak" ) )
 	{
@@ -408,36 +469,37 @@ void SetUpStuff()
 
 	flExpBarrelsWaitTime = Globals.GetCurrentTime() + 0.1f;
 	
-	Engine.Ent_Fire( "Precache", "kill" );
-	Engine.Ent_Fire( "vrad_shadows", "kill" );
-	Engine.Ent_Fire( "temp_expbarrel*", "ForceSpawn" );
-	Engine.Ent_Fire( "lobby_*", "Disable" );
-	Engine.Ent_Fire( "shading", "StartOverlays" );
+	Engine.Ent_Fire( "Precache", "kill", "", "0" );
+	Engine.Ent_Fire( "vrad_shadows", "kill", "", "0" );
+	Engine.Ent_Fire( "_td", "kill", "", "0" );
+	Engine.Ent_Fire( "temp_expbarrel*", "ForceSpawn", "", "0" );
+	Engine.Ent_Fire( "trigger_lobby_*", "Disable", "", "0" );
+	Engine.Ent_Fire( "shading", "StartOverlays", "", "0" );
 
-	Engine.Ent_Fire( "ld_doors", "Open" );
-	Engine.Ent_Fire( "dr_vodker", "Disable" );
-	Engine.Ent_Fire( "hi_greenhouse", "Enable" );
-	Engine.Ent_Fire( "hi_greenhouse_nm", "Disable" );
-	Engine.Ent_Fire( "KD-Core", "Open" );
-	Engine.Ent_Fire( "sky_light1", "FadeToPattern", "f" );
-	Engine.Ent_Fire( "Tram-Stair*", "AddOutput", "targetname Tram-Stair" );
+	Engine.Ent_Fire( "ld_doors", "Open", "", "0" );
+	Engine.Ent_Fire( "dr_vodker", "Disable", "", "0" );
+	Engine.Ent_Fire( "hi_greenhouse", "Enable", "", "0" );
+	Engine.Ent_Fire( "hi_greenhouse_nm", "Disable", "", "0" );
+	Engine.Ent_Fire( "KD-Core", "Open", "", "0"  );
+	Engine.Ent_Fire( "sky_light1", "FadeToPattern", "f", "0" );
+	Engine.Ent_Fire( "Tram-Stair*", "AddOutput", "targetname Tram-Stair", "0"  );
 
-	Engine.Ent_Fire( "watermelon", "SetLightingOrigin", "armor_lighting" );
+	Engine.Ent_Fire( "watermelon", "SetLightingOrigin", "armor_lighting", "0"  );
 	
 	SpawnCheese();
 
 	switch( Math::RandomInt( 1, 3 ) )
 	{
 		case 1:
-			Engine.Ent_Fire( "lobby_knockknock", "Enable" );
+			Engine.Ent_Fire( "trigger_lobby_knockknock", "Enable", "", "0" );
 		break;
 		
 		case 2:
-			Engine.Ent_Fire( "lobby_raul", "Enable" );
+			Engine.Ent_Fire( "trigger_lobby_raul", "Enable", "", "0" );
 		break;
 		
 		case 3:
-			Engine.Ent_Fire( "lobby_deepcover", "Enable" );
+			Engine.Ent_Fire( "trigger_lobby_deepcover", "Enable", "", "0" );
 		break;
 	}
 

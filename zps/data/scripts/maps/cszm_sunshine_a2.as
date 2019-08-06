@@ -1,4 +1,4 @@
-#include "cszm_random_def"
+#include "cszm/random_def"
 #include "../SendGameText"
 
 void SD( const string &in strMSG )
@@ -109,6 +109,7 @@ void OnMapInit()
 	Events::Player::OnPlayerSpawn.Hook( @SH_OnPlayerSpawn );
 
 	Schedule::Task( 0.01f, "SetUpStuff" );
+	OverrideLimits();
 }
 
 int CalculateHealthPoints( int &in iMulti )
@@ -139,6 +140,7 @@ void OnNewRound()
 {
 	Schedule::Task( 0.01f, "SetUpStuff" );
 	if ( bIsFirstRound ) bIsFirstRound = false;
+	OverrideLimits();
 }
 
 void OnMatchBegin()

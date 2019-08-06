@@ -1,5 +1,5 @@
-#include "cszm_random_def"
-#include "cszm_doorset"
+#include "cszm/random_def"
+#include "cszm/doorset"
 
 //MyDebugFunc
 void SD(const string &in strMSG)
@@ -130,6 +130,7 @@ void OnNewRound()
 	}
 
 	Schedule::Task(0.05f, "SetUpStuff");
+	OverrideLimits();
 }
 
 void OnMatchBegin() 
