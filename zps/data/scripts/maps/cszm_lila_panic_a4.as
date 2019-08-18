@@ -85,7 +85,7 @@ HookReturnCode OnPlayerSpawn(CZP_Player@ pPlayer)
 
 HookReturnCode OnStartTouch(CBaseEntity@ pTrigger, const string &in strEntityName, CBaseEntity@ pEntity)
 {
-	if (pEntity.GetTeamNumber() == 0 && pEntity.IsPlayer() == true && strEntityName == "fog_volume_lobby") Engine.Ent_Fire_Ent(pBaseEnt, "SetFogController", "lobby_fog");
+	if (pEntity.GetTeamNumber() == 0 && pEntity.IsPlayer() == true && strEntityName == "fog_volume_lobby") Engine.Ent_Fire_Ent(pEntity, "SetFogController", "lobby_fog");
 
 	return HOOK_HANDLED;
 }
