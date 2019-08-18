@@ -38,13 +38,7 @@ HookReturnCode CSZM_SetS_OnPlrSpawn( CZP_Player@ pPlayer )
 
 	if ( pBaseEnt.GetTeamNumber() == 1 ) pPlayer.StripWeapon( "weapon_emptyhand" );
 
-	if ( Utils.StrEql( "", sEntName ) )
-	{
-		sEntName = ( "plr_setsize" + pBaseEnt.entindex() );
-		pBaseEnt.SetEntityName( sEntName );
-	}
-
-	Engine.Ent_Fire( sEntName, "SetModelScale", "1.0"  );
+	Engine.Ent_Fire_Ent( pBaseEnt, "SetModelScale", "1.0"  );
 
 	return HOOK_CONTINUE;
 }
@@ -104,15 +98,7 @@ HookReturnCode CSZM_SetS_PlrSay( CZP_Player@ pPlayer, CASCommand@ pArgs )
 
 				if ( fltest == 1 ) sAddition = ".0";
 
-				string sEntName = pBaseEnt.GetEntityName();
-
-				if ( Utils.StrEql( "", sEntName ) )
-				{
-					sEntName = ( "plr_setsize" + pBaseEnt.entindex() );
-					pBaseEnt.SetEntityName( sEntName );
-				}
-
-				Engine.Ent_Fire( sEntName, "SetModelScale", "" + fltest );
+				Engine.Ent_Fire_Ent( pBaseEnt, "SetModelScale", "" + fltest );
 				Engine.EmitSoundPlayer( pPlayer, "weapons/slam/buttonclick.wav" );
 			}
 
