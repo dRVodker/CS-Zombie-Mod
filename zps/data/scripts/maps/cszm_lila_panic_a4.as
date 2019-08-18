@@ -9,7 +9,6 @@ void SD(const string &in strMSG)
 
 //Some Data
 int iMaxPlayers;
-int iUNum;
 int iFireflyIndex;
 int iSSCount;
 bool bIsFireflyPikedUp;
@@ -71,47 +70,37 @@ HookReturnCode OnPlayerSpawn(CZP_Player@ pPlayer)
 	int iIndex = pBaseEnt.entindex();
 	int iTeamNum = pBaseEnt.GetTeamNumber();
 
-	if(iTeamNum != 0)
-	{
-		iUNum++;
-		pBaseEnt.SetEntityName("FOGGUY"+iUNum);
-		Engine.Ent_Fire("FOGGUY"+iUNum, "SetFogController", "main_insta_fog");
-	}
+	if (iTeamNum != 0) Engine.Ent_Fire_Ent( pBaseEnt, "SetFogController", "main_insta_fog");
 
-	if(g_bIsFireFly[iIndex] == true && iTeamNum == 1)
+	if (g_bIsFireFly[iIndex] == true && iTeamNum == 1)
 	{
 		SpawnFirefly(pBaseEnt, iIndex);
 		g_bIsFireFly[iIndex] = false;	
 	}
 
-	else if(g_bIsFireFly[iIndex] == false) RemoveFireFly(iIndex);
+	else if (g_bIsFireFly[iIndex] == false) RemoveFireFly(iIndex);
 
 	return HOOK_CONTINUE;
 }
 
 HookReturnCode OnStartTouch(CBaseEntity@ pTrigger, const string &in strEntityName, CBaseEntity@ pEntity)
 {
-	if(pEntity.GetTeamNumber() == 0 && pEntity.IsPlayer() == true && strEntityName == "fog_volume_lobby")
-	{
-		iUNum++;
-		pEntity.SetEntityName("FOGGUY"+iUNum);
-		Engine.Ent_Fire("FOGGUY"+iUNum, "SetFogController", "lobby_fog");
-	}
+	if (pEntity.GetTeamNumber() == 0 && pEntity.IsPlayer() == true && strEntityName == "fog_volume_lobby") Engine.Ent_Fire_Ent( pBaseEnt, "SetFogController", "main_insta_fog");
 
 	return HOOK_HANDLED;
 }
 
 void OnEntityUsed(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 {
-	if(pPlayer is null) return;
-	if(pEntity is null) return;
+	if (pPlayer is null) return;
+	if (pEntity is null) return;
 
 	CBasePlayer@ pPlrEnt = pPlayer.opCast();
 	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 
 	int iIndex = pBaseEnt.entindex();
 	
-	if(Utils.StrEql(pEntity.GetEntityName(), "spec_button") && g_bIsFireFly[iIndex] == false)
+	if (Utils.StrEql(pEntity.GetEntityName(), "spec_button") && g_bIsFireFly[iIndex] == false)
 	{
 		Chat.PrintToChatPlayer(pPlrEnt, "{cornflowerblue}*You picked up a firefly.");
 		g_bIsFireFly[iIndex] = true;
@@ -142,7 +131,6 @@ void OnMatchBegin()
 
 void SetUpStuff()
 {
-	iUNum = 0;
 	VMSkins();
 	RandomizePropCrate();
 	RemoveAmmoBar();
@@ -151,10 +139,7 @@ void SetUpStuff()
 // Random Skins for the vending machines
 void VMSkins()
 {
-	for(int i = 1; i <= 10; i++)
-	{
-		Engine.Ent_Fire("vm"+i, "Skin", ""+Math::RandomInt(0, 2));
-	}
+	for (int i = 1; i <= 10; i++) Engine.Ent_Fire("vm"+i, "Skin", ""+Math::RandomInt(0, 2));
 }
 
 //Setiing HP of 'func_breakable'
@@ -163,25 +148,25 @@ void BreakableHP()
 	CBaseEntity@ pEntity;
 	while ((@pEntity = FindEntityByClassname(pEntity, "func_breakable")) !is null)
 	{
-		if("TrashDumpster-Helper" == pEntity.GetEntityName())
+		if ("TrashDumpster-Helper" == pEntity.GetEntityName())
 		{
 			pEntity.SetMaxHealth(PlrCountHP(25));
 			pEntity.SetHealth(PlrCountHP(25));
 		}
 		
-		if("Container-Helper" == pEntity.GetEntityName())
+		if ("Container-Helper" == pEntity.GetEntityName())
 		{
 			pEntity.SetMaxHealth(PlrCountHP(25));
 			pEntity.SetHealth(PlrCountHP(25));
 		}
 		
-		if("ContainerBDoor1" == pEntity.GetEntityName())
+		if ("ContainerBDoor1" == pEntity.GetEntityName())
 		{
 			pEntity.SetMaxHealth(PlrCountHP(50));
 			pEntity.SetHealth(PlrCountHP(50));
 		}
 		
-		if("ContainerBDoor2" == pEntity.GetEntityName())
+		if ("ContainerBDoor2" == pEntity.GetEntityName())
 		{
 			pEntity.SetMaxHealth(PlrCountHP(50));
 			pEntity.SetHealth(PlrCountHP(50));
@@ -195,43 +180,43 @@ void PropsHP()
 	CBaseEntity@ pEntity;
 	while ((@pEntity = FindEntityByClassname(pEntity, "prop_physics_multiplayer")) !is null)
 	{
-		if("Oildrums-Solid" == pEntity.GetEntityName())
+		if ("Oildrums-Solid" == pEntity.GetEntityName())
 		{
 			pEntity.SetMaxHealth(pEntity.GetHealth() + PlrCountHP(75));
 			pEntity.SetHealth(pEntity.GetHealth() + PlrCountHP(75));
 		}
 		
-		else if(Utils.StrContains("oildrum001_explosive", pEntity.GetModelName()))
+		else if (Utils.StrContains("oildrum001_explosive", pEntity.GetModelName()))
 		{
 			Engine.Ent_Fire_Ent(pEntity, "addoutput", "ExplodeDamage 200");
 			Engine.Ent_Fire_Ent(pEntity, "addoutput", "ExplodeRadius 256");
 		}
 		
-		else if("Sofa-Solid" == pEntity.GetEntityName())
+		else if ("Sofa-Solid" == pEntity.GetEntityName())
 		{
 			pEntity.SetMaxHealth(pEntity.GetHealth() + PlrCountHP(55));
 			pEntity.SetHealth(pEntity.GetHealth() + PlrCountHP(55));
 		}
 		
-		else if("Shelves-Solid" == pEntity.GetEntityName())
+		else if ("Shelves-Solid" == pEntity.GetEntityName())
 		{
 			pEntity.SetMaxHealth(pEntity.GetHealth() + PlrCountHP(50));
 			pEntity.SetHealth(pEntity.GetHealth() + PlrCountHP(50));
 		}
 		
-		else if(Utils.StrContains("vm", pEntity.GetEntityName()))
+		else if (Utils.StrContains("vm", pEntity.GetEntityName()))
 		{
 			pEntity.SetMaxHealth(pEntity.GetHealth() + PlrCountHP(100));
 			pEntity.SetHealth(pEntity.GetHealth() + PlrCountHP(100));
 		}
 		
-		else if(Utils.StrContains("Pallet", pEntity.GetEntityName()))
+		else if (Utils.StrContains("Pallet", pEntity.GetEntityName()))
 		{
 			pEntity.SetMaxHealth(pEntity.GetHealth() + PlrCountHP(30));
 			pEntity.SetHealth(pEntity.GetHealth() + PlrCountHP(30));
 		}
 		
-		else if("phys_cars" == pEntity.GetEntityName())
+		else if ("phys_cars" == pEntity.GetEntityName())
 		{
 			pEntity.SetEntityName( "unbrk_cars" );
 //			pEntity.SetMaxHealth(999999);
@@ -256,7 +241,7 @@ void RemoveAmmoBar()
 	{
 		iRND = Math::RandomInt(1, 100);
 		
-		if(iRND < 80)
+		if (iRND < 80)
 		{
 			pEntity.SUB_Remove();
 		}
@@ -277,9 +262,9 @@ void RandomizePropCrate()
 	{
 		iRND = Math::RandomInt(1, 100);
 		
-		if(iRND > 32)
+		if (iRND > 32)
 		{
-			if(pEntity.GetEntityName() != "breencrate")
+			if (pEntity.GetEntityName() != "breencrate")
 			{
 				int iRND_Type = Math::RandomInt(0, 10);
 
@@ -287,22 +272,22 @@ void RandomizePropCrate()
 				iRND_Class = 13;
 				iRND_Count = 1;	
 
-				if(iRND_Type <= 2) 
+				if (iRND_Type <= 2) 
 				{
 					iRND_Class = Math::RandomInt(0, 10);
 					iRND_Count = Math::RandomInt(2, 4);		//Amout of weapons
 				}
-				else if(iRND_Type >= 3 && iRND_Type <= 6)
+				else if (iRND_Type >= 3 && iRND_Type <= 6)
 				{
 					iRND_Class = Math::RandomInt(14, 17);
 					iRND_Count = Math::RandomInt(1, 3);		//Amout of ammo
 				}
-				else if(iRND_Type >= 7 && iRND_Type <= 8) 
+				else if (iRND_Type >= 7 && iRND_Type <= 8) 
 				{
 					iRND_Class = Math::RandomInt(11, 13);
 					iRND_Count = Math::RandomInt(3, 4);		//Amout of frag and ied
 				}
-				else if(iRND_Type > 8)
+				else if (iRND_Type > 8)
 				{
 					iRND_Class = Math::RandomInt(18, 20);
 					iRND_Count = Math::RandomInt(1, 3);		//Amout of adrenaline and antidote
@@ -315,15 +300,15 @@ void RandomizePropCrate()
 		
 		else
 		{
-			if(pEntity.GetEntityName() != "breencrate") pEntity.SUB_Remove();
+			if (pEntity.GetEntityName() != "breencrate") pEntity.SUB_Remove();
 		}
 
-		if(pEntity.GetEntityName() == "breencrate")
+		if (pEntity.GetEntityName() == "breencrate")
 		{
 			//BreenCrate contains only ammo and medicine
 			iRND_Class = Math::RandomInt(13, 18);
 			iRND_Count = Math::RandomInt(2, 5);
-			if(iRND_Class > 16) iRND_Count = Math::RandomInt(1, 3);
+			if (iRND_Class > 16) iRND_Count = Math::RandomInt(1, 3);
 			
 			Engine.Ent_Fire_Ent(pEntity, "AddOutput", "ItemCount "+iRND_Count);
 			Engine.Ent_Fire_Ent(pEntity, "AddOutput", "ItemClass "+g_strClassnames[iRND_Class]);
@@ -380,5 +365,5 @@ void RemoveFireFly(const int &in iIndex)
 
 	@pSpriteEnt = FindEntityByName(pSpriteEnt, iIndex + "firefly_sprite");
 
-	if(pSpriteEnt !is null) pSpriteEnt.SUB_Remove();
+	if (pSpriteEnt !is null) pSpriteEnt.SUB_Remove();
 }
