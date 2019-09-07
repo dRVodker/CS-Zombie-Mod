@@ -43,6 +43,7 @@ void OnMapInit()
 void OnNewRound()
 {
 	if ( !bIsCSZM ) return;
+	
 	for ( int i = 1; i <= iMaxPlayers; i++ ) 
 	{
 		g_Hits[i] = 0;
@@ -56,6 +57,7 @@ void OnNewRound()
 void OnMapShutdown()
 {
 	if ( !bIsCSZM ) return;
+
 	g_Hits.removeRange( 0, g_Hits.length() );
 	g_VicIndex.removeRange( 0, g_VicIndex.length() );
 	g_DamageDealt.removeRange( 0, g_DamageDealt.length() );
@@ -66,6 +68,7 @@ void OnMapShutdown()
 HookReturnCode OnKPlayerConnected( CZP_Player@ pPlayer )
 {
 	if ( !bIsCSZM ) return HOOK_CONTINUE;
+
 	CBasePlayer@ pPlrEnt = pPlayer.opCast();
 	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 
@@ -88,9 +91,9 @@ HookReturnCode OnKPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &in Damage
 	CBasePlayer@ pBPlrAttacker = null;
 	CBasePlayer@ pPlrEnt = pPlayer.opCast();
 	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+	CBaseEntity@ pEntityAttacker = DamageInfo.GetAttacker();
 	const int iVicIndex = pBaseEnt.entindex();
 	const int iVicTeam = pBaseEnt.GetTeamNumber();
-	CBaseEntity@ pEntityAttacker = DamageInfo.GetAttacker();
 	const int iAttIndex = pEntityAttacker.entindex();
 	const bool bIsAttPlayer = pEntityAttacker.IsPlayer();
 	
@@ -117,11 +120,11 @@ HookReturnCode OnKPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &in Damage
 
 		g_Hits[iAttIndex]++;
 		g_Show[iAttIndex] = true;
-		g_ResetTime[iAttIndex] = Globals.GetCurrentTime() + 1.25f;
+		g_ResetTime[iAttIndex] = Globals.GetCurrentTime() + 1.35f;
 
 		if ( g_VicIndex[iAttIndex] != iVicIndex ) g_VicIndex[iAttIndex] = iVicIndex;
-
 		if ( pBaseEnt.GetHealth() - DamageInfo.GetDamage() <= 0 ) g_DamageDealt[iAttIndex] += pBaseEnt.GetHealth();
+
 		else g_DamageDealt[iAttIndex] += DamageInfo.GetDamage();
 
 		Schedule::Task( 0.01f, "ShowDamageHealth" );
@@ -157,9 +160,9 @@ void ShowDamageHealth()
 
 		else
 		{
-			float fHealth = pVicPlayer.GetHealth();
-			if ( fHealth < 0 ) fHealth = 0;
-			Chat.CenterMessagePlayer( pBPlrAttacker, "Damage dealt: " + int( g_DamageDealt[i] ) + "\nin " + g_Hits[i] + strHits + "\nHealth left: " + fHealth );
+			int iHealth = pVicPlayer.GetHealth();
+			if ( iHealth < 0 ) iHealth = 0;
+			Chat.CenterMessagePlayer( pBPlrAttacker, "Damage dealt: " + int( g_DamageDealt[i] ) + "\nin " + g_Hits[i] + strHits + "\nHealth left: " + iHealth );
 		}
 	}
 }
