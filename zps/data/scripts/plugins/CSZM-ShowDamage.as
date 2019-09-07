@@ -1,18 +1,18 @@
 #include "../SendGameText"
 
-//some data
-int iMaxPlayers;
-bool bIsCSZM = false;
-float flWaitTime;
-
-array<float> g_flDamage;
-array<float> g_flShowDamage;
-array<float> g_flSDTimer;
-
 void SD( const string &in strMSG )
 {
 	Chat.PrintToChat( all, strMSG );
 }
+
+int iMaxPlayers;
+bool bIsCSZM = false;
+
+array<int> g_VicIndex;
+array<int> g_Hits;
+array<float> g_DamageDealt;
+array<float> g_ResetTime;
+array<bool> g_Show;
 
 void OnPluginInit()
 {
@@ -26,183 +26,140 @@ void OnPluginInit()
 }
 
 void OnMapInit()
-{		
+{
 	if ( Utils.StrContains( "cszm", Globals.GetCurrentMapName() ) )
 	{
 		bIsCSZM = true;
 		iMaxPlayers = Globals.GetMaxClients();
 				
-		g_flDamage.resize( iMaxPlayers + 1 );
-		g_flShowDamage.resize( iMaxPlayers + 1 );
-		g_flSDTimer.resize( iMaxPlayers + 1 );
-		
-		flWaitTime = Globals.GetCurrentTime() + 0.10f;
+		g_VicIndex.resize( iMaxPlayers + 1 );
+		g_Hits.resize( iMaxPlayers + 1 );
+		g_DamageDealt.resize( iMaxPlayers + 1 );
+		g_ResetTime.resize( iMaxPlayers + 1 );
+		g_Show.resize( iMaxPlayers + 1 );
 	}
 }
 
 void OnNewRound()
 {
-	if ( bIsCSZM )
+	if ( !bIsCSZM ) return;
+	for ( int i = 1; i <= iMaxPlayers; i++ ) 
 	{
-		for ( int i = 1; i <= iMaxPlayers; i++ ) 
-		{
-			g_flDamage[i] = 0.0f;
-			g_flShowDamage[i] = 0.0f;
-			g_flSDTimer[i] = 0.0f;
-			
-			flWaitTime = Globals.GetCurrentTime() + 0.10f;
-		}
+		g_Hits[i] = 0;
+		g_VicIndex[i] = 0;
+		g_DamageDealt[i] = 0.0f;
+		g_ResetTime[i] = 0.0f;
+		g_Show[i] = false;
 	}
 }
 
 void OnMapShutdown()
 {
-	if ( bIsCSZM )
-	{
-		bIsCSZM = false;
-		
-		flWaitTime = 0.0f;
-		
-		ClearFloatArray( g_flDamage );
-		ClearFloatArray( g_flShowDamage );
-		ClearFloatArray( g_flSDTimer );
-	}
-}
-
-void OnProcessRound()
-{
-	if ( bIsCSZM )
-	{
-		if ( flWaitTime <= Globals.GetCurrentTime() )
-		{
-			flWaitTime = Globals.GetCurrentTime() + 0.1f;
-			
-			for ( int i = 1; i <= iMaxPlayers; i++ )
-			{
-				CZP_Player@ pPlayer = ToZPPlayer( i );
-
-				if ( pPlayer is null ) continue;
-
-				CBasePlayer@ pPlrEnt = pPlayer.opCast();
-				CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
-
-				if ( g_flSDTimer[i] > 0 )
-				{
-					g_flSDTimer[i] -= 0.1f;
-				}
-				
-				if ( g_flSDTimer[i] <= 0 && g_flShowDamage[i] > 0 )
-				{
-					g_flShowDamage[i] = 0;
-				}
-			}
-		}
-	}
-}
-
-void ClearIntArray( array<int> &iTarget )
-{
-	while ( iTarget.length() > 0 )
-	{
-		iTarget.removeAt( 0 );
-	}
-}
-
-void ClearFloatArray( array<float> &iTarget )
-{
-	while ( iTarget.length() > 0 )
-	{
-		iTarget.removeAt( 0 );
-	}
+	if ( !bIsCSZM ) return;
+	g_Hits.removeRange( 0, g_Hits.length() );
+	g_VicIndex.removeRange( 0, g_VicIndex.length() );
+	g_DamageDealt.removeRange( 0, g_DamageDealt.length() );
+	g_ResetTime.removeRange( 0, g_ResetTime.length() );
+	g_Show.removeRange( 0, g_Show.length() );
 }
 
 HookReturnCode OnKPlayerConnected( CZP_Player@ pPlayer )
 {
-	if ( bIsCSZM )
-	{
-		CBasePlayer@ pPlrEnt = pPlayer.opCast();
-		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
-		
-		g_flDamage[pBaseEnt.entindex()] = 0.0f;
-		g_flShowDamage[pBaseEnt.entindex()] = 0.0f;
-		g_flSDTimer[pBaseEnt.entindex()] = 0.0f;
-		
-		return HOOK_HANDLED;
-	}
+	if ( !bIsCSZM ) return HOOK_CONTINUE;
+	CBasePlayer@ pPlrEnt = pPlayer.opCast();
+	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+
+	int index = pBaseEnt.entindex();
+	
+	g_Hits[index] = 0;
+	g_VicIndex[index] = 0;
+	g_DamageDealt[index] = 0.0f;
+	g_ResetTime[index] = 0.0f;
+	g_Show[index] = false;
 	
 	return HOOK_CONTINUE;
 }
 
 HookReturnCode OnKPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &in DamageInfo )
 {
-	if ( bIsCSZM )
-	{
-		CZP_Player@ pPlrAttacker = null;
-		CBasePlayer@ pBPlrAttacker = null;
+	if ( !bIsCSZM ) return HOOK_CONTINUE;
+
+	CZP_Player@ pPlrAttacker = null;
+	CBasePlayer@ pBPlrAttacker = null;
+	CBasePlayer@ pPlrEnt = pPlayer.opCast();
+	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+	const int iVicIndex = pBaseEnt.entindex();
+	const int iVicTeam = pBaseEnt.GetTeamNumber();
+	CBaseEntity@ pEntityAttacker = DamageInfo.GetAttacker();
+	const int iAttIndex = pEntityAttacker.entindex();
+	const bool bIsAttPlayer = pEntityAttacker.IsPlayer();
 	
-		CBasePlayer@ pPlrEnt = pPlayer.opCast();
-		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+	if ( bIsAttPlayer )
+	{
+		@pPlrAttacker = ToZPPlayer( iAttIndex );
+		@pBPlrAttacker = ToBasePlayer( iAttIndex );
+	}
 
-		const int iVicIndex = pBaseEnt.entindex();
-		const int iVicTeam = pBaseEnt.GetTeamNumber();
-		
-		CBaseEntity@ pEntityAttacker = DamageInfo.GetAttacker();
-		
-		const int iAttIndex = pEntityAttacker.entindex();
-		const bool bIsAttPlayer = pEntityAttacker.IsPlayer();
+	else return HOOK_HANDLED;
 
-		float flVicHealth = pBaseEnt.GetHealth() - DamageInfo.GetDamage();
-		if ( flVicHealth < 0 ) flVicHealth = 0;
-		
-		if ( bIsAttPlayer )
+	if ( iAttIndex == iVicIndex ) return HOOK_HANDLED;
+	if ( iVicTeam == pEntityAttacker.GetTeamNumber() ) return HOOK_HANDLED;
+	if ( iVicTeam == 0 || iVicTeam == 1 ) return HOOK_HANDLED;
+
+	if ( pEntityAttacker.GetTeamNumber() == 2 )
+	{
+		if ( g_ResetTime[iAttIndex] <= Globals.GetCurrentTime() )
 		{
-			@pPlrAttacker = ToZPPlayer( iAttIndex );
-			@pBPlrAttacker = ToBasePlayer( iAttIndex );
+			g_DamageDealt[iAttIndex] = 0.0f;
+			g_VicIndex[iAttIndex] = 0;
+			g_Hits[iAttIndex] = 0;
 		}
-		else return HOOK_HANDLED;
 
-		if ( iAttIndex == iVicIndex ) return HOOK_HANDLED;
+		g_Hits[iAttIndex]++;
+		g_Show[iAttIndex] = true;
+		g_ResetTime[iAttIndex] = Globals.GetCurrentTime() + 1.25f;
 
-		if ( iVicTeam == pEntityAttacker.GetTeamNumber() ) return HOOK_HANDLED;
+		if ( g_VicIndex[iAttIndex] != iVicIndex ) g_VicIndex[iAttIndex] = iVicIndex;
 
-		if ( iVicTeam == 0 || iVicTeam == 1 ) return HOOK_HANDLED;
-		
-		if ( pEntityAttacker.GetTeamNumber() == 2 )
-		{
-			g_flSDTimer[iAttIndex] = 1.0f;
-			
-			float flHPD = 0;
-			float flHP = pBaseEnt.GetHealth();
-			float flDMG = floor( DamageInfo.GetDamage() );
-			
-			if ( flHP < flDMG )
-			{
-				flHPD = flHP - flDMG;
-				flHPD = flDMG + flHPD;
-				
-				g_flDamage[iAttIndex] += flHPD;
-				g_flShowDamage[iAttIndex] += flHPD;
-			}
-			
-			else if ( DamageInfo.GetDamage() >= pBaseEnt.GetMaxHealth() && pBaseEnt.GetHealth() <= pBaseEnt.GetMaxHealth() )
-			{
-				g_flDamage[iAttIndex] += pBaseEnt.GetMaxHealth();
-				g_flShowDamage[iAttIndex] += pBaseEnt.GetMaxHealth();
-			}
-			
-			else
-			{
-				g_flDamage[iAttIndex] += floor( DamageInfo.GetDamage() );
-				g_flShowDamage[iAttIndex] += floor( DamageInfo.GetDamage() );
-			}
-			
-//			if ( g_flShowDamage[iAttIndex] > 0 ) Chat.CenterMessagePlayer( pBPlrAttacker, "- "+g_flShowDamage[iAttIndex]+" HP" );
+		if ( pBaseEnt.GetHealth() - DamageInfo.GetDamage() <= 0 ) g_DamageDealt[iAttIndex] += pBaseEnt.GetHealth();
+		else g_DamageDealt[iAttIndex] += DamageInfo.GetDamage();
 
-			if ( g_flShowDamage[iAttIndex] > 0 ) Chat.CenterMessagePlayer( pBPlrAttacker, "Damage dealt: " + g_flShowDamage[iAttIndex] + "\nHealth left: " + int( flVicHealth ) );
+		Schedule::Task( 0.01f, "ShowDamageHealth" );
 
-			return HOOK_HANDLED;
-		}
+		return HOOK_HANDLED;
 	}
 	
 	return HOOK_CONTINUE;
+}
+
+void ShowDamageHealth()
+{
+	if ( !bIsCSZM ) return;
+	
+	for ( int i = 1; i <= iMaxPlayers; i++ )
+	{
+		CZP_Player@ pPlayer = ToZPPlayer( i );
+						
+		if ( pPlayer is null ) continue;
+
+		if ( !g_Show[i] ) continue;
+
+		CBasePlayer@ pBPlrAttacker = ToBasePlayer( i );
+		CBaseEntity@ pVicPlayer = FindEntityByEntIndex( g_VicIndex[i] );
+
+		g_Show[i] = false;
+
+		string strHits = " hits";
+
+		if ( g_Hits[i] == 1 ) strHits = " hit";
+
+		if ( pVicPlayer is null ) Chat.CenterMessagePlayer( pBPlrAttacker, "Damage dealt: " + int( g_DamageDealt[i] ) + "\nin " + g_Hits[i] + strHits );
+
+		else
+		{
+			float fHealth = pVicPlayer.GetHealth();
+			if ( fHealth < 0 ) fHealth = 0;
+			Chat.CenterMessagePlayer( pBPlrAttacker, "Damage dealt: " + int( g_DamageDealt[i] ) + "\nin " + g_Hits[i] + strHits + "\nHealth left: " + fHealth );
+		}
+	}
 }
