@@ -1,8 +1,10 @@
-//some data
 void SD( const string &in strMSG )
 {
 	Chat.PrintToChat( all, strMSG );
 }
+
+const int TEAM_SURVIVORS = 2;
+const int TEAM_ZOMBIES = 3;
 
 bool bIsCSZM = false;
 
@@ -102,7 +104,7 @@ HookReturnCode CSZM_SHP_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out
 	if ( Utils.StrEql( pEntity.GetClassname(), "prop_barricade" ) ) DamageInfo.SetDamage( DamageInfo.GetDamage() * 0.5f );
 
 	//Show HP
-	if ( pAttacker.IsPlayer() && pAttacker.GetTeamNumber() == 3 && bIsUnbreakable != true )
+	if ( pAttacker.IsPlayer() && pAttacker.GetTeamNumber() == TEAM_ZOMBIES && bIsUnbreakable != true )
 	{
 		int iSlot = pAttacker.entindex();
 		bool bIsValid = false;
@@ -169,7 +171,7 @@ HookReturnCode CSZM_SHP_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out
 		float flMultiplier = 12.0f;
 
 		//Only for survivors
-		if ( pAttacker.IsPlayer() && pAttacker.GetTeamNumber() == 2 )
+		if ( pAttacker.IsPlayer() && pAttacker.GetTeamNumber() == TEAM_SURVIVORS )
 		{
 			//If Damage Type is BULLET reduce amount of damage and increase force
 			if ( bDamageType( DMGType, 1 ) )
@@ -184,7 +186,7 @@ HookReturnCode CSZM_SHP_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out
 				DamageInfo.SetDamageType( 1<<1 );
 				DamageInfo.SetDamageForce( DamageInfo.GetDamageForce() * flMultiplier );
 
-				//Do not reduce damage if explosive prop
+				//Do not reduce damage if explosive props
 				if ( 
 					Utils.StrContains( "propanecanister001a", MDLName ) ||
 					Utils.StrContains( "oildrum001_explosive", MDLName ) ||

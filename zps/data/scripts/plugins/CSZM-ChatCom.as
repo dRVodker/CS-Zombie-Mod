@@ -1,3 +1,6 @@
+const int TEAM_LOBBYGUYS = 0;
+const int TEAM_SPECTATORS = 1;
+
 bool bIsCSZM = false;
 
 void OnPluginInit()
@@ -36,7 +39,7 @@ HookReturnCode CSZM_SetS_OnPlrSpawn( CZP_Player@ pPlayer )
 
 	string sEntName = pBaseEnt.GetEntityName();
 
-	if ( pBaseEnt.GetTeamNumber() == 1 ) pPlayer.StripWeapon( "weapon_emptyhand" );
+	if ( pBaseEnt.GetTeamNumber() == TEAM_SPECTATORS ) pPlayer.StripWeapon( "weapon_emptyhand" );
 
 	Engine.Ent_Fire_Ent( pBaseEnt, "SetModelScale", "1.0"  );
 
@@ -52,7 +55,7 @@ HookReturnCode CSZM_SetS_OnConCommand( CZP_Player@ pPlayer, CASCommand@ pArgs )
 
 		int iIndex = pBaseEnt.entindex();
 
-		if ( pBaseEnt.GetTeamNumber() == 0 )
+		if ( pBaseEnt.GetTeamNumber() == TEAM_LOBBYGUYS )
 		{
 			if ( Utils.StrContains( "enhancevision", pArgs.Arg( 0 ) ) ) 
 			{
@@ -77,7 +80,7 @@ HookReturnCode CSZM_SetS_PlrSay( CZP_Player@ pPlayer, CASCommand@ pArgs )
 
 	if ( Utils.StrContains( "!setscale", arg1 ) || Utils.StrContains( "!scale", arg1 ) )
 	{
-		if ( pBaseEnt.GetTeamNumber() == 0 )
+		if ( pBaseEnt.GetTeamNumber() == TEAM_LOBBYGUYS )
 		{
 			CASCommand@ pSplited = StringToArgSplit( arg1, " ");
 			string sValue = pSplited.Arg( 1 );
@@ -117,7 +120,7 @@ HookReturnCode CSZM_SetS_PlrSay( CZP_Player@ pPlayer, CASCommand@ pArgs )
 
 	if ( Utils.StrContains( "!dlight", arg1 ) || Utils.StrContains( "!dl", arg1 ) )
 	{
-		if ( pBaseEnt.GetTeamNumber() == 0 )
+		if ( pBaseEnt.GetTeamNumber() == TEAM_LOBBYGUYS )
 		{
 			DLight( pPlayer, pBaseEnt, pBaseEnt.entindex() );
 			return HOOK_HANDLED;

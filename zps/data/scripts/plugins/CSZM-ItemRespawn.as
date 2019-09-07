@@ -67,7 +67,6 @@ void OnProcessRound()
 	}
 }
 
-
 void OnPluginInit()
 {
 	PluginData::SetVersion(  "1.0"  );

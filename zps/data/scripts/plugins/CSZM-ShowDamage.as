@@ -5,6 +5,10 @@ void SD( const string &in strMSG )
 	Chat.PrintToChat( all, strMSG );
 }
 
+const int TEAM_LOBBYGUYS = 0;
+const int TEAM_SPECTATORS = 1;
+const int TEAM_SURVIVORS = 2;
+
 int iMaxPlayers;
 bool bIsCSZM = false;
 
@@ -107,9 +111,9 @@ HookReturnCode OnKPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &in Damage
 
 	if ( iAttIndex == iVicIndex ) return HOOK_HANDLED;
 	if ( iVicTeam == pEntityAttacker.GetTeamNumber() ) return HOOK_HANDLED;
-	if ( iVicTeam == 0 || iVicTeam == 1 ) return HOOK_HANDLED;
+	if ( iVicTeam == TEAM_LOBBYGUYS || iVicTeam == TEAM_SPECTATORS ) return HOOK_HANDLED;
 
-	if ( pEntityAttacker.GetTeamNumber() == 2 )
+	if ( pEntityAttacker.GetTeamNumber() == TEAM_SURVIVORS )
 	{
 		if ( g_ResetTime[iAttIndex] <= Globals.GetCurrentTime() )
 		{

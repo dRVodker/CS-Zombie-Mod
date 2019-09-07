@@ -8,6 +8,10 @@ void CD( const string &in strMsg )
 	Chat.CenterMessage( all, strMsg );
 }
 
+const int TEAM_SPECTATORS = 1;
+const int TEAM_SURVIVORS = 2;
+const int TEAM_ZOMBIES = 3;
+
 int iMaxPlayers;
 bool bIsCSZM = false;
 float flWaitTime;
@@ -50,7 +54,7 @@ void OnMapInit()
 
 void OnMapShutdown()
 {
-	if ( bIsCSZM == true ) 
+	if ( bIsCSZM ) 
 	{
 		bIsCSZM = false;
 		Entities::RemoveRegisterUse( "item_deliver" );
@@ -63,7 +67,7 @@ void OnMapShutdown()
 
 void OnProcessRound()
 {
-	if ( bIsCSZM == true )
+	if ( bIsCSZM )
 	{
 		if ( flWaitTime <= Globals.GetCurrentTime() )
 		{
@@ -84,7 +88,7 @@ void OnProcessRound()
 				CBasePlayer@ pPlrEnt = pPlayer.opCast();
 				CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 
-				if ( pPlayer.m_afButtonPressed == 32 && pBaseEnt.IsGrounded() && pBaseEnt.GetTeamNumber() == 2 )
+				if ( pPlayer.m_afButtonPressed == 32 && pBaseEnt.IsGrounded() && pBaseEnt.GetTeamNumber() == TEAM_SURVIVORS )
 				{
 					Vector Forward = pBaseEnt.EyePosition();
 					Vector StartPos;
@@ -144,8 +148,8 @@ HookReturnCode CSZM_FM_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out 
 		{
 			if ( pEntityOwner !is null )
 			{
-				if ( pAttacker.GetTeamNumber() == 2 && pAttacker !is pEntityOwner ) bExplode = false;
-				pEntity.ChangeTeam( 2 );
+				if ( pAttacker.GetTeamNumber() == TEAM_SURVIVORS && pAttacker !is pEntityOwner ) bExplode = false;
+				pEntity.ChangeTeam( TEAM_SURVIVORS );
 			}
 
 			else
@@ -183,7 +187,7 @@ HookReturnCode CSZM_FM_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out 
 
 				@pEntityOwner = EntityCreator::Create( "prop_dynamic_override", Vector( 0, 0, 0 ), QAngle( 0, 0, 0 ), ImputData );
 
-				pEntityOwner.ChangeTeam( 1 );
+				pEntityOwner.ChangeTeam( TEAM_SPECTATORS );
 			}
 
 			int iShowerCount = Math::RandomInt( 1, 3 );
@@ -215,7 +219,6 @@ HookReturnCode CSZM_FM_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out 
 				Globals.AngleVectors( QAngle( Math::RandomFloat( -2, -72 ), Math::RandomFloat( 0, 360 ), Math::RandomFloat( 0, 360 ) ), vUP );
 				pTracer.SetAbsVelocity( vUP * Math::RandomInt( 2750, 2995 ) );	
 			}
-
 
 			Utils.CreateShrapnelEx( pEntityOwner, 50, pEntity.GetAbsOrigin(), 0.0f );
 		}
@@ -331,7 +334,7 @@ void FragMineThink()
 			if ( pFMine.GetTeamNumber() != pFMine.GetOwner().GetTeamNumber() || pFMine.GetOwner().IsAlive() == false )
 			{
 				pFMine.SetOwner( null );
-				pFMine.SetOutline( true, filter_team, 2, Color( 245, 245, 245 ), 512.0f, false, true );
+				pFMine.SetOutline( true, filter_team, TEAM_SURVIVORS, Color( 245, 245, 245 ), 512.0f, false, true );
 			}
 		}
 	}
@@ -352,7 +355,7 @@ void FragMineThink()
 			if ( pFMine.GetTeamNumber() != pFMine.GetOwner().GetTeamNumber() || pFMine.GetOwner().IsAlive() == false )
 			{
 				pFMine.SetOwner( null );
-				pFMine.SetOutline( true, filter_team, 2, Color( 245, 245, 245 ), 512.0f, false, true );
+				pFMine.SetOutline( true, filter_team, TEAM_SURVIVORS, Color( 245, 245, 245 ), 512.0f, false, true );
 			}
 		}
 
