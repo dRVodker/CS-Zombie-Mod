@@ -849,10 +849,7 @@ void OnProcessRound()
 					pPlayer.SetMaxSpeed( g_iDefSpeed[i] );
 				}
 					
-				else
-				{
-					pPlayer.SetMaxSpeed( g_iSlowSpeed[i] );
-				}
+				else pPlayer.SetMaxSpeed( g_iSlowSpeed[i] );
 			}
 
 			if ( pBaseEnt.GetTeamNumber() == TEAM_ZOMBIES && pBaseEnt.IsAlive() )
