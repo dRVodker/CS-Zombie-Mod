@@ -6,6 +6,8 @@ void SD( const string &in strMSG )
 int iMaxPlayers;
 bool bIsCSZM = false;
 
+const int TEAM_SURVIVORS = 2;
+
 const int iHumanSpeed = 197; 
 const int iAdrenalineSpeed = 100;
 
@@ -72,7 +74,7 @@ void OnProcessRound()
 
 			if ( g_flAdrenalineTime[i] <= Globals.GetCurrentTime() && g_flAdrenalineTime[i] != 0 )
 			{
-				if ( pBaseEnt.GetTeamNumber() == 2 ) pPlayer.SetMaxSpeed( iHumanSpeed );
+				if ( pBaseEnt.GetTeamNumber() == TEAM_SURVIVORS ) pPlayer.SetMaxSpeed( iHumanSpeed );
 				pPlayer.DoPlayerDSP( 0 );
 				g_flAdrenalineTime[i] = 0;
 			}
