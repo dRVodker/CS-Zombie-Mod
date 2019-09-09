@@ -46,7 +46,10 @@ void OnMapInit()
 
 void OnNewRound()
 {
-	if ( !bIsCSZM ) return;
+	if ( !bIsCSZM )
+	{
+		return;
+	}
 	
 	for ( int i = 1; i <= iMaxPlayers; i++ ) 
 	{
@@ -60,7 +63,10 @@ void OnNewRound()
 
 void OnMapShutdown()
 {
-	if ( !bIsCSZM ) return;
+	if ( !bIsCSZM )
+	{
+		return;
+	}
 
 	g_Hits.removeRange( 0, g_Hits.length() );
 	g_VicIndex.removeRange( 0, g_VicIndex.length() );
@@ -71,7 +77,10 @@ void OnMapShutdown()
 
 HookReturnCode OnKPlayerConnected( CZP_Player@ pPlayer )
 {
-	if ( !bIsCSZM ) return HOOK_CONTINUE;
+	if ( !bIsCSZM )
+	{
+		return HOOK_CONTINUE;
+	}
 
 	CBasePlayer@ pPlrEnt = pPlayer.opCast();
 	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
@@ -89,7 +98,10 @@ HookReturnCode OnKPlayerConnected( CZP_Player@ pPlayer )
 
 HookReturnCode OnKPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &in DamageInfo )
 {
-	if ( !bIsCSZM ) return HOOK_CONTINUE;
+	if ( !bIsCSZM )
+	{
+		return HOOK_CONTINUE;
+	}
 
 	CZP_Player@ pPlrAttacker = null;
 	CBasePlayer@ pBPlrAttacker = null;
@@ -107,11 +119,25 @@ HookReturnCode OnKPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &in Damage
 		@pBPlrAttacker = ToBasePlayer( iAttIndex );
 	}
 
-	else return HOOK_HANDLED;
+	else
+	{
+		return HOOK_HANDLED;
+	}
 
-	if ( iAttIndex == iVicIndex ) return HOOK_HANDLED;
-	if ( iVicTeam == pEntityAttacker.GetTeamNumber() ) return HOOK_HANDLED;
-	if ( iVicTeam == TEAM_LOBBYGUYS || iVicTeam == TEAM_SPECTATORS ) return HOOK_HANDLED;
+	if ( iAttIndex == iVicIndex )
+	{
+		return HOOK_HANDLED;
+	}
+
+	if ( iVicTeam == pEntityAttacker.GetTeamNumber() )
+	{
+		return HOOK_HANDLED;
+	}
+
+	if ( iVicTeam == TEAM_LOBBYGUYS || iVicTeam == TEAM_SPECTATORS )
+	{
+		return HOOK_HANDLED;
+	}
 
 	if ( pEntityAttacker.GetTeamNumber() == TEAM_SURVIVORS )
 	{
@@ -126,10 +152,20 @@ HookReturnCode OnKPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &in Damage
 		g_Show[iAttIndex] = true;
 		g_ResetTime[iAttIndex] = Globals.GetCurrentTime() + 1.35f;
 
-		if ( g_VicIndex[iAttIndex] != iVicIndex ) g_VicIndex[iAttIndex] = iVicIndex;
-		if ( pBaseEnt.GetHealth() - DamageInfo.GetDamage() <= 0 ) g_DamageDealt[iAttIndex] += pBaseEnt.GetHealth();
+		if ( g_VicIndex[iAttIndex] != iVicIndex )
+		{
+			g_VicIndex[iAttIndex] = iVicIndex;
+		}
 
-		else g_DamageDealt[iAttIndex] += DamageInfo.GetDamage();
+		if ( pBaseEnt.GetHealth() - DamageInfo.GetDamage() <= 0 )
+		{
+			g_DamageDealt[iAttIndex] += pBaseEnt.GetHealth();
+		}
+
+		else
+		{
+			g_DamageDealt[iAttIndex] += DamageInfo.GetDamage();
+		}
 
 		Schedule::Task( 0.01f, "ShowDamageHealth" );
 
@@ -141,15 +177,24 @@ HookReturnCode OnKPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &in Damage
 
 void ShowDamageHealth()
 {
-	if ( !bIsCSZM ) return;
+	if ( !bIsCSZM )
+	{
+		return;
+	}
 	
 	for ( int i = 1; i <= iMaxPlayers; i++ )
 	{
 		CZP_Player@ pPlayer = ToZPPlayer( i );
 						
-		if ( pPlayer is null ) continue;
+		if ( pPlayer is null )
+		{
+			continue;
+		}
 
-		if ( !g_Show[i] ) continue;
+		if ( !g_Show[i] && g_DamageDealt[i] <= 0 )
+		{
+			continue;
+		}
 
 		CBasePlayer@ pBPlrAttacker = ToBasePlayer( i );
 		CBaseEntity@ pVicPlayer = FindEntityByEntIndex( g_VicIndex[i] );
@@ -158,14 +203,25 @@ void ShowDamageHealth()
 
 		string strHits = " hits";
 
-		if ( g_Hits[i] == 1 ) strHits = " hit";
+		if ( g_Hits[i] == 1 )
+		{
+			strHits = " hit";
+		}
 
-		if ( pVicPlayer is null ) Chat.CenterMessagePlayer( pBPlrAttacker, "Damage dealt: " + int( g_DamageDealt[i] ) + "\nin " + g_Hits[i] + strHits );
+		if ( pVicPlayer is null )
+		{
+			Chat.CenterMessagePlayer( pBPlrAttacker, "Damage dealt: " + int( g_DamageDealt[i] ) + "\nin " + g_Hits[i] + strHits );
+		}
 
 		else
 		{
 			int iHealth = pVicPlayer.GetHealth();
-			if ( iHealth < 0 ) iHealth = 0;
+
+			if ( iHealth < 0 )
+			{
+				iHealth = 0;
+			}
+			
 			Chat.CenterMessagePlayer( pBPlrAttacker, "Damage dealt: " + int( g_DamageDealt[i] ) + "\nin " + g_Hits[i] + strHits + "\nHealth left: " + iHealth );
 		}
 	}

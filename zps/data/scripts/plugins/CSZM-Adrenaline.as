@@ -8,8 +8,8 @@ bool bIsCSZM = false;
 
 const int TEAM_SURVIVORS = 2;
 
-const int iHumanSpeed = 197; 
-const int iAdrenalineSpeed = 100;
+const int iHumanSpeed = 207; 
+const int iAdrenalineSpeed = 80;
 
 array<float> g_flAdrenalineTime;
 
@@ -45,7 +45,10 @@ void OnMapInit()
 
 void OnMapShutdown()
 {
-	if ( bIsCSZM ) bIsCSZM = false;
+	if ( bIsCSZM )
+	{
+		bIsCSZM = false;
+	}
 }
 
 void OnNewRound()
@@ -70,11 +73,18 @@ void OnProcessRound()
 			CBasePlayer@ pPlrEnt = pPlayer.opCast();
 			CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 								
-			if ( pPlayer is null ) continue;
+			if ( pPlayer is null )
+			{
+				continue;
+			}
 
 			if ( g_flAdrenalineTime[i] <= Globals.GetCurrentTime() && g_flAdrenalineTime[i] != 0 )
 			{
-				if ( pBaseEnt.GetTeamNumber() == TEAM_SURVIVORS ) pPlayer.SetMaxSpeed( iHumanSpeed );
+				if ( pBaseEnt.GetTeamNumber() == TEAM_SURVIVORS )
+				{
+					pPlayer.SetMaxSpeed( iHumanSpeed );
+				}
+
 				pPlayer.DoPlayerDSP( 0 );
 				g_flAdrenalineTime[i] = 0;
 			}
@@ -84,9 +94,15 @@ void OnProcessRound()
 
 HookReturnCode OnEntityCreation( const string &in strClassname, CBaseEntity@ pEntity )
 {
-	if ( !bIsCSZM ) return HOOK_HANDLED;
+	if ( !bIsCSZM )
+	{
+		return HOOK_CONTINUE;
+	}
 
-	if ( Utils.StrContains( "item_pills", strClassname ) ) SpawnAdrenaline( pEntity );
+	if ( Utils.StrContains( "item_pills", strClassname ) )
+	{
+		SpawnAdrenaline( pEntity );
+	}
 
 	return HOOK_CONTINUE;
 }
@@ -106,8 +122,14 @@ HookReturnCode OnPlayerConnected( CZP_Player@ pPlayer )
 
 HookReturnCode OnPlayerKilled( CZP_Player@ pPlayer, CTakeDamageInfo &in DamageInfo )
 {
-	if ( !bIsCSZM ) return HOOK_HANDLED;
-	if ( pPlayer is null ) return HOOK_HANDLED;
+	if ( !bIsCSZM )
+	{
+		return HOOK_CONTINUE;
+	}
+	if ( pPlayer is null )
+	{
+		return HOOK_CONTINUE;
+	}
 
 	CBasePlayer@ pPlrEnt = pPlayer.opCast();
 	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
@@ -122,32 +144,58 @@ HookReturnCode OnPlayerKilled( CZP_Player@ pPlayer, CTakeDamageInfo &in DamageIn
 
 void OnItemDeliverUsed( CZP_Player@ pPlayer, CBaseEntity@ pEntity, int &in iEntityOutput )
 {
-    if ( pPlayer is null ) return;
-    if ( pEntity is null ) return;
-	if ( !bIsCSZM ) return;
+    if ( pPlayer is null )
+	{
+		return;
+	}
+
+    if ( pEntity is null )
+	{
+		return;
+	}
+
+	if ( !bIsCSZM )
+	{
+		return;
+	}
 
 	CBasePlayer@ pPlrEnt = pPlayer.opCast();
 	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 	
 	int iIndex = pBaseEnt.entindex();
 
-	if ( pEntity.GetEntityName() == "item_adrenaline" ) AdrenalineInjection( iIndex, pPlayer, pEntity );
+	if ( pEntity.GetEntityName() == "item_adrenaline" )
+	{
+		AdrenalineInjection( iIndex, pPlayer, pEntity );
+	}
 }
 
 void OnEntityDropped( CZP_Player@ pPlayer, CBaseEntity@ pEntity )
 {
-	if ( !bIsCSZM ) return;
+	if ( !bIsCSZM )
+	{
+		return;
+	}
 
-	if ( Utils.StrContains( "used", pEntity.GetEntityName() ) ) pEntity.SUB_Remove();
+	if ( Utils.StrContains( "used", pEntity.GetEntityName() ) )
+	{
+		pEntity.SUB_Remove();
+	}
 }
 
 void AdrenalineInjection( const int &in iIndex, CZP_Player@ pPlayer, CBaseEntity@ pEntity )
 {
-	if ( !bIsCSZM ) return;
+	if ( !bIsCSZM )
+	{
+		return;
+	}
 
 	int iSetSpeed = pPlayer.GetMaxSpeed() + iAdrenalineSpeed;
 
-	if ( iSetSpeed > iAdrenalineSpeed + iHumanSpeed ) iSetSpeed = iAdrenalineSpeed + iHumanSpeed;
+	if ( iSetSpeed > iAdrenalineSpeed + iHumanSpeed )
+	{
+		iSetSpeed = iAdrenalineSpeed + iHumanSpeed;
+	}
 
 	pPlayer.SetMaxSpeed( iSetSpeed );
 
@@ -162,7 +210,10 @@ void AdrenalineInjection( const int &in iIndex, CZP_Player@ pPlayer, CBaseEntity
 
 void SpawnAdrenaline( CBaseEntity@ pEntity )
 {
-	if ( !bIsCSZM ) return;
+	if ( !bIsCSZM )
+	{
+		return;
+	}
 
 	CEntityData@ AdrenalineIPD = EntityCreator::EntityData();
 

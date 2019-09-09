@@ -27,19 +27,28 @@ void OnMapInit()
 
 void OnMapShutdown()
 {
-	if ( bIsCSZM )  bIsCSZM = false;
+	if ( bIsCSZM )
+	{
+		bIsCSZM = false;
+	}
 }
 
 HookReturnCode CSZM_SetS_OnPlrSpawn( CZP_Player@ pPlayer )
 {
-	if ( !bIsCSZM ) return HOOK_CONTINUE;
+	if ( !bIsCSZM )
+	{
+		return HOOK_CONTINUE;
+	}
 
 	CBasePlayer@ pPlrEnt = pPlayer.opCast();
 	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 
 	string sEntName = pBaseEnt.GetEntityName();
 
-	if ( pBaseEnt.GetTeamNumber() == TEAM_SPECTATORS ) pPlayer.StripWeapon( "weapon_emptyhand" );
+	if ( pBaseEnt.GetTeamNumber() == TEAM_SPECTATORS )
+	{
+		pPlayer.StripWeapon( "weapon_emptyhand" );
+	}
 
 	Engine.Ent_Fire_Ent( pBaseEnt, "SetModelScale", "1.0"  );
 
@@ -70,8 +79,15 @@ HookReturnCode CSZM_SetS_OnConCommand( CZP_Player@ pPlayer, CASCommand@ pArgs )
 
 HookReturnCode CSZM_SetS_PlrSay( CZP_Player@ pPlayer, CASCommand@ pArgs )
 {
-	if ( !bIsCSZM ) return HOOK_CONTINUE;
-	if ( pArgs is null ) return HOOK_CONTINUE;
+	if ( !bIsCSZM ) 
+	{
+		return HOOK_CONTINUE;
+	}
+
+	if ( pArgs is null )
+	{
+		return HOOK_CONTINUE;
+	}
 
 	string arg1 = pArgs.Arg( 1 );
 
@@ -96,10 +112,20 @@ HookReturnCode CSZM_SetS_PlrSay( CZP_Player@ pPlayer, CASCommand@ pArgs )
 
 			else
 			{
-				if ( fltest < 0.1f ) fltest = 0.1f;
-				if ( fltest > 1.0f ) fltest = 1.0f;
+				if ( fltest < 0.1f )
+				{
+					fltest = 0.1f;
+				}
 
-				if ( fltest == 1 ) sAddition = ".0";
+				if ( fltest > 1.0f )
+				{
+					fltest = 1.0f;
+				}
+
+				if ( fltest == 1 )
+				{
+					sAddition = ".0";
+				}
 
 				Engine.Ent_Fire_Ent( pBaseEnt, "SetModelScale", "" + fltest );
 				Engine.EmitSoundPlayer( pPlayer, "weapons/slam/buttonclick.wav" );
