@@ -73,7 +73,8 @@ const int CONST_ROUND_TIME = 300;											//Round time in seconds.
 const int CONST_ROUND_TIME_FULL = CONST_ROUND_TIME + CONST_GEARUP_TIME;		//Round time in seconds.
 const int CONST_ZOMBIE_LIVES = 32;											//Hold Zombie Lives at this level ( Zombie Lives unused in CSZM ) 
 const float CONST_ROUND_TIME_GAME = 300.0f;									//Hold IN-Game Round timer at this level ( IN-Game Round timer unused in CSZM )
-const float CONST_SLOWDOWN_PERCER = 36.0f;
+const float CONST_SLOWDOWN_MULT = 36.0f;
+const float CONST_SLOWDOWN_WEAKMULT = 30.0f;
 const float CONST_SLOWDOWN_CRITDMG = 45.0f;
 
 //Some text over here
@@ -1451,13 +1452,13 @@ void AddSlowdown( const int &in iIndex, const float &in flDamage, const int &in 
 	g_flRecoverTime[iIndex] = 0.0f;
 
 	bool bFreeze = false;
-	int iSpeed = int( ( g_iCurSpeed[iIndex] * 0.01 ) * CONST_SLOWDOWN_PERCER );
+	int iSpeed = int( ( g_iCurSpeed[iIndex] * 0.01 ) * CONST_SLOWDOWN_MULT );
 	float p_flAddTime = 0.0f;
 
 	//Reduce the slowdown speed if weak zombie
 	if ( g_bIsWeakZombie[iIndex] )
 	{
-		iSpeed * 0.30f;
+		iSpeed * CONST_SLOWDOWN_WEAKMULT;
 	}
 
 	//Add time if critical dmg
