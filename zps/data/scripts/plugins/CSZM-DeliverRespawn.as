@@ -40,7 +40,10 @@ void OnMapInit()
 
 void OnProcessRound()
 {
-	if ( bIsCSZM == false ) return;
+	if ( !bIsCSZM )
+	{
+		return;
+	}
 
 	if ( flWaitSpawnTime <= Globals.GetCurrentTime() )
 	{
@@ -48,7 +51,11 @@ void OnProcessRound()
 
 		for ( uint i = 0; i <= g_flSpawnTime.length(); i++ )
 		{
-			if ( g_flSpawnTime[i] == -1 ) continue;
+			if ( g_flSpawnTime[i] == -1 )
+			{
+				continue;
+			}
+
 			if ( g_flSpawnTime[i] <= Globals.GetCurrentTime() )
 			{
 				g_flSpawnTime[i] = -1;
@@ -60,7 +67,10 @@ void OnProcessRound()
 
 void OnNewRound()
 {
-	if ( bIsCSZM == false ) return;
+	if ( !bIsCSZM )
+	{
+		return;
+	}
 
 	flWaitSpawnTime = Globals.GetCurrentTime() + 0.01f;
 	ClearArray();
@@ -68,7 +78,10 @@ void OnNewRound()
 
 void OnMapShutdown()
 {
-	if ( bIsCSZM == false ) return;
+	if ( !bIsCSZM )
+	{
+		return;
+	}
 
 	bIsCSZM = false;
 	flWaitSpawnTime = 0;
@@ -82,7 +95,10 @@ void OnMapShutdown()
 
 void OnMatchBegin()
 {
-	if ( bIsCSZM == false ) return;
+	if ( !bIsCSZM )
+	{
+		return;
+	}
 
 	Schedule::Task( 1.75f, "FindItems" );
 }
@@ -99,7 +115,10 @@ void ClearArray()
 
 void FindItems()
 {
-	if ( bIsCSZM == false ) return;
+	if ( !bIsCSZM )
+	{
+		return;
+	}
 
 	g_flSpawnTime.removeRange( 0, g_flSpawnTime.length() );
 	g_iIndex.removeRange( 0, g_iIndex.length() );
@@ -119,7 +138,10 @@ void FindItems()
 
 	while ( ( @pEntity = FindEntityByClassname( pEntity, "item_deliver" ) ) !is null )
 	{
-		if ( pEntity.GetEntityName() == "item_adrenaline" || pEntity.GetEntityName() == "iantidote" ) InsertValues( pEntity.entindex(), pEntity.GetClassname(), pEntity.GetEntityName(), pEntity.GetAbsOrigin(), pEntity.GetAbsAngles() );
+		if ( pEntity.GetEntityName() == "item_adrenaline" || pEntity.GetEntityName() == "iantidote" )
+		{
+			InsertValues( pEntity.entindex(), pEntity.GetClassname(), pEntity.GetEntityName(), pEntity.GetAbsOrigin(), pEntity.GetAbsAngles() );
+		}
 	}
 }
 
@@ -135,20 +157,33 @@ void InsertValues( const int &in iIndex, const string &in strClass, const string
 
 void OnEntityPickedUp( CZP_Player@ pPlayer, CBaseEntity@ pEntity )
 {
-	if ( bIsCSZM == false ) return;
+	if ( !bIsCSZM )
+	{
+		return;
+	}
 
 	int iIndex = pEntity.entindex();
 
 	float flRespawnT = 60.0f;
 
-	if ( pEntity.GetEntityName() == "iantidote" ) flRespawnT = flAntidoteRespawnTime;
-	else if ( pEntity.GetEntityName() == "item_adrenaline" ) flRespawnT = flAdrenalineRespawnTime;
+	if ( pEntity.GetEntityName() == "iantidote" )
+	{
+		flRespawnT = flAntidoteRespawnTime;
+	}
+
+	else if ( pEntity.GetEntityName() == "item_adrenaline" )
+	{
+		flRespawnT = flAdrenalineRespawnTime;
+	}
 
 	if ( pEntity.GetClassname() == "item_deliver" )
 	{
 		for ( uint i = 0; i <= g_iIndex.length(); i++ )
 		{
-			if ( g_iIndex[i] != iIndex ) continue;
+			if ( g_iIndex[i] != iIndex )
+			{
+				continue;
+			}
 
 			g_flSpawnTime[i] = Globals.GetCurrentTime() + flRespawnT;
 			g_iIndex[i] = -2;
@@ -158,8 +193,15 @@ void OnEntityPickedUp( CZP_Player@ pPlayer, CBaseEntity@ pEntity )
 
 void SpawnItem( const int &in iID )
 {
-	if ( g_strTargetname[iID] == "iantidote" ) SpawnAntidote( iID );
-	else if ( g_strTargetname[iID] == "item_adrenaline" ) SpawnAdrenaline( iID );
+	if ( g_strTargetname[iID] == "iantidote" )
+	{
+		SpawnAntidote( iID );
+	}
+
+	else if ( g_strTargetname[iID] == "item_adrenaline" )
+	{
+		SpawnAdrenaline( iID );
+	}
 
 	CEntityData@ SparkIPD = EntityCreator::EntityData();
 	SparkIPD.Add( "spawnflags", "896" );

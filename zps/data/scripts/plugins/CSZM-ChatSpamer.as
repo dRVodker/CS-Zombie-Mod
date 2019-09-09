@@ -31,7 +31,10 @@ void OnPluginInit()
 
 void OnMapInit()
 {
-	if ( Utils.StrContains( "cszm", Globals.GetCurrentMapName() ) ) bIsCSZM = true;
+	if ( Utils.StrContains( "cszm", Globals.GetCurrentMapName() ) )
+	{
+		bIsCSZM = true;
+	}
 }
 
 void OnMapShutdown()
