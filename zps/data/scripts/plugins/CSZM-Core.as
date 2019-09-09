@@ -20,12 +20,13 @@ CASConVar@ pFriendlyFire  = null;
 CASConVar@ pInfectionRate   = null;
 
 int iMaxPlayers;
-int iDoorsState;
+int iDoorsState;						//Used for warm up ( to allow everyone to open doors )
 
 bool bIsCSZM;							//Is CSZM available? ( Depends on a map )
+bool bAllowAddTime = true;				//Allow add time for successful infection
+
 bool bSpawnWeak = true;
 bool bAllowZombieSpawn;
-bool bAllowAddTime = true;				//Allow add time for successful infection
 bool bWarmUp = true;
 
 //Win Countes
@@ -42,8 +43,8 @@ const int SPEED_WEAK = 231;
 const int SPEED_MINIMUM = 80;
 
 //Damage Slowdown
-const float CONST_MAX_SLOWTIME = 2.0f;
-const float CONST_RECOVER_UNIT = 0.05f;
+const float CONST_MAX_SLOWTIME = 2.0f;		//Maximum amount of seconds a zombie could be slowed down
+const float CONST_RECOVER_UNIT = 0.05f;		//Amount of time in one tick of a speed recovery
 
 //Team Consts
 const int TEAM_LOBBYGUYS = 0;
@@ -52,27 +53,27 @@ const int TEAM_SURVIVORS = 2;
 const int TEAM_ZOMBIES = 3;
 
 //Other Consts
-const float CONST_SPAWN_DELAY = 5.0f;							//Zombies spawn delay.
-const int CONST_FI_HEALTH_MULT = 125;							//HP multiplier of first infected.
-const int CONST_ZOMBIE_ADD_HP = 200;							//Additional HP to Max Health of a zombie.
-const int CONST_WEAK_ZOMBIE_HP = 125;							//Health of the weak zombies
-const int CONST_REWARD_HEALTH = 125;							//Give that amount of HP as reward of successful infection.
-const int CONST_GEARUP_TIME = 40;								//Time to gear up and find a good spot.
-const int CONST_TURNING_TIME = 20;								//Turning time.
-const int CONST_INFECT_DELAY = 2;								//Amount of rounds you have to wait to be the First Infected again.
-const int CONST_WARMUP_TIME = 10;								//Time of the warmup in seconds.		( default value is 75 )
+const float CONST_SPAWN_DELAY = 5.0f;		//Zombies spawn delay.
+const int CONST_FI_HEALTH_MULT = 125;		//HP multiplier of first infected.
+const int CONST_ZOMBIE_ADD_HP = 200;		//Additional HP to Max Health of a zombie.
+const int CONST_WEAK_ZOMBIE_HP = 125;		//Health of the weak zombies
+const int CONST_CARRIER_HP = 0;				//Additional HP to Max Health of the carrier.	( Currently equal 0 because the carrier is too OP )
+const int CONST_REWARD_HEALTH = 125;		//Give that amount of HP as reward of successful infection.
+const int CONST_GEARUP_TIME = 40;			//Time to gear up and find a good spot.
+const int CONST_TURNING_TIME = 20;			//Turning time.
+const int CONST_INFECT_DELAY = 2;			//Amount of rounds you have to wait to be the First Infected again.
+const int CONST_WARMUP_TIME = 10;			//Time of the warmup in seconds.		( default value is 75 )
 
 //Other Consts
 const float CONST_WEAK_ZOMBIE_TIME = 45.0f;								
-const int CONST_SUBTRACT_DEATH = 2;											//Amount of units subtract from the death counter
-const int CONST_INFECT_ADD_TIME = 15;										//Amount of time in seconds add to the round time in case of successful infection
-const int CONST_CARRIER_HP = 0;												//Additional HP to Max Health of the carrier.	( Currently equal 0 because the carrier is too OP )
-const int CONST_DEATH_BONUS_HP = 100;										//Multiplier of death hp bonus.
-const int CONST_DEATH_MAX = 7;												//Maximum amount of death to boost up the max health.
-const int CONST_ROUND_TIME = 300;											//Round time in seconds.
-const int CONST_ROUND_TIME_FULL = CONST_ROUND_TIME + CONST_GEARUP_TIME;		//Round time in seconds.
-const int CONST_ZOMBIE_LIVES = 32;											//Hold Zombie Lives at this level ( Zombie Lives unused in CSZM ) 
-const float CONST_ROUND_TIME_GAME = 300.0f;									//Hold IN-Game Round timer at this level ( IN-Game Round timer unused in CSZM )
+const int CONST_SUBTRACT_DEATH = 2;												//Amount of units subtract from the death counter
+const int CONST_INFECT_ADD_TIME = 15;											//Amount of time in seconds add to the round time in case of successful infection
+const int CONST_DEATH_BONUS_HP = 100;											//Multiplier of death hp bonus.
+const int CONST_DEATH_MAX = 7;													//Maximum amount of death to boost up the max health.
+const int CONST_ROUND_TIME = 300;												//Round time in seconds.
+const int CONST_ROUND_TIME_FULL = CONST_ROUND_TIME + CONST_GEARUP_TIME;			//Round time in seconds.
+const int CONST_ZOMBIE_LIVES = 32;												//Hold Zombie Lives at this level ( Zombie Lives unused in CSZM ) 
+const float CONST_ROUND_TIME_GAME = 300.0f;										//Hold IN-Game Round timer at this level ( IN-Game Round timer unused in CSZM )
 const float CONST_SLOWDOWN_MULT = 36.0f;
 const float CONST_SLOWDOWN_WEAKMULT = 30.0f;
 const float CONST_SLOWDOWN_CRITDMG = 45.0f;
@@ -116,7 +117,7 @@ array<string> g_strModels =
 array<string> g_strMDLToUse;
 
 //Damage Slowdown arrays
-array<int> g_iCurSpeed;
+array<int> g_iNormalSpeed;
 array<int> g_iSlowSpeed;
 array<float> g_flSlowTime;
 array<float> g_flAddTime;
@@ -253,7 +254,7 @@ void OnMapInit()
 		g_iVictims.resize( iMaxPlayers + 1 );
 
 		//Resize Damage Slowdown arrays
-		g_iCurSpeed.resize( iMaxPlayers + 1 );
+		g_iNormalSpeed.resize( iMaxPlayers + 1 );
 		g_iSlowSpeed.resize( iMaxPlayers + 1 );
 		g_flSlowTime.resize( iMaxPlayers + 1 );
 		g_flRecoverTime.resize( iMaxPlayers + 1 );
@@ -307,7 +308,7 @@ void OnMapShutdown()
 		ClearIntArray( g_CONST_INFECT_DELAY );
 		ClearIntArray( g_iZMDeathCount );
 		ClearIntArray( g_iAntidote );
-		ClearIntArray( g_iCurSpeed );
+		ClearIntArray( g_iNormalSpeed );
 		ClearIntArray( g_iSlowSpeed );
 		ClearFloatArray( g_flSlowTime );
 		ClearFloatArray( g_flRecoverTime );
@@ -502,27 +503,27 @@ HookReturnCode CSZM_OnPlayerSpawn( CZP_Player@ pPlayer )
 		switch( pBaseEnt.GetTeamNumber() )
 		{
 			case TEAM_SURVIVORS:
-				g_iCurSpeed[iIndex] = SPEED_HUMAN;
+				g_iNormalSpeed[iIndex] = SPEED_HUMAN;
 			break;
 			
 			case TEAM_ZOMBIES:
 				if ( pPlayer.IsCarrier() )
 				{
-					g_iCurSpeed[iIndex] = SPEED_CARRIER;
+					g_iNormalSpeed[iIndex] = SPEED_CARRIER;
 				}
 
 				else
 				{
-					g_iCurSpeed[iIndex] = SPEED_ZOMBIE;
+					g_iNormalSpeed[iIndex] = SPEED_ZOMBIE;
 				}
 			break;
 			
 			default:
-				g_iCurSpeed[iIndex] = SPEED_DEFAULT;
+				g_iNormalSpeed[iIndex] = SPEED_DEFAULT;
 			break;
 		}
 
-		pPlayer.SetMaxSpeed( g_iCurSpeed[iIndex] );
+		pPlayer.SetMaxSpeed( g_iNormalSpeed[iIndex] );
 
 		if ( pBaseEnt.GetTeamNumber() != TEAM_ZOMBIES )
 		{
@@ -953,8 +954,7 @@ void OnProcessRound()
 				continue;
 			}
 							
-			CBasePlayer@ pPlrEnt = pPlayer.opCast();
-			CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+			CBaseEntity@ pBaseEnt = FindEntityByEntIndex( i );
 
 			if ( g_flSlowTime[i] <= Globals.GetCurrentTime() && g_flSlowTime[i] != 0 )
 			{
@@ -968,11 +968,11 @@ void OnProcessRound()
 				g_flRecoverTime[i] = Globals.GetCurrentTime() + CONST_RECOVER_UNIT;
 				g_iSlowSpeed[i] += 2;
 
-				if ( g_iSlowSpeed[i] >= g_iCurSpeed[i] )
+				if ( g_iSlowSpeed[i] >= g_iNormalSpeed[i] )
 				{
 					g_flRecoverTime[i] = 0;
 					g_iSlowSpeed[i] = 0;
-					pPlayer.SetMaxSpeed( g_iCurSpeed[i] );
+					pPlayer.SetMaxSpeed( g_iNormalSpeed[i] );
 				}
 					
 				else pPlayer.SetMaxSpeed( g_iSlowSpeed[i] );
@@ -985,7 +985,6 @@ void OnProcessRound()
 				if ( pPlayer.IsCarrier() && g_bIsFirstInfected[i] )
 				{
 					bAllowIdleSound = true;
-
 				}
 
 				if ( !pPlayer.IsCarrier() )
@@ -1089,7 +1088,7 @@ void LocknLoad()
 	
 	Globals.SetPlayerRespawnDelay( true, CONST_SPAWN_DELAY );
 	
-	ShowChatMsg( strRoundBegun, 2 );
+	ShowChatMsg( strRoundBegun, TEAM_SURVIVORS );
 
 	DecideFirstInfected();
 
@@ -1452,7 +1451,7 @@ void AddSlowdown( const int &in iIndex, const float &in flDamage, const int &in 
 	g_flRecoverTime[iIndex] = 0.0f;
 
 	bool bFreeze = false;
-	int iSpeed = int( ( g_iCurSpeed[iIndex] * 0.01 ) * CONST_SLOWDOWN_MULT );
+	int iSpeed = int( ( g_iNormalSpeed[iIndex] * 0.01 ) * CONST_SLOWDOWN_MULT );
 	float p_flAddTime = 0.0f;
 
 	//Reduce the slowdown speed if weak zombie
@@ -1501,7 +1500,7 @@ void AddSlowdown( const int &in iIndex, const float &in flDamage, const int &in 
 	//If Carrier - reduce iSpeed
 	//if ( pPlayer.IsCarrier() && !g_bIsFirstInfected[iIndex] ) iSpeed = int( floor( iSpeed * 0.65f ) );
 
-	g_iSlowSpeed[iIndex] = g_iCurSpeed[iIndex] - iSpeed;
+	g_iSlowSpeed[iIndex] = g_iNormalSpeed[iIndex] - iSpeed;
 
 	g_flAddTime[iIndex] += p_flAddTime;
 
@@ -1525,7 +1524,7 @@ void AddSlowdown( const int &in iIndex, const float &in flDamage, const int &in 
 	}
 
 /*	SD("------------------------------");
-	SD( "iSpeed: " + iSpeed + "\ng_iSlowSpeed: " + g_iSlowSpeed[iIndex] + "\ng_flAddTime: " + g_flAddTime[iIndex] + "\ng_iCurSpeed: " + g_iCurSpeed[iIndex] );
+	SD( "iSpeed: " + iSpeed + "\ng_iSlowSpeed: " + g_iSlowSpeed[iIndex] + "\ng_flAddTime: " + g_flAddTime[iIndex] + "\ng_iNormalSpeed: " + g_iNormalSpeed[iIndex] );
 	SD("------------------------------");*/
 }
 
@@ -1533,7 +1532,7 @@ void ZeroingSlowdown( const int &in iIndex, const bool &in bIsConnected )
 {
 	if ( bIsConnected )
 	{
-		g_iCurSpeed[iIndex] = SPEED_DEFAULT;
+		g_iNormalSpeed[iIndex] = SPEED_DEFAULT;
 	}
 
 	g_flSlowTime[iIndex] = 0.0f;
@@ -1654,7 +1653,7 @@ void TurnToZ( const int &in iIndex )
 
 			g_flIdleTime[iIndex] = Globals.GetCurrentTime() + Math::RandomFloat( 3.15f, 12.10f );
 
-			g_iCurSpeed[iIndex] = SPEED_ZOMBIE;
+			g_iNormalSpeed[iIndex] = SPEED_ZOMBIE;
 			pPlayer.SetMaxSpeed( SPEED_ZOMBIE );
 
 			pPlayer.SetArmModel( "models/cszm/weapons/c_css_zombie_arms.mdl" );
@@ -1702,7 +1701,7 @@ void SpawnWeakZombie( CZP_Player@ pPlayer )
 	pBaseEnt.SetHealth( CONST_WEAK_ZOMBIE_HP );
 	pPlayer.SetMaxSpeed( SPEED_WEAK );
 	g_iCVSIndex[iIndex] = 2;
-	g_iCurSpeed[iIndex] = SPEED_WEAK;
+	g_iNormalSpeed[iIndex] = SPEED_WEAK;
 
 	Chat.PrintToChatPlayer( pPlrEnt, strWeakZombie );
 }
