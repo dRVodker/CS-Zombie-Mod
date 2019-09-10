@@ -21,7 +21,10 @@ void ShowChatMsg( const string &in strMsg, const int &in iTeamNum )
 		{
 			CZP_Player@ pPlayer = ToZPPlayer( i );
 
-			if ( pPlayer is null ) continue;
+			if ( pPlayer is null )
+			{
+				continue;
+			}
 
 			CBasePlayer@ pPlrEnt = pPlayer.opCast();
 			CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
@@ -32,5 +35,8 @@ void ShowChatMsg( const string &in strMsg, const int &in iTeamNum )
 			}
 		}
 	}
-	else Chat.PrintToChat( all, strMsg );
+	else
+	{
+		Chat.PrintToChat( all, strMsg );
+	}
 }

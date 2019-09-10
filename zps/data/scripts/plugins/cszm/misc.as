@@ -2,7 +2,10 @@ bool bDamageType( int &in iSubjectDT, int &in iDMGNum )
 {
 	bool bIsDTValid = false;
 
-	if ( iSubjectDT & (1<<iDMGNum) == (1<<iDMGNum) ) bIsDTValid = true;
+	if ( iSubjectDT & (1<<iDMGNum) == (1<<iDMGNum) )
+	{
+		bIsDTValid = true;
+	}
 
 	return bIsDTValid;
 }
@@ -35,10 +38,12 @@ int CountPlrs( const int &in iTeamNum )
 	{
 		CZP_Player@ pPlayer = ToZPPlayer( i );
 	
-		if ( pPlayer is null ) continue;
+		if ( pPlayer is null )
+		{
+			continue;
+		}
 			
-		CBasePlayer@ pPlrEnt = pPlayer.opCast();
-		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+		CBaseEntity@ pBaseEnt = FindEntityByEntIndex( i );
 
 		if ( pBaseEnt.GetTeamNumber() == iTeamNum )
 		{
@@ -93,9 +98,15 @@ void lobby_hint( CZP_Player@ pPlayer )
 
 	SendGameTextPlayer( pPlayer, strHintF1, 3, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color( 64, 128, 255 ), Color( 255, 95, 5 ) );
 
-	if ( !RoundManager.IsRoundOngoing( false ) ) SendGameTextPlayer( pPlayer, "\n" + strHintF2Inf, 4, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color( 255, 32, 64 ), Color( 255, 95, 5 ) );
+	if ( !RoundManager.IsRoundOngoing( false ) )
+	{
+		SendGameTextPlayer( pPlayer, "\n" + strHintF2Inf, 4, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color( 255, 32, 64 ), Color( 255, 95, 5 ) );
+	}
 
-	else if ( bAllowZombieSpawn ) SendGameTextPlayer( pPlayer, "\n" + strHintF2, 4, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color( 255, 32, 64 ), Color( 255, 95, 5 ) );
+	else if ( bAllowZombieSpawn )
+	{
+		SendGameTextPlayer( pPlayer, "\n" + strHintF2, 4, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color( 255, 32, 64 ), Color( 255, 95, 5 ) );
+	}
 
 	else 
 	{
@@ -134,12 +145,17 @@ void PutPlrToLobby( CBaseEntity@ pEntPlayer )
 		{
 			CZP_Player@ pPlayer = ToZPPlayer( i );
 			
-			if ( pPlayer is null ) continue;
+			if ( pPlayer is null )
+			{
+				continue;
+			}
 			
-			CBasePlayer@ pPlrEnt = pPlayer.opCast();
-			CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+			CBaseEntity@ pBaseEnt = FindEntityByEntIndex( i );
 			
-			if ( pBaseEnt.GetTeamNumber() == 1 || pBaseEnt.GetTeamNumber() == 0 ) pBaseEnt.SetAbsOrigin( g_pLobbySpawn[Math::RandomInt( 1, iLength )].GetAbsOrigin() );
+			if ( pBaseEnt.GetTeamNumber() == 1 || pBaseEnt.GetTeamNumber() == 0 )
+			{
+				pBaseEnt.SetAbsOrigin( g_pLobbySpawn[Math::RandomInt( 1, iLength )].GetAbsOrigin() );
+			}
 		}
 	}
 	else
@@ -176,10 +192,12 @@ void PutPlrToPlayZone( CBaseEntity@ pEntPlayer )
 		{
 			CZP_Player@ pPlayer = ToZPPlayer( i );
 			
-			if ( pPlayer is null ) continue;
+			if ( pPlayer is null )
+			{
+				continue;
+			}
 			
-			CBasePlayer@ pPlrEnt = pPlayer.opCast();
-			CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+			CBaseEntity@ pBaseEnt = FindEntityByEntIndex( i );
 			
 			if ( pBaseEnt.GetTeamNumber() == 1 || pBaseEnt.GetTeamNumber() == 0 )
 			{
@@ -187,6 +205,7 @@ void PutPlrToPlayZone( CBaseEntity@ pEntPlayer )
 			}
 		}
 	}
+	
 	else
 	{
 		pEntPlayer.SetAbsOrigin( g_pOtherSpawn[Math::RandomInt( 1, iLength )].GetAbsOrigin() );

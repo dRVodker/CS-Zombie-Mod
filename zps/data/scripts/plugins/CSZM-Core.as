@@ -344,6 +344,7 @@ HookReturnCode CSZM_RoundWin( const string &in strMapname, RoundWinState iWinSta
 		{
 			Engine.EmitSound( "CS_HumanWin" );
 		}
+
 		if ( iWinState == STATE_ZOMBIE )
 		{
 			Engine.EmitSound( "CS_ZombieWin" );
@@ -353,6 +354,7 @@ HookReturnCode CSZM_RoundWin( const string &in strMapname, RoundWinState iWinSta
 		{
 			iHumanWin++;
 		}
+		
 		if ( iWinState == STATE_ZOMBIE )
 		{
 			iZombieWin++;

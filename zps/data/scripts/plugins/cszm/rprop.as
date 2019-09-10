@@ -17,7 +17,10 @@ void RemoveProp( CBaseEntity@ pPlayer )
     {
         while ( ( @pProp = FindEntityByClassname( pProp, g_strPropsCN[i] ) ) !is null )
         {
-            if ( pProp.Intersects( pPlayer ) == true  && pProp !is null ) pProp.SUB_Remove();
+            if ( pProp.Intersects( pPlayer ) == true  && pProp !is null )
+            {
+                pProp.SUB_Remove();
+            }
         }
     }
 }
