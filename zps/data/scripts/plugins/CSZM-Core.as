@@ -705,6 +705,33 @@ HookReturnCode CSZM_OnPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &out D
 		
 		if ( iVicTeam == TEAM_ZOMBIES && pBaseEnt.IsAlive() )
 		{
+			bool bLeft = false;
+
+			float VP_X = 0.0f;
+			float VP_Y = 0.0f;
+			float VP_DAMP = Math::RandomFloat( 0.047f , 0.095f );
+			float VP_KICK = Math::RandomFloat( 0.25f , 1.35f );
+
+			if ( bDamageType( iDamageType, 5 ) )
+			{
+				VP_X = Math::RandomFloat( -1.75f, -5.15f );
+				VP_Y = Math::RandomFloat( -1.75f, -5.15f );
+				VP_DAMP = Math::RandomFloat( 0.0f , 0.015f );
+			}
+
+			else 
+			{
+				VP_X = Math::RandomFloat( -3.75f, 3.85f );
+				VP_Y = Math::RandomFloat( -3.75f, 3.85f );
+			}
+
+			if ( Math::RandomInt( 0 , 1 ) > 0 )
+			{
+				bLeft = true;
+			}
+
+			Utils.FakeRecoil( pPlayer, VP_KICK, VP_DAMP, VP_X, VP_Y, bLeft );
+
 			bool bAllowPainSound = false;
 
 			if ( pPlayer.IsCarrier() && g_bIsFirstInfected[iVicIndex] )
@@ -1442,11 +1469,6 @@ void AddSlowdown( const int &in iIndex, const float &in flDamage, const int &in 
 	{
 		return;
 	}
-
-/*	if ( g_bIsWeakZombie[iIndex] )
-	{
-		return;
-	}*/
 
 	CBaseEntity@ pPlayerEntity = FindEntityByEntIndex( iIndex );
 
