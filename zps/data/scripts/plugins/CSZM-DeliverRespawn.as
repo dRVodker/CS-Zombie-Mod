@@ -40,12 +40,7 @@ void OnMapInit()
 
 void OnProcessRound()
 {
-	if ( !bIsCSZM )
-	{
-		return;
-	}
-
-	if ( flWaitSpawnTime <= Globals.GetCurrentTime() )
+	if ( flWaitSpawnTime <= Globals.GetCurrentTime() && bIsCSZM )
 	{
 		flWaitSpawnTime = Globals.GetCurrentTime() + 0.01f;
 
@@ -67,40 +62,34 @@ void OnProcessRound()
 
 void OnNewRound()
 {
-	if ( !bIsCSZM )
+	if ( bIsCSZM )
 	{
-		return;
+		flWaitSpawnTime = Globals.GetCurrentTime() + 0.01f;
+		ClearArray();
 	}
-
-	flWaitSpawnTime = Globals.GetCurrentTime() + 0.01f;
-	ClearArray();
 }
 
 void OnMapShutdown()
 {
-	if ( !bIsCSZM )
+	if ( bIsCSZM )
 	{
-		return;
+		bIsCSZM = false;
+		flWaitSpawnTime = 0;
+
+		Entities::RemoveRegisterUse( "item_deliver" );
+		Entities::RemoveRegisterDrop( "item_deliver" );
+		Entities::RemoveRegisterPickup( "item_deliver" );
+		
+		ClearArray();
 	}
-
-	bIsCSZM = false;
-	flWaitSpawnTime = 0;
-
-	Entities::RemoveRegisterUse( "item_deliver" );
-	Entities::RemoveRegisterDrop( "item_deliver" );
-	Entities::RemoveRegisterPickup( "item_deliver" );
-	
-	ClearArray();
 }
 
 void OnMatchBegin()
 {
-	if ( !bIsCSZM )
+	if ( bIsCSZM )
 	{
-		return;
+		Schedule::Task( 1.75f, "FindItems" );
 	}
-
-	Schedule::Task( 1.75f, "FindItems" );
 }
 
 void ClearArray()
@@ -115,32 +104,30 @@ void ClearArray()
 
 void FindItems()
 {
-	if ( !bIsCSZM )
+	if ( bIsCSZM )
 	{
-		return;
-	}
+		g_flSpawnTime.removeRange( 0, g_flSpawnTime.length() );
+		g_iIndex.removeRange( 0, g_iIndex.length() );
+		g_strClassname.removeRange( 0, g_strClassname.length() );
+		g_strTargetname.removeRange( 0, g_strTargetname.length() );
+		g_vecOrigin.removeRange( 0, g_vecOrigin.length() );
+		g_angAngles.removeRange( 0, g_angAngles.length() );
 
-	g_flSpawnTime.removeRange( 0, g_flSpawnTime.length() );
-	g_iIndex.removeRange( 0, g_iIndex.length() );
-	g_strClassname.removeRange( 0, g_strClassname.length() );
-	g_strTargetname.removeRange( 0, g_strTargetname.length() );
-	g_vecOrigin.removeRange( 0, g_vecOrigin.length() );
-	g_angAngles.removeRange( 0, g_angAngles.length() );
+		g_flSpawnTime.insertLast( -1 );
+		g_iIndex.insertLast( 0 );
+		g_strClassname.insertLast( "" );
+		g_strTargetname.insertLast( "" );
+		g_vecOrigin.insertLast( Vector( 0, 0, 0 ) );
+		g_angAngles.insertLast( QAngle( 0, 0, 0 ) );
 
-	g_flSpawnTime.insertLast( -1 );
-	g_iIndex.insertLast( 0 );
-	g_strClassname.insertLast( "" );
-	g_strTargetname.insertLast( "" );
-	g_vecOrigin.insertLast( Vector( 0, 0, 0 ) );
-	g_angAngles.insertLast( QAngle( 0, 0, 0 ) );
+		CBaseEntity@ pEntity;
 
-	CBaseEntity@ pEntity;
-
-	while ( ( @pEntity = FindEntityByClassname( pEntity, "item_deliver" ) ) !is null )
-	{
-		if ( pEntity.GetEntityName() == "item_adrenaline" || pEntity.GetEntityName() == "iantidote" )
+		while ( ( @pEntity = FindEntityByClassname( pEntity, "item_deliver" ) ) !is null )
 		{
-			InsertValues( pEntity.entindex(), pEntity.GetClassname(), pEntity.GetEntityName(), pEntity.GetAbsOrigin(), pEntity.GetAbsAngles() );
+			if ( pEntity.GetEntityName() == "item_adrenaline" || pEntity.GetEntityName() == "iantidote" )
+			{
+				InsertValues( pEntity.entindex(), pEntity.GetClassname(), pEntity.GetEntityName(), pEntity.GetAbsOrigin(), pEntity.GetAbsAngles() );
+			}
 		}
 	}
 }
@@ -157,36 +144,34 @@ void InsertValues( const int &in iIndex, const string &in strClass, const string
 
 void OnEntityPickedUp( CZP_Player@ pPlayer, CBaseEntity@ pEntity )
 {
-	if ( !bIsCSZM )
+	if ( bIsCSZM )
 	{
-		return;
-	}
+		int iIndex = pEntity.entindex();
 
-	int iIndex = pEntity.entindex();
+		float flRespawnT = 60.0f;
 
-	float flRespawnT = 60.0f;
-
-	if ( pEntity.GetEntityName() == "iantidote" )
-	{
-		flRespawnT = flAntidoteRespawnTime;
-	}
-
-	else if ( pEntity.GetEntityName() == "item_adrenaline" )
-	{
-		flRespawnT = flAdrenalineRespawnTime;
-	}
-
-	if ( pEntity.GetClassname() == "item_deliver" )
-	{
-		for ( uint i = 0; i <= g_iIndex.length(); i++ )
+		if ( pEntity.GetEntityName() == "iantidote" )
 		{
-			if ( g_iIndex[i] != iIndex )
-			{
-				continue;
-			}
+			flRespawnT = flAntidoteRespawnTime;
+		}
 
-			g_flSpawnTime[i] = Globals.GetCurrentTime() + flRespawnT;
-			g_iIndex[i] = -2;
+		else if ( pEntity.GetEntityName() == "item_adrenaline" )
+		{
+			flRespawnT = flAdrenalineRespawnTime;
+		}
+
+		if ( pEntity.GetClassname() == "item_deliver" )
+		{
+			for ( uint i = 0; i <= g_iIndex.length(); i++ )
+			{
+				if ( g_iIndex[i] != iIndex )
+				{
+					continue;
+				}
+
+				g_flSpawnTime[i] = Globals.GetCurrentTime() + flRespawnT;
+				g_iIndex[i] = -2;
+			}
 		}
 	}
 }

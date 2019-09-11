@@ -21,22 +21,22 @@ array<string> g_strAmmoClass =
 
 array<string> g_strAllowedCN =
 {
-	"null", //0
-	"item_ammo_pistol", //1
-	"item_ammo_rifle", //2
-	"item_ammo_shotgun", //3
-	"item_ammo_revolver", //4
-	"item_armor" //5
+	"null",					//0
+	"item_ammo_pistol",		//1
+	"item_ammo_rifle",		//2
+	"item_ammo_shotgun",	//3
+	"item_ammo_revolver",	//4
+	"item_armor"			//5
 };
 
 array<float> g_flRespawnTime =
 {
-	0.0f, //0
-	7.0f, //1
-	22.0f, //2
-	27.0f, //3
-	36.0f, //4
-	39.0f //5
+	0.0f,	//0
+	7.0f,	//1
+	22.0f,	//2
+	27.0f,	//3
+	36.0f,	//4
+	39.0f	//5
 };
 
 array<float> g_flSpawnTime;
@@ -47,7 +47,7 @@ array<QAngle> g_angAngles;
 
 void OnProcessRound()
 {
-	if ( bIsCSZM == true )
+	if ( bIsCSZM )
 	{
 		if ( flWaitSpawnTime <= Globals.GetCurrentTime() )
 		{
@@ -55,7 +55,10 @@ void OnProcessRound()
 
 			for ( uint i = 0; i <= g_flSpawnTime.length(); i++ )
 			{
-				if ( g_flSpawnTime[i] == -1 ) continue;
+				if ( g_flSpawnTime[i] == -1 )
+				{
+					continue;
+				}
 
 				if ( g_flSpawnTime[i] <= Globals.GetCurrentTime() )
 				{
@@ -109,12 +112,15 @@ void OnMapInit()
 
 void OnNewRound()
 {
-	if ( bIsCSZM == true ) ClearArray();
+	if ( bIsCSZM )
+	{
+		ClearArray();
+	}
 }
 
 void OnMapShutdown()
 {
-	if ( bIsCSZM == true )
+	if ( bIsCSZM )
 	{
 		iDroppedAmmoCount = 0;
 		bIsCSZM = false;
@@ -125,7 +131,7 @@ void OnMapShutdown()
 
 void OnMatchBegin()
 {
-	if ( bIsCSZM == true )
+	if ( bIsCSZM )
 	{
 		Schedule::Task( 1.75f, "FindItems" );
 	}
@@ -149,7 +155,10 @@ void FindItems()
 
 	for ( uint i = 0; i < g_strAllowedCN.length(); i++ )
 	{
-		if ( i == 0 ) continue;
+		if ( i == 0 )
+		{
+			continue;
+		}
 
 		while ( ( @pEntity = FindEntityByClassname( pEntity, g_strAllowedCN[i] ) ) !is null )
 		{
@@ -178,9 +187,12 @@ void ClearArray()
 
 HookReturnCode OnEntityCreation( const string &in strClassname, CBaseEntity@ pEntity )
 {
-	if ( bIsCSZM == true )
+	if ( bIsCSZM )
 	{
-		if ( Utils.StrContains( "weapon", strClassname ) || Utils.StrContains( "item", strClassname ) ) Engine.Ent_Fire_Ent( pEntity, "DisableDamageForces" );
+		if ( Utils.StrContains( "weapon", strClassname ) || Utils.StrContains( "item", strClassname ) )
+		{
+			Engine.Ent_Fire_Ent( pEntity, "DisableDamageForces" );
+		}
 
 		if ( Utils.StrContains( "clip", strClassname ) && strClassname != "item_ammo_barricade_clip" )
 		{
@@ -200,12 +212,14 @@ HookReturnCode OnEntityCreation( const string &in strClassname, CBaseEntity@ pEn
 			if ( iDroppedAmmoCount > iMaxDroppedAmmo )
 			{
 				uint iResult = 1;
-				if ( ( iDroppedAmmoCount - iMaxDroppedAmmo ) > 0 ) iResult = iDroppedAmmoCount - iMaxDroppedAmmo;
+				if ( ( iDroppedAmmoCount - iMaxDroppedAmmo ) > 0 )
+				{
+					iResult = iDroppedAmmoCount - iMaxDroppedAmmo;
+				}
+
 				RemoveExtraClip( iResult );
 			}
 		}
-
-		return HOOK_HANDLED;
 	}
 	
 	return HOOK_CONTINUE;
@@ -213,7 +227,7 @@ HookReturnCode OnEntityCreation( const string &in strClassname, CBaseEntity@ pEn
 
 void OnEntityPickedUp( CZP_Player@ pPlayer, CBaseEntity@ pEntity )
 {
-	if ( bIsCSZM == true )
+	if ( bIsCSZM )
 	{
 		pEntity.SetHealth( -1 );
 
@@ -225,7 +239,10 @@ void OnEntityPickedUp( CZP_Player@ pPlayer, CBaseEntity@ pEntity )
 
 				for ( uint i = 0; i <= g_strClassname.length(); i++ )
 				{
-					if ( g_iIndex[i] != iIndex ) continue;
+					if ( g_iIndex[i] != iIndex )
+					{
+						continue;
+					}
 
 					g_flSpawnTime[i] = Globals.GetCurrentTime() + g_flRespawnTime[ui];
 					g_iIndex[i] = -2;
@@ -238,7 +255,7 @@ void OnEntityPickedUp( CZP_Player@ pPlayer, CBaseEntity@ pEntity )
 
 HookReturnCode OnEntityDestruction( const string &in strClassname, CBaseEntity@ pEntity )
 {
-	if ( bIsCSZM == true )
+	if ( bIsCSZM )
 	{
 		RemoveIndex( pEntity.entindex(), pEntity.GetHealth(), strClassname );
 
@@ -251,7 +268,10 @@ HookReturnCode OnEntityDestruction( const string &in strClassname, CBaseEntity@ 
 				if ( strClassname == g_strAmmoClass[ui] )
 				{
 					iDroppedAmmoCount--;
-					if ( iDroppedAmmoCount < 0 ) iDroppedAmmoCount = 0;
+					if ( iDroppedAmmoCount < 0 )
+					{
+						iDroppedAmmoCount = 0;
+					}
 				}
 			}
 		}
@@ -316,7 +336,11 @@ void RemoveExtraClip( const uint &in iUnit )
 		g_pAmmoEntity.insertLast( pAmmoEntity );
 	}
 
-	if ( iUnit == 1 ) g_pAmmoEntity[0].SUB_Remove();
+	if ( iUnit == 1 )
+	{
+		g_pAmmoEntity[0].SUB_Remove();
+	}
+
 	else
 	{
 		for ( uint uii = 0; uii <= iUnit; uii++ )
