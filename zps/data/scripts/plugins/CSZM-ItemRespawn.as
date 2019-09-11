@@ -36,7 +36,7 @@ array<float> g_flRespawnTime =
 	22.0f, //2
 	27.0f, //3
 	36.0f, //4
-	41.0f //5
+	39.0f //5
 };
 
 array<float> g_flSpawnTime;

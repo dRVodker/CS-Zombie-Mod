@@ -15,8 +15,8 @@ array<string> g_strTargetname;
 array<Vector> g_vecOrigin;
 array<QAngle> g_angAngles;
 
-const float flAntidoteRespawnTime = 64.0f;
-const float flAdrenalineRespawnTime = 45.0f;
+const float flAntidoteRespawnTime = 70.0f;
+const float flAdrenalineRespawnTime = 50.0f;
 
 void OnPluginInit()
 {
