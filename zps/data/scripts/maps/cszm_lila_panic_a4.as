@@ -271,7 +271,7 @@ void PropsHP()
 
 		else
 		{
-			int Health = int( pEntity.GetHealth() * 0.65f );
+			int Health = int( pEntity.GetHealth() * 0.4f );
 			pEntity.SetMaxHealth( PlrCountHP( Health ) );
 			pEntity.SetHealth( PlrCountHP( Health ) );
 		}
