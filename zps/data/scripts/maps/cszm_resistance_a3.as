@@ -1,9 +1,9 @@
 #include "cszm/random_def"
 
 //MyDebugFunc
-void SD(const string &in strMSG)
+void SD( const string &in strMSG )
 {
-	Chat.PrintToChat(all, strMSG);
+	Chat.PrintToChat( all, strMSG );
 }
 
 int iMaxPlayers;
@@ -26,7 +26,7 @@ void OnMapInit()
 {
 	iMaxPlayers = Globals.GetMaxClients();
 
-	Schedule::Task(0.05f, "SetUpStuff");
+	Schedule::Task( 0.05f, "SetUpStuff" );
 
 	Entities::RegisterUse( "teleport_door" );
 
@@ -39,31 +39,31 @@ void OnMapInit()
 
 void OnNewRound()
 {
-	Engine.Ent_Fire("SND_Ambient", "StopSound");
-	Engine.Ent_Fire("SND_Ambient", "PlaySound");
+	Engine.Ent_Fire( "SND_Ambient", "StopSound" );
+	Engine.Ent_Fire( "SND_Ambient", "PlaySound" );
 	
-	Schedule::Task(0.05f, "SetUpStuff");
+	Schedule::Task( 0.05f, "SetUpStuff" );
 	OverrideLimits();
 }
 
 void OnMatchBegin() 
 {
 	PropsSettings();
-	Engine.Ent_Fire("SND_Ambient", "PlaySound");
+	Engine.Ent_Fire( "SND_Ambient", "PlaySound" );
 }
 
 void SetUpStuff()
 {
 	RemoveAmmoBar();
 	RemoveItemCrate();
-	Schedule::Task(Math::RandomFloat(4.32f, 35.14f), "SND_Ambient_Rats");
-	Schedule::Task(Math::RandomFloat(12.85f, 175.35f), "SND_Ambient_Groan2");
-	Schedule::Task(Math::RandomFloat(35.24f, 225.25f), "SND_Ambient_Thunder");
-	Schedule::Task(Math::RandomFloat(45.75f, 250.00f), "SND_Ambient_Groan1");
-	Schedule::Task(Math::RandomFloat(20.15f, 135.17f), "SND_Ambient_Siren");
-	Engine.Ent_Fire("Precache", "kill");
-	Engine.Ent_Fire("SND_Ambient", "PlaySound");
-	Engine.Ent_Fire("shading", "StartOverlays");
+	Schedule::Task( Math::RandomFloat( 4.32f, 35.14f ), "SND_Ambient_Rats" );
+	Schedule::Task( Math::RandomFloat( 12.85f, 175.35f ), "SND_Ambient_Groan2" );
+	Schedule::Task( Math::RandomFloat( 35.24f, 225.25f ), "SND_Ambient_Thunder" );
+	Schedule::Task( Math::RandomFloat( 45.75f, 250.00f ), "SND_Ambient_Groan1" );
+	Schedule::Task( Math::RandomFloat( 20.15f, 135.17f ), "SND_Ambient_Siren" );
+	Engine.Ent_Fire( "Precache", "kill" );
+	Engine.Ent_Fire( "SND_Ambient", "PlaySound" );
+	Engine.Ent_Fire( "shading", "StartOverlays" );
 }
 
 void OnProcessRound()
@@ -73,7 +73,10 @@ void OnProcessRound()
 		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex( i );
 		CZP_Player@ pPlayer = ToZPPlayer( i );
 
-		if ( pPlayerEntity is null ) continue;
+		if ( pPlayerEntity is null )
+		{
+			continue;
+		}
 
 		if ( g_TeleportDelay[i] != 0 && g_TeleportDelay[i] <= Globals.GetCurrentTime() )
 		{
@@ -85,7 +88,7 @@ void OnProcessRound()
 				Utils.ScreenFade( pPlayer, Color( 0, 0, 0, 255 ), 0.175f, 0.01f, fade_in );
 				pPlayerEntity.SetMoveType( MOVETYPE_WALK );
 				pPlayerEntity.Teleport( g_TPOrigins[iRNG], g_TPAngles[iRNG], Vector( 0, 0, 0 ) );
-				Engine.EmitSoundPosition( i, "doors/default_stop.wav", pPlayerEntity.EyePosition(), 1.0f, 60, 105);
+				Engine.EmitSoundPosition( i, "doors/default_stop.wav", pPlayerEntity.EyePosition(), 1.0f, 60, 105 );
 			}
 		}
 	}
@@ -114,60 +117,49 @@ void OnEntityUsed( CZP_Player@ pPlayer, CBaseEntity@ pEntity )
 
 		pBaseEnt.Teleport( trace.endpos, pBaseEnt.EyeAngles(), Vector( 0, 0, 0 ) );
 
-		pBaseEnt.SetAbsVelocity( Vector( 0, 0, 0) );
+		pBaseEnt.SetAbsVelocity( Vector( 0, 0, 0 ) );
 		g_TeleportDelay[iIndex] = Globals.GetCurrentTime() + 1.485f;
 		Utils.ScreenFade( pPlayer, Color( 0, 0, 0, 255 ), 1.175f, 0.395f, fade_out );
 		pBaseEnt.SetMoveType( MOVETYPE_NONE );
-		Engine.EmitSoundPosition( iIndex, "doors/default_move.wav", pBaseEnt.EyePosition(), 1.0f, 60, 105);
+		Engine.EmitSoundPosition( iIndex, "doors/default_move.wav", pBaseEnt.EyePosition(), 1.0f, 60, 105 );
 	}
 }
 
 void PropsSettings()
 {
 	CBaseEntity@ pEntity;
-	while ((@pEntity = FindEntityByClassname(pEntity, "prop_physics_multiplayer")) !is null)
+	while ( ( @pEntity = FindEntityByClassname( pEntity, "prop_physics_multiplayer" ) ) !is null )
 	{
-		if("weak" == pEntity.GetEntityName())
+		if ( Utils.StrContains( "oildrum001_explosive", pEntity.GetModelName() ) )
 		{
-			pEntity.SetMaxHealth(15);
-			pEntity.SetHealth(15);
+			Engine.Ent_Fire_Ent( pEntity, "addoutput", "ExplodeDamage 200" );
+			Engine.Ent_Fire_Ent( pEntity, "addoutput", "ExplodeRadius 256" );
 		}
-		else if(Utils.StrContains("PropaneCanister001a", pEntity.GetModelName()))
+
+		else if ( Utils.StrContains( "PropaneCanister001a", pEntity.GetModelName() ) )
 		{
-			Engine.Ent_Fire_Ent(pEntity, "addoutput", "ExplodeDamage 85");
-			Engine.Ent_Fire_Ent(pEntity, "addoutput", "ExplodeRadius 256");
-			pEntity.SetHealth(5);
+			Engine.Ent_Fire_Ent( pEntity, "addoutput", "ExplodeDamage 85" );
+			Engine.Ent_Fire_Ent( pEntity, "addoutput", "ExplodeRadius 256" );
+			pEntity.SetHealth( 5 );
+			pEntity.SetMaxHealth( 5 );
 		}
-		else if(Utils.StrContains("oildrum001_explosive", pEntity.GetModelName()))
+
+		else if ( Utils.StrContains( "weak", pEntity.GetEntityName() ) )
 		{
-			Engine.Ent_Fire_Ent(pEntity, "addoutput", "ExplodeDamage 200");
-			Engine.Ent_Fire_Ent(pEntity, "addoutput", "ExplodeRadius 256");
+			pEntity.SetHealth( 5 );
+			pEntity.SetMaxHealth( 5 );
 		}
-		else if(Utils.StrContains("wood_crate001", pEntity.GetModelName()))
-		{
-			pEntity.SetMaxHealth(pEntity.GetHealth() + PlrCountHP(84));
-			pEntity.SetHealth(pEntity.GetHealth() + PlrCountHP(84));
-		}
-		else if(Utils.StrContains("wood_crate002", pEntity.GetModelName()))
-		{
-			pEntity.SetMaxHealth(pEntity.GetHealth() + PlrCountHP(168));
-			pEntity.SetHealth(pEntity.GetHealth() + PlrCountHP(168));
-		}
-		else if(Utils.StrContains("PushCart01a", pEntity.GetModelName()))
-		{
-			pEntity.SetMaxHealth(pEntity.GetHealth() + PlrCountHP(150));
-			pEntity.SetHealth(pEntity.GetHealth() + PlrCountHP(150));
-		}
-		else if(Utils.StrContains("bluebarrel001", pEntity.GetModelName()) || Utils.StrContains("Wheebarrow01a", pEntity.GetModelName()) || Utils.StrContains("trashdumpster01a", pEntity.GetModelName()))
+
+		else if( Utils.StrContains( "bluebarrel001", pEntity.GetModelName() ) || Utils.StrContains( "Wheebarrow01a", pEntity.GetModelName() ) || Utils.StrContains( "trashdumpster01a", pEntity.GetModelName() ) )
 		{
 			pEntity.SetEntityName( "unbrk" );
-//			pEntity.SetMaxHealth(99999);
-//			pEntity.SetHealth(99999);
 		}
+
 		else
 		{
-			pEntity.SetMaxHealth(pEntity.GetHealth() + PlrCountHP(25));
-			pEntity.SetHealth(pEntity.GetHealth() + PlrCountHP(25));
+			int Health = int( pEntity.GetHealth() * 0.65f );
+			pEntity.SetMaxHealth( PlrCountHP( Health ) );
+			pEntity.SetHealth( PlrCountHP( Health ) );
 		}
 	}
 }
@@ -175,7 +167,7 @@ void PropsSettings()
 void RemoveItemCrate()
 {
 	CBaseEntity@ pEntity;
-	while ((@pEntity = FindEntityByClassname(pEntity, "prop_itemcrate")) !is null)
+	while ( ( @pEntity = FindEntityByClassname( pEntity, "prop_itemcrate" ) ) !is null )
 	{
 		pEntity.SUB_Remove();
 	}
@@ -186,22 +178,22 @@ void RemoveAmmoBar()
 	int iRND;
 	
 	CBaseEntity@ pEntity;
-	while ((@pEntity = FindEntityByClassname(pEntity, "item_ammo_barricade")) !is null)
+	while ( ( @pEntity = FindEntityByClassname( pEntity, "item_ammo_barricade" ) ) !is null )
 	{
-		iRND = Math::RandomInt(1, 100);
+		iRND = Math::RandomInt( 1, 100 );
 		
-		if(iRND < 60)
+		if( iRND < 60 )
 		{
 			pEntity.SUB_Remove();
 		}
 	}
 }
 
-int PlrCountHP(int &in iMulti)
+int PlrCountHP( int &in iMulti )
 {
 	int iHP = 0;
-	int iSurvNum = Utils.GetNumPlayers(survivor, true);
-	if(iSurvNum < 4) iSurvNum = 5;
+	int iSurvNum = Utils.GetNumPlayers( survivor, true );
+	if( iSurvNum < 4 ) iSurvNum = 5;
 	iHP = iSurvNum * iMulti;
 	
 	return iHP;
@@ -209,35 +201,35 @@ int PlrCountHP(int &in iMulti)
 
 void SND_Ambient_Rats()
 {
-	Engine.Ent_Fire("rat", "PlaySound");
+	Engine.Ent_Fire( "rat", "PlaySound" );
 	
-	Schedule::Task(Math::RandomFloat(4.32f, 35.14f), "SND_Ambient_Rats");
+	Schedule::Task( Math::RandomFloat( 4.32f, 35.14f ), "SND_Ambient_Rats" );
 }
 
 void SND_Ambient_Groan2()
 {
-	Engine.Ent_Fire("groan2", "PlaySound");
+	Engine.Ent_Fire( "groan2", "PlaySound" );
 	
-	Schedule::Task(Math::RandomFloat(37.85f, 175.35f), "SND_Ambient_Groan2");
+	Schedule::Task( Math::RandomFloat( 37.85f, 175.35f ), "SND_Ambient_Groan2" );
 }
 
 void SND_Ambient_Siren()
 {
-	Engine.Ent_Fire("siren", "PlaySound");
+	Engine.Ent_Fire( "siren", "PlaySound" );
 	
-	Schedule::Task(Math::RandomFloat(40.15f, 135.17f), "SND_Ambient_Siren");
+	Schedule::Task( Math::RandomFloat( 40.15f, 135.17f ), "SND_Ambient_Siren" );
 }
 
 void SND_Ambient_Thunder()
 {
-	Engine.Ent_Fire("thunder", "PlaySound");
+	Engine.Ent_Fire( "thunder", "PlaySound" );
 	
-	Schedule::Task(Math::RandomFloat(51.24f, 225.25f), "SND_Ambient_Thunder");
+	Schedule::Task( Math::RandomFloat( 51.24f, 225.25f ), "SND_Ambient_Thunder" );
 }
 
 void SND_Ambient_Groan1()
 {
-	Engine.Ent_Fire("groan1", "PlaySound");
+	Engine.Ent_Fire( "groan1", "PlaySound" );
 	
-	Schedule::Task(Math::RandomFloat(103.75f, 250.00f), "SND_Ambient_Groan1");
+	Schedule::Task( Math::RandomFloat( 103.75f, 250.00f ), "SND_Ambient_Groan1" );
 }

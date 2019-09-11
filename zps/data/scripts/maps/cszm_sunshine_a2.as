@@ -11,6 +11,9 @@ void CD( const string &in strMsg )
 	Chat.CenterMessage( all, strMsg );
 }
 
+const int TEAM_LOBBYGUYS = 0;
+const int TEAM_SURVIVORS = 2;
+
 int iMaxPlayers;
 int iUNum;
 int iBlackCross;
@@ -68,7 +71,7 @@ void OnMapInit()
 {
 	iMaxPlayers = Globals.GetMaxClients();
 
-	flWaitTime = Globals.GetCurrentTime() + 0.01f;
+	flWaitTime = Globals.GetCurrentTime()+ 0.01f;
 
 	Engine.PrecacheFile( sound, "sunshine_ambient/vo/sometimes01.wav" );
 	Engine.PrecacheFile( sound, "@sunshine_ambient/vo/sometimes01.wav" );
@@ -116,7 +119,10 @@ int CalculateHealthPoints( int &in iMulti )
 {
 	int iHP = 0;
 	int iSurvNum = Utils.GetNumPlayers( survivor, true );
-	if ( iSurvNum < 4 ) iSurvNum = 5;
+	if ( iSurvNum < 4 )
+	{
+		iSurvNum = 5;
+	}
 
 	iHP = iSurvNum * iMulti;
 	
@@ -127,19 +133,34 @@ void FindIPC()
 {
 	int iCount = 0;
 	CBaseEntity@ pEntity;
-	while ( ( @pEntity = FindEntityByClassname( pEntity, "info_player_commons" ) ) !is null )
+	while ( ( @pEntity = FindEntityByClassname( pEntity, "info_player_commons" ) )!is null )
 	{
 		iCount++;
-		if ( bIsIPCCollected == false ) g_vLobbySpawn.insertLast( pEntity.GetAbsOrigin() );
-		if ( iCount < 41 ) pEntity.SUB_Remove();
-		else if ( bIsIPCCollected == false ) bIsIPCCollected = true;
+		if ( !bIsIPCCollected )
+		{
+			g_vLobbySpawn.insertLast( pEntity.GetAbsOrigin() );
+		}
+
+		if ( iCount < 41 )
+		{
+			pEntity.SUB_Remove();
+		}
+
+		else if ( !bIsIPCCollected )
+		{
+			bIsIPCCollected = true;
+		}
 	}
 }
 
 void OnNewRound()
 {
 	Schedule::Task( 0.01f, "SetUpStuff" );
-	if ( bIsFirstRound ) bIsFirstRound = false;
+	if ( bIsFirstRound )
+	{
+		bIsFirstRound = false;
+	}
+
 	OverrideLimits();
 }
 
@@ -157,15 +178,18 @@ void GiveStartGear()
 	{
 		CZP_Player@ pPlayer = ToZPPlayer( i );
 							
-		if ( pPlayer is null ) continue;
+		if ( pPlayer is null )
+		{
+			continue;
+		}
 
 		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex( i );
 
-		if ( pPlayerEntity.GetTeamNumber() == 2 ) 
+		if ( pPlayerEntity.GetTeamNumber()== TEAM_SURVIVORS )
 		{
 			pPlayer.AmmoBank( add, pistol, 30 );
 			pPlayer.GiveWeapon( "weapon_barricade" );
-			pPlayer.GiveWeapon( g_strStartWeapons[ Math::RandomInt( 0, g_strStartWeapons.length() -1 ) ] );
+			pPlayer.GiveWeapon( g_strStartWeapons[ Math::RandomInt( 0, g_strStartWeapons.length()-1 )] );
 		}
 	}
 }
@@ -196,11 +220,10 @@ void SetUpStuff()
 
 HookReturnCode SH_OnEndTouch( CBaseEntity@ pTrigger, const string &in strEntityName, CBaseEntity@ pEntity )
 {
-	if ( strEntityName == "bob_trigger" && pEntity.GetClassname() == "npc_grenade_frag" )
+	if ( strEntityName == "bob_trigger" && pEntity.GetClassname()== "npc_grenade_frag" )
 	{	
 		pEntity.SetHealth( 25 );
 		pEntity.Ignite( 15 );
-		return HOOK_HANDLED;
 	}
 	
 	return HOOK_CONTINUE;
@@ -210,7 +233,10 @@ HookReturnCode SH_OnStartTouch(CBaseEntity@ pTrigger, const string &in strEntity
 {
 	CBaseEntity@ pParent = pTrigger.GetParent();
 
-	if ( pParent !is null && Utils.StrEql( pParent.GetClassname(), "func_breakable" ) && pEntity.GetTeamNumber() == 2 ) pParent.SetHealth( pParent.GetHealth() + pParent.GetMaxHealth() );
+	if ( pParent !is null && Utils.StrEql( pParent.GetClassname(), "func_breakable" )&& pEntity.GetTeamNumber()== 2 )
+	{
+		pParent.SetHealth( pParent.GetHealth()+ pParent.GetMaxHealth() );
+	}
 	
 	return HOOK_CONTINUE;
 }
@@ -220,7 +246,10 @@ HookReturnCode SH_OnPlayerSpawn( CZP_Player@ pPlayer )
 	CBasePlayer@ pPlrEnt = pPlayer.opCast();
 	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 
-	if ( pBaseEnt.GetTeamNumber() == 0 && bIsFirstRound != true ) pBaseEnt.SetAbsOrigin( g_vLobbySpawn[ Math::RandomInt( 0, g_vLobbySpawn.length() ) ] );
+	if ( pBaseEnt.GetTeamNumber() == TEAM_LOBBYGUYS && !bIsFirstRound )
+	{
+		pBaseEnt.SetAbsOrigin( g_vLobbySpawn[ Math::RandomInt( 0, g_vLobbySpawn.length() )] );
+	}
 
 	return HOOK_CONTINUE;
 }
@@ -233,9 +262,15 @@ void OnEntityPickedUp( CZP_Player@ pPlayer, CBaseEntity@ pEntity )
 
 		for ( uint i = 0; i < g_iIndex.length(); i++ )
 		{
-			if ( i == 0 ) continue;
+			if ( i == 0 )
+			{
+				continue;
+			}
 
-			if ( g_iIndex[i] == iIndex ) SetRespawnTime( pEntity.entindex() );
+			if ( g_iIndex[i] == iIndex )
+			{
+				SetRespawnTime( pEntity.entindex() );
+			}
 		}
 	}
 }
@@ -245,11 +280,10 @@ void OnEntityUsed( CZP_Player@ pPlayer, CBaseEntity@ pEntity )
 	CBasePlayer@ pPlrEnt = pPlayer.opCast();
 	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 
-	if ( Utils.StrEql( pEntity.GetEntityName(), "cheese" ) ) 
+	if ( Utils.StrEql( pEntity.GetEntityName(), "cheese" ) )
 	{
 		Engine.Ent_Fire_Ent( pEntity, "AddHealth", "-5" );
 		Engine.Ent_Fire( "cheese_voice", "PlaySound" );
-		return;
 	}
 }
 
@@ -265,11 +299,11 @@ void OnEntityOutput(const string &in strOutput, CBaseEntity@ pActivator, CBaseEn
 			Schedule::Task(1.9f, "CheeseNooo");
 		}
 
-		if ( g_iBlackCrossIndex.length() > 0 )
+		if ( g_iBlackCrossIndex.length()> 0 )
 		{
 			for ( uint i = 0; i < g_iBlackCrossIndex.length(); i++ )
 			{
-				if ( pCaller.entindex() == g_iBlackCrossIndex[i] )
+				if ( pCaller.entindex()== g_iBlackCrossIndex[i] )
 				{
 					BlackCross( pActivator );
 					g_iBlackCrossIndex.removeAt( i );
@@ -278,11 +312,11 @@ void OnEntityOutput(const string &in strOutput, CBaseEntity@ pActivator, CBaseEn
 			}
 		}
 
-		if ( g_iSewerCapIndex.length() > 0 )
+		if ( g_iSewerCapIndex.length()> 0 )
 		{
 			for ( uint i = 0; i < g_iSewerCapIndex.length(); i++ )
 			{
-				if ( pCaller.entindex() == g_iSewerCapIndex[i] )
+				if ( pCaller.entindex()== g_iSewerCapIndex[i] )
 				{
 					Engine.Ent_Fire( "SewerCap", "SetHealth", "50", "0.00" );
 					g_iSewerCapIndex.removeAt( i );
@@ -291,13 +325,13 @@ void OnEntityOutput(const string &in strOutput, CBaseEntity@ pActivator, CBaseEn
 			}
 		}
 
-		if ( pCaller.entindex() == iAtticHatchIndex )
+		if ( pCaller.entindex()== iAtticHatchIndex )
 		{
 			Engine.Ent_Fire( "areaportal_wall4", "Open", "", "0.00" );
 			Engine.Ent_Fire( "Player_clip1", "Disable", "", "0.00" );
 		}
 
-		if ( pCaller.entindex() == iCeilingHatchIndex )
+		if ( pCaller.entindex()== iCeilingHatchIndex )
 		{
 			Engine.Ent_Fire( "ladder", "EnableMotion", "", "0.00" );
 			Engine.Ent_Fire( "areaportal_wall3", "Open", "", "0.00" );
@@ -308,9 +342,15 @@ void OnEntityOutput(const string &in strOutput, CBaseEntity@ pActivator, CBaseEn
 
 	if ( Utils.StrEql( pCaller.GetEntityName(), "bust" ) )
 	{
-		if ( Utils.StrEql( strOutput, "OnPhysPunted" ) ) Engine.EmitSoundPosition( pCaller.entindex(), "sunshine_ambient/vo/youkilllingme.wav", pCaller.GetAbsOrigin(), 1.0f, 65, iBustPitch );
+		if ( Utils.StrEql( strOutput, "OnPhysPunted" ) )
+		{
+			Engine.EmitSoundPosition( pCaller.entindex(), "sunshine_ambient/vo/youkilllingme.wav", pCaller.GetAbsOrigin(), 1.0f, 65, iBustPitch );
+		}
 
-		if ( Utils.StrEql( strOutput, "OnTakeDamage" ) ) Engine.EmitSoundPosition( pCaller.entindex(), "humans/eugene/pain/pain-0" + Math::RandomInt(1, 6) + ".wav", pCaller.GetAbsOrigin(), 1.0f, 75, iBustPitch );
+		if ( Utils.StrEql( strOutput, "OnTakeDamage" ) )
+		{
+			Engine.EmitSoundPosition( pCaller.entindex(), "humans/eugene/pain/pain-0" + Math::RandomInt(1, 6)+ ".wav", pCaller.GetAbsOrigin(), 1.0f, 75, iBustPitch );
+		}
 	}
 }
 
@@ -329,7 +369,10 @@ void BlackCross( CBaseEntity@ pEntityPlayer )
 
 	iBlackCross++;
 
-	if ( iBlackCross == 10 ) Schedule::Task( Math::RandomFloat( 4.12f, 7.23f ), "BlackCrossCompleted");
+	if ( iBlackCross == 10 )
+	{
+		Schedule::Task( Math::RandomFloat( 4.12f, 7.23f ), "BlackCrossCompleted");
+	}
 }
 
 void BlackCrossCompleted()
@@ -353,7 +396,7 @@ void CheeseNooo()
 
 void SpawnCheese()
 {
-	if ( Math::RandomInt( 0, 100 ) <= 47 )
+	if ( Math::RandomInt( 0, 100 )<= 47 )
 	{
 		Vector NewOrigin = g_vecCheeseOrigin[Math::RandomInt( 0, 9 )];
 
@@ -388,10 +431,13 @@ void RemoveAmmoBar()
 	int iRND;
 	
 	CBaseEntity@ pEntity;
-	while ( ( @pEntity = FindEntityByClassname( pEntity, "item_ammo_barricade" ) ) !is null )
+	while ( ( @pEntity = FindEntityByClassname( pEntity, "item_ammo_barricade" ) )!is null )
 	{
 		iRND = Math::RandomInt( 1, 100 );
-		if ( iRND < 45 ) pEntity.SUB_Remove();
+		if ( iRND < 45 )
+		{
+			pEntity.SUB_Remove();
+		}
 	}
 }
 
@@ -399,36 +445,39 @@ void HealthSettings()
 {
 	CBaseEntity@ pEntity;
 
-	while ( ( @pEntity = FindEntityByClassname( pEntity, "prop_physics_multiplayer" ) ) !is null )
+	while ( ( @pEntity = FindEntityByClassname( pEntity, "prop_physics_multiplayer" ) )!is null )
 	{
-		if ( Utils.StrContains( "oildrum001_explosive", pEntity.GetModelName() ) )
+		if ( Utils.StrContains( "oildrum001_explosive", pEntity.GetModelName() ))
 		{
 			pEntity.SetHealth( 20 );
 		}
 
-		else if ( Utils.StrContains( "props_junk/glass", pEntity.GetModelName() ) )
+		else if ( Utils.StrContains( "props_junk/glass", pEntity.GetModelName() ))
 		{
 			pEntity.SetHealth( 5 );
 		}
 
-		else if ( Utils.StrContains( "bust", pEntity.GetEntityName() ) )
+		else if ( Utils.StrContains( "bust", pEntity.GetEntityName() ))
 		{
 			pEntity.SetMaxHealth( 999999 );
 			pEntity.SetHealth( 999999 );
 		}
 
-		else if ( Utils.StrContains( "cheese", pEntity.GetEntityName() ) ) continue;
+		else if ( Utils.StrContains( "cheese", pEntity.GetEntityName() ))
+		{
+			continue;
+		}
 
 		else
 		{
-			pEntity.SetMaxHealth( CalculateHealthPoints( pEntity.GetHealth() ) );
-			pEntity.SetHealth( CalculateHealthPoints( pEntity.GetHealth() ) );
+			pEntity.SetMaxHealth( CalculateHealthPoints( pEntity.GetHealth() ));
+			pEntity.SetHealth( CalculateHealthPoints( pEntity.GetHealth() ));
 		}
 	}
 
-	while ( ( @pEntity = FindEntityByClassname( pEntity, "func_breakable" ) ) !is null )
+	while ( ( @pEntity = FindEntityByClassname( pEntity, "func_breakable" ) )!is null )
 	{
-		if ( Utils.StrContains( "UselessBoards", pEntity.GetEntityName() ) )
+		if ( Utils.StrContains( "UselessBoards", pEntity.GetEntityName() ))
 		{
 			pEntity.SetMaxHealth( CalculateHealthPoints( 3 ) );
 			pEntity.SetHealth( CalculateHealthPoints( 3 ) );
@@ -448,41 +497,41 @@ void HealthSettings()
 			pEntity.SetMaxHealth( CalculateHealthPoints( 52 ) );
 			pEntity.SetHealth( CalculateHealthPoints( 52 ) );
 		}
-		else if ( Utils.StrContains( "CeilingHatch", pEntity.GetEntityName() ) )
+		else if ( Utils.StrContains( "CeilingHatch", pEntity.GetEntityName() ))
 		{
 			pEntity.SetMaxHealth( CalculateHealthPoints( 50 ) );
 			pEntity.SetHealth( CalculateHealthPoints( 50 ) );
 		}
-		else if ( Utils.StrContains( "SewerCap", pEntity.GetEntityName() ) )
+		else if ( Utils.StrContains( "SewerCap", pEntity.GetEntityName() ))
 		{
 			pEntity.SetMaxHealth( CalculateHealthPoints( 10 ) );
 			pEntity.SetHealth( CalculateHealthPoints( 10 ) );
 		}
-		else if ( Utils.StrContains( "lockers_breakable", pEntity.GetEntityName() ) )
+		else if ( Utils.StrContains( "lockers_breakable", pEntity.GetEntityName() ))
 		{
 			pEntity.SetMaxHealth( CalculateHealthPoints( 10 ) );
 			pEntity.SetHealth( CalculateHealthPoints( 10 ) );
 		}
-		else if ( Utils.StrContains( "AtticHatch", pEntity.GetEntityName() ) )
+		else if ( Utils.StrContains( "AtticHatch", pEntity.GetEntityName() ))
 		{
 			pEntity.SetMaxHealth( CalculateHealthPoints( 45 ) );
 			pEntity.SetHealth( CalculateHealthPoints( 45 ) );
 		}
-		else if ( Utils.StrContains( "SewerCap", pEntity.GetEntityName() ) )
+		else if ( Utils.StrContains( "SewerCap", pEntity.GetEntityName() ))
 		{
 			pEntity.SetMaxHealth( CalculateHealthPoints( 10 ) );
 			pEntity.SetHealth( CalculateHealthPoints( 10 ) );
 		}
-		else if ( Utils.StrContains( "lockers_breakable", pEntity.GetEntityName() ) )
+		else if ( Utils.StrContains( "lockers_breakable", pEntity.GetEntityName() ))
 		{
 			pEntity.SetMaxHealth( CalculateHealthPoints( 11 ) );
 			pEntity.SetHealth( CalculateHealthPoints( 11 ) );
 		}
 	}
 
-	while ( ( @pEntity = FindEntityByClassname( pEntity, "func_physbox" ) ) !is null )
+	while ( ( @pEntity = FindEntityByClassname( pEntity, "func_physbox" ) )!is null )
 	{
-		if ( Utils.StrContains( "physd", pEntity.GetEntityName() ) )
+		if ( Utils.StrContains( "physd", pEntity.GetEntityName() ))
 		{
 			pEntity.SetMaxHealth( CalculateHealthPoints( 52 ) );
 			pEntity.SetHealth( CalculateHealthPoints( 52 ) );
@@ -492,27 +541,39 @@ void HealthSettings()
 
 void OnProcessRound()
 {
-	if ( g_iIndex.length() > 1 && flWaitTime <= Globals.GetCurrentTime() )
+	if ( g_iIndex.length()> 1 && flWaitTime <= Globals.GetCurrentTime() )
 	{
-		flWaitTime = Globals.GetCurrentTime() + 0.01f;
+		flWaitTime = Globals.GetCurrentTime()+ 0.01f;
 		CBaseEntity@ pEntity;
 
 		for ( uint i = 0; i < g_iIndex.length(); i++ )
 		{
-			if ( i == 0 ) continue;
+			if ( i == 0 )
+			{
+				continue;
+			}
 
-			if ( g_flRSTime[i] == -1 ) continue;
+			if ( g_flRSTime[i] == -1 )
+			{
+				continue;
+			}
 
-			if ( g_flRSTime[i] <= Globals.GetCurrentTime() ) SpawnItem( i );
+			if ( g_flRSTime[i] <= Globals.GetCurrentTime() )
+			{
+				SpawnItem( i );
+			}
 		}
 
-		while ( ( @pEntity = FindEntityByClassname( pEntity, "weapon_frag" ) ) !is null )//hint_frag
+		while ( ( @pEntity = FindEntityByClassname( pEntity, "weapon_frag" ) )!is null )//hint_frag
 		{
 			for ( uint n = 0; n < g_iIndex.length(); n++ )
 			{
-				if ( n == 0 ) continue;
+				if ( n == 0 )
+				{
+					continue;
+				}
 
-				if ( pEntity.entindex() == g_iIndex[n] && Globals.Distance( g_vOrigin[n], pEntity.GetAbsOrigin() ) >= 32.0f )
+				if ( pEntity.entindex()== g_iIndex[n] && Globals.Distance( g_vOrigin[n], pEntity.GetAbsOrigin() )>= 32.0f )
 				{
 					pEntity.SUB_Remove();
 					SpawnItem( n );
@@ -535,9 +596,12 @@ void FindItems()
 	g_flRSTime.insertLast( -1 );
 
 	CBaseEntity@ pEntity;
-	while ( ( @pEntity = FindEntityByName( pEntity, "re_frag" ) ) !is null )
+	while ( ( @pEntity = FindEntityByName( pEntity, "re_frag" ) )!is null )
 	{
-		if ( Utils.StrEql( pEntity.GetClassname(), "weapon_frag" ) ) InsertValues( pEntity );
+		if ( Utils.StrEql( pEntity.GetClassname(), "weapon_frag" ) )
+		{
+			InsertValues( pEntity );
+		}
 	}
 }
 
@@ -553,11 +617,14 @@ void SetRespawnTime( const int &in iIndex )
 {
 	for ( uint i = 0; i < g_iIndex.length(); i++ )
 	{
-		if ( i == 0 ) continue;
+		if ( i == 0 )
+		{
+			continue;
+		}
 
 		if ( g_iIndex[i] == iIndex )
 		{
-			g_flRSTime[i] = Globals.GetCurrentTime() + Math::RandomFloat( 4.12f, 6.21f );
+			g_flRSTime[i] = Globals.GetCurrentTime()+ Math::RandomFloat( 4.12f, 6.21f );
 			g_iIndex[i] = -1;
 		}
 	}
@@ -597,16 +664,31 @@ void CollectEntIndexs()
 	iCeilingHatchIndex = 0;
 
 	CBaseEntity@ pEntity;
-	while ( ( @pEntity = FindEntityByClassname( pEntity, "func_breakable" ) ) !is null )
+	while ( ( @pEntity = FindEntityByClassname( pEntity, "func_breakable" ) )!is null )
 	{
 		for ( uint i = 0; i < g_strFBNames.length(); i++ )
 		{
 			if ( Utils.StrEql( pEntity.GetEntityName(), g_strFBNames[i] ) )
 			{
-				if ( i == 0 ) g_iBlackCrossIndex.insertLast( pEntity.entindex() );
-				if ( i == 1 ) g_iSewerCapIndex.insertLast( pEntity.entindex() );
-				if ( i == 2 ) iAtticHatchIndex = pEntity.entindex();
-				if ( i == 3 ) iCeilingHatchIndex = pEntity.entindex();
+				if ( i == 0 )
+				{
+					g_iBlackCrossIndex.insertLast( pEntity.entindex() );
+				}
+
+				if ( i == 1 )
+				{
+					g_iSewerCapIndex.insertLast( pEntity.entindex() );
+				}
+
+				if ( i == 2 )
+				{
+					iAtticHatchIndex = pEntity.entindex();
+				}
+
+				if ( i == 3 )
+				{
+					iCeilingHatchIndex = pEntity.entindex();
+				}
 			}
 		}
 	}

@@ -220,8 +220,8 @@ void SetUpStuff()
 	RandomizePropCrate();
 	RemoveAmmoBar();
 
-	Engine.Ent_Fire( "lobby_ambient_generic", "stopsound" );
-	Engine.Ent_Fire( "lobby_ambient_generic", "kill", "0", "0.01" );
+	Engine.Ent_Fire( "lobby_ambient_generic", "StopSound" );
+	Engine.Ent_Fire( "lobby_ambient_generic", "kill", "0", "0.05" );
 }
 
 // Random Skins for the vending machines

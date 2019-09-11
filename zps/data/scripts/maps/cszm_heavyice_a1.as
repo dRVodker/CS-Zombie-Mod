@@ -10,11 +10,15 @@ int CHP( int &in iMulti )
 {
 	int iHP = 0;
 	int iSurvNum = Utils.GetNumPlayers( survivor, true );
-	if( iSurvNum < 4 ) iSurvNum = 5;
+	if ( iSurvNum < 4 ) iSurvNum = 5;
 	iHP = iSurvNum * iMulti;
 	
 	return iHP;
 }
+
+const int TEAM_LOBBYGUYS = 0;
+const int TEAM_SURVIVORS = 2;
+const int TEAM_ZOMBIES = 3;
 
 int iMaxPlayers;
 int iMysticismAttackerIndex = 0;
@@ -158,7 +162,6 @@ void OnMapInit()
 	Engine.PrecacheFile( sound, "doors/default_stop.wav" );
 	Engine.PrecacheFile( sound, "doors/default_move.wav" );
 //	Engine.PrecacheFile( sound, "" );
-//	Engine.PrecacheFile( sound, "" );
 
 	Entities::RegisterOutput( "OnBreak", "cheese" );
 	Entities::RegisterOutput( "OnBreak", "func_breakable" );
@@ -213,13 +216,16 @@ void OnProcessRound()
 		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex( i );
 		CZP_Player@ pPlayer = ToZPPlayer( i );
 
-		if ( pPlayerEntity is null ) continue;
+		if ( pPlayerEntity is null )
+		{
+			continue;
+		}
 
 		if ( g_TeleportDelay[i] != 0 && g_TeleportDelay[i] <= Globals.GetCurrentTime() )
 		{
 			g_TeleportDelay[i] = 0;
 
-			if ( pPlayerEntity.GetTeamNumber() == 0 )
+			if ( pPlayerEntity.GetTeamNumber() == TEAM_LOBBYGUYS )
 			{
 				Utils.ScreenFade( pPlayer, Color( 0, 0, 0, 255 ), 0.175f, 0.01f, fade_in );
 				pPlayerEntity.SetMoveType( MOVETYPE_WALK );
@@ -235,7 +241,10 @@ HookReturnCode HI_OnPlrSpawn( CZP_Player@ pPlayer )
 	CBasePlayer@ pPlrEnt = pPlayer.opCast();
 	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 
-	if ( pBaseEnt.GetTeamNumber() == 3 || pBaseEnt.GetTeamNumber() == 0 ) LittleStar( pBaseEnt );
+	if ( pBaseEnt.GetTeamNumber() == TEAM_ZOMBIES || pBaseEnt.GetTeamNumber() == TEAM_LOBBYGUYS )
+	{
+		LittleStar( pBaseEnt );
+	}
 
 	return HOOK_HANDLED;
 }
@@ -253,22 +262,19 @@ HookReturnCode HI_OnStartTouch(CBaseEntity@ pTrigger, const string &in strEntity
 				pPlayer.GiveWeapon( "weapon_snowball" );
 				LittleStar( pEntity );
 			}
-			return HOOK_HANDLED;
 		}
 
-		if ( pTrigger.GetAbsOrigin() == Vector( 624, -958, 164 ) && pEntity.GetTeamNumber() == 2 )
+		else if ( pTrigger.GetAbsOrigin() == Vector( 624, -958, 164 ) && pEntity.GetTeamNumber() == TEAM_SURVIVORS )
 		{	
 			pEntity.SetEntityName( "BalconyPlr" + pEntity.entindex() );
 			Engine.Ent_Fire( "BalconyPlr" + pEntity.entindex(), "AddOutput", "physdamagescale 0" );
-			return HOOK_HANDLED;
 		}
 
-		if ( pTrigger.GetAbsOrigin() == Vector( 812, 768, 235.5 ) )
+		else if ( pTrigger.GetAbsOrigin() == Vector( 812, 768, 235.5 ) )
 		{	
 			Engine.EmitSoundPosition( 0, "heavyice_ambient/vo/hello1.wav", Vector( 812, 810, 251 ), 1.0f, 75, 100 );
 			Engine.Ent_Fire( "say_hello", "Disable" );
 			Engine.Ent_Fire( "say_hello", "Enable", "0", "25.0" );
-			return HOOK_HANDLED;
 		}
 	}
 
@@ -285,9 +291,9 @@ HookReturnCode HI_OnEndTouch(CBaseEntity@ pTrigger, const string &in strEntityNa
 		{	
 			pEntity.SetEntityName( "BalconyPlr" + pEntity.entindex() );
 			Engine.Ent_Fire( "BalconyPlr" + pEntity.entindex(), "AddOutput", "physdamagescale 0.1" );
-			return HOOK_HANDLED;
 		}
 	}
+
 	return HOOK_HANDLED;
 }
 
@@ -297,14 +303,12 @@ HookReturnCode HI_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out Damag
 	{
 		DamageInfo.SetDamage( 0 );
 		Engine.EmitSoundEntity( pEntity, "HeavyIce.BustPain" );
-		return HOOK_HANDLED;
 	}
 
-	if ( Utils.StrEql( pEntity.GetEntityName(), "cheese" ) && DamageInfo.GetDamageType() == (1<<23) )
+	else if ( Utils.StrEql( pEntity.GetEntityName(), "cheese" ) && DamageInfo.GetDamageType() == (1<<23) )
 	{
 		DamageInfo.SetDamage( 25 );
 		Engine.Ent_Fire( "cheese_voice", "PlaySound" );
-		return HOOK_HANDLED;
 	}
 
 	return HOOK_HANDLED;
@@ -422,7 +426,10 @@ void OnEntityOutput( const string &in strOutput, CBaseEntity@ pActivator, CBaseE
 
 	if ( Utils.StrEql( strOutput, "OnAwakened" ) )
 	{
-		if( Utils.StrContains( "heavy_props", pCaller.GetModelName() ) ) Engine.Ent_Fire( pCaller.GetEntityName(), "Wake" );
+		if ( Utils.StrContains( "heavy_props", pCaller.GetModelName() ) )
+		{
+			Engine.Ent_Fire( pCaller.GetEntityName(), "Wake" );
+		}
 	}
 }
 
@@ -444,11 +451,14 @@ void GiveStartGear()
 	{
 		CZP_Player@ pPlayer = ToZPPlayer( i );
 							
-		if ( pPlayer is null ) continue;
+		if ( pPlayer is null )
+		{
+			continue;
+		}
 
 		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex( i );
 
-		if ( pPlayerEntity.GetTeamNumber() == 2 ) 
+		if ( pPlayerEntity.GetTeamNumber() == TEAM_SURVIVORS ) 
 		{
 			pPlayer.AmmoBank( add, pistol, 30 );
 			pPlayer.GiveWeapon( "weapon_barricade" );
@@ -541,9 +551,15 @@ void FindBreakIndexes()
 		CBaseEntity@ pEntity;
 		@pEntity = FindEntityByName( pEntity, g_BreakName[i] );
 
-		if ( pEntity is null ) continue;
+		if ( pEntity is null )
+		{
+			continue;
+		}
 
-		if ( Utils.StrEql( pEntity.GetEntityName(), g_BreakName[i] ) ) g_BreakIndex[i] = pEntity.entindex();
+		if ( Utils.StrEql( pEntity.GetEntityName(), g_BreakName[i] ) )
+		{
+			g_BreakIndex[i] = pEntity.entindex();
+		}
 	}
 }
 
@@ -612,7 +628,10 @@ void SpawnCeilingEnts()
 {
 	for ( uint i = 0; i < g_CeilingModel.length(); i++ )
 	{
-		if( Utils.StrContains( "weapon_", g_CeilingModel[i] ) ) EntityCreator::Create( g_CeilingModel[i], g_CeilingOrigin[i], g_CeilingAngles[i] );
+		if ( Utils.StrContains( "weapon_", g_CeilingModel[i] ) )
+		{
+			EntityCreator::Create( g_CeilingModel[i], g_CeilingOrigin[i], g_CeilingAngles[i] );
+		}
 
 		else
 		{
@@ -712,7 +731,10 @@ void MysticismSpawnExplosion()
 		Engine.EmitSoundPosition( 0, "ambient/explosions/explode_" + Math::RandomInt( 1, 9 ) + ".wav", g_MExplosionOrigin[iRNG], 1.0f, 145, Math::RandomInt( 95, 105 ) );
 
 		CBaseEntity@ pActivator = FindEntityByEntIndex( iMysticismAttackerIndex );
-		if ( pActivator !is null ) pExplosion.SetOwner( pActivator );
+		if ( pActivator !is null )
+		{
+			pExplosion.SetOwner( pActivator );
+		}
 
 		g_vecActiveOrigin.removeAt( iRNG );
 	}
@@ -752,37 +774,61 @@ void HealthSettings()
 			{
 				for ( uint u = 0; u < g_FuncBreakName.length(); u++ )
 				{
-					if ( Utils.StrEql( pEntity.GetEntityName(), g_FuncBreakName[u] ) ) SetHP( pEntity, g_FuncBreakHP[u] );
+					if ( Utils.StrEql( pEntity.GetEntityName(), g_FuncBreakName[u] ) )
+					{
+						SetHP( pEntity, g_FuncBreakHP[u] );
+					}
 				}
 			}
 
-			if ( i == 1 || i == 2 ) SetHP( pEntity, 54 );
+			if ( i == 1 || i == 2 )
+			{
+				SetHP( pEntity, 54 );
+			}
 
 			if ( i == 3 )
 			{
-				if( Utils.StrContains( "toycar", pEntity.GetModelName() ) ) pEntity.SetEntityName( "unbrk_toycar" );
+				if ( Utils.StrContains( "toycar", pEntity.GetModelName() ) )
+				{
+					pEntity.SetEntityName( "unbrk_toycar" );
+				}
 
-				if( Utils.StrContains( "oildrum001_explosive", pEntity.GetModelName() ) )
+				if ( Utils.StrContains( "oildrum001_explosive", pEntity.GetModelName() ) )
 				{
 					Engine.Ent_Fire_Ent( pEntity, "addoutput", "ExplodeDamage 400" );
 					Engine.Ent_Fire_Ent( pEntity, "addoutput", "ExplodeRadius 350" );
 				}
 
-				else if( Utils.StrContains( "watermelon", pEntity.GetEntityName() ) )
+				else if ( Utils.StrContains( "watermelon", pEntity.GetEntityName() ) )
 				{
 					pEntity.SetMaxHealth( 250 );
 					pEntity.SetHealth( 250 );
 				}
 
-				else if( Utils.StrContains( "BlueCrate", pEntity.GetEntityName() ) ) SetHP( pEntity, 32 );
+				else if ( Utils.StrContains( "BlueCrate", pEntity.GetEntityName() ) )
+				{
+					SetHP( pEntity, 32 );
+				}
 
-				else if( Utils.StrContains( "RedCrate", pEntity.GetEntityName() ) ) SetHP( pEntity, 64 );
+				else if ( Utils.StrContains( "RedCrate", pEntity.GetEntityName() ) )
+				{
+					SetHP( pEntity, 64 );
+				}
 
-				else if( Utils.StrContains( "_tv", pEntity.GetEntityName() ) ) SetHP( pEntity, 42 );
+				else if ( Utils.StrContains( "_tv", pEntity.GetEntityName() ) )
+				{
+					SetHP( pEntity, 42 );
+				}
 
-				else if( Utils.StrContains( "props_junk/glass", pEntity.GetModelName() ) ) pEntity.SetHealth( 5 );
+				else if ( Utils.StrContains( "props_junk/glass", pEntity.GetModelName() ) )
+				{
+					pEntity.SetHealth( 5 );
+				}
 
-				else SetHP( pEntity, int( floor( pEntity.GetHealth() * 0.75 ) ) );
+				else
+				{
+					SetHP( pEntity, int( floor( pEntity.GetHealth() * 0.75 ) ) );
+				}
 			}
 		}
 	}

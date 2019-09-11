@@ -1,11 +1,11 @@
 #include "cszm/random_def"
 #include "cszm/doorset"
 
-int CalculateHealthPoints(int &in iMulti)
+int CalculateHealthPoints( const int &in iMulti )
 {
 	int iHP = 0;
-	int iSurvNum = Utils.GetNumPlayers(survivor, true);
-	if(iSurvNum < 4) iSurvNum = 5;
+	int iSurvNum = Utils.GetNumPlayers( survivor, true );
+	if( iSurvNum < 4 ) iSurvNum = 5;
 	iHP = iSurvNum * iMulti;
 	
 	return iHP;
@@ -13,13 +13,13 @@ int CalculateHealthPoints(int &in iMulti)
 
 void OnMapInit()
 {
-	Schedule::Task(0.05f, "SetUpStuff");
+	Schedule::Task( 0.05f, "SetUpStuff" );
 	OverrideLimits();
 }
 
 void OnNewRound()
 {	
-	Schedule::Task(0.05f, "SetUpStuff");
+	Schedule::Task( 0.05f, "SetUpStuff" );
 	OverrideLimits();
 }
 
@@ -31,10 +31,10 @@ void OnMatchBegin()
 
 void SetUpStuff()
 {
-	Engine.Ent_Fire("screenoverlay", "StartOverlays");
-	Engine.Ent_Fire("Precache", "Kill");
+	Engine.Ent_Fire( "screenoverlay", "StartOverlays" );
+	Engine.Ent_Fire( "Precache", "Kill" );
 	
-//	Engine.Ent_Fire("tonemap", "SetBloomScale", "0.475");
+//	Engine.Ent_Fire( "tonemap", "SetBloomScale", "0.475" );
 	RemoveAmmoBar();
 	PropSkins();
 	OpenDoors();
@@ -43,12 +43,12 @@ void SetUpStuff()
 void OpenDoors()
 {
 	CBaseEntity@ pEntity;
-	while ((@pEntity = FindEntityByClassname(pEntity, "prop_door_rotating")) !is null)
+	while ( ( @pEntity = FindEntityByClassname( pEntity, "prop_door_rotating" ) ) !is null )
 	{
-		Engine.Ent_Fire_Ent(pEntity, "FireUser1");
+		Engine.Ent_Fire_Ent( pEntity, "FireUser1" );
 	}
 	
-	Engine.Ent_Fire("H-OF*", "Kill", "0", "0.85");
+	Engine.Ent_Fire( "H-OF*", "Kill", "0", "0.85" );
 }
 
 void RemoveAmmoBar()
@@ -56,11 +56,11 @@ void RemoveAmmoBar()
 	int iRND;
 	
 	CBaseEntity@ pEntity;
-	while ((@pEntity = FindEntityByClassname(pEntity, "item_ammo_barricade")) !is null)
+	while ( ( @pEntity = FindEntityByClassname( pEntity, "item_ammo_barricade" ) ) !is null )
 	{
-		iRND = Math::RandomInt(0, 100);
+		iRND = Math::RandomInt( 0, 100 );
 		
-		if(iRND < 75)
+		if( iRND < 75 )
 		{
 			pEntity.SUB_Remove();
 		}
@@ -70,16 +70,16 @@ void RemoveAmmoBar()
 void PropSkins()
 {
 	CBaseEntity@ pEntity;
-	while ((@pEntity = FindEntityByClassname(pEntity, "prop_physics_multiplayer")) !is null)
+	while ( ( @pEntity = FindEntityByClassname( pEntity, "prop_physics_multiplayer" ) ) !is null )
 	{
-		if(Utils.StrContains("vending_machine", pEntity.GetModelName()))
+		if( Utils.StrContains( "vending_machine", pEntity.GetModelName() ) )
 		{
-			Engine.Ent_Fire_Ent(pEntity, "Skin", ""+Math::RandomInt(0, 2));
+			Engine.Ent_Fire_Ent( pEntity, "Skin", "" + Math::RandomInt( 0, 2 ) );
 		}
 
-		else if(Utils.StrContains("oildrum001", pEntity.GetModelName()))
+		else if( Utils.StrContains( "oildrum001", pEntity.GetModelName() ) )
 		{
-			Engine.Ent_Fire_Ent(pEntity, "Skin", ""+Math::RandomInt(0, 5));
+			Engine.Ent_Fire_Ent( pEntity, "Skin", "" + Math::RandomInt( 0, 5 ) );
 		}
 	}
 }
@@ -87,22 +87,18 @@ void PropSkins()
 void PropsHP()
 {
 	CBaseEntity@ pEntity;
-	while ((@pEntity = FindEntityByClassname(pEntity, "prop_physics_multiplayer")) !is null)
+	while ( ( @pEntity = FindEntityByClassname( pEntity, "prop_physics_multiplayer" ) ) !is null )
 	{
- 		if(Utils.StrContains("vending_machine", pEntity.GetModelName()))
+		if ( Utils.StrContains( "oildrum001_explosive", pEntity.GetModelName() ) )
 		{
-			pEntity.SetMaxHealth(pEntity.GetHealth() + CalculateHealthPoints(50));
-			pEntity.SetHealth(pEntity.GetHealth() + CalculateHealthPoints(50));
+			continue;
 		}
-		else if(Utils.StrContains("helves_metal", pEntity.GetModelName()))
-		{
-			pEntity.SetMaxHealth(pEntity.GetHealth() + CalculateHealthPoints(40));
-			pEntity.SetHealth(pEntity.GetHealth() + CalculateHealthPoints(40));
-		}
+
 		else
 		{
-			pEntity.SetMaxHealth(pEntity.GetHealth() + CalculateHealthPoints(35));
-			pEntity.SetHealth(pEntity.GetHealth() + CalculateHealthPoints(35));
+			int Health = int( pEntity.GetHealth() * 0.6f );
+			pEntity.SetMaxHealth( PlrCountHP( Health ) );
+			pEntity.SetHealth( PlrCountHP( Health ) );
 		}
 	}
 }

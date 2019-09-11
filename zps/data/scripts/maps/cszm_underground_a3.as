@@ -7,6 +7,8 @@ void SD( const string &in strMSG )
 	Chat.PrintToChat( all, strMSG );
 }
 
+const int TEAM_SURVIVORS = 2;
+
 int iMaxPlayers;
 const float flMaxDist = 1024;
 const float flLastRadius = 384;
@@ -86,15 +88,24 @@ void SpawnDist()
 	{
 		CBaseEntity@ pSpawn = FindEntityByEntIndex( g_ZSpawnIndex[i] );
 
-		if ( pSpawn is null ) continue;
+		if ( pSpawn is null )
+		{
+			continue;
+		}
 
 		for ( int p = 1; p <= iMaxPlayers; p++ ) 
 		{
 			CBaseEntity@ pPlayerEnt = FindEntityByEntIndex( p );
 
-			if ( pPlayerEnt is null ) continue;
+			if ( pPlayerEnt is null )
+			{
+				continue;
+			}
 
-			if ( pPlayerEnt.GetTeamNumber() != 2 ) continue;
+			if ( pPlayerEnt.GetTeamNumber() != TEAM_SURVIVORS )
+			{
+				continue;
+			}
 
 			if ( pSpawn.Distance( pPlayerEnt.GetAbsOrigin() ) < 512.0f )
 			{
@@ -143,7 +154,10 @@ void SpawnDist()
 	for ( uint u = 0; u < g_ZSpawnState.length(); u++ )
 	{
 		iCount++;
-		if ( g_ZSpawnState[u] == 1 ) iLCount++;
+		if ( g_ZSpawnState[u] == 1 )
+		{
+			iLCount++;
+		}
 	}
 
 	if ( iLCount >= iCount )
@@ -156,8 +170,15 @@ void SpawnDist()
 			{
 				CBaseEntity@ pSpawn = FindEntityByEntIndex( g_ZSpawnIndex[q] );
 
-				if ( pSpawn is null ) continue;
-				if ( g_ZSpawnState[q] == 2 || g_ZSpawnState[q] == 1 ) continue;
+				if ( pSpawn is null )
+				{
+					continue;
+				}
+
+				if ( g_ZSpawnState[q] == 2 || g_ZSpawnState[q] == 1 )
+				{
+					continue;
+				}
 
 				if ( pSpawn.Distance( pLastSpawn.GetAbsOrigin() ) < 512.0f )
 				{
@@ -179,30 +200,36 @@ void PropsSettings()
 			Engine.Ent_Fire_Ent( pEntity, "addoutput", "ExplodeDamage 200" );
 			Engine.Ent_Fire_Ent( pEntity, "addoutput", "ExplodeRadius 256" );
 		}
+
 		else if( Utils.StrContains( "wood_crate", pEntity.GetModelName() ) )
 		{
 			pEntity.SetMaxHealth( pEntity.GetHealth() + PlrCountHP( 50 ) );
 			pEntity.SetHealth( pEntity.GetHealth() + PlrCountHP( 50 ) );
 		}
+
 		else if( Utils.StrContains( "plasma_53", pEntity.GetModelName() ) )
 		{
 			pEntity.SetMaxHealth( 5 );
 			pEntity.SetHealth( 5 );
 		}
+		
 		else if( Utils.StrContains( "fire_extinguisher", pEntity.GetModelName() ) )
 		{
 			pEntity.SetMaxHealth( 5 );
 			pEntity.SetHealth( 5 );
 		}
+
 		else if( Utils.StrContains( "interior_fence001g", pEntity.GetModelName() ) )
 		{
 			pEntity.SetMaxHealth( pEntity.GetHealth() + PlrCountHP( 45 ) );
 			pEntity.SetHealth( pEntity.GetHealth() + PlrCountHP( 45 ) );
 		}
+
 		else
 		{
-			pEntity.SetMaxHealth( pEntity.GetHealth() + PlrCountHP( 25 ) );
-			pEntity.SetHealth( pEntity.GetHealth() + PlrCountHP( 25 ) );
+			int Health = int( pEntity.GetHealth() * 0.5f );
+			pEntity.SetMaxHealth( PlrCountHP( Health ) );
+			pEntity.SetHealth( PlrCountHP( Health ) );
 		}
 	}
 }

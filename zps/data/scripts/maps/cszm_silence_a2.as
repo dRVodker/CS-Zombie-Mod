@@ -4,6 +4,9 @@
 int iSurvInBasement;
 bool bIsBZSEnabled;
 
+const int TEAM_LOBBYGUYS = 0;
+const int TEAM_SURVIVORS = 2;
+
 void OnMapInit()
 {
 	Events::Player::OnPlayerSpawn.Hook( @OnPlayerSpawn );
@@ -47,26 +50,24 @@ void PropsSettings()
 	CBaseEntity@ pEntity;
 	while ( ( @pEntity = FindEntityByClassname( pEntity, "prop_physics_multiplayer" ) ) !is null )
 	{
-		if( "weak" == pEntity.GetEntityName() )
-		{
-			pEntity.SetMaxHealth( 15 );
-			pEntity.SetHealth( 15 );
-		}
-		else if( Utils.StrContains( "gascan001a", pEntity.GetModelName() ) )
+		if ( Utils.StrContains( "gascan001a", pEntity.GetModelName() ) )
 		{
 			Engine.Ent_Fire_Ent( pEntity, "addoutput", "ExplodeDamage 85" );
 			Engine.Ent_Fire_Ent( pEntity, "addoutput", "ExplodeRadius 256" );
 			pEntity.SetHealth( 5 );
 		}
-		else if( Utils.StrContains( "wood_crate", pEntity.GetModelName() ) )
+
+		else if ( Utils.StrContains( "weak", pEntity.GetEntityName() ) )
 		{
-			pEntity.SetMaxHealth( pEntity.GetHealth() + PlrCountHP( 50 ) );
-			pEntity.SetHealth( pEntity.GetHealth() + PlrCountHP( 50 ) );
+			pEntity.SetHealth( 5 );
+			pEntity.SetMaxHealth( 5 );
 		}
+
 		else
 		{
-			pEntity.SetMaxHealth( pEntity.GetHealth() + PlrCountHP( 10 ) );
-			pEntity.SetHealth( pEntity.GetHealth() + PlrCountHP( 10 ) );
+			int Health = int( pEntity.GetHealth() * 0.45f );
+			pEntity.SetMaxHealth( PlrCountHP( Health ) );
+			pEntity.SetHealth( PlrCountHP( Health ) );
 		}
 	}
 }
@@ -84,18 +85,14 @@ HookReturnCode OnPlayerSpawn( CZP_Player@ pPlayer )
 	CBasePlayer@ pPlrEnt = pPlayer.opCast();
 	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 
-	if ( pBaseEnt.GetTeamNumber() != 0 )
+	if ( pBaseEnt.GetTeamNumber() != TEAM_LOBBYGUYS )
 	{
-		if ( Utils.StrEql( "", pBaseEnt.GetEntityName() ) ) pBaseEnt.SetEntityName( "plr_fogguy" + pBaseEnt.entindex() );
-
-		Engine.Ent_Fire( pBaseEnt.GetEntityName(), "SetFogController", "base_fog" );
+		Engine.Ent_Fire_Ent( pBaseEnt, "SetFogController", "base_fog" );
 	}
 
 	else
 	{
-		if ( Utils.StrEql( "", pBaseEnt.GetEntityName() ) ) pBaseEnt.SetEntityName( "plr_fogguy" + pBaseEnt.entindex() );
-
-		Engine.Ent_Fire( pBaseEnt.GetEntityName(), "SetFogController", "lobby_fog" );
+		Engine.Ent_Fire_Ent( pBaseEnt, "SetFogController", "lobby_fog" );
 	}
 
 	return HOOK_CONTINUE;	
@@ -103,9 +100,12 @@ HookReturnCode OnPlayerSpawn( CZP_Player@ pPlayer )
 
 HookReturnCode OnStartTouch( CBaseEntity@ pTrigger, const string &in strEntityName, CBaseEntity@ pEntity )
 {
-	if ( pEntity is null ) return HOOK_CONTINUE;
+	if ( pEntity is null )
+	{
+		return HOOK_CONTINUE;
+	}
 	
-	if ( pEntity.GetTeamNumber() == 2 && Utils.StrEql( strEntityName, "fog_volume" ) )
+	if ( pEntity.GetTeamNumber() == TEAM_SURVIVORS && Utils.StrEql( strEntityName, "fog_volume" ) )
 	{
 		iSurvInBasement++;
 		if( bIsBZSEnabled == false )
@@ -114,16 +114,19 @@ HookReturnCode OnStartTouch( CBaseEntity@ pTrigger, const string &in strEntityNa
 			string strInput = "FireUser1";
 			ManipulateZS( strInput );
 		}
-		return HOOK_HANDLED;
 	}
+
 	return HOOK_CONTINUE;
 }
 
 HookReturnCode OnEndTouch( CBaseEntity@ pTrigger, const string &in strEntityName, CBaseEntity@ pEntity )
 {
-	if ( pEntity is null ) return HOOK_CONTINUE;
+	if ( pEntity is null )
+	{
+		return HOOK_CONTINUE;
+	}
 	
-	if ( pEntity.GetTeamNumber() == 2 && Utils.StrEql( strEntityName, "fog_volume" ) )
+	if ( pEntity.GetTeamNumber() == TEAM_SURVIVORS && Utils.StrEql( strEntityName, "fog_volume" ) )
 	{
 		iSurvInBasement--;
 		if( iSurvInBasement <= 0 )
@@ -133,6 +136,7 @@ HookReturnCode OnEndTouch( CBaseEntity@ pTrigger, const string &in strEntityName
 			ManipulateZS( strInput );
 		}
 	}
+	
 	return HOOK_CONTINUE;
 }
 

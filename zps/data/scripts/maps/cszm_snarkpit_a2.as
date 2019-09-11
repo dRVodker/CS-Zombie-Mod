@@ -40,13 +40,13 @@ float flFan2FLTime = 0.0f;
 
 void OnProcessRound()
 {
-	if ( flFan1FLTime <= Globals.GetCurrentTime() && bFan1IsOn == true )
+	if ( flFan1FLTime <= Globals.GetCurrentTime() && bFan1IsOn )
 	{
 		flFan1FLTime = Globals.GetCurrentTime() + 1.1f;
 		Engine.Ent_Fire( "snd_fan1", "Volume", "10" );
 	}
 
-	if ( flFan2FLTime <= Globals.GetCurrentTime() && bFan2IsOn == true )
+	if ( flFan2FLTime <= Globals.GetCurrentTime() && bFan2IsOn )
 	{
 		flFan2FLTime = Globals.GetCurrentTime() + 1.1f;
 		Engine.Ent_Fire( "snd_fan2", "Volume", "10" );
@@ -77,7 +77,10 @@ HookReturnCode OnStartTouch( CBaseEntity@ pTrigger, const string &in strEntityNa
 	{
 		if ( !pEntity.IsPlayer() )
 		{
-			if ( Utils.StrContains( "weapon_", pEntity.GetClassname() ) || Utils.StrContains( "item_", pEntity.GetClassname() ) ) pEntity.SUB_Remove();
+			if ( Utils.StrContains( "weapon_", pEntity.GetClassname() ) || Utils.StrContains( "item_", pEntity.GetClassname() ) )
+			{
+				pEntity.SUB_Remove();
+			}
 		}
 	}
 
@@ -95,7 +98,7 @@ void OnEntityUsed( CZP_Player@ pPlayer, CBaseEntity@ pEntity )
 				Engine.EmitSoundEntity( pEntity, "Buttons.snd14" );
 				flFan1Delay = Globals.GetCurrentTime() + 20.0f;
 
-				if ( bFan1IsOn == true )
+				if ( bFan1IsOn )
 				{
 					bFan1IsOn = false;
 					iF1SPitch = 100;
@@ -104,6 +107,7 @@ void OnEntityUsed( CZP_Player@ pPlayer, CBaseEntity@ pEntity )
 					Engine.Ent_Fire( "fanpush", "disable", "0", "0.75" );
 					Schedule::Task( 10.0f, "TurnOnFan1" );
 				}
+
 				else
 				{
 					bFan1IsOn = true;
@@ -125,7 +129,7 @@ void OnEntityUsed( CZP_Player@ pPlayer, CBaseEntity@ pEntity )
 				Engine.EmitSoundEntity( pEntity, "Buttons.snd14" );
 				flFan2Delay = Globals.GetCurrentTime() + 45.0f;
 
-				if ( bFan2IsOn == true )
+				if ( bFan2IsOn )
 				{
 					bFan2IsOn = false;
 					iF2SPitch = 100;
@@ -133,6 +137,7 @@ void OnEntityUsed( CZP_Player@ pPlayer, CBaseEntity@ pEntity )
 					Engine.Ent_Fire( "func_fan2", "stop" );
 					Engine.Ent_Fire( "fanpush2", "disable", "0", "0.75" );
 				}
+
 				else
 				{
 					bFan2IsOn = true;
@@ -153,13 +158,19 @@ float flFan1Delay = 0.0f;
 
 void Fan1SNDPlay()
 {
-	if ( iF1SPitch == 0 ) Engine.Ent_Fire( "snd_fan1", "Volume", "10" );
+	if ( iF1SPitch == 0 )
+	{
+		Engine.Ent_Fire( "snd_fan1", "Volume", "10" );
+	}
 
 	iF1SPitch++;
 
 	Engine.Ent_Fire( "snd_fan1", "Pitch", "" + iF1SPitch );
 
-	if ( iF1SPitch != 100 && iF1SPitch > 0 && iF1SPitch < 100 ) Schedule::Task( 0.025f, "Fan1SNDPlay" );
+	if ( iF1SPitch != 100 && iF1SPitch > 0 && iF1SPitch < 100 )
+	{
+		Schedule::Task( 0.025f, "Fan1SNDPlay" );
+	}
 }
 
 void Fan1SNDStop()
@@ -168,9 +179,15 @@ void Fan1SNDStop()
 
 	Engine.Ent_Fire( "snd_fan1", "Pitch", "" + iF1SPitch );
 
-	if ( iF1SPitch != 0 && iF1SPitch > 0 && iF1SPitch < 100 ) Schedule::Task( 0.025f, "Fan1SNDStop" );
+	if ( iF1SPitch != 0 && iF1SPitch > 0 && iF1SPitch < 100 )
+	{
+		Schedule::Task( 0.025f, "Fan1SNDStop" );
+	}
 
-	if ( iF1SPitch == 0 ) Engine.Ent_Fire( "snd_fan1", "Volume", "0" );
+	if ( iF1SPitch == 0 )
+	{
+		Engine.Ent_Fire( "snd_fan1", "Volume", "0" );
+	}
 }
 
 int iF2SPitch = 0;
@@ -179,13 +196,19 @@ float flFan2Delay = 0.0f;
 
 void Fan2SNDPlay()
 {
-	if ( iF2SPitch == 0 ) Engine.Ent_Fire( "snd_fan2", "Volume", "10" );
+	if ( iF2SPitch == 0 )
+	{
+		Engine.Ent_Fire( "snd_fan2", "Volume", "10" );
+	}
 
 	iF2SPitch++;
 
 	Engine.Ent_Fire( "snd_fan2", "Pitch", "" + iF2SPitch );
 
-	if ( iF2SPitch != 100 && iF2SPitch > 0 && iF2SPitch < 100 ) Schedule::Task( 0.025f, "Fan2SNDPlay" );
+	if ( iF2SPitch != 100 && iF2SPitch > 0 && iF2SPitch < 100 )
+	{
+		Schedule::Task( 0.025f, "Fan2SNDPlay" );
+	}
 }
 
 void Fan2SNDStop()
@@ -194,14 +217,20 @@ void Fan2SNDStop()
 
 	Engine.Ent_Fire( "snd_fan2", "Pitch", "" + iF2SPitch );
 
-	if ( iF2SPitch > 0 ) Schedule::Task( 0.025f, "Fan2SNDStop" );
+	if ( iF2SPitch > 0 )
+	{
+		Schedule::Task( 0.025f, "Fan2SNDStop" );
+	}
 
-	if ( iF2SPitch == 0 ) Engine.Ent_Fire( "snd_fan2", "Volume", "0" );
+	if ( iF2SPitch == 0 )
+	{
+		Engine.Ent_Fire( "snd_fan2", "Volume", "0" );
+	}
 }
 
 void TurnOnFan1()
 {
-	if ( bFan1IsOn == false )
+	if ( !bFan1IsOn )
 	{
 		bFan1IsOn = true;
 		iF1SPitch = 0;
@@ -213,7 +242,7 @@ void TurnOnFan1()
 
 void TurnOffFan2()
 {
-	if ( bFan2IsOn == true )
+	if ( bFan2IsOn )
 	{
 		bFan2IsOn = false;
 		iF2SPitch = 100;
@@ -249,15 +278,18 @@ void PropsHP()
 			Engine.Ent_Fire_Ent( pEntity, "addoutput", "ExplodeDamage 200" );
 			Engine.Ent_Fire_Ent( pEntity, "addoutput", "ExplodeRadius 256" );
 		}
+
 		else if ( Utils.StrContains( "propane_tank001a", pEntity.GetModelName() ) )
 		{
 			Engine.Ent_Fire_Ent( pEntity, "addoutput", "ExplodeDamage 50" );
 			Engine.Ent_Fire_Ent( pEntity, "addoutput", "ExplodeRadius 256" );
 		}
+
 		else
 		{
-			pEntity.SetMaxHealth( pEntity.GetHealth() + CalculateHealthPoints( 15 ) );
-			pEntity.SetHealth( pEntity.GetHealth() + CalculateHealthPoints( 15 ) );
+			int Health = int( pEntity.GetHealth() * 0.5f );
+			pEntity.SetMaxHealth( PlrCountHP( Health ) );
+			pEntity.SetHealth( PlrCountHP( Health ) );
 		}
 	}
 }
