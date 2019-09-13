@@ -74,7 +74,7 @@ const int CONST_ROUND_TIME = 300;												//Round time in seconds.
 const int CONST_ROUND_TIME_FULL = CONST_ROUND_TIME + CONST_GEARUP_TIME;			//Round time in seconds.
 const int CONST_ZOMBIE_LIVES = 32;												//Hold Zombie Lives at this level ( Zombie Lives unused in CSZM ) 
 const float CONST_ROUND_TIME_GAME = 300.0f;										//Hold IN-Game Round timer at this level ( IN-Game Round timer unused in CSZM )
-const float CONST_SLOWDOWN_MULT = 36.0f;
+const float CONST_SLOWDOWN_MULT = 40.0f;										//36.0f
 const float CONST_SLOWDOWN_WEAKMULT = 30.0f;
 const float CONST_SLOWDOWN_CRITDMG = 45.0f;
 
@@ -497,11 +497,11 @@ HookReturnCode CSZM_OnPlayerSpawn( CZP_Player@ pPlayer )
 		RemoveProp( pBaseEnt );
 		
 		int iIndex = pBaseEnt.entindex();
-		
+
 		Engine.EmitSoundEntity( pBaseEnt, "CSPlayer.Mute" );
 
 		ZeroingSlowdown( iIndex, false );
-
+		//Apply the custom movement speed
 		switch( pBaseEnt.GetTeamNumber() )
 		{
 			case TEAM_SURVIVORS:
@@ -527,16 +527,41 @@ HookReturnCode CSZM_OnPlayerSpawn( CZP_Player@ pPlayer )
 
 		pPlayer.SetMaxSpeed( g_iNormalSpeed[iIndex] );
 
+		//Set CSS Arms (human type) if not zombie
 		if ( pBaseEnt.GetTeamNumber() != TEAM_ZOMBIES )
 		{
 			pPlayer.SetArmModel( "models/cszm/weapons/c_css_arms.mdl" );
 		}
 
-		else if ( !pPlayer.IsCarrier() )
+		else
 		{
-			pPlayer.SetArmModel( "models/cszm/weapons/c_css_zombie_arms.mdl" );
+			//Don't set CSS Arms (zombie type) to The Carrier
+			if ( !pPlayer.IsCarrier() )
+			{
+				pPlayer.SetArmModel( "models/cszm/weapons/c_css_zombie_arms.mdl" );
+			}
+			//Give zomies some ammo to drop
+			if ( Math::RandomInt( 1, 100 ) > 59 )
+			{
+				int iRNG = Math::RandomInt( 0, 3 );	//RNG Ammo type 0 - Pistol, 1 - Revolver, 2 - Shotgun, 4 - Rifle
+				int iAmmoCount = Math::RandomInt( 21, 43 );
+
+				switch( iRNG )
+				{
+					case 1:	//Revolver ammo
+						iAmmoCount = Math::RandomInt( 4, 12 );
+					break;
+					
+					case 2:	//Shotgun ammo
+						iAmmoCount = Math::RandomInt( 3, 9 );
+					break;
+				}
+
+				AmmoBankSetValue iAmmoType = AmmoBankSetValue( iRNG );
+				pPlayer.AmmoBank( add, iAmmoType, iAmmoCount );
+			}
 		}
-		
+		//If in lobby team set the lobby guy player model
 		if ( pBaseEnt.GetTeamNumber() == TEAM_LOBBYGUYS )
 		{
 			pBaseEnt.SetModel( "models/cszm/lobby_guy.mdl" );
@@ -605,11 +630,12 @@ HookReturnCode CSZM_OnPlayerSpawn( CZP_Player@ pPlayer )
 				return HOOK_HANDLED;
 			}
 		}
+
 		else
 		{
-			if ( pPlrEnt.IsBot() )							//Delete me
-			{														//This is for debug purposes with bots
-				pBaseEnt.ChangeTeam( TEAM_LOBBYGUYS );							//Unused in actual gameplay
+			if ( pPlrEnt.IsBot() )									
+			{														//For debug purposes
+				pBaseEnt.ChangeTeam( TEAM_LOBBYGUYS );				//Unused in actual gameplay
 				pPlayer.ForceRespawn();
 				pBaseEnt.SetModel( "models/cszm/lobby_guy.mdl" );
 			}
@@ -646,6 +672,8 @@ HookReturnCode CSZM_OnPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &out D
         const string strVicName = pPlayer.GetPlayerName();
 
         CBaseEntity@ pEntityAttacker = DamageInfo.GetAttacker();
+
+//		CBaseEntity@ pWeapon = DamageInfo.GetWeapon();
 
 		const int iAttIndex = pEntityAttacker.entindex();
 		const int iAttTeam = pEntityAttacker.GetTeamNumber();
@@ -731,7 +759,16 @@ HookReturnCode CSZM_OnPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &out D
 			}
 
 			Utils.FakeRecoil( pPlayer, VP_KICK, VP_DAMP, VP_X, VP_Y, bLeft );
-
+/*
+			if ( pWeapon !is null )
+			{
+				if ( Utils.StrEql( "weapon_sledgehammer", pWeapon.GetClassname() ) )
+				{
+					DamageInfo.SetDamage( pBaseEnt.GetHealth() + 200 );
+					DamageInfo.SetDamageType( 1 ); 
+				}
+			}
+*/
 			bool bAllowPainSound = false;
 
 			if ( pPlayer.IsCarrier() && g_bIsFirstInfected[iVicIndex] )
