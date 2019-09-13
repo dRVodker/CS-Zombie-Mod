@@ -12,10 +12,11 @@ const int TEAM_SPECTATORS = 1;
 const int TEAM_SURVIVORS = 2;
 const int TEAM_ZOMBIES = 3;
 
+const float TIK_TIME = 0.1f;
+
 int iMaxPlayers;
 bool bIsCSZM = false;
 float flWaitTime;
-float flWaitTimeTL;
 
 void OnPluginInit()
 {
@@ -26,6 +27,8 @@ void OnPluginInit()
 	Events::Entities::OnEntityCreation.Hook( @CSZM_FM_OnEntityCreation );
 
 	Events::Custom::OnEntityDamaged.Hook( @CSZM_FM_OnEntDamaged );
+
+	Events::Player::OnConCommand.Hook( @CSZM_FM_OnConCom );
 }
 
 void OnMapInit()
@@ -34,8 +37,7 @@ void OnMapInit()
 	{
 		bIsCSZM = true;
 
-		flWaitTime = Globals.GetCurrentTime() + 0.05f;
-		flWaitTimeTL = Globals.GetCurrentTime() + 0.01f;
+		flWaitTime = Globals.GetCurrentTime() + TIK_TIME;
 
 		iMaxPlayers = Globals.GetMaxClients();
 
@@ -61,7 +63,6 @@ void OnMapShutdown()
 		Entities::RemoveRegisterDrop( "item_deliver" );
 
 		flWaitTime = 0.0f;
-		flWaitTimeTL = 0.0f;
 	}
 }
 
@@ -71,65 +72,54 @@ void OnProcessRound()
 	{
 		if ( flWaitTime <= Globals.GetCurrentTime() )
 		{
-			flWaitTime = Globals.GetCurrentTime() + 0.05f;
+			flWaitTime = Globals.GetCurrentTime() + TIK_TIME;
 			FragMineThink();
 		}
+	}
+}
 
-		if ( flWaitTimeTL <= Globals.GetCurrentTime() )
+HookReturnCode CSZM_FM_OnConCom( CZP_Player@ pPlayer, CASCommand@ pArgs )
+{
+	CBasePlayer@ pPlrEnt = pPlayer.opCast();
+	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+
+	if ( Utils.StrEql( "roar_target", pArgs.Arg( 0 ) ) && pBaseEnt.IsGrounded() && pBaseEnt.GetTeamNumber() == TEAM_SURVIVORS )
+	{
+		Vector Forward = pBaseEnt.EyePosition();
+		Vector StartPos;
+		Vector EndPos;
+
+		Globals.AngleVectors( pBaseEnt.EyeAngles(), Forward );
+
+		StartPos = pBaseEnt.EyePosition() + Forward * 32;
+		EndPos = StartPos + Forward * 40;
+
+		CGameTrace trace;
+
+		Utils.TraceLine( StartPos, EndPos, MASK_ALL, null, COLLISION_GROUP_NONE, trace );
+
+		if ( trace.DidHitNonWorldEntity() )
 		{
-			flWaitTimeTL = Globals.GetCurrentTime() + 0.01f;
-
-			for ( int i = 1; i <= iMaxPlayers; i++ )
+			CBaseEntity@ pTEntity = trace.m_pEnt;
+			if ( pTEntity !is null )
 			{
-				CZP_Player@ pPlayer = ToZPPlayer( i );
-								
-				if ( pPlayer is null )
+				if ( Utils.StrContains( "test_fragmine", pTEntity.GetEntityName() ) ) 
 				{
-					continue;
-				}
-
-				CBasePlayer@ pPlrEnt = pPlayer.opCast();
-				CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
-
-				if ( pPlayer.m_afButtonPressed == 32 && pBaseEnt.IsGrounded() && pBaseEnt.GetTeamNumber() == TEAM_SURVIVORS )
-				{
-					Vector Forward = pBaseEnt.EyePosition();
-					Vector StartPos;
-					Vector EndPos;
-
-					Globals.AngleVectors( pBaseEnt.EyeAngles(), Forward );
-
-					StartPos = pBaseEnt.EyePosition() + Forward * 32;
-					EndPos = StartPos + Forward * 40;
-
-					CGameTrace trace;
-
-					Utils.TraceLine( StartPos, EndPos, MASK_ALL, null, COLLISION_GROUP_NONE, trace );
-
-					if ( trace.DidHitNonWorldEntity() )
+					if ( pTEntity.GetOwner() is pBaseEnt || pTEntity.GetOwner() is null )
 					{
-						CBaseEntity@ pTEntity = trace.m_pEnt;
+						DefuseFragMine( pTEntity, pPlayer );
+					}
 
-						if ( pTEntity !is null )
-						{
-							if ( Utils.StrContains( "test_fragmine", pTEntity.GetEntityName() ) ) 
-							{
-								if ( pTEntity.GetOwner() is pBaseEnt || pTEntity.GetOwner() is null )
-								{
-									DefuseFragMine( pTEntity, pPlayer );
-								}
-
-								else
-								{
-									Chat.PrintToChatPlayer( pPlrEnt, "This frag mine is not yours, you can't disarm and pick it up!" );
-								}
-							}
-						}
+					else
+					{
+						Chat.PrintToChatPlayer( pPlrEnt, "This frag mine is not yours, you can't disarm and pick it up!" );
 					}
 				}
 			}
 		}
 	}
+
+	return HOOK_CONTINUE;
 }
 
 HookReturnCode CSZM_FM_OnEntityCreation( const string &in strClassname, CBaseEntity@ pEntity )
@@ -157,6 +147,7 @@ HookReturnCode CSZM_FM_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out 
 	if ( Utils.StrContains( "test_fragmine", pEntity.GetEntityName() ) || Utils.StrContains( "fragmine_detonation", pEntity.GetEntityName() ) )
 	{
 		DamageInfo.SetDamage( pEntity.GetHealth() );
+
 		bool bExplode = true;
 
 		CBaseEntity@ pAttacker = DamageInfo.GetAttacker();
@@ -182,16 +173,13 @@ HookReturnCode CSZM_FM_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out 
 			}
 		}
 
-		else
+		else if ( pEntityOwner !is null )
 		{
-			if ( pEntityOwner !is null )
-			{
-				DamageInfo.SetAttacker( pEntityOwner );
-				DamageInfo.SetInflictor( pEntityOwner );
-			}
+			DamageInfo.SetAttacker( pEntityOwner );
+			DamageInfo.SetInflictor( pEntityOwner );
 		}
 
-		if ( bExplode == false )
+		if ( !bExplode )
 		{
 			DamageInfo.SetDamage( 0 );
 		}
@@ -216,8 +204,19 @@ HookReturnCode CSZM_FM_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out 
 				pEntityOwner.ChangeTeam( TEAM_SPECTATORS );
 			}
 
+			int iUsed;
+			int iFree;
+
+			Engine.EdictCount( iFree, iUsed );
+
 			int iShowerCount = Math::RandomInt( 1, 3 );
 			int iTracerCount = Math::RandomInt( 18, 24 );
+
+			if ( iUsed > 1964 )
+			{
+				iShowerCount = 1;
+				iTracerCount = -1;
+			}
 
 			for ( int i = 0; i <= iShowerCount; i++)
 			{
@@ -246,28 +245,16 @@ HookReturnCode CSZM_FM_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out 
 				pTracer.SetAbsVelocity( vUP * Math::RandomInt( 2750, 2995 ) );	
 			}
 
-			Utils.CreateShrapnelEx( pEntityOwner, 50, pEntity.GetAbsOrigin(), 0.0f );
+			Utils.CreateShrapnelEx( pEntityOwner, 52, pEntity.GetAbsOrigin(), 0.0f );
 		}
-
-		return HOOK_HANDLED;
 	}
 
-	return HOOK_HANDLED;
+	return HOOK_CONTINUE;
 }
 
 void OnItemDeliverUsed( CZP_Player@ pPlayer, CBaseEntity@ pEntity, int &in iEntityOutput )
 {
-	if ( !bIsCSZM )
-	{
-		return;
-	}
-
-	if ( pPlayer is null )
-	{
-		return;
-	}
-
-	if ( pEntity is null )
+	if ( !bIsCSZM || pPlayer is null || pEntity is null  )
 	{
 		return;
 	}
@@ -285,17 +272,7 @@ void OnItemDeliverUsed( CZP_Player@ pPlayer, CBaseEntity@ pEntity, int &in iEnti
 
 void OnEntityDropped( CZP_Player@ pPlayer, CBaseEntity@ pEntity )
 {
-	if ( !bIsCSZM )
-	{
-		return;
-	}
-
-	if ( pPlayer is null )
-	{
-		return;
-	}
-
-	if ( pEntity is null )
+	if ( !bIsCSZM || pPlayer is null || pEntity is null  )
 	{
 		return;
 	}
@@ -322,8 +299,8 @@ void ThrowMine( const int &in iIndex, CZP_Player@ pPlayer, CBaseEntity@ pEntity 
 	FragMineIPD.Add( "skin", "0" );
 	FragMineIPD.Add( "overridescript", "mass,60,rotdamping,10000,damping,0,inertia,0," );
 	FragMineIPD.Add( "nodamageforces", "1" );
-	FragMineIPD.Add( "ExplodeDamage", "350" );
-	FragMineIPD.Add( "ExplodeRadius", "164" );
+	FragMineIPD.Add( "ExplodeDamage", "423" );
+	FragMineIPD.Add( "ExplodeRadius", "162" );
 
 	FragMineIPD.Add( "addoutput", "classname npc_fragmine", true );
 	FragMineIPD.Add( "addoutput", "targetname test_fragmine_preactive", true, "0.98" );
@@ -402,7 +379,10 @@ void FragMineThink()
 
 	while ( ( @pFMine = FindEntityByName( pFMine, "test_fragmine_preactive" ) ) !is null )
 	{
-		if ( pFMine.GetOwner() !is null ) pFMine.SetOutline( true, filter_entity, pFMine.GetOwner().entindex(), Color( 245, 32, 64 ), 384.0f, false, true );
+		if ( pFMine.GetOwner() !is null )
+		{
+			pFMine.SetOutline( true, filter_entity, pFMine.GetOwner().entindex(), Color( 245, 32, 64 ), 384.0f, false, true );
+		}
 
 		pFMine.SetEntityName( "test_fragmine_active" );
 		pFMine.SetSkin( 1 );
