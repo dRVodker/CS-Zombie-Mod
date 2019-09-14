@@ -151,7 +151,7 @@ float flShowMinutes;
 float flShowHours;
 float flWeakZombieWait;
 
-#include "./cszm/misc.as"
+#include "./cszm_modules/misc.as"
 
 void OnPluginInit()
 {
