@@ -104,10 +104,13 @@ HookReturnCode OnKPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &in Damage
 	}
 
 	CZP_Player@ pPlrAttacker = null;
+
 	CBasePlayer@ pBPlrAttacker = null;
 	CBasePlayer@ pPlrEnt = pPlayer.opCast();
+
 	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 	CBaseEntity@ pEntityAttacker = DamageInfo.GetAttacker();
+	
 	const int iVicIndex = pBaseEnt.entindex();
 	const int iVicTeam = pBaseEnt.GetTeamNumber();
 	const int iAttIndex = pEntityAttacker.entindex();

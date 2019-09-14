@@ -12,7 +12,10 @@ bool bDamageType( int &in iSubjectDT, int &in iDMGNum )
 {
 	bool bIsDTValid = false;
 
-	if ( iSubjectDT & (1<<iDMGNum) == (1<<iDMGNum) ) bIsDTValid = true;
+	if ( iSubjectDT & (1<<iDMGNum) == (1<<iDMGNum) )
+	{
+		bIsDTValid = true;
+	}
 
 	return bIsDTValid;
 }
@@ -46,7 +49,10 @@ void OnPluginInit()
 
 void OnMapInit()
 {	
-	if( Utils.StrContains( "cszm", Globals.GetCurrentMapName() ) ) bIsCSZM = true;
+	if( Utils.StrContains( "cszm", Globals.GetCurrentMapName() ) )
+	{
+		bIsCSZM = true;
+	}
 }
 
 void OnMapShutdown()
@@ -93,26 +99,42 @@ HookReturnCode CSZM_SHP_OnPlrDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &out 
 
 HookReturnCode CSZM_SHP_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out DamageInfo )
 {
-	if ( bIsCSZM == false ) return HOOK_HANDLED;
+	if ( !bIsCSZM )
+	{
+		return HOOK_HANDLED;
+	}
 
 	CBaseEntity@ pAttacker = DamageInfo.GetAttacker();
 	bool bIsUnbreakable = false; 
 
-	if ( Utils.StrContains( "unbrk", pEntity.GetEntityName() ) || Utils.StrContains( "unbreakable", pEntity.GetEntityName() ) ) bIsUnbreakable = true;
+	if ( Utils.StrContains( "unbrk", pEntity.GetEntityName() ) || Utils.StrContains( "unbreakable", pEntity.GetEntityName() ) )
+	{
+		bIsUnbreakable = true;
+	}
 
 	//50% of damage resist for "prop_barricade"
-	if ( Utils.StrEql( pEntity.GetClassname(), "prop_barricade" ) ) DamageInfo.SetDamage( DamageInfo.GetDamage() * 0.5f );
+	if ( Utils.StrEql( pEntity.GetClassname(), "prop_barricade" ) )
+	{
+		DamageInfo.SetDamage( DamageInfo.GetDamage() * 0.5f );
+	}
 
 	//Show HP
-	if ( pAttacker.IsPlayer() && pAttacker.GetTeamNumber() == TEAM_ZOMBIES && bIsUnbreakable != true )
+	if ( pAttacker.IsPlayer() && pAttacker.GetTeamNumber() == TEAM_ZOMBIES && !bIsUnbreakable )
 	{
 		int iSlot = pAttacker.entindex();
 		bool bIsValid = false;
 
 		for ( uint i = 0; i < g_strEntities.length(); i++ )
 		{
-			if ( bIsValid ) continue;
-			if ( Utils.StrEql( pEntity.GetClassname(), g_strEntities[i] ) ) bIsValid = true;
+			if ( bIsValid )
+			{
+				continue;
+			}
+
+			if ( Utils.StrEql( pEntity.GetClassname(), g_strEntities[i] ) )
+			{
+				bIsValid = true;
+			}
 		}
 
 		if ( bIsValid )
@@ -122,10 +144,20 @@ HookReturnCode CSZM_SHP_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out
 			float flHP = pEntity.GetHealth();
 			float flResult = flHP - flDMG;
 
-			if ( flDMG > 0 ) bLeft = true;
+			if ( flDMG > 0 )
+			{
+				bLeft = true;
+			}
 
-			if ( flResult > 0 ) ShowHP( ToBasePlayer( iSlot ), int( flResult ), bLeft, false );
-			else ShowHP( ToBasePlayer( iSlot ), int( flResult ), bLeft, true );
+			if ( flResult > 0 )
+			{
+				ShowHP( ToBasePlayer( iSlot ), int( flResult ), bLeft, false );
+			}
+
+			else
+			{
+				ShowHP( ToBasePlayer( iSlot ), int( flResult ), bLeft, true );
+			}
 		}
 	}
 
@@ -144,7 +176,10 @@ HookReturnCode CSZM_SHP_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out
 			{
 				for ( uint i = 0; i < g_PhysTPIndex.length(); i++ )
 				{
-					if ( bIsIndexValid ) continue;
+					if ( bIsIndexValid )
+					{
+						continue;
+					}
 
 					if ( iIndex == g_PhysTPIndex[i] )
 					{
@@ -153,6 +188,7 @@ HookReturnCode CSZM_SHP_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out
 					}
 				}
 			}
+
 			if ( bIsIndexValid == false )
 			{
 				g_PhysTPIndex.insertLast( iIndex );
@@ -168,7 +204,7 @@ HookReturnCode CSZM_SHP_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out
 		string MDLName = pEntity.GetModelName();
 		int DMGType = DamageInfo.GetDamageType();
 		float DMG = DamageInfo.GetDamage();
-		float flMultiplier = 12.0f;
+		float flMultiplier = 22.0f;
 
 		//Only for survivors
 		if ( pAttacker.IsPlayer() && pAttacker.GetTeamNumber() == TEAM_SURVIVORS )
@@ -177,25 +213,33 @@ HookReturnCode CSZM_SHP_OnEntDamaged( CBaseEntity@ pEntity, CTakeDamageInfo &out
 			if ( bDamageType( DMGType, 1 ) )
 			{
 				//If revolver bullet
-				if ( bDamageType( DMGType, 13 ) && DMG > 30 ) flMultiplier = 8.0f;
+				if ( bDamageType( DMGType, 13 ) && DMG > 30 )
+				{
+					flMultiplier = 8.0f;
+				}
 
 				//If buckshot
-				else if ( bDamageType( DMGType, 29 ) ) flMultiplier = 1.02f;
+				else if ( bDamageType( DMGType, 29 ) )
+				{
+					flMultiplier = 1.02f;
+				}
 
 				//Set DMG_BULLET Damage Type, otherwise it won't push
 				DamageInfo.SetDamageType( 1<<1 );
 				DamageInfo.SetDamageForce( DamageInfo.GetDamageForce() * flMultiplier );
 
 				//Do not reduce damage if explosive props
-				if ( 
-					Utils.StrContains( "propanecanister001a", MDLName ) ||
-					Utils.StrContains( "oildrum001_explosive", MDLName ) ||
-					Utils.StrContains( "fire_extinguisher", MDLName ) ||
-					Utils.StrContains( "vent001", MDLName ) ||
-					Utils.StrContains( "canister01a", MDLName ) ||
-					Utils.StrContains( "canister02a", MDLName ) ||
-					Utils.StrContains( "propane_tank001a", MDLName ) ||
-					Utils.StrContains( "gascan001a", MDLName ) ) return HOOK_HANDLED;
+				if ( Utils.StrContains( "propanecanister001a", MDLName ) ||
+				Utils.StrContains( "oildrum001_explosive", MDLName ) ||
+				Utils.StrContains( "fire_extinguisher", MDLName ) ||
+				Utils.StrContains( "vent001", MDLName ) ||
+				Utils.StrContains( "canister01a", MDLName ) ||
+				Utils.StrContains( "canister02a", MDLName ) ||
+				Utils.StrContains( "propane_tank001a", MDLName ) ||
+				Utils.StrContains( "gascan001a", MDLName ) )
+				{
+					return HOOK_HANDLED;
+				}
 				
 				DamageInfo.SetDamage( DMG * 0.021f );
 			}
@@ -239,7 +283,11 @@ void ShowHP( CBasePlayer@ pBasePlayer, const int &in iHP, const bool &in bLeft, 
 	else
 	{
 		string strLeft = "";
-		if ( bLeft ) strLeft = " Left";
+		if ( bLeft )
+		{
+			strLeft = " Left";
+		}
+
 		Chat.CenterMessagePlayer( pBasePlayer, iHP + " HP" + strLeft );
 	}
 }

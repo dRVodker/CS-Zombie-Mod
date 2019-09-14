@@ -6,11 +6,11 @@
 */
 
 #include "../SendGameText"
-#include "./cszm/cache.as"
-#include "./cszm/antidote.as"
-#include "./cszm/killfeed.as"
-#include "./cszm/chat.as"
-#include "./cszm/rprop.as"
+#include "./cszm_modules/cache.as"
+#include "./cszm_modules/antidote.as"
+#include "./cszm_modules/killfeed.as"
+#include "./cszm_modules/chat.as"
+#include "./cszm_modules/rprop.as"
 
 //Some Data
 CASConVar@ pSoloMode = null;
