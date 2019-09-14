@@ -100,9 +100,9 @@ void OnMapInit()
 {		
 	if ( Utils.StrContains( "cszm", Globals.GetCurrentMapName() ) )
 	{
+		bIsCSZM = true;
 		flWaitSpawnTime = 0;
 		iDroppedAmmoCount = 0;
-		bIsCSZM = true;
 
 		RegisterPickup();
 		

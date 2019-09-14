@@ -170,7 +170,7 @@ HookReturnCode OnKPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &in Damage
 			g_DamageDealt[iAttIndex] += DamageInfo.GetDamage();
 		}
 
-		Schedule::Task( 0.01f, "ShowDamageHealth" );
+		Schedule::Task( 0.005f, "ShowDamageHealth" );
 
 		return HOOK_HANDLED;
 	}

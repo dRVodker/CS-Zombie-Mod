@@ -57,7 +57,7 @@ void OnMapInit()
 
 void OnMapShutdown()
 {
-	if ( bIsCSZM == true )
+	if ( bIsCSZM )
 	{
 		bIsCSZM = false;
 		OnNewRound();	
@@ -83,6 +83,7 @@ HookReturnCode CSZM_SHP_OnPlrDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &out 
 			if ( pAttacker.entindex() == g_PhysTPIndex[i] )
 			{
 				CBaseEntity@ pNewAttacker = FindEntityByEntIndex( g_PhysTPOwner[i] );
+				
 				if ( pNewAttacker !is null ) 
 				{
 					DamageInfo.SetInflictor( pNewAttacker );

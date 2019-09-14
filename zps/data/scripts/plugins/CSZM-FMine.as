@@ -25,9 +25,7 @@ void OnPluginInit()
 	PluginData::SetName( "CSZM - Anti-personnel Mine" );
 
 	Events::Entities::OnEntityCreation.Hook( @CSZM_FM_OnEntityCreation );
-
 	Events::Custom::OnEntityDamaged.Hook( @CSZM_FM_OnEntDamaged );
-
 	Events::Player::OnConCommand.Hook( @CSZM_FM_OnConCom );
 }
 

@@ -1,4 +1,3 @@
-//Some data over there
 bool bIsCSZM = false;
 float flMsgWaitTime = Globals.GetCurrentTime() + Math::RandomFloat( 3.50f, 10.00f );
 const string lb = "{blue}[";
@@ -45,7 +44,7 @@ void OnMapShutdown()
 
 void OnProcessRound()
 {
-	if ( bIsCSZM == true )
+	if ( bIsCSZM )
 	{
 		if ( flMsgWaitTime <= Globals.GetCurrentTime() )
 		{
