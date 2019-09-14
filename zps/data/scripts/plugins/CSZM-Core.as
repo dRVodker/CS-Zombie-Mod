@@ -1929,6 +1929,7 @@ void WarmUpTimer()
 			iWUSeconds--;
 		}
 	}
+	
 	else if ( iNumPlrs <= 1 )
 	{
 		flWUWait = 0;
