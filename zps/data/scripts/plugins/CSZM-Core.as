@@ -126,7 +126,7 @@ array<float> g_flRecoverTime;
 //Other arrays ( Don't even touch this )
 array<float> g_flFRespawnCD;
 array<float> g_flIdleTime;
-array<int> g_CONST_INFECT_DELAY;
+array<int> g_iInfectDelay;
 array<int> g_iZMDeathCount;
 
 array<int> g_iCVSIndex;
@@ -151,6 +151,7 @@ float flShowMinutes;
 float flShowHours;
 float flWeakZombieWait;
 
+//misc.as
 #include "./cszm_modules/misc.as"
 
 void OnPluginInit()
@@ -247,7 +248,7 @@ void OnMapInit()
 		g_bIsAbuser.resize( iMaxPlayers + 1 );
 		g_bIsWeakZombie.resize( iMaxPlayers + 1 );
 		g_bIsVolunteer.resize( iMaxPlayers + 1 );
-		g_CONST_INFECT_DELAY.resize( iMaxPlayers + 1 );
+		g_iInfectDelay.resize( iMaxPlayers + 1 );
 		g_iZMDeathCount.resize( iMaxPlayers + 1 );
 		g_iAntidote.resize( iMaxPlayers + 1 );
 		g_iKills.resize( iMaxPlayers + 1 );
@@ -305,7 +306,7 @@ void OnMapShutdown()
 		ClearIntArray( g_iKills );
 		ClearIntArray( g_iVictims );
 		ClearIntArray( g_iCVSIndex );
-		ClearIntArray( g_CONST_INFECT_DELAY );
+		ClearIntArray( g_iInfectDelay );
 		ClearIntArray( g_iZMDeathCount );
 		ClearIntArray( g_iAntidote );
 		ClearIntArray( g_iNormalSpeed );
@@ -382,7 +383,7 @@ HookReturnCode CSZM_OnPlayerConnected( CZP_Player@ pPlayer )
 		
 		g_flFRespawnCD[iIndex] = 0.0f;
 		g_flIdleTime[iIndex] = 0.0f;
-		g_CONST_INFECT_DELAY[iIndex] = 0;
+		g_iInfectDelay[iIndex] = 0;
 		g_iAntidote[iIndex] = 0;
 		g_iZMDeathCount[iIndex] = -1;
 		g_iCVSIndex[iIndex] = Math::RandomInt( 1, 3 );
@@ -429,7 +430,7 @@ HookReturnCode CSZM_OnConCommand( CZP_Player@ pPlayer, CASCommand@ pArgs )
 				{
 					if ( Utils.StrEql( "choose2", pArgs.Arg( 0 ) ) )
 					{
-						if ( g_CONST_INFECT_DELAY[iIndex] > 0 )
+						if ( g_iInfectDelay[iIndex] > 0 )
 						{
 							Chat.PrintToChatPlayer( pPlrEnt, strCannotPlayFI );
 							return HOOK_HANDLED;
@@ -1173,9 +1174,9 @@ void LocknLoad()
 			continue;
 		}
 
-		if ( pEntPlayer.GetTeamNumber() == TEAM_SURVIVORS && g_CONST_INFECT_DELAY[i] > 0 )
+		if ( pEntPlayer.GetTeamNumber() == TEAM_SURVIVORS && g_iInfectDelay[i] > 0 )
 		{
-			g_CONST_INFECT_DELAY[i]--;
+			g_iInfectDelay[i]--;
 		}
 	}
 }
@@ -1258,7 +1259,7 @@ int ChooseVictim()
 			continue;
 		}
 		
-		if ( !g_bWasFirstInfected[i] && pPlrEntity.IsAlive() && pPlrEntity.GetTeamNumber() == TEAM_SURVIVORS && g_CONST_INFECT_DELAY[i] < 2 )
+		if ( !g_bWasFirstInfected[i] && pPlrEntity.IsAlive() && pPlrEntity.GetTeamNumber() == TEAM_SURVIVORS && g_iInfectDelay[i] < 2 )
 		{
 			iCount++;
 			p_VictimIndex.insertLast( i );
@@ -1664,7 +1665,7 @@ void TurnFirstInfected()
 		iInfDelay = CONST_INFECT_DELAY;
 	}
 	g_bIsFirstInfected[iFZIndex] = true;
-	g_CONST_INFECT_DELAY[iFZIndex] += iInfDelay;
+	g_iInfectDelay[iFZIndex] += iInfDelay;
 	ShowOutbreak( iFZIndex );
 	TurnToZ( iFZIndex );
 
