@@ -1,3 +1,11 @@
 
 *.lnk
 zps/data/scripts/dmg_types.as
+zps/data/scripts/plugins/CSZM_MAIN/cszm_modules/rprop.as
+zps/data/scripts/plugins/CSZM_MAIN/cszm_modules/misc.as
+zps/data/scripts/plugins/CSZM_MAIN/cszm_modules/killfeed.as
+zps/data/scripts/plugins/CSZM_MAIN/cszm_modules/funcs.as
+zps/data/scripts/plugins/CSZM_MAIN/cszm_modules/chat.as
+zps/data/scripts/plugins/CSZM_MAIN/cszm_modules/cache.as
+zps/data/scripts/plugins/CSZM_MAIN/cszm_modules/antidote.as
+zps/data/scripts/plugins/CSZM_MAIN/CSZM-Main.as
