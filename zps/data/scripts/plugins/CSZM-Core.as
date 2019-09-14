@@ -35,10 +35,10 @@ int iZombieWin;
 
 //GamePlay Consts and Variables
 //Player Speed
-const int SPEED_DEFAULT = 220;
-const int SPEED_HUMAN = 207; 
-const int SPEED_ZOMBIE = 180;
-const int SPEED_CARRIER = 199;
+const int SPEED_DEFAULT = 225;
+const int SPEED_HUMAN = 212; 
+const int SPEED_ZOMBIE = 185;
+const int SPEED_CARRIER = 204;
 const int SPEED_WEAK = 231;
 const int SPEED_MINIMUM = 80;
 
@@ -66,10 +66,10 @@ const int CONST_WARMUP_TIME = 10;			//Time of the warmup in seconds.		( default 
 
 //Other Consts
 const float CONST_WEAK_ZOMBIE_TIME = 45.0f;								
-const int CONST_SUBTRACT_DEATH = 2;												//Amount of units subtract from the death counter
+const int CONST_SUBTRACT_DEATH = 1;												//Amount of units subtract from the death counter
 const int CONST_INFECT_ADD_TIME = 15;											//Amount of time in seconds add to the round time in case of successful infection
-const int CONST_DEATH_BONUS_HP = 100;											//Multiplier of death hp bonus.
-const int CONST_DEATH_MAX = 7;													//Maximum amount of death to boost up the max health.
+const int CONST_DEATH_BONUS_HP = 75;											//Multiplier of death hp bonus.
+const int CONST_DEATH_MAX = 8;													//Maximum amount of death to boost up the max health.
 const int CONST_ROUND_TIME = 300;												//Round time in seconds.
 const int CONST_ROUND_TIME_FULL = CONST_ROUND_TIME + CONST_GEARUP_TIME;			//Round time in seconds.
 const int CONST_ZOMBIE_LIVES = 32;												//Hold Zombie Lives at this level ( Zombie Lives unused in CSZM ) 
@@ -541,7 +541,7 @@ HookReturnCode CSZM_OnPlayerSpawn( CZP_Player@ pPlayer )
 				pPlayer.SetArmModel( "models/cszm/weapons/c_css_zombie_arms.mdl" );
 			}
 			//Give zomies some ammo to drop
-			if ( Math::RandomInt( 1, 100 ) > 59 )
+			if ( Math::RandomInt( 1, 100 ) > 47 )
 			{
 				int iRNG = Math::RandomInt( 0, 3 );	//RNG Ammo type 0 - Pistol, 1 - Revolver, 2 - Shotgun, 4 - Rifle
 				int iAmmoCount = Math::RandomInt( 21, 43 );
@@ -1513,7 +1513,7 @@ void AddSlowdown( const int &in iIndex, const float &in flDamage, const int &in 
 
 	bool bFreeze = false;
 	int iSpeed = int( ( g_iNormalSpeed[iIndex] * 0.01 ) * CONST_SLOWDOWN_MULT );
-	float p_flAddTime = 0.0f;
+	float p_flAddTime = 0.20f;
 
 	//Reduce the slowdown speed if weak zombie
 	if ( g_bIsWeakZombie[iIndex] )
@@ -1524,7 +1524,7 @@ void AddSlowdown( const int &in iIndex, const float &in flDamage, const int &in 
 	//Add time if critical dmg
 	if ( flDamage > CONST_SLOWDOWN_CRITDMG )
 	{
-		p_flAddTime = 0.35f;
+		p_flAddTime = 0.45f;
 	}
 
 	//Melee
@@ -1853,6 +1853,7 @@ void RndZModel( CZP_Player@ pPlayer, CBaseEntity@ pEntPlr )
 
 void SetZMHealth( CBaseEntity@ pEntPlr )
 {
+	int iIndex = pEntPlr.entindex();
 	int iZombCount = Utils.GetNumPlayers( zombie, false );
 	float flMultiplier = 0.5;
 	
@@ -1871,12 +1872,12 @@ void SetZMHealth( CBaseEntity@ pEntPlr )
 		break;
 	}
 	
-	if ( g_iZMDeathCount[pEntPlr.entindex()] < 0 )
+	if ( g_iZMDeathCount[iIndex] < 0 )
 	{
-		g_iZMDeathCount[pEntPlr.entindex()] = 0;
+		g_iZMDeathCount[iIndex] = 0;
 	}
 	
-	int iHPBonus = g_iZMDeathCount[pEntPlr.entindex()] * CONST_DEATH_BONUS_HP;
+	int iHPBonus = g_iZMDeathCount[iIndex] * CONST_DEATH_BONUS_HP;
 	
 	CZP_Player@ pPlayer = ToZPPlayer( pEntPlr );
 
@@ -1893,7 +1894,7 @@ void SetZMHealth( CBaseEntity@ pEntPlr )
 		pEntPlr.SetHealth( pEntPlr.GetHealth() + ( CONST_ZOMBIE_ADD_HP / 4 ) + iHPBonus + iArmor );
 	}
 
-	else if ( pPlayer.IsCarrier() && !g_bIsFirstInfected[pEntPlr.entindex()] )
+	else if ( pPlayer.IsCarrier() && !g_bIsFirstInfected[iIndex] )
 	{
 		pEntPlr.SetMaxHealth( pEntPlr.GetMaxHealth() + int( float( CONST_CARRIER_HP ) + ( float( iHPBonus ) * flMultiplier ) ) );
 		pEntPlr.SetHealth( pEntPlr.GetHealth() + int( float( CONST_CARRIER_HP ) + ( float( iHPBonus ) * flMultiplier ) ) + iArmor );

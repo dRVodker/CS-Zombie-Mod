@@ -8,7 +8,7 @@ bool bIsCSZM = false;
 
 const int TEAM_SURVIVORS = 2;
 
-const int SPEED_HUMAN = 207; 
+const int SPEED_HUMAN = 212; 
 const int SPEED_ADRENALINE = 80;
 
 array<float> g_flAdrenalineTime;
