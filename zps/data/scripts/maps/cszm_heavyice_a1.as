@@ -161,7 +161,6 @@ void OnMapInit()
 	Engine.PrecacheFile( sound, "heavyice_ambient/vo/hello1.wav" );
 	Engine.PrecacheFile( sound, "doors/default_stop.wav" );
 	Engine.PrecacheFile( sound, "doors/default_move.wav" );
-//	Engine.PrecacheFile( sound, "" );
 
 	Entities::RegisterOutput( "OnBreak", "cheese" );
 	Entities::RegisterOutput( "OnBreak", "func_breakable" );
@@ -599,7 +598,7 @@ void RespawnExpBarrel( const int &in iID )
 
 	CBaseEntity@ pExpBarrel = EntityCreator::Create( "prop_physics_multiplayer", g_ExpBarrelOrigin[iID], g_ExpBarrelAngles[iID], ExpBarrelIPD );
 
-	Engine.EmitSoundPosition( pExpBarrel.entindex(), "weapons/crossbow/fire1.wav", g_ExpBarrelOrigin[iID], 1.0f, 60, Math::RandomInt( 125, 140 ) );
+	Engine.EmitSoundPosition( pExpBarrel.entindex(), "weapons/crossbow/fire1.wav", g_ExpBarrelOrigin[iID], 1.0f, 65, Math::RandomInt( 125, 140 ) );
 
 	g_ExpBarrelIndex[iID] = pExpBarrel.entindex();
 }
