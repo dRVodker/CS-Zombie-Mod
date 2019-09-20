@@ -1012,75 +1012,86 @@ void OnProcessRound()
 			bSpawnWeak = false;
 		}
 
-		for ( int i = 1; i <= iMaxPlayers; i++ )
-		{
-			CZP_Player@ pPlayer = ToZPPlayer( i );
-							
-			if ( pPlayer is null )
-			{
-				continue;
-			}
-							
-			CBaseEntity@ pBaseEnt = FindEntityByEntIndex( i );
+		CSZMPlayerThink();
+	}
+}
 
-			if ( g_flSlowTime[i] <= Globals.GetCurrentTime() && g_flSlowTime[i] != 0 )
-			{
-				g_flSlowTime[i] = 0.0f;
-				g_flAddTime[i] = 0.0f;
-				g_flRecoverTime[i] = Globals.GetCurrentTime() + CONST_RECOVER_UNIT;
-			}
-
-			if ( g_flRecoverTime[i] <= Globals.GetCurrentTime() && g_flRecoverTime[i] != 0 )
-			{
-				g_flRecoverTime[i] = Globals.GetCurrentTime() + CONST_RECOVER_UNIT;
-				g_iSlowSpeed[i] += 2;
-
-				if ( g_iSlowSpeed[i] >= g_iNormalSpeed[i] )
-				{
-					g_flRecoverTime[i] = 0;
-					g_iSlowSpeed[i] = 0;
-					pPlayer.SetMaxSpeed( g_iNormalSpeed[i] );
-				}
-					
-				else pPlayer.SetMaxSpeed( g_iSlowSpeed[i] );
-			}
-
-			if ( pBaseEnt.GetTeamNumber() == TEAM_ZOMBIES && pBaseEnt.IsAlive() )
-			{
-				bool bAllowIdleSound = false;
-
-				if ( pPlayer.IsCarrier() && g_bIsFirstInfected[i] )
-				{
-					bAllowIdleSound = true;
-				}
-
-				if ( !pPlayer.IsCarrier() )
-				{
-					bAllowIdleSound = true;
-				}
-
-				if ( bAllowIdleSound && g_flIdleTime[i] <= Globals.GetCurrentTime() && g_flIdleTime[i] != 0 )
-				{
-					if ( pBaseEnt.GetWaterLevel() != WL_Eyes )
-					{
-						Engine.EmitSoundEntity( pBaseEnt, "CSPlayer.Idle" + g_iCVSIndex[pBaseEnt.entindex()] );
-					}
-
-					switch( g_iCVSIndex[i] )
-					{
-						case 2:
-							g_flIdleTime[i] = Globals.GetCurrentTime() + Math::RandomFloat( 3.0f, 6.65f );
-						break;
+void CSZMPlayerThink()
+{
+	for ( int i = 1; i <= iMaxPlayers; i++ )
+	{
+		CZP_Player@ pPlayer = ToZPPlayer( i );
 						
-						case 3:
-							g_flIdleTime[i] = Globals.GetCurrentTime() + Math::RandomFloat( 3.75f, 9.75f );
-						break;
+		if ( pPlayer is null )
+		{
+			continue;
+		}
+						
+		CBaseEntity@ pBaseEnt = FindEntityByEntIndex( i );
 
-						default:
-							g_flIdleTime[i] = Globals.GetCurrentTime() + Math::RandomFloat( 3.15f, 12.10f );
-						break;	
-					}
+		if ( g_flSlowTime[i] <= Globals.GetCurrentTime() && g_flSlowTime[i] != 0 )
+		{
+			g_flSlowTime[i] = 0.0f;
+			g_flAddTime[i] = 0.0f;
+			g_flRecoverTime[i] = Globals.GetCurrentTime() + CONST_RECOVER_UNIT;
+		}
+
+		if ( g_flRecoverTime[i] <= Globals.GetCurrentTime() && g_flRecoverTime[i] != 0 )
+		{
+			g_flRecoverTime[i] = Globals.GetCurrentTime() + CONST_RECOVER_UNIT;
+			g_iSlowSpeed[i] += 2;
+
+			if ( g_iSlowSpeed[i] >= g_iNormalSpeed[i] )
+			{
+				g_flRecoverTime[i] = 0.0f;
+				g_iSlowSpeed[i] = 0.0f;
+				pPlayer.SetMaxSpeed( g_iNormalSpeed[i] );
+			}
+				
+			else
+			{
+				pPlayer.SetMaxSpeed( g_iSlowSpeed[i] );
+			}
+		}
+
+		if ( pBaseEnt.GetTeamNumber() == TEAM_ZOMBIES && pBaseEnt.IsAlive() && g_flIdleTime[i] <= Globals.GetCurrentTime() && g_flIdleTime[i] != 0 )
+		{
+			bool bAllowIdleSound = false;
+
+			if ( pPlayer.IsCarrier() && g_bIsFirstInfected[i] )
+			{
+				bAllowIdleSound = true;
+			}
+
+			if ( !pPlayer.IsCarrier() )
+			{
+				bAllowIdleSound = true;
+			}
+
+			if ( bAllowIdleSound )
+			{
+				if ( pBaseEnt.GetWaterLevel() != WL_Eyes )
+				{
+					Engine.EmitSoundEntity( pBaseEnt, "CSPlayer.Idle" + g_iCVSIndex[pBaseEnt.entindex()] );
 				}
+
+				float Time_Low = 3.15f;
+				float Time_High = 12.10f;
+
+				switch( g_iCVSIndex[i] )
+				{
+					case 2:
+						Time_Low = 3.0f;
+						Time_High = 6.65f;
+					break;
+					
+					case 3:
+						Time_Low = 3.75f;
+						Time_High = 9.75f;
+					break;
+				}
+
+				g_flIdleTime[i] = Globals.GetCurrentTime() + Math::RandomFloat( Time_Low, Time_High );
 			}
 		}
 	}
