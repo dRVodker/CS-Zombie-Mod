@@ -1,12 +1,12 @@
 bool bIsCSZM = false;
-float flMsgWaitTime = Globals.GetCurrentTime() + Math::RandomFloat( 3.50f, 10.00f );
+float flMsgWaitTime = Globals.GetCurrentTime() + Math::RandomFloat(3.50f, 10.00f);
 const string lb = "{blue}[";
 const string rb = "{blue}] ";
 const string strCSZM = lb + "{coral}cszm"+rb;
 
-void SD( const string &in strMSG )
+void SD(const string &in strMSG)
 {
-	Chat.PrintToChat( all, strMSG );
+	Chat.PrintToChat(all, strMSG);
 }
 
 array<string> g_strMsg =
@@ -23,14 +23,14 @@ array<string> g_strMsgToShow;
 
 void OnPluginInit()
 {
-	PluginData::SetVersion( "1.0" );
-	PluginData::SetAuthor( "dR.Vodker" );
-	PluginData::SetName( "CSZM - Chat Spammer" );
+	PluginData::SetVersion("1.0");
+	PluginData::SetAuthor("dR.Vodker");
+	PluginData::SetName("CSZM - Chat Spammer");
 }
 
 void OnMapInit()
 {
-	if ( Utils.StrContains( "cszm", Globals.GetCurrentMapName() ) )
+	if (Utils.StrContains("cszm", Globals.GetCurrentMapName()))
 	{
 		bIsCSZM = true;
 	}
@@ -44,11 +44,11 @@ void OnMapShutdown()
 
 void OnProcessRound()
 {
-	if ( bIsCSZM )
+	if (bIsCSZM)
 	{
-		if ( flMsgWaitTime <= Globals.GetCurrentTime() )
+		if (flMsgWaitTime <= Globals.GetCurrentTime())
 		{
-			flMsgWaitTime = Globals.GetCurrentTime() + Math::RandomFloat( 30.00f, 50.00f );
+			flMsgWaitTime = Globals.GetCurrentTime() + Math::RandomFloat(30.00f, 50.00f);
 			ShowMsg();
 		}
 	}
@@ -56,16 +56,16 @@ void OnProcessRound()
 
 void ShowMsg()
 {
-	if ( g_strMsgToShow.length() == 0 )
+	if (g_strMsgToShow.length() == 0)
 	{
-		for ( uint i = 0; i < g_strMsg.length(); i++ )
+		for (uint i = 0; i < g_strMsg.length(); i++)
 		{
-			g_strMsgToShow.insertLast( g_strMsg[i] );
+			g_strMsgToShow.insertLast(g_strMsg[i]);
 		}
 	}
 
-	int iRNG = Math::RandomInt( 0, g_strMsgToShow.length() - 1 );
+	int iRNG = Math::RandomInt(0, g_strMsgToShow.length() - 1);
 
-	SD( g_strMsgToShow[iRNG] );
-	g_strMsgToShow.removeAt( iRNG );
+	SD(g_strMsgToShow[iRNG]);
+	g_strMsgToShow.removeAt(iRNG);
 }

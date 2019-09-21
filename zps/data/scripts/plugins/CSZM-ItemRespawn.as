@@ -1,6 +1,6 @@
-void SD( const string &in strMSG )
+void SD(const string &in strMSG)
 {
-	Chat.PrintToChat( all, strMSG );
+	Chat.PrintToChat(all, strMSG);
 }
 
 //some data
@@ -47,23 +47,23 @@ array<QAngle> g_angAngles;
 
 void OnProcessRound()
 {
-	if ( bIsCSZM )
+	if (bIsCSZM)
 	{
-		if ( flWaitSpawnTime <= Globals.GetCurrentTime() )
+		if (flWaitSpawnTime <= Globals.GetCurrentTime())
 		{
 			flWaitSpawnTime = Globals.GetCurrentTime() + 0.01f;
 
-			for ( uint i = 0; i <= g_flSpawnTime.length(); i++ )
+			for (uint i = 0; i <= g_flSpawnTime.length(); i++)
 			{
-				if ( g_flSpawnTime[i] == -1 )
+				if (g_flSpawnTime[i] == -1)
 				{
 					continue;
 				}
 
-				if ( g_flSpawnTime[i] <= Globals.GetCurrentTime() )
+				if (g_flSpawnTime[i] <= Globals.GetCurrentTime())
 				{
 					g_flSpawnTime[i] = -1;
-					SpawnItem( i );
+					SpawnItem(i);
 				}
 			}
 		}
@@ -72,33 +72,33 @@ void OnProcessRound()
 
 void OnPluginInit()
 {
-	PluginData::SetVersion(  "1.0"  );
-	PluginData::SetAuthor(  "dR.Vodker"  );
-	PluginData::SetName(  "CSZM - Items Respawn"  );
+	PluginData::SetVersion("1.0");
+	PluginData::SetAuthor("dR.Vodker");
+	PluginData::SetName("CSZM - Items Respawn");
 
-	Events::Entities::OnEntityCreation.Hook( @OnEntityCreation );
-	Events::Entities::OnEntityDestruction.Hook( @OnEntityDestruction );
+	Events::Entities::OnEntityCreation.Hook(@OnEntityCreation);
+	Events::Entities::OnEntityDestruction.Hook(@OnEntityDestruction);
 }
 
 void RegisterPickup()
 {
-	for ( uint i = 1; i <= g_strAllowedCN.length() - 1; i++ )
+	for (uint i = 1; i <= g_strAllowedCN.length() - 1; i++)
 	{
-		Entities::RegisterPickup( g_strAllowedCN[i] );
+		Entities::RegisterPickup(g_strAllowedCN[i]);
 	}
 }
 
 void RemoveRegisterPickup()
 {
-	for ( uint i = 1; i <= g_strAllowedCN.length() - 1; i++ )
+	for (uint i = 1; i <= g_strAllowedCN.length() - 1; i++)
 	{
-		Entities::RemoveRegisterPickup( g_strAllowedCN[i] );
+		Entities::RemoveRegisterPickup(g_strAllowedCN[i]);
 	}
 }
 
 void OnMapInit()
 {		
-	if ( Utils.StrContains( "cszm", Globals.GetCurrentMapName() ) )
+	if (Utils.StrContains("cszm", Globals.GetCurrentMapName()))
 	{
 		bIsCSZM = true;
 		flWaitSpawnTime = 0;
@@ -106,13 +106,13 @@ void OnMapInit()
 
 		RegisterPickup();
 		
-		Engine.PrecacheFile( sound, "items/suitchargeok1.wav" );
+		Engine.PrecacheFile(sound, "items/suitchargeok1.wav");
 	}
 }
 
 void OnNewRound()
 {
-	if ( bIsCSZM )
+	if (bIsCSZM)
 	{
 		ClearArray();
 	}
@@ -120,7 +120,7 @@ void OnNewRound()
 
 void OnMapShutdown()
 {
-	if ( bIsCSZM )
+	if (bIsCSZM)
 	{
 		iDroppedAmmoCount = 0;
 		bIsCSZM = false;
@@ -131,93 +131,93 @@ void OnMapShutdown()
 
 void OnMatchBegin()
 {
-	if ( bIsCSZM )
+	if (bIsCSZM)
 	{
-		Schedule::Task( 1.75f, "FindItems" );
+		Schedule::Task(1.75f, "FindItems");
 	}
 }
 
 void FindItems()
 {
-	g_flSpawnTime.removeRange( 0, g_flSpawnTime.length() );
-	g_iIndex.removeRange( 0, g_iIndex.length() );
-	g_strClassname.removeRange( 0, g_strClassname.length() );
-	g_vecOrigin.removeRange( 0, g_vecOrigin.length() );
-	g_angAngles.removeRange( 0, g_angAngles.length() );
+	g_flSpawnTime.removeRange(0, g_flSpawnTime.length());
+	g_iIndex.removeRange(0, g_iIndex.length());
+	g_strClassname.removeRange(0, g_strClassname.length());
+	g_vecOrigin.removeRange(0, g_vecOrigin.length());
+	g_angAngles.removeRange(0, g_angAngles.length());
 
-	g_flSpawnTime.insertLast( -1 );
-	g_iIndex.insertLast( 0 );
-	g_strClassname.insertLast( "" );
-	g_vecOrigin.insertLast( Vector( 0, 0, 0 ) );
-	g_angAngles.insertLast( QAngle( 0, 0, 0 ) );
+	g_flSpawnTime.insertLast(-1);
+	g_iIndex.insertLast(0);
+	g_strClassname.insertLast("");
+	g_vecOrigin.insertLast(Vector(0, 0, 0));
+	g_angAngles.insertLast(QAngle(0, 0, 0));
 
 	CBaseEntity@ pEntity;
 
-	for ( uint i = 0; i < g_strAllowedCN.length(); i++ )
+	for (uint i = 0; i < g_strAllowedCN.length(); i++)
 	{
-		if ( i == 0 )
+		if (i == 0)
 		{
 			continue;
 		}
 
-		while ( ( @pEntity = FindEntityByClassname( pEntity, g_strAllowedCN[i] ) ) !is null )
+		while ((@pEntity = FindEntityByClassname(pEntity, g_strAllowedCN[i])) !is null)
 		{
-			InsertValues( pEntity.entindex(), pEntity.GetClassname(), pEntity.GetAbsOrigin(), pEntity.GetAbsAngles() );
+			InsertValues(pEntity.entindex(), pEntity.GetClassname(), pEntity.GetAbsOrigin(), pEntity.GetAbsAngles());
 		}
 	}
 }
 
-void InsertValues( const int &in iIndex, const string &in strClass, const Vector &in vecOrigin, const QAngle &in angAngles )
+void InsertValues(const int &in iIndex, const string &in strClass, const Vector &in vecOrigin, const QAngle &in angAngles)
 {
-	g_flSpawnTime.insertLast( -1 );
-	g_iIndex.insertLast( iIndex );
-	g_strClassname.insertLast( strClass );
-	g_vecOrigin.insertLast( vecOrigin );
-	g_angAngles.insertLast( angAngles );
+	g_flSpawnTime.insertLast(-1);
+	g_iIndex.insertLast(iIndex);
+	g_strClassname.insertLast(strClass);
+	g_vecOrigin.insertLast(vecOrigin);
+	g_angAngles.insertLast(angAngles);
 }
 
 void ClearArray()
 {
-	g_flSpawnTime.removeRange( 0, g_flSpawnTime.length() );
-	g_iIndex.removeRange( 0, g_iIndex.length() );
-	g_strClassname.removeRange( 0, g_strClassname.length() );
-	g_vecOrigin.removeRange( 0, g_vecOrigin.length() );
-	g_angAngles.removeRange( 0, g_angAngles.length() );
+	g_flSpawnTime.removeRange(0, g_flSpawnTime.length());
+	g_iIndex.removeRange(0, g_iIndex.length());
+	g_strClassname.removeRange(0, g_strClassname.length());
+	g_vecOrigin.removeRange(0, g_vecOrigin.length());
+	g_angAngles.removeRange(0, g_angAngles.length());
 }
 
-HookReturnCode OnEntityCreation( const string &in strClassname, CBaseEntity@ pEntity )
+HookReturnCode OnEntityCreation(const string &in strClassname, CBaseEntity@ pEntity)
 {
-	if ( bIsCSZM )
+	if (bIsCSZM)
 	{
-		if ( Utils.StrContains( "weapon", strClassname ) || Utils.StrContains( "item", strClassname ) )
+		if (Utils.StrContains("weapon", strClassname) || Utils.StrContains("item", strClassname))
 		{
-			Engine.Ent_Fire_Ent( pEntity, "DisableDamageForces" );
+			Engine.Ent_Fire_Ent(pEntity, "DisableDamageForces");
 		}
 
-		if ( Utils.StrContains( "clip", strClassname ) && strClassname != "item_ammo_barricade_clip" )
+		if (Utils.StrContains("clip", strClassname) && strClassname != "item_ammo_barricade_clip")
 		{
-			pEntity.SetEntityName( "dropped_ammo" );
+			pEntity.SetEntityName("dropped_ammo");
 
 			uint iType = 0;
 
-			for ( uint ui = 0; ui < g_strAmmoClass.length(); ui++ )
+			for (uint ui = 0; ui < g_strAmmoClass.length(); ui++)
 			{
-				if ( strClassname == g_strAmmoClass[ui] )
+				if (strClassname == g_strAmmoClass[ui])
 				{
 					iDroppedAmmoCount++;
 					iType = ui;
 				}
 			}
 
-			if ( iDroppedAmmoCount > iMaxDroppedAmmo )
+			if (iDroppedAmmoCount > iMaxDroppedAmmo)
 			{
 				uint iResult = 1;
-				if ( ( iDroppedAmmoCount - iMaxDroppedAmmo ) > 0 )
+				if ((iDroppedAmmoCount - iMaxDroppedAmmo) > 0)
 				{
 					iResult = iDroppedAmmoCount - iMaxDroppedAmmo;
 				}
 
-				RemoveExtraClip( iResult );
+				RemoveExtraClip(iResult);
 			}
 		}
 	}
@@ -225,21 +225,21 @@ HookReturnCode OnEntityCreation( const string &in strClassname, CBaseEntity@ pEn
 	return HOOK_CONTINUE;
 }
 
-void OnEntityPickedUp( CZP_Player@ pPlayer, CBaseEntity@ pEntity )
+void OnEntityPickedUp(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 {
-	if ( bIsCSZM )
+	if (bIsCSZM)
 	{
-		pEntity.SetHealth( -1 );
+		pEntity.SetHealth(-1);
 
-		for ( uint ui = 1; ui <= g_strAllowedCN.length() - 1; ui++ )
+		for (uint ui = 1; ui <= g_strAllowedCN.length() - 1; ui++)
 		{
-			if ( pEntity.GetClassname() == g_strAllowedCN[ui] )
+			if (pEntity.GetClassname() == g_strAllowedCN[ui])
 			{
 				int iIndex = pEntity.entindex();
 
-				for ( uint i = 0; i <= g_strClassname.length(); i++ )
+				for (uint i = 0; i <= g_strClassname.length(); i++)
 				{
-					if ( g_iIndex[i] != iIndex )
+					if (g_iIndex[i] != iIndex)
 					{
 						continue;
 					}
@@ -253,22 +253,22 @@ void OnEntityPickedUp( CZP_Player@ pPlayer, CBaseEntity@ pEntity )
 	}
 }
 
-HookReturnCode OnEntityDestruction( const string &in strClassname, CBaseEntity@ pEntity )
+HookReturnCode OnEntityDestruction(const string &in strClassname, CBaseEntity@ pEntity)
 {
-	if ( bIsCSZM )
+	if (bIsCSZM)
 	{
-		RemoveIndex( pEntity.entindex(), pEntity.GetHealth(), strClassname );
+		RemoveIndex(pEntity.entindex(), pEntity.GetHealth(), strClassname);
 
-		if ( Utils.StrContains( "clip", strClassname ) && strClassname != "item_ammo_barricade_clip" )
+		if (Utils.StrContains("clip", strClassname) && strClassname != "item_ammo_barricade_clip")
 		{
 			uint iType = 0;
 
-			for ( uint ui = 0; ui < g_strAmmoClass.length(); ui++ )
+			for (uint ui = 0; ui < g_strAmmoClass.length(); ui++)
 			{
-				if ( strClassname == g_strAmmoClass[ui] )
+				if (strClassname == g_strAmmoClass[ui])
 				{
 					iDroppedAmmoCount--;
-					if ( iDroppedAmmoCount < 0 )
+					if (iDroppedAmmoCount < 0)
 					{
 						iDroppedAmmoCount = 0;
 					}
@@ -282,68 +282,68 @@ HookReturnCode OnEntityDestruction( const string &in strClassname, CBaseEntity@ 
 	return HOOK_CONTINUE;
 }
 
-void RemoveIndex( const int &in iRIndex, const int &in iRHealth, const string strClassname )
+void RemoveIndex(const int &in iRIndex, const int &in iRHealth, const string strClassname)
 {
-	if ( iRHealth != -1 )
+	if (iRHealth != -1)
 	{
-		for ( uint ui = 0; ui < g_iIndex.length(); ui++ )
+		for (uint ui = 0; ui < g_iIndex.length(); ui++)
 		{
-			if ( g_iIndex[ui] == iRIndex && g_strClassname[ui] == strClassname )
+			if (g_iIndex[ui] == iRIndex && g_strClassname[ui] == strClassname)
 			{
-				g_flSpawnTime.removeAt( ui );
-				g_iIndex.removeAt( ui );
-				g_strClassname.removeAt( ui );
-				g_vecOrigin.removeAt( ui );
-				g_angAngles.removeAt( ui );
+				g_flSpawnTime.removeAt(ui);
+				g_iIndex.removeAt(ui);
+				g_strClassname.removeAt(ui);
+				g_vecOrigin.removeAt(ui);
+				g_angAngles.removeAt(ui);
 			}
 		}
 	}
 }
 
-void SpawnItem( const int &in iID )
+void SpawnItem(const int &in iID)
 {
 	CEntityData@ ItemIPD = EntityCreator::EntityData();
-	ItemIPD.Add( "targetname", "cszm_respawned_item" );
-	ItemIPD.Add( "health", "" + iID );
+	ItemIPD.Add("targetname", "cszm_respawned_item");
+	ItemIPD.Add("health", "" + iID);
 
-	ItemIPD.Add( "DisableDamageForces", "1", true );
+	ItemIPD.Add("DisableDamageForces", "1", true);
 
-	CBaseEntity@ pItem = EntityCreator::Create( g_strClassname[iID], g_vecOrigin[iID], g_angAngles[iID], ItemIPD );
+	CBaseEntity@ pItem = EntityCreator::Create(g_strClassname[iID], g_vecOrigin[iID], g_angAngles[iID], ItemIPD);
 
 	g_iIndex[iID] = pItem.entindex();
 
 	CEntityData@ SparkIPD = EntityCreator::EntityData();
-	SparkIPD.Add( "spawnflags", "896" );
-	SparkIPD.Add( "magnitude", "1" );
-	SparkIPD.Add( "trailLength", "1" );
-	SparkIPD.Add( "maxdelay", "0" );
+	SparkIPD.Add("spawnflags", "896");
+	SparkIPD.Add("magnitude", "1");
+	SparkIPD.Add("trailLength", "1");
+	SparkIPD.Add("maxdelay", "0");
 
-	SparkIPD.Add( "SparkOnce", "0", true );
-	SparkIPD.Add( "kill", "0", true );
+	SparkIPD.Add("SparkOnce", "0", true);
+	SparkIPD.Add("kill", "0", true);
 
-	EntityCreator::Create( "env_spark", g_vecOrigin[iID], QAngle( -90, 0, 0 ), SparkIPD );	
+	EntityCreator::Create("env_spark", g_vecOrigin[iID], QAngle(-90, 0, 0), SparkIPD);	
 
-	Engine.EmitSoundPosition( 0, "items/suitchargeok1.wav", g_vecOrigin[iID], 0.695f, 75, Math::RandomInt( 135, 165 ) );
+	Engine.EmitSoundPosition(0, "items/suitchargeok1.wav", g_vecOrigin[iID], 0.695f, 75, Math::RandomInt(135, 165));
 }
 
-void RemoveExtraClip( const uint &in iUnit )
+void RemoveExtraClip(const uint &in iUnit)
 {
 	array<CBaseEntity@> g_pAmmoEntity;
 	CBaseEntity@ pAmmoEntity;
 
-	while ( ( @pAmmoEntity = FindEntityByName( pAmmoEntity, "dropped_ammo" ) ) !is null )
+	while ((@pAmmoEntity = FindEntityByName(pAmmoEntity, "dropped_ammo")) !is null)
 	{
-		g_pAmmoEntity.insertLast( pAmmoEntity );
+		g_pAmmoEntity.insertLast(pAmmoEntity);
 	}
 
-	if ( iUnit == 1 )
+	if (iUnit == 1)
 	{
 		g_pAmmoEntity[0].SUB_Remove();
 	}
 
 	else
 	{
-		for ( uint uii = 0; uii <= iUnit; uii++ )
+		for (uint uii = 0; uii <= iUnit; uii++)
 		{
 			g_pAmmoEntity[uii].SUB_Remove();
 		}
