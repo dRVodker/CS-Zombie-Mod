@@ -9,15 +9,15 @@ array<string> g_strPropsCN =
     "prop_barricade"
 };
 
-void RemoveProp( CBaseEntity@ pPlayer )
+void RemoveProp(CBaseEntity@ pPlayer)
 {
 	CBaseEntity@ pProp = null;
 
-    for ( uint i = 0; i < g_strPropsCN.length(); i++ )
+    for (uint i = 0; i < g_strPropsCN.length(); i++)
     {
-        while ( ( @pProp = FindEntityByClassname( pProp, g_strPropsCN[i] ) ) !is null )
+        while ((@pProp = FindEntityByClassname(pProp, g_strPropsCN[i])) !is null)
         {
-            if ( pProp.Intersects( pPlayer ) == true  && pProp !is null )
+            if (pProp.Intersects(pPlayer) == true  && pProp !is null)
             {
                 pProp.SUB_Remove();
             }

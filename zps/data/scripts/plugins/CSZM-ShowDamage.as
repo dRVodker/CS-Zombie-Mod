@@ -25,6 +25,8 @@ const float CONST_SHOWDMG_WAIT = 0.005f;
 int iMaxPlayers;
 bool bIsCSZM = false;
 
+array<CShowDamage@> ShowDamageArray;
+
 class CShowDamage
 {
 	int PlayerIndex;
@@ -112,8 +114,6 @@ class CShowDamage
 		}
 	}
 }
-
-array<CShowDamage@> ShowDamageArray;
 
 void OnMapInit()
 {

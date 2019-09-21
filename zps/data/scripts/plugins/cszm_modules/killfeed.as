@@ -1,7 +1,7 @@
 array<int> g_iKills;
 array<int> g_iVictims;
 
-void ShowTextPlr( CZP_Player@ pPlayer, const string &in strMessage, int iChannel, float flxTime, float flxPos, float flyPos, float flFadeIn, float flFadeOut, float flHoldTime, Color clrPrimary, Color clrSecondary )
+void ShowTextPlr(CZP_Player@ pPlayer, const string &in strMessage, int iChannel, float flxTime, float flxPos, float flyPos, float flFadeIn, float flFadeOut, float flHoldTime, Color clrPrimary, Color clrSecondary)
 {
 	HudTextParams pParams;
 	pParams.x = flxPos;
@@ -11,17 +11,17 @@ void ShowTextPlr( CZP_Player@ pPlayer, const string &in strMessage, int iChannel
 	pParams.fadeoutTime = flFadeOut;
 	pParams.holdTime = flHoldTime;
 	pParams.fxTime = flxTime;
-	pParams.SetColor( clrPrimary );
-	pParams.SetColor2( clrSecondary );
-	Utils.GameTextPlayer( pPlayer, strMessage, pParams );
+	pParams.SetColor(clrPrimary);
+	pParams.SetColor2(clrSecondary);
+	Utils.GameTextPlayer(pPlayer, strMessage, pParams);
 }
 
-void KillFeed( const string &in strAttName, const int &in iAttTeam, const string &in strVicName, const int &in iVicTeam, const bool &in bIsInfect, const bool &in bIsSuicide )
+void KillFeed(const string &in strAttName, const int &in iAttTeam, const string &in strVicName, const int &in iVicTeam, const bool &in bIsInfect, const bool &in bIsSuicide)
 {
 	string VicColor = "white";
 	string AttColor = "white";
 	
-	switch( iAttTeam )
+	switch(iAttTeam)
 	{
 		case 1:
 			AttColor = "green";
@@ -36,7 +36,7 @@ void KillFeed( const string &in strAttName, const int &in iAttTeam, const string
 		break;
 	}
 
-	switch( iVicTeam )
+	switch(iVicTeam)
 	{
 		case 1:
 			VicColor = "green";
@@ -51,34 +51,34 @@ void KillFeed( const string &in strAttName, const int &in iAttTeam, const string
 		break;
 	}
 
-	if( bIsSuicide == false )
+	if(bIsSuicide == false)
 	{
 		string strKill = "killed";
-		if( bIsInfect == true )
+		if(bIsInfect == true)
 		{
 			strKill = "infected";
 			VicColor = "blue";
 		}
 
-		Chat.PrintToChat( all, "{"+VicColor+"}" + strVicName + " {default}" + strKill + " by {"+AttColor+"}" + strAttName +"{default}." );
+		Chat.PrintToChat(all, "{"+VicColor+"}" + strVicName + " {default}" + strKill + " by {"+AttColor+"}" + strAttName +"{default}.");
 	}
 	
 	else
 	{
-		Chat.PrintToChat( all, "{"+VicColor+"}" + strVicName + "{default} committed suicide." );
+		Chat.PrintToChat(all, "{"+VicColor+"}" + strVicName + "{default} committed suicide.");
 	}
 }
 
-void ShowKills( CZP_Player@ pPlayer, const int &in iKills, const bool &in bIsVictim )
+void ShowKills(CZP_Player@ pPlayer, const int &in iKills, const bool &in bIsVictim)
 {
 	string strMsgToShow = "";
 	int iR = 235;
 	int iG = 16;
 	int iB = 32;
 	
-	if( bIsVictim == false )
+	if(bIsVictim == false)
 	{
-		if( iKills == 1 )
+		if(iKills == 1)
 		{
 			strMsgToShow = "Kill: ";
 		}
@@ -94,7 +94,7 @@ void ShowKills( CZP_Player@ pPlayer, const int &in iKills, const bool &in bIsVic
 		iG = 235;
 		iR = 16;
 		iB = 32;
-		if( iKills == 1 )
+		if(iKills == 1)
 		{
 			strMsgToShow = "Victim: ";
 		}
@@ -105,14 +105,14 @@ void ShowKills( CZP_Player@ pPlayer, const int &in iKills, const bool &in bIsVic
 		}
 	}
 	
-	ShowTextPlr( pPlayer, strMsgToShow + iKills, 5, 0.00f, -1, 0.65f, 0.00f, 0.125f, 2.00f, Color( iR, iG, iB ), Color( 255, 95, 5 ) );
+	ShowTextPlr(pPlayer, strMsgToShow + iKills, 5, 0.00f, -1, 0.65f, 0.00f, 0.125f, 2.00f, Color(iR, iG, iB), Color(255, 95, 5));
 }
 
-void ShowStatsEnd( CZP_Player@ pPlayer, const int &in iKills, const int &in iVictims )
+void ShowStatsEnd(CZP_Player@ pPlayer, const int &in iKills, const int &in iVictims)
 {
 	string strStatsHead = "Your stats of the round:\n";
 	string strStats = "";
 	strStats = strStatsHead + " Kills: " + iKills + "\n Victims: " + iVictims;
 
-	ShowTextPlr( pPlayer, strStats, 2, 0.00f, 0, 0.25f, 0.25f, 0.00f, 10.10f, Color( 205, 205, 220 ), Color( 255, 95, 5 ) );
+	ShowTextPlr(pPlayer, strStats, 2, 0.00f, 0, 0.25f, 0.25f, 0.00f, 10.10f, Color(205, 205, 220), Color(255, 95, 5));
 }
