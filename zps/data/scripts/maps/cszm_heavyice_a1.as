@@ -494,7 +494,7 @@ void SetUpStuff()
 	Engine.Ent_Fire( "Tram-Stair*", "AddOutput", "targetname Tram-Stair", "0"  );
 
 	Engine.Ent_Fire( "watermelon", "SetLightingOrigin", "armor_lighting", "0"  );
-	
+
 	SpawnCheese();
 
 	switch( Math::RandomInt( 1, 3 ) )
@@ -730,6 +730,7 @@ void MysticismSpawnExplosion()
 		Engine.EmitSoundPosition( 0, "ambient/explosions/explode_" + Math::RandomInt( 1, 9 ) + ".wav", g_MExplosionOrigin[iRNG], 1.0f, 145, Math::RandomInt( 95, 105 ) );
 
 		CBaseEntity@ pActivator = FindEntityByEntIndex( iMysticismAttackerIndex );
+
 		if ( pActivator !is null )
 		{
 			pExplosion.SetOwner( pActivator );
@@ -737,7 +738,11 @@ void MysticismSpawnExplosion()
 
 		g_vecActiveOrigin.removeAt( iRNG );
 	}
-	else iMysticismAttackerIndex = 0;
+
+	else
+	{
+		iMysticismAttackerIndex = 0;
+	}
 
 	Engine.Ent_Fire( "mysticism_blood", "EmitBlood" );
 }
@@ -822,6 +827,11 @@ void HealthSettings()
 				else if ( Utils.StrContains( "props_junk/glass", pEntity.GetModelName() ) )
 				{
 					pEntity.SetHealth( 5 );
+				}
+
+				else if ( Utils.StrContains( "cheese", pEntity.GetEntityName() ))
+				{
+					continue;
 				}
 
 				else

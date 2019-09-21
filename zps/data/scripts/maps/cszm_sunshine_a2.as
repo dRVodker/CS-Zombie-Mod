@@ -105,7 +105,6 @@ void OnMapInit()
 	Entities::RegisterPickup( "weapon_frag" );
 
 	Entities::RegisterUse( "cheese" );
-	Entities::RegisterUse( "test_cheese" );
 
 	Events::Trigger::OnEndTouch.Hook( @SH_OnEndTouch );
 	Events::Trigger::OnStartTouch.Hook( @SH_OnStartTouch );
@@ -564,7 +563,7 @@ void OnProcessRound()
 			}
 		}
 
-		while ( ( @pEntity = FindEntityByClassname( pEntity, "weapon_frag" ) )!is null )//hint_frag
+		while ( ( @pEntity = FindEntityByClassname( pEntity, "weapon_frag" ) )!is null )
 		{
 			for ( uint n = 0; n < g_iIndex.length(); n++ )
 			{
