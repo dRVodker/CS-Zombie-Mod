@@ -10,7 +10,6 @@ void OnPluginInit()
 	PluginData::SetAuthor( "dR.Vodker");
 	PluginData::SetName( "CSZM - Show Damage");
 
-	//Events
 	Events::Player::OnPlayerConnected.Hook( @OnKPlayerConnected );
 	Events::Player::OnPlayerDamaged.Hook( @OnKPlayerDamaged );
 }
@@ -21,6 +20,7 @@ const int TEAM_SURVIVORS = 2;
 const int TEAM_ZOMBIES = 3;
 
 const float CONST_SHOWDMG_RESET = 1.35f;
+const float CONST_SHOWDMG_WAIT = 0.005f;
 
 int iMaxPlayers;
 bool bIsCSZM = false;
@@ -57,7 +57,7 @@ class CShowDamage
 		VicIndex = pVictim.entindex();
 		Hits++;
 		Reset = Globals.GetCurrentTime() + CONST_SHOWDMG_RESET;
-		Wait = Globals.GetCurrentTime() + 0.005f;
+		Wait = Globals.GetCurrentTime() + CONST_SHOWDMG_WAIT;
 		Show = true;
 
 		if ( VicHP - flDamage <= 0 )
@@ -125,91 +125,74 @@ void OnMapInit()
 		ShowDamageArray.resize( iMaxPlayers + 1 );	
 	}
 }
-/*
-void OnNewRound()
-{
-	if ( !bIsCSZM )
-	{
-		return;
-	}
-}
 
-void OnMapShutdown()
-{
-	if ( !bIsCSZM )
-	{
-		return;
-	}
-}
-*/
 void OnProcessRound()
 {
-	for ( int i = 1; i <= iMaxPlayers; i++ )
+	if ( bIsCSZM )
 	{
-		CShowDamage@ pShowDamage = ShowDamageArray[i];
-
-		if ( pShowDamage !is null )
+		for ( int i = 1; i <= iMaxPlayers; i++ )
 		{
-			pShowDamage.Think();
+			CShowDamage@ pShowDamage = ShowDamageArray[i];
+
+			if ( pShowDamage !is null )
+			{
+				pShowDamage.Think();
+			}
 		}
 	}
 }
 
 HookReturnCode OnKPlayerConnected( CZP_Player@ pPlayer )
 {
-	if ( !bIsCSZM )
+	if ( bIsCSZM )
 	{
-		return HOOK_CONTINUE;
+		CBasePlayer@ pPlrEnt = pPlayer.opCast();
+		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+
+		int iIndex = pBaseEnt.entindex();
+		
+		ShowDamageArray.removeAt( iIndex );
+		ShowDamageArray.insertAt( iIndex, CShowDamage( iIndex ) );
 	}
-
-	CBasePlayer@ pPlrEnt = pPlayer.opCast();
-	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
-
-	int iIndex = pBaseEnt.entindex();
-	
-	ShowDamageArray.removeAt( iIndex );
-	ShowDamageArray.insertAt( iIndex, CShowDamage( iIndex ) );
 
 	return HOOK_CONTINUE;
 }
 
 HookReturnCode OnKPlayerDamaged( CZP_Player@ pPlayer, CTakeDamageInfo &in DamageInfo )
 {
-	if ( !bIsCSZM )
+	if ( bIsCSZM )
 	{
-		return HOOK_CONTINUE;
-	}
+		CZP_Player@ pPlrAttacker = null;
 
-	CZP_Player@ pPlrAttacker = null;
+		CBasePlayer@ pBPlrAttacker = null;
 
-	CBasePlayer@ pBPlrAttacker = null;
+		CBasePlayer@ pPlrEnt = pPlayer.opCast();
+		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 
-	CBasePlayer@ pPlrEnt = pPlayer.opCast();
-	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+		CBaseEntity@ pEntityAttacker = DamageInfo.GetAttacker();
+		
+		const int iVicIndex = pBaseEnt.entindex();
+		const int iVicTeam = pBaseEnt.GetTeamNumber();
+		const int iAttIndex = pEntityAttacker.entindex();
+		const bool bIsAttPlayer = pEntityAttacker.IsPlayer();
 
-	CBaseEntity@ pEntityAttacker = DamageInfo.GetAttacker();
-	
-	const int iVicIndex = pBaseEnt.entindex();
-	const int iVicTeam = pBaseEnt.GetTeamNumber();
-	const int iAttIndex = pEntityAttacker.entindex();
-	const bool bIsAttPlayer = pEntityAttacker.IsPlayer();
+		CShowDamage@ pShowDamage = ShowDamageArray[iAttIndex];
 
-	CShowDamage@ pShowDamage = ShowDamageArray[iAttIndex];
+		if ( bIsAttPlayer )
+		{
+			@pPlrAttacker = ToZPPlayer( iAttIndex );
+			@pBPlrAttacker = ToBasePlayer( iAttIndex );
+		}
 
-	if ( bIsAttPlayer )
-	{
-		@pPlrAttacker = ToZPPlayer( iAttIndex );
-		@pBPlrAttacker = ToBasePlayer( iAttIndex );
-	}
+		else
+		{
+			return HOOK_HANDLED;
+		}
 
-	else
-	{
-		return HOOK_HANDLED;
-	}
-
-	if ( pEntityAttacker.GetTeamNumber() == TEAM_SURVIVORS && iVicTeam == TEAM_ZOMBIES )
-	{
-		pShowDamage.AddDamage( DamageInfo.GetDamage(), pBaseEnt );
+		if ( pEntityAttacker.GetTeamNumber() == TEAM_SURVIVORS && iVicTeam == TEAM_ZOMBIES )
+		{
+			pShowDamage.AddDamage( DamageInfo.GetDamage(), pBaseEnt );
+		}
 	}
 
 	return HOOK_CONTINUE;
