@@ -238,7 +238,7 @@ class CSZMPlayer
 		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(PlayerIndex);
 		CZP_Player@ pPlayer = ToZPPlayer(PlayerIndex);
 
-		VoiceTime += Math::RandomFloat(0.18f, 0.27f);
+		VoiceTime += Math::RandomFloat(0.24f, 0.33f);
 
 		float CurrentTime = SlowTime - Globals.GetCurrentTime();
 		float NewTime;
