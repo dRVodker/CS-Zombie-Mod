@@ -44,7 +44,8 @@ const int SPEED_MINIMUM = 80;
 
 //Damage Slowdown
 const float CONST_MAX_SLOWTIME = 2.0f;		//Maximum amount of seconds a zombie could be slowed down
-const float CONST_RECOVER_UNIT = 0.05f;		//Amount of time in one tick of a speed recovery
+const float CONST_RECOVER_UNIT = 0.285f;	//Amount of time in one tick of a speed recovery
+const float CONST_SLOWDOWN_TIME = 0.2f;		//Amount of time in one tick of a speed recovery
 
 //Team Consts
 const int TEAM_LOBBYGUYS = 0;
@@ -77,6 +78,12 @@ const float CONST_ROUND_TIME_GAME = 300.0f;										//Hold IN-Game Round timer 
 const float CONST_SLOWDOWN_MULT = 40.0f;										//36.0f
 const float CONST_SLOWDOWN_WEAKMULT = 30.0f;
 const float CONST_SLOWDOWN_CRITDMG = 45.0f;
+
+//ZM Voice related stuff
+const int CONST_MAX_VOICEINDEX = 3;
+const string CONST_ZM_PAIN = "CSPlayer_Z.Pain";
+const string CONST_ZM_DIE = "CSPlayer_Z.Die";
+const string CONST_ZM_IDLE = "CSPlayer.Idle";
 
 //Some text over here
 const string strRoundBegun = "{default}Round has begun, you have {lightgreen}"+CONST_GEARUP_TIME+" seconds{default} to gear up before the {lightseagreen}first infected{default} turns.";
@@ -116,32 +123,26 @@ array<string> g_strModels =
 
 array<string> g_strMDLToUse;
 
-//Damage Slowdown arrays
-array<int> g_iNormalSpeed;
-array<int> g_iSlowSpeed;
-array<float> g_flSlowTime;
-array<float> g_flAddTime;
-array<float> g_flRecoverTime;
-
 //Other arrays (Don't even touch this)
 array<float> g_flFRespawnCD;
 array<float> g_flIdleTime;
 array<int> g_iInfectDelay;
 array<int> g_iZMDeathCount;
 
-array<int> g_iCVSIndex;
 array<bool> g_bWasFirstInfected;
 array<bool> g_bIsVolunteer;
 array<bool> g_bIsFirstInfected;
 array<bool> g_bIsAbuser;
 array<bool> g_bIsWeakZombie;
 
+//CSZM Player Array
+array<CSZMPlayer@> CSZMPlayerArray;
+
 //Other Data (Don't even touch this)
 int iFirstInfectedHP;
 int iStartCoundDown;
 int iSeconds;
 int iFZIndex;
-int iRND_CVS_PV;
 int iWUSeconds = CONST_WARMUP_TIME;
 
 float flRTWait;
@@ -153,6 +154,234 @@ float flWeakZombieWait;
 
 //misc.as
 #include "./cszm_modules/misc.as"
+
+class CSZMPlayer
+{
+	int PlayerIndex;
+	float SlowTime;
+	int SlowSpeed;
+	int DefSpeed;
+	float SpeedRT;
+    int Voice;
+    int PreviousVoice;
+    float VoiceTime;
+
+	CSZMPlayer(int index, int NormSpeed)
+	{
+		DefSpeed = NormSpeed;
+		PlayerIndex = index;
+		SlowTime = 0;
+		SlowSpeed = 0;
+		SpeedRT = 0;
+        Voice = 0;
+        PreviousVoice = 0;
+        VoiceTime = 0;
+	}
+
+    void SetDefSpeed(int NewSpeed)
+    {
+        CZP_Player@ pPlayer = ToZPPlayer(PlayerIndex);
+        pPlayer.SetMaxSpeed(NewSpeed);
+
+        DefSpeed = NewSpeed;
+        SlowSpeed = NewSpeed;
+        SlowTime = 0;
+        SpeedRT = 0;
+    }
+
+    void SetZMVoice(int VoiceIndex)
+    {
+        if ( VoiceIndex < 0 )
+        {
+            Voice = 2;
+        }
+
+        else
+        {
+            if (VoiceIndex == PreviousVoice)
+            {
+                while(VoiceIndex == PreviousVoice)
+                {
+                    VoiceIndex = Math::RandomInt(1, CONST_MAX_VOICEINDEX);
+                }
+            }
+
+            Voice = VoiceIndex;
+        }
+    }
+
+    void EmitZMSound(string ZM_Sound)
+    {
+        CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(PlayerIndex);
+		CZP_Player@ pPlayer = ToZPPlayer(PlayerIndex);
+
+    	bool bAllowPainSound = false;
+
+		if (pPlayer.IsCarrier() && g_bIsFirstInfected[PlayerIndex])
+		{
+			bAllowPainSound = true;
+		}
+
+		if (!pPlayer.IsCarrier())
+		{
+			bAllowPainSound = true;
+		}
+
+		if (bAllowPainSound && pPlayerEntity.GetWaterLevel() != WL_Eyes)
+		{
+			Engine.EmitSoundEntity(pPlayerEntity, ZM_Sound + Voice);
+		}
+    }
+
+	void AddSlowdown(float flDamage, int iDamageType)
+	{
+		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(PlayerIndex);
+		CZP_Player@ pPlayer = ToZPPlayer(PlayerIndex);
+
+		VoiceTime += Math::RandomFloat(0.18f, 0.27f);
+
+		float CurrentTime = SlowTime - Globals.GetCurrentTime();
+		float NewTime;
+		int NewSpeed;
+
+		NewTime = CONST_SLOWDOWN_TIME;
+
+		//Add time if critical dmg
+		if (flDamage > CONST_SLOWDOWN_CRITDMG)
+		{
+			NewTime = 0.45f;
+		}
+
+		//Melee
+		if (bDamageType(iDamageType, 7))
+		{
+			NewTime = 2.0f;
+		}
+
+		//Blast
+		if (bDamageType(iDamageType, 6))
+		{
+			NewTime = 1.85f;
+		}
+
+		//Blast Surface
+		if (bDamageType(iDamageType, 27))
+		{
+			NewTime = 1.40f;
+		}
+
+		//Fall
+		if (bDamageType(iDamageType, 5))
+		{
+			NewTime = 0.65f;
+		}
+
+		if ( NewTime < CurrentTime )
+		{
+			NewTime = CurrentTime; 
+		}
+
+		//Cap slowdown time to our MAX
+		if (NewTime > CONST_MAX_SLOWTIME)
+		{
+			NewTime = CONST_MAX_SLOWTIME;
+		}
+
+		SlowSpeed = int((DefSpeed * 0.01) * CONST_SLOWDOWN_MULT);
+
+		//Reduce the slowdown speed if weak zombie
+		if (g_bIsWeakZombie[PlayerIndex])
+		{
+			SlowSpeed * CONST_SLOWDOWN_WEAKMULT;
+		}
+
+		SlowTime = Globals.GetCurrentTime() + NewTime;
+		SpeedRT = Globals.GetCurrentTime() + CONST_RECOVER_UNIT;
+
+		NewSpeed = DefSpeed - SlowSpeed;
+
+		pPlayer.SetMaxSpeed(NewSpeed);
+	}
+
+	void Think()
+	{
+		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(PlayerIndex);
+		CZP_Player@ pPlayer = ToZPPlayer(PlayerIndex);
+
+		int NewSpeed;
+
+		if (pPlayerEntity.GetTeamNumber() == TEAM_ZOMBIES)
+		{
+			if (SlowTime <= Globals.GetCurrentTime() && SlowTime != 0 && SlowSpeed != 0)
+			{
+				if (SpeedRT <= Globals.GetCurrentTime() && SpeedRT != 0)
+				{
+					SpeedRT = Globals.GetCurrentTime() + CONST_RECOVER_UNIT;
+
+					SlowSpeed -= 5;
+
+					if (SlowSpeed < 0)
+					{
+						SlowSpeed = 0;
+					}
+
+					NewSpeed = DefSpeed - SlowSpeed;
+
+					if (NewSpeed > DefSpeed)
+					{
+						NewSpeed = DefSpeed;
+					}
+
+					pPlayer.SetMaxSpeed(NewSpeed);
+				}
+			}
+
+            if (pPlayerEntity.IsAlive())
+            {
+                if (VoiceTime <= Globals.GetCurrentTime())
+                {
+                    bool bAllowIdleSound = false;
+
+                    if (pPlayer.IsCarrier() && g_bIsFirstInfected[PlayerIndex])
+                    {
+                        bAllowIdleSound = true;
+                    }
+
+                    if (!pPlayer.IsCarrier())
+                    {
+                        bAllowIdleSound = true;
+                    }
+
+                    if (bAllowIdleSound)
+                    {
+                        if (pPlayerEntity.GetWaterLevel() != WL_Eyes)
+                        {
+                            Engine.EmitSoundEntity(pPlayerEntity, CONST_ZM_IDLE + Voice);
+                        }
+
+                        float Time_Low = 3.15f;
+                        float Time_High = 12.10f;
+
+                        switch(Voice)
+                        {
+                            case 2:
+                                Time_Low = 3.0f;
+                                Time_High = 6.65f;
+                            break;
+                            
+                            case 3:
+                                Time_Low = 3.75f;
+                                Time_High = 9.75f;
+                            break;
+                        }
+
+                        VoiceTime = Globals.GetCurrentTime() + Math::RandomFloat(Time_Low, Time_High);
+                    }
+                }
+            }
+		}
+	}
+}
 
 void OnPluginInit()
 {
@@ -242,7 +471,6 @@ void OnMapInit()
 		//Resize
 		g_flFRespawnCD.resize(iMaxPlayers + 1);
 		g_flIdleTime.resize(iMaxPlayers + 1);
-		g_iCVSIndex.resize(iMaxPlayers + 1);
 		g_bWasFirstInfected.resize(iMaxPlayers + 1);
 		g_bIsFirstInfected.resize(iMaxPlayers + 1);
 		g_bIsAbuser.resize(iMaxPlayers + 1);
@@ -254,12 +482,8 @@ void OnMapInit()
 		g_iKills.resize(iMaxPlayers + 1);
 		g_iVictims.resize(iMaxPlayers + 1);
 
-		//Resize Damage Slowdown arrays
-		g_iNormalSpeed.resize(iMaxPlayers + 1);
-		g_iSlowSpeed.resize(iMaxPlayers + 1);
-		g_flSlowTime.resize(iMaxPlayers + 1);
-		g_flRecoverTime.resize(iMaxPlayers + 1);
-		g_flAddTime.resize(iMaxPlayers + 1);
+		//CSZM Player array resize
+		CSZMPlayerArray.resize(iMaxPlayers + 1);
 		
 		//Set Doors Filter to 0 (any team)
 		if (bWarmUp)
@@ -301,6 +525,8 @@ void OnMapShutdown()
 		bSpawnWeak = true;
 		bAllowZombieSpawn = false;
 		bWarmUp = true;
+
+		CSZMPlayerArray.removeRange(0, CSZMPlayerArray.length());
 		
 		ClearBoolArray(g_bWasFirstInfected);
 		ClearBoolArray(g_bIsFirstInfected);
@@ -309,15 +535,9 @@ void OnMapShutdown()
 		ClearBoolArray(g_bIsVolunteer);
 		ClearIntArray(g_iKills);
 		ClearIntArray(g_iVictims);
-		ClearIntArray(g_iCVSIndex);
 		ClearIntArray(g_iInfectDelay);
 		ClearIntArray(g_iZMDeathCount);
 		ClearIntArray(g_iAntidote);
-		ClearIntArray(g_iNormalSpeed);
-		ClearIntArray(g_iSlowSpeed);
-		ClearFloatArray(g_flSlowTime);
-		ClearFloatArray(g_flRecoverTime);
-		ClearFloatArray(g_flAddTime);
 		ClearFloatArray(g_flIdleTime);
 		ClearFloatArray(g_flFRespawnCD);
 	}
@@ -382,13 +602,16 @@ HookReturnCode CSZM_OnPlayerConnected(CZP_Player@ pPlayer)
 		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 
         const int iIndex = pBaseEnt.entindex();
+
+		//Before inserting remove everything at this index
+		CSZMPlayerArray.removeAt(iIndex);
+		CSZMPlayerArray.insertAt(iIndex, CSZMPlayer(iIndex, SPEED_DEFAULT));
 		
 		g_flFRespawnCD[iIndex] = 0.0f;
 		g_flIdleTime[iIndex] = 0.0f;
 		g_iInfectDelay[iIndex] = 0;
 		g_iAntidote[iIndex] = 0;
 		g_iZMDeathCount[iIndex] = -1;
-		g_iCVSIndex[iIndex] = Math::RandomInt(1, 3);
 
 		g_iKills[iIndex] = 0;
 		g_iVictims[iIndex] = 0;
@@ -398,8 +621,6 @@ HookReturnCode CSZM_OnPlayerConnected(CZP_Player@ pPlayer)
 		g_bIsAbuser[iIndex] = false;
 		g_bIsWeakZombie[iIndex] = true;
 		g_bIsVolunteer[iIndex] = false;
-
-		ZeroingSlowdown(iIndex, true);
 	}
 	
 	return HOOK_CONTINUE;
@@ -505,35 +726,33 @@ HookReturnCode CSZM_OnPlayerSpawn(CZP_Player@ pPlayer)
 
 		int iIndex = pBaseEnt.entindex();
 
+		CSZMPlayer@ pCSZMPlayer = CSZMPlayerArray[iIndex];
+
 		RemoveProp(pBaseEnt);
 		Engine.EmitSoundEntity(pBaseEnt, "CSPlayer.Mute");
-		ZeroingSlowdown(iIndex, false);
 
 		//Apply the custom movement speed
 		switch(pBaseEnt.GetTeamNumber())
 		{
 			case TEAM_SURVIVORS:
-				g_iNormalSpeed[iIndex] = SPEED_HUMAN;
+				pCSZMPlayer.SetDefSpeed(SPEED_HUMAN);
 			break;
 			
 			case TEAM_ZOMBIES:
 				if (pPlayer.IsCarrier())
 				{
-					g_iNormalSpeed[iIndex] = SPEED_CARRIER;
+					pCSZMPlayer.SetDefSpeed(SPEED_CARRIER);
 				}
-
 				else
 				{
-					g_iNormalSpeed[iIndex] = SPEED_ZOMBIE;
+					pCSZMPlayer.SetDefSpeed(SPEED_ZOMBIE);
 				}
 			break;
 			
 			default:
-				g_iNormalSpeed[iIndex] = SPEED_DEFAULT;
+				pCSZMPlayer.SetDefSpeed(SPEED_DEFAULT);
 			break;
 		}
-
-		pPlayer.SetMaxSpeed(g_iNormalSpeed[iIndex]);
 
 		//Set CSS Arms (human type) if not zombie
 		if (pBaseEnt.GetTeamNumber() != TEAM_ZOMBIES)
@@ -689,6 +908,8 @@ HookReturnCode CSZM_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out Da
 		const int iAttIndex = pEntityAttacker.entindex();
 		const int iAttTeam = pEntityAttacker.GetTeamNumber();
 
+		CSZMPlayer@ pVicCSZMPlayer = CSZMPlayerArray[iVicIndex];
+
 		if (Utils.StrEql(pEntityAttacker.GetEntityName(), "frendly_shrapnel") && iVicTeam == 2)
 		{
 			DamageInfo.SetDamageType(0);
@@ -774,25 +995,12 @@ HookReturnCode CSZM_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out Da
 
 			Utils.FakeRecoil(pPlayer, VP_KICK, VP_DAMP, VP_X, VP_Y, bLeft);
 
-			bool bAllowPainSound = false;
-
-			if (pPlayer.IsCarrier() && g_bIsFirstInfected[iVicIndex])
+			if (flDamage < pBaseEnt.GetHealth() && flDamage > 0.5f)
 			{
-				bAllowPainSound = true;
+				pVicCSZMPlayer.EmitZMSound(CONST_ZM_PAIN);
 			}
 
-			if (!pPlayer.IsCarrier())
-			{
-				bAllowPainSound = true;
-			}
-
-			if (bAllowPainSound && flDamage > 0 && flDamage < pBaseEnt.GetHealth() && flDamage > 0.5f && pBaseEnt.GetWaterLevel() != WL_Eyes)
-			{
-				Engine.EmitSoundEntity(pBaseEnt, "CSPlayer_Z.Pain" + g_iCVSIndex[iVicIndex]);
-				g_flIdleTime[iVicIndex] = Globals.GetCurrentTime() + Math::RandomFloat(4.85f, 9.95f);
-			}
-
-			AddSlowdown(iVicIndex, flDamage, iDamageType);
+			pVicCSZMPlayer.AddSlowdown(flDamage, iDamageType);
 		}
 	}
 
@@ -830,7 +1038,7 @@ HookReturnCode CSZM_OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in Dama
 		const int iAttIndex = pEntityAttacker.entindex();
 		const int iAttTeam = pEntityAttacker.GetTeamNumber();
 
-		ZeroingSlowdown(iVicIndex, false);
+		CSZMPlayer@ pVicCSZMPlayer = CSZMPlayerArray[iVicIndex];
 		
 		if (pEntityAttacker.IsPlayer()) 
 		{
@@ -853,22 +1061,7 @@ HookReturnCode CSZM_OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in Dama
 
 		if (iVicTeam == TEAM_ZOMBIES)
 		{
-			bool bAllowDieSound = false;
-
-			if (pPlayer.IsCarrier() && g_bIsFirstInfected[iVicIndex])
-			{
-				bAllowDieSound = true;
-			}
-
-			if (!pPlayer.IsCarrier())
-			{
-				bAllowDieSound = true;
-			}
-
-			if (bAllowDieSound && pBaseEnt.GetWaterLevel() != WL_Eyes)
-			{
-				Engine.EmitSoundEntity(pBaseEnt, "CSPlayer_Z.Die" + g_iCVSIndex[iVicIndex]);
-			}
+			pVicCSZMPlayer.EmitZMSound(CONST_ZM_DIE);
 
 			if (!bSuicide)
 			{
@@ -1017,86 +1210,13 @@ void OnProcessRound()
 			bSpawnWeak = false;
 		}
 
-		CSZMPlayerThink();
-	}
-}
-
-void CSZMPlayerThink()
-{
-	for (int i = 1; i <= iMaxPlayers; i++)
-	{
-		CZP_Player@ pPlayer = ToZPPlayer(i);
-						
-		if (pPlayer is null)
+		for (int i = 1; i <= iMaxPlayers; i++) 
 		{
-			continue;
-		}
-						
-		CBaseEntity@ pBaseEnt = FindEntityByEntIndex(i);
+			CSZMPlayer@ pCSZMPlayer = CSZMPlayerArray[i];
 
-		if (g_flSlowTime[i] <= Globals.GetCurrentTime() && g_flSlowTime[i] != 0)
-		{
-			g_flSlowTime[i] = 0.0f;
-			g_flAddTime[i] = 0.0f;
-			g_flRecoverTime[i] = Globals.GetCurrentTime() + CONST_RECOVER_UNIT;
-		}
-
-		if (g_flRecoverTime[i] <= Globals.GetCurrentTime() && g_flRecoverTime[i] != 0)
-		{
-			g_flRecoverTime[i] = Globals.GetCurrentTime() + CONST_RECOVER_UNIT;
-			g_iSlowSpeed[i] += 2;
-
-			if (g_iSlowSpeed[i] >= g_iNormalSpeed[i])
+			if ( pCSZMPlayer !is null )
 			{
-				g_flRecoverTime[i] = 0.0f;
-				g_iSlowSpeed[i] = 0.0f;
-				pPlayer.SetMaxSpeed(g_iNormalSpeed[i]);
-			}
-				
-			else
-			{
-				pPlayer.SetMaxSpeed(g_iSlowSpeed[i]);
-			}
-		}
-
-		if (pBaseEnt.GetTeamNumber() == TEAM_ZOMBIES && pBaseEnt.IsAlive() && g_flIdleTime[i] <= Globals.GetCurrentTime() && g_flIdleTime[i] != 0)
-		{
-			bool bAllowIdleSound = false;
-
-			if (pPlayer.IsCarrier() && g_bIsFirstInfected[i])
-			{
-				bAllowIdleSound = true;
-			}
-
-			if (!pPlayer.IsCarrier())
-			{
-				bAllowIdleSound = true;
-			}
-
-			if (bAllowIdleSound)
-			{
-				if (pBaseEnt.GetWaterLevel() != WL_Eyes)
-				{
-					Engine.EmitSoundEntity(pBaseEnt, "CSPlayer.Idle" + g_iCVSIndex[pBaseEnt.entindex()]);
-				}
-
-				float Time_Low = 3.15f;
-				float Time_High = 12.10f;
-
-				switch(g_iCVSIndex[i])
-				{
-					case 2:
-						Time_Low = 3.0f;
-						Time_High = 6.65f;
-					break;
-					
-					case 3:
-						Time_Low = 3.75f;
-						Time_High = 9.75f;
-					break;
-				}
-
-				g_flIdleTime[i] = Globals.GetCurrentTime() + Math::RandomFloat(Time_Low, Time_High);
+				pCSZMPlayer.Think();
 			}
 		}
 	}
@@ -1125,8 +1245,6 @@ void OnNewRound()
 			g_bIsVolunteer[i] = false;
 			g_bIsAbuser[i] = false;
 			g_bIsWeakZombie[i] = true;
-
-			ZeroingSlowdown(i, true);
 		}
 	}
 }
@@ -1517,110 +1635,6 @@ void EndGame()
 	}
 }
 
-void AddSlowdown(const int &in iIndex, const float &in flDamage, const int &in iDamageType)
-{
-	CZP_Player@ pPlayer = ToZPPlayer(iIndex);
-
-	if (pPlayer is null)
-	{
-		return;
-	}
-
-	CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(iIndex);
-
-	g_flRecoverTime[iIndex] = 0.0f;
-
-	bool bFreeze = false;
-	int iSpeed = int((g_iNormalSpeed[iIndex] * 0.01) * CONST_SLOWDOWN_MULT);
-	float p_flAddTime = 0.20f;
-
-	//Reduce the slowdown speed if weak zombie
-	if (g_bIsWeakZombie[iIndex])
-	{
-		iSpeed * CONST_SLOWDOWN_WEAKMULT;
-	}
-
-	//Add time if critical dmg
-	if (flDamage > CONST_SLOWDOWN_CRITDMG)
-	{
-		p_flAddTime = 0.45f;
-	}
-
-	//Melee
-	if (bDamageType(iDamageType, 7))
-	{
-		bFreeze = true;
-		p_flAddTime = 2.0f;
-	}
-
-	//Blast
-	if (bDamageType(iDamageType, 6))
-	{
-		bFreeze = true;
-		p_flAddTime = 1.85f;
-	}
-
-	//Blast Surface
-	if (bDamageType(iDamageType, 27))
-	{
-		bFreeze = true;
-		p_flAddTime = 1.40f;
-	}
-
-	//Fall
-	if (bDamageType(iDamageType, 5))
-	{
-		bFreeze = true;
-		p_flAddTime = 0.65f;
-	}
-
-	//If First infected - reduce iSpeed
-	//if (g_bIsFirstInfected[iIndex]) iSpeed = int(floor(iSpeed * 0.85f));
-
-	//If Carrier - reduce iSpeed
-	//if (pPlayer.IsCarrier() && !g_bIsFirstInfected[iIndex]) iSpeed = int(floor(iSpeed * 0.65f));
-
-	g_iSlowSpeed[iIndex] = g_iNormalSpeed[iIndex] - iSpeed;
-
-	g_flAddTime[iIndex] += p_flAddTime;
-
-	if (g_flAddTime[iIndex] > CONST_MAX_SLOWTIME)
-	{
-		g_flAddTime[iIndex] = CONST_MAX_SLOWTIME;
-	}
-
-	g_flSlowTime[iIndex] = Globals.GetCurrentTime() + g_flAddTime[iIndex];
-
-	if (g_iSlowSpeed[iIndex] < SPEED_MINIMUM)
-	{
-		g_iSlowSpeed[iIndex] = SPEED_MINIMUM;
-	}
-
-	pPlayer.SetMaxSpeed(g_iSlowSpeed[iIndex]);
-
-	if (bFreeze)
-	{
-		pPlayerEntity.SetAbsVelocity(Vector(0, 0, 0));
-	}
-
-/*	SD("------------------------------");
-	SD("iSpeed: " + iSpeed + "\ng_iSlowSpeed: " + g_iSlowSpeed[iIndex] + "\ng_flAddTime: " + g_flAddTime[iIndex] + "\ng_iNormalSpeed: " + g_iNormalSpeed[iIndex]);
-	SD("------------------------------");*/
-}
-
-void ZeroingSlowdown(const int &in iIndex, const bool &in bIsConnected)
-{
-	if (bIsConnected)
-	{
-		g_iNormalSpeed[iIndex] = SPEED_DEFAULT;
-	}
-
-	g_flSlowTime[iIndex] = 0.0f;
-	g_flRecoverTime[iIndex] = 0.0f;
-	g_flAddTime[iIndex] = 0.0f;
-	g_iSlowSpeed[iIndex] = 0;
-}
-
 void GotVictim(CZP_Player@ pAttacker, CBaseEntity@ pBaseEntA)
 {
 	if (g_iZMDeathCount[pBaseEntA.entindex()] >= 0)
@@ -1734,7 +1748,6 @@ void TurnToZ(const int &in iIndex)
 
 			g_bIsWeakZombie[iIndex] = false;
 			g_flIdleTime[iIndex] = Globals.GetCurrentTime() + Math::RandomFloat(3.15f, 12.10f);
-			g_iNormalSpeed[iIndex] = SPEED_ZOMBIE;
 			pPlayer.SetMaxSpeed(SPEED_ZOMBIE);
 			pPlayer.SetArmModel("models/cszm/weapons/c_css_zombie_arms.mdl");
 			EmitBloodExp(pPlayer, false);
@@ -1762,6 +1775,8 @@ void SpawnWeakZombie(CZP_Player@ pPlayer)
 
 	const int iIndex = pBaseEnt.entindex();
 
+	CSZMPlayer@ pCSZMPlayer = CSZMPlayerArray[iIndex];
+
 	if (pPlayer.IsCarrier()) 
 	{
 		pBaseEnt.SetModel("models/cszm/carrier.mdl");
@@ -1777,9 +1792,8 @@ void SpawnWeakZombie(CZP_Player@ pPlayer)
 	Utils.CosmeticWear(pPlayer, "models/cszm/weapons/w_knife_t.mdl");
 	pBaseEnt.SetMaxHealth(15);
 	pBaseEnt.SetHealth(CONST_WEAK_ZOMBIE_HP);
-	pPlayer.SetMaxSpeed(SPEED_WEAK);
-	g_iCVSIndex[iIndex] = 2;
-	g_iNormalSpeed[iIndex] = SPEED_WEAK;
+	pCSZMPlayer.SetDefSpeed(SPEED_WEAK);
+	pCSZMPlayer.SetZMVoice(-1);
 	Chat.PrintToChatPlayer(pPlrEnt, strWeakZombie);
 }
 
@@ -1818,33 +1832,23 @@ void EmitBloodExp(CZP_Player@ pPlayer, const bool &in bSilent)
 	}
 }
 
-void RndZModel(CZP_Player@ pPlayer, CBaseEntity@ pEntPlr)
+void RndZModel(CZP_Player@ pPlayer, CBaseEntity@ pPlayerEntity)
 {
 	Utils.CosmeticWear(pPlayer, "models/cszm/weapons/w_knife_t.mdl");
-	
-	int iRND_CVS = Math::RandomInt(1, 3);
-	
-	if (iRND_CVS_PV == iRND_CVS)
-	{
-		while (iRND_CVS_PV == iRND_CVS)
-		{
-			iRND_CVS = Math::RandomInt(1, 3);
-		}
-	}
+	CSZMPlayer@ pCSZMPlayer = CSZMPlayerArray[pPlayerEntity.entindex()];
 
-	g_iCVSIndex[pEntPlr.entindex()] = iRND_CVS;
-	iRND_CVS_PV = iRND_CVS;
+	pCSZMPlayer.SetZMVoice(Math::RandomInt(1,3));
 	
-	if (g_bIsFirstInfected[pEntPlr.entindex()])
+	if (g_bIsFirstInfected[pPlayerEntity.entindex()])
 	{
-		pEntPlr.SetModel("models/cszm/zombie_morgue.mdl");
+		pPlayerEntity.SetModel("models/cszm/zombie_morgue.mdl");
 	}
 
 	else 
 	{	
 		if (pPlayer.IsCarrier())
 		{
-			pEntPlr.SetModel("models/cszm/carrier.mdl");
+			pPlayerEntity.SetModel("models/cszm/carrier.mdl");
 		}
 
 		else
@@ -1859,7 +1863,7 @@ void RndZModel(CZP_Player@ pPlayer, CBaseEntity@ pEntPlr)
 
 			int iRNG = Math::RandomInt(0, g_strMDLToUse.length() - 1);
 
-			pEntPlr.SetModel(g_strMDLToUse[iRNG]);
+			pPlayerEntity.SetModel(g_strMDLToUse[iRNG]);
 			g_strMDLToUse.removeAt(iRNG);
 		}
 	}
