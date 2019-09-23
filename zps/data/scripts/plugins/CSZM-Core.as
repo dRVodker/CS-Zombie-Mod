@@ -81,7 +81,7 @@ const float CONST_SLOWDOWN_WEAKMULT = 30;
 const float CONST_SLOWDOWN_CRITDMG = 45.0f;
 const float CONST_ADRENALINE_DURATION = 12.0f;
 const int CONST_MAX_INFECTRESIST = 2;
-const float CONST_ZO_DISTANCE = 2000.0f;
+const float CONST_ZO_DISTANCE = 1684.0f;
 
 //ZM Voice related stuff
 const int CONST_MAX_VOICEINDEX = 3;
@@ -411,18 +411,27 @@ class CSZMPlayer
 		{
 			if (OutlineTime <= Globals.GetCurrentTime())
 			{
-				OutlineTime = Globals.GetCurrentTime() + 0.1f;
+				OutlineTime = Globals.GetCurrentTime() + 0.05f;
 				int cRed = 0;
 				int cGreen = 127;
 				int cBlue = 101;
 				float ExtraDistance = 0;
+				bool RenderUnOccluded = false;
 
 				if (pPlayer.IsCarrier() && !g_bIsFirstInfected[PlayerIndex])
 				{
 					cRed = 190;
 					cGreen = 95;
 					cBlue = 0;
-					ExtraDistance = 347.0f;
+					ExtraDistance = 600.0f;
+
+					if (pPlayer.IsRoaring())
+					{
+						cRed = 255;
+						cGreen = 127;
+						ExtraDistance = 9000.0f;
+						RenderUnOccluded = true;
+					}
 				}
 
 				if (g_bIsFirstInfected[PlayerIndex])
@@ -430,7 +439,7 @@ class CSZMPlayer
 					cRed = 145;
 					cGreen = 95;
 					cBlue = 215;
-					ExtraDistance = 724.0f;
+					ExtraDistance = 1045.0f;
 				}
 
 				if (g_bIsWeakZombie[PlayerIndex])
@@ -438,10 +447,10 @@ class CSZMPlayer
 					cRed = 82;
 					cGreen = 125;
 					cBlue = 191;
-					ExtraDistance = -256.0f;
+					ExtraDistance = -64.0f;
 				}
 
-				pPlayerEntity.SetOutline(true, filter_team, TEAM_ZOMBIES, Color(cRed, cGreen, cBlue), CONST_ZO_DISTANCE + ExtraDistance, true, false);
+				pPlayerEntity.SetOutline(true, filter_team, TEAM_ZOMBIES, Color(cRed, cGreen, cBlue), CONST_ZO_DISTANCE + ExtraDistance, true, RenderUnOccluded);
 			}
 
 			if (MeleeFreezeTime > Globals.GetCurrentTime())
