@@ -29,28 +29,33 @@ void CacheModels()
 
 void CacheSounds()
 {
-    //Antidote PickUp Sound
+    //Antidote PickUp sound
     Engine.PrecacheFile(sound, "items/smallmedkit1.wav");
 
-    //Deny Choose/Spawn Sound
+    //Various item_adrenaline related sounds
+    Engine.PrecacheFile(sound, "cszm_fx/weapons/adrenaline_cap_off.wav");
+	Engine.PrecacheFile(sound, "cszm_fx/weapons/adrenaline_needle_open.wav");
+	Engine.PrecacheFile(sound, "cszm_fx/weapons/adrenaline_needle_in.wav");
+
+    //Deny Choose/Spawn sound
     Engine.PrecacheFile(sound, "common/wpn_denyselect.wav");
 
-    //Boom HeadShot Sound
+    //Boom HeadShot sound
     Engine.PrecacheFile(sound, ")impacts/flesh_impact_headshot-01.wav");
 	
-	//Item Respawn Sound
+	//Item Respawn sound
     Engine.PrecacheFile(sound, "items/suitchargeok1.wav");
 	
-	//ZM Leave Warning Sound
+	//ZM Leave Warning sound
     Engine.PrecacheFile(sound, "common/warning.wav");
     
-    //ZM First Turn Sound
+    //ZM First Turn sound
     Engine.PrecacheFile(sound, "@cszm_fx/misc/suspense.wav");
     
-    //ZM WarmUp End Sound
+    //ZM WarmUp End sound
     Engine.PrecacheFile(sound, "@buttons/button3.wav");
     
-    //ZM Countdown Sounds
+    //ZM Countdown sounds
     Engine.PrecacheFile(sound, "@cszm_fx/fvox/fv10.wav");
     Engine.PrecacheFile(sound, "@cszm_fx/fvox/fv9.wav");
     Engine.PrecacheFile(sound, "@cszm_fx/fvox/fv8.wav");
@@ -62,16 +67,16 @@ void CacheSounds()
     Engine.PrecacheFile(sound, "@cszm_fx/fvox/fv2.wav");
     Engine.PrecacheFile(sound, "@cszm_fx/fvox/fv1.wav");
     
-    //ZM Turn Sounds
+    //ZM Turn sounds
     Engine.PrecacheFile(sound, "cszm_fx/player/plr_scream1.wav");
     Engine.PrecacheFile(sound, "cszm_fx/player/plr_scream2.wav");
     
-    //ZM Die Sounds
+    //ZM Die sounds
     Engine.PrecacheFile(sound, ")npc/zombie/zombie_die1.wav");
     Engine.PrecacheFile(sound, ")npc/zombie/zombie_die2.wav");
     Engine.PrecacheFile(sound, ")npc/zombie/zombie_die3.wav");
     
-    //ZM Pain Sounds
+    //ZM Pain sounds
     Engine.PrecacheFile(sound, ")npc/zombie/zombie_pain1.wav");
     Engine.PrecacheFile(sound, ")npc/zombie/zombie_pain2.wav");
     Engine.PrecacheFile(sound, ")npc/zombie/zombie_pain3.wav");
@@ -79,7 +84,7 @@ void CacheSounds()
     Engine.PrecacheFile(sound, ")npc/zombie/zombie_pain5.wav");
     Engine.PrecacheFile(sound, ")npc/zombie/zombie_pain6.wav");
     
-    //ZM Idle Sounds
+    //ZM Idle sounds
     Engine.PrecacheFile(sound, ")npc/zombie/zombie_voice_idle1.wav");
     Engine.PrecacheFile(sound, ")npc/zombie/zombie_voice_idle2.wav");
     Engine.PrecacheFile(sound, ")npc/zombie/zombie_voice_idle3.wav");
@@ -95,20 +100,20 @@ void CacheSounds()
     Engine.PrecacheFile(sound, ")npc/zombie/zombie_voice_idle13.wav");
     Engine.PrecacheFile(sound, ")npc/zombie/zombie_voice_idle14.wav");
     
-    //ZM Pain2 Sounds
+    //ZM Pain2 sounds
     Engine.PrecacheFile(sound, ")cszm_fx/zombie/pain_01.wav");
     Engine.PrecacheFile(sound, ")cszm_fx/zombie/pain_02.wav");
     Engine.PrecacheFile(sound, ")cszm_fx/zombie/pain_03.wav");
     Engine.PrecacheFile(sound, ")cszm_fx/zombie/pain_04.wav");
     Engine.PrecacheFile(sound, ")cszm_fx/zombie/pain_05.wav");
 
-    //ZM Die2 Sounds
+    //ZM Die2 sounds
     Engine.PrecacheFile(sound, ")cszm_fx/zombie/die_01.wav");
     Engine.PrecacheFile(sound, ")cszm_fx/zombie/die_02.wav");
     Engine.PrecacheFile(sound, ")cszm_fx/zombie/die_03.wav");
     Engine.PrecacheFile(sound, ")cszm_fx/zombie/die_04.wav");
     
-    //ZM Idle2 Sounds
+    //ZM Idle2 sounds
     Engine.PrecacheFile(sound, ")cszm_fx/zombie/idle_01.wav");
     Engine.PrecacheFile(sound, ")cszm_fx/zombie/idle_02.wav");
     Engine.PrecacheFile(sound, ")cszm_fx/zombie/idle_03.wav");
@@ -119,20 +124,20 @@ void CacheSounds()
     Engine.PrecacheFile(sound, ")cszm_fx/zombie/idle_08.wav");
     Engine.PrecacheFile(sound, ")cszm_fx/zombie/idle_09.wav");
     
-    //ZM Pain3 Sounds
+    //ZM Pain3 sounds
     Engine.PrecacheFile(sound, ")cszm_fx/zombie_d3/zombie_pain01.wav");
     Engine.PrecacheFile(sound, ")cszm_fx/zombie_d3/zombie_pain02.wav");
     Engine.PrecacheFile(sound, ")cszm_fx/zombie_d3/zombie_pain03.wav");
     Engine.PrecacheFile(sound, ")cszm_fx/zombie_d3/zombie_pain04.wav");
     Engine.PrecacheFile(sound, ")cszm_fx/zombie_d3/zombie_pain05.wav");
     
-    //ZM Die3 Sounds
+    //ZM Die3 sounds
     Engine.PrecacheFile(sound, ")cszm_fx/zombie_d3/zombie_death01.wav");
     Engine.PrecacheFile(sound, ")cszm_fx/zombie_d3/zombie_death02.wav");
     Engine.PrecacheFile(sound, ")cszm_fx/zombie_d3/zombie_death03.wav");
     Engine.PrecacheFile(sound, ")cszm_fx/zombie_d3/zombie_death04.wav");
     
-    //ZM Idle3 Sounds
+    //ZM Idle3 sounds
     Engine.PrecacheFile(sound, ")cszm_fx/zombie_d3/zombie_idle03.wav");
     Engine.PrecacheFile(sound, ")cszm_fx/zombie_d3/zombie_idle04.wav");
     Engine.PrecacheFile(sound, ")cszm_fx/zombie_d3/zombie_idle05.wav");
@@ -141,17 +146,17 @@ void CacheSounds()
     Engine.PrecacheFile(sound, ")cszm_fx/zombie_d3/zombie_idle08.wav");
     Engine.PrecacheFile(sound, ")cszm_fx/zombie_d3/zombie_idle09.wav");
 
-    //ZM Radio Sounds
+    //ZM Radio sounds
     Engine.PrecacheFile(sound, "@cszm_fx/radio/gogogo.wav");
     Engine.PrecacheFile(sound, "@cszm_fx/radio/moveout.wav");
     Engine.PrecacheFile(sound, "@cszm_fx/radio/letsgo.wav");
     Engine.PrecacheFile(sound, "@cszm_fx/radio/locknload.wav");
     
-    //ZM Win Sounds
+    //ZM Win sounds
     Engine.PrecacheFile(sound, "@cszm_fx/misc/hwin.wav");
     Engine.PrecacheFile(sound, "@cszm_fx/misc/zwin.wav");
     
-    //ZM Weapon Impact Sounds	
+    //ZM Weapon Impact sounds	
     Engine.PrecacheFile(sound, "physics/metal/weapon_impact_hard1.wav");
     Engine.PrecacheFile(sound, "physics/metal/weapon_impact_hard2.wav");
     Engine.PrecacheFile(sound, "physics/metal/weapon_impact_hard3.wav");		

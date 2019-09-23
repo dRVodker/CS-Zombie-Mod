@@ -25,7 +25,7 @@ void DisallowWeakZombie()
 
 void MovePlrToSpec(CBaseEntity@ pEntPlr)
 {
-	pEntPlr.ChangeTeam(0);
+	pEntPlr.ChangeTeam(TEAM_LOBBYGUYS);
 	CZP_Player@ pPlayer = ToZPPlayer(pEntPlr);
 	pPlayer.ConsoleCommand("choose3");
 }
@@ -152,7 +152,7 @@ void PutPlrToLobby(CBaseEntity@ pEntPlayer)
 			
 			CBaseEntity@ pBaseEnt = FindEntityByEntIndex(i);
 			
-			if (pBaseEnt.GetTeamNumber() == 1 || pBaseEnt.GetTeamNumber() == 0)
+			if (pBaseEnt.GetTeamNumber() == TEAM_SPECTATORS || pBaseEnt.GetTeamNumber() == TEAM_LOBBYGUYS)
 			{
 				pBaseEnt.SetAbsOrigin(g_pLobbySpawn[Math::RandomInt(1, iLength)].GetAbsOrigin());
 			}
@@ -199,7 +199,7 @@ void PutPlrToPlayZone(CBaseEntity@ pEntPlayer)
 			
 			CBaseEntity@ pBaseEnt = FindEntityByEntIndex(i);
 			
-			if (pBaseEnt.GetTeamNumber() == 1 || pBaseEnt.GetTeamNumber() == 0)
+			if (pBaseEnt.GetTeamNumber() == TEAM_SPECTATORS || pBaseEnt.GetTeamNumber() == TEAM_LOBBYGUYS)
 			{
 				pBaseEnt.SetAbsOrigin(g_pOtherSpawn[Math::RandomInt(1, iLength)].GetAbsOrigin());
 			}
@@ -210,4 +210,44 @@ void PutPlrToPlayZone(CBaseEntity@ pEntPlayer)
 	{
 		pEntPlayer.SetAbsOrigin(g_pOtherSpawn[Math::RandomInt(1, iLength)].GetAbsOrigin());
 	}
+}
+
+void AttachTrail(CBaseEntity@ pEntity)
+{
+		CEntityData@ SPRTrailIPD = EntityCreator::EntityData();
+		SPRTrailIPD.Add("lifetime", "0.25");
+		SPRTrailIPD.Add("renderamt", "255");
+		SPRTrailIPD.Add("rendercolor", "245 16 16");
+		SPRTrailIPD.Add("rendermode", "5");
+		SPRTrailIPD.Add("spritename", "sprites/lgtning.vmt");
+		SPRTrailIPD.Add("startwidth", "3.85");
+
+		CEntityData@ SpriteIPD = EntityCreator::EntityData();
+		SpriteIPD.Add("spawnflags", "1");
+		SpriteIPD.Add("GlowProxySize", "4");
+		SpriteIPD.Add("scale", "0.35");
+		SpriteIPD.Add("rendermode", "9");
+		SpriteIPD.Add("rendercolor", "245 16 16");
+		SpriteIPD.Add("renderamt", "255");
+		SpriteIPD.Add("model", "sprites/light_glow01.vmt");
+		SpriteIPD.Add("renderfx", "0");
+
+		CEntityData@ DLightIPD = EntityCreator::EntityData();
+		DLightIPD.Add("_cone", "0");
+		DLightIPD.Add("_inner_cone", "0");
+		DLightIPD.Add("pitch", "0");
+		DLightIPD.Add("spawnflags", "0");
+		DLightIPD.Add("spotlight_radius", "0");
+		DLightIPD.Add("style", "0");
+		DLightIPD.Add("_light", "245 8 8 200");
+		DLightIPD.Add("brightness", "4");
+		DLightIPD.Add("distance", "48");
+
+		CBaseEntity@ pEntTrail = EntityCreator::Create("env_spritetrail", pEntity.GetAbsOrigin(), QAngle(0, 0, 0), SPRTrailIPD);
+		CBaseEntity@ pEntSprite = EntityCreator::Create("env_sprite", pEntity.GetAbsOrigin(), QAngle(0, 0, 0), SpriteIPD);
+		CBaseEntity@ pDLight = EntityCreator::Create("light_dynamic", pEntity.GetAbsOrigin(), QAngle(0, 0, 0), DLightIPD);
+		
+		pEntTrail.SetParent(pEntity);
+		pEntSprite.SetParent(pEntity);
+		pDLight.SetParent(pEntity);
 }
