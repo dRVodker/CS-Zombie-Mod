@@ -81,6 +81,7 @@ const float CONST_SLOWDOWN_WEAKMULT = 30;
 const float CONST_SLOWDOWN_CRITDMG = 45.0f;
 const float CONST_ADRENALINE_DURATION = 12.0f;
 const int CONST_MAX_INFECTRESIST = 2;
+const float CONST_ZO_DISTANCE = 2000.0f;
 
 //ZM Voice related stuff
 const int CONST_MAX_VOICEINDEX = 3;
@@ -128,7 +129,6 @@ array<string> g_strMDLToUse;
 
 //Other arrays (Don't even touch this)
 array<float> g_flFRespawnCD;
-array<float> g_flIdleTime;
 array<int> g_iInfectDelay;
 array<int> g_iZMDeathCount;
 
@@ -172,6 +172,7 @@ class CSZMPlayer
 	int InfectResist;
 	float IRITime;
 	float MeleeFreezeTime;
+	float OutlineTime;
 
 	CSZMPlayer(int index, int NormSpeed)
 	{
@@ -187,6 +188,7 @@ class CSZMPlayer
 		InfectResist = 0;
 		IRITime = 0;
 		MeleeFreezeTime = 0;
+		OutlineTime = 0;
 	}
 
 	void Zeroing()
@@ -199,16 +201,6 @@ class CSZMPlayer
 		IRITime = 0;
 		MeleeFreezeTime = 0;
 		pPlayer.DoPlayerDSP(0);
-	}
-
-	void OverrideOutline()
-	{
-		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(PlayerIndex);
-
-		if (pPlayerEntity.GetTeamNumber() == TEAM_ZOMBIES)
-		{
-			pPlayerEntity.SetOutline(true, filter_team, TEAM_ZOMBIES, Color(0, 200, 160), 2000.0f, true, false);
-		}
 	}
 
 	void SetDefSpeed(int NewSpeed)
@@ -417,6 +409,41 @@ class CSZMPlayer
 
 		if (TeamNum == TEAM_ZOMBIES)
 		{
+			if (OutlineTime <= Globals.GetCurrentTime())
+			{
+				OutlineTime = Globals.GetCurrentTime() + 0.1f;
+				int cRed = 0;
+				int cGreen = 127;
+				int cBlue = 101;
+				float ExtraDistance = 0;
+
+				if (pPlayer.IsCarrier() && !g_bIsFirstInfected[PlayerIndex])
+				{
+					cRed = 190;
+					cGreen = 95;
+					cBlue = 0;
+					ExtraDistance = 347.0f;
+				}
+
+				if (g_bIsFirstInfected[PlayerIndex])
+				{
+					cRed = 145;
+					cGreen = 95;
+					cBlue = 215;
+					ExtraDistance = 724.0f;
+				}
+
+				if (g_bIsWeakZombie[PlayerIndex])
+				{
+					cRed = 82;
+					cGreen = 125;
+					cBlue = 191;
+					ExtraDistance = -256.0f;
+				}
+
+				pPlayerEntity.SetOutline(true, filter_team, TEAM_ZOMBIES, Color(cRed, cGreen, cBlue), CONST_ZO_DISTANCE + ExtraDistance, true, false);
+			}
+
 			if (MeleeFreezeTime > Globals.GetCurrentTime())
 			{
 				float x = 0;
@@ -613,7 +640,6 @@ void OnMapInit()
 		
 		//Resize
 		g_flFRespawnCD.resize(iMaxPlayers + 1);
-		g_flIdleTime.resize(iMaxPlayers + 1);
 		g_bWasFirstInfected.resize(iMaxPlayers + 1);
 		g_bIsFirstInfected.resize(iMaxPlayers + 1);
 		g_bIsAbuser.resize(iMaxPlayers + 1);
@@ -675,7 +701,6 @@ void OnMapShutdown()
 		ClearIntArray(g_iVictims);
 		ClearIntArray(g_iInfectDelay);
 		ClearIntArray(g_iZMDeathCount);
-		ClearFloatArray(g_flIdleTime);
 		ClearFloatArray(g_flFRespawnCD);
 	}
 }
@@ -839,7 +864,6 @@ HookReturnCode CSZM_OnPlayerConnected(CZP_Player@ pPlayer)
 		CSZMPlayerArray.insertAt(index, CSZMPlayer(index, SPEED_DEFAULT));
 		
 		g_flFRespawnCD[index] = 0;
-		g_flIdleTime[index] = 0;
 		g_iInfectDelay[index] = 0;
 		g_iZMDeathCount[index] = -1;
 
@@ -864,6 +888,8 @@ HookReturnCode CSZM_OnConCommand(CZP_Player@ pPlayer, CASCommand@ pArgs)
 		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 
 		int index = pBaseEnt.entindex();
+
+		CSZMPlayer@ pCSZMPlayer = CSZMPlayerArray[index];
 
 		if (!RoundManager.IsRoundOngoing(false))
 		{
@@ -992,9 +1018,12 @@ HookReturnCode CSZM_OnPlayerSpawn(CZP_Player@ pPlayer)
 		}
 
 		//Don't set CSS Arms (zombie type) to The Carrier
-		else if (!pPlayer.IsCarrier())
+		else
 		{
-			pPlayer.SetArmModel("models/cszm/weapons/c_css_zombie_arms.mdl");
+			if (!pPlayer.IsCarrier())
+			{
+				pPlayer.SetArmModel("models/cszm/weapons/c_css_zombie_arms.mdl");
+			}
 		}
 
 		//If in lobby team set the lobby guy player model
@@ -1042,13 +1071,9 @@ HookReturnCode CSZM_OnPlayerSpawn(CZP_Player@ pPlayer)
 							break;
 						}
 
-						pCSZMPlayer.OverrideOutline();
 						AmmoBankSetValue iAmmoType = AmmoBankSetValue(iRNG);
 						pPlayer.AmmoBank(add, iAmmoType, iAmmoCount);
 					}
-
-					g_flIdleTime[index] = Globals.GetCurrentTime() + 0.1f;
-					EmitBloodExp(pPlayer, true);
 
 					if (!bSpawnWeak && g_bIsWeakZombie[index])
 					{
@@ -1065,6 +1090,8 @@ HookReturnCode CSZM_OnPlayerSpawn(CZP_Player@ pPlayer)
 						RndZModel(pPlayer, pBaseEnt);
 						SetZMHealth(pBaseEnt);
 					}
+
+					EmitBloodExp(pPlayer, true);
 				}
 				
 				else
@@ -1937,9 +1964,7 @@ void TurnToZ(const int &in index)
 			}
 
 			g_bIsWeakZombie[index] = false;
-			g_flIdleTime[index] = Globals.GetCurrentTime() + Math::RandomFloat(3.15f, 12.10f);
 			pCSZMPlayer.SetDefSpeed(SPEED_ZOMBIE);
-			pCSZMPlayer.OverrideOutline();
 			pPlayer.SetArmModel("models/cszm/weapons/c_css_zombie_arms.mdl");
 			EmitBloodExp(pPlayer, false);
 			pPlayer.CompleteInfection();
