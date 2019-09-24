@@ -81,7 +81,11 @@ const float CONST_SLOWDOWN_WEAKMULT = 30;
 const float CONST_SLOWDOWN_CRITDMG = 68.0f;
 const float CONST_ADRENALINE_DURATION = 12.0f;
 const int CONST_MAX_INFECTRESIST = 2;
-const float CONST_ZO_DISTANCE = 1684.0f;
+
+const float GLOW_BASE_DISTANCE = 1684.0f;
+const float GLOW_CARRIER_ADD_DISTANCE = 512.0f;
+const float GLOW_CARRIER_ROAR_DISTANCE = 10000.0f;
+const float GLOW_WEAK_ADD_DISTANCE = -128.0f;
 
 //ZM Voice related stuff
 const int CONST_MAX_VOICEINDEX = 3;
@@ -428,53 +432,41 @@ class CSZMPlayer
 			{
 				if (pPlayerEntity.GetHealth() != PreviousHP || pPlayer.IsCarrier())
 				{
-					OutlineTime = Globals.GetCurrentTime() + 0.05f;
+					OutlineTime = Globals.GetCurrentTime() + 0.075f;
 					PreviousHP = pPlayerEntity.GetHealth();
 
 					float MaxHP = pPlayerEntity.GetMaxHealth();
 					float HP = pPlayerEntity.GetHealth();
-					float HPP = (HP / MaxHP) * 100.0f;
-
-					if (HPP > 100)
-					{
-						HPP = 100.0f;
-					}
-
-					if (HPP < 0)
-					{
-						HPP = 0;
-					}
-
-					int cRed = 255 - int(2.55f * HPP);
-					int cGreen = int(2.55f * HPP);
-					int cBlue = 0;
-
+					float HPP = (HP / MaxHP);
+					float BaseCChanel = 255;
+					int cRed = 0;
+					int cGreen = 255;
+					int cBlue = 16;
 					float ExtraDistance = 0;
 					bool RenderUnOccluded = false;
 
-					if (cGreen < 130)
+					if (HPP < 1 && !g_bIsWeakZombie[PlayerIndex])
 					{
-						cGreen = 130;
+						BaseCChanel = (2.55f * HPP * 100);
+						cRed = int(255 - BaseCChanel);
+						cGreen = int(BaseCChanel);
 					}
 
-					if (HP > MaxHP + 126)
+					else if (HPP > 1.115f)
 					{
-						cRed = 255;
-						cBlue = 175;
-						cGreen = 64;
+						cRed = 125;
+						cGreen = 0;
+						cBlue = 255;
 					}
 
 					if (pPlayer.IsCarrier())
 					{
-						if (HPP < 75)
-						{
-							ExtraDistance = 1521.0f;
-						}
+						ExtraDistance = GLOW_CARRIER_ADD_DISTANCE;
 
 						if (pPlayer.IsRoaring())
 						{
 							RenderUnOccluded = true;
-							ExtraDistance = 9000.0f;
+							ExtraDistance = GLOW_CARRIER_ROAR_DISTANCE;
 						}
 					}
 
@@ -483,10 +475,10 @@ class CSZMPlayer
 						cRed = 84;
 						cGreen = 135;
 						cBlue = 198;
-						ExtraDistance = -128.0f;
+						ExtraDistance = GLOW_WEAK_ADD_DISTANCE;
 					}
 
-					pPlayerEntity.SetOutline(true, filter_team, TEAM_ZOMBIES, Color(cRed, cGreen, cBlue), CONST_ZO_DISTANCE + ExtraDistance, true, RenderUnOccluded);
+					pPlayerEntity.SetOutline(true, filter_team, TEAM_ZOMBIES, Color(cRed, cGreen, cBlue), GLOW_BASE_DISTANCE + ExtraDistance, true, RenderUnOccluded);
 				}
 			}
 
