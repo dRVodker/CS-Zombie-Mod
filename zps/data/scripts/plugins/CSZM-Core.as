@@ -223,7 +223,7 @@ class CSZMPlayer
 
 	void SetZMVoice(int VoiceIndex)
 	{
-		VoiceTime = Globals.GetCurrentTime() + Math::RandomFloat(4.75f, 14.2f);
+		VoiceTime = Globals.GetCurrentTime() + Math::RandomFloat(5.15f, 14.2f);
 
 		if (VoiceIndex < 0)
 		{
@@ -524,43 +524,25 @@ class CSZMPlayer
 			{
 				if (VoiceTime <= Globals.GetCurrentTime())
 				{
-					bool bAllowIdleSound = false;
+					this.EmitZMSound(CONST_ZM_IDLE);
 
-					if (pPlayer.IsCarrier() && g_bIsFirstInfected[PlayerIndex])
+					float Time_Low = 5.24f;
+					float Time_High = 14.25f;
+
+					switch(Voice)
 					{
-						bAllowIdleSound = true;
+						case 2:
+							Time_Low = 5.05f;
+							Time_High = 12.05f;
+						break;
+						
+						case 3:
+							Time_Low = 5.65f;
+							Time_High = 11.92f;
+						break;
 					}
 
-					if (!pPlayer.IsCarrier())
-					{
-						bAllowIdleSound = true;
-					}
-
-					if (bAllowIdleSound)
-					{
-						if (pPlayerEntity.GetWaterLevel() != WL_Eyes)
-						{
-							Engine.EmitSoundEntity(pPlayerEntity, CONST_ZM_IDLE + Voice);
-						}
-
-						float Time_Low = 4.24f;
-						float Time_High = 13.10f;
-
-						switch(Voice)
-						{
-							case 2:
-								Time_Low = 4.1f;
-								Time_High = 9.85f;
-							break;
-							
-							case 3:
-								Time_Low = 4.84f;
-								Time_High = 10.92f;
-							break;
-						}
-
-						VoiceTime = Globals.GetCurrentTime() + Math::RandomFloat(Time_Low, Time_High);
-					}
+					VoiceTime = Globals.GetCurrentTime() + Math::RandomFloat(Time_Low, Time_High);
 				}
 			}
 		}
