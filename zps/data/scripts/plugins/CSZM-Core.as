@@ -47,8 +47,8 @@ const int SPEED_MINIMUM = 80;
 
 //Damage Slowdown
 const float CONST_MAX_SLOWTIME = 2.0f;	//Maximum amount of seconds a zombie could be slowed down
-const float CONST_RECOVER_UNIT = 0.305f;	//Amount of time in one tick of a speed recovery
-const float CONST_SLOWDOWN_TIME = 0.2f;	//Amount of time in one tick of a speed recovery
+const float CONST_RECOVER_UNIT = 0.305f;	//Speed recovery tick time
+const float CONST_SLOWDOWN_TIME = 0.2f;	//Amount of time zombie being slowed down (any damage)
 
 //Team Consts
 const int TEAM_LOBBYGUYS = 0;
@@ -76,22 +76,27 @@ const int CONST_ROUND_TIME = 300;	//Round time in seconds.
 const int CONST_ROUND_TIME_FULL = CONST_ROUND_TIME + CONST_GEARUP_TIME;	//Round time in seconds.
 const int CONST_ZOMBIE_LIVES = 32;	//Hold Zombie Lives at this level (Zombie Lives unused in CSZM) 
 const float CONST_ROUND_TIME_GAME = 300;	//Hold IN-Game Round timer at this level (IN-Game Round timer unused in CSZM)
-const float CONST_SLOWDOWN_MULT = 40;	//36.0f
+const float CONST_SLOWDOWN_MULT = 40;	//Old value - 36.0f
 const float CONST_SLOWDOWN_WEAKMULT = 30;
 const float CONST_SLOWDOWN_CRITDMG = 68.0f;
 const float CONST_ADRENALINE_DURATION = 12.0f;
 const int CONST_MAX_INFECTRESIST = 2;
 
+//Antidote state
+const int ANTIDOTE_STATE_UNUSEABLE = 0;
+const int ANTIDOTE_STATE_USEABLE = 1;
+
+//Zombie outline consts
 const float GLOW_BASE_DISTANCE = 1684.0f;
 const float GLOW_CARRIER_ADD_DISTANCE = 512.0f;
 const float GLOW_CARRIER_ROAR_DISTANCE = 10000.0f;
 const float GLOW_WEAK_ADD_DISTANCE = -128.0f;
 
 //ZM Voice related stuff
-const int CONST_MAX_VOICEINDEX = 3;
-const string CONST_ZM_PAIN = "CSPlayer_Z.Pain";
-const string CONST_ZM_DIE = "CSPlayer_Z.Die";
-const string CONST_ZM_IDLE = "CSPlayer.Idle";
+const int VOICE_MAX_INDEX = 3;
+const string VOICE_ZM_PAIN = "CSPlayer_Z.Pain";
+const string VOICE_ZM_DIE = "CSPlayer_Z.Die";
+const string VOICE_ZM_IDLE = "CSPlayer.Idle";
 
 //Some text over here
 const string strRoundBegun = "{default}Round has begun, you have {lightgreen}"+CONST_GEARUP_TIME+" seconds{default} to gear up before the {lightseagreen}first infected{default} turns.";
@@ -179,12 +184,12 @@ class CSZMPlayer
 	float OutlineTime;
 	int PreviousHP;
 
-	CSZMPlayer(int index, int NormSpeed)
+	CSZMPlayer(int index)
 	{
 		PlayerIndex = index;
 		SlowTime = 0;
 		SlowSpeed = 0;
-		DefSpeed = NormSpeed;
+		DefSpeed = SPEED_DEFAULT;
 		SpeedRT = 0;
 		Voice = 0;
 		PreviousVoice = 0;
@@ -236,7 +241,7 @@ class CSZMPlayer
 			{
 				while(VoiceIndex == PreviousVoice)
 				{
-					VoiceIndex = Math::RandomInt(1, CONST_MAX_VOICEINDEX);
+					VoiceIndex = Math::RandomInt(1, VOICE_MAX_INDEX);
 				}
 			}
 
@@ -272,13 +277,11 @@ class CSZMPlayer
 		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(PlayerIndex);
 		CZP_Player@ pPlayer = ToZPPlayer(PlayerIndex);
 
-		VoiceTime += Math::RandomFloat(0.42f, 0.73f);
+		VoiceTime += Math::RandomFloat(0.52f, 0.83f); //Increase VoiceTime if slowed down/took damage
 
 		float CurrentTime = SlowTime - Globals.GetCurrentTime();
-		float CurrentMFTime = MeleeFreezeTime - Globals.GetCurrentTime();
-		float NewTime;
-		float NewMFTime;
-		int NewSpeed;
+		float NewTime;	//Amount of time zombie being slowed down until start recovering a normal speed
+		int NewSpeed;	//Variabel to calculate new speed
 
 		NewTime = CONST_SLOWDOWN_TIME;
 
@@ -286,40 +289,35 @@ class CSZMPlayer
 		if (flDamage > CONST_SLOWDOWN_CRITDMG)
 		{
 			NewTime = 0.51f;
-			NewMFTime = 0.285f;
+			MeleeFreezeTime = Globals.GetCurrentTime() + 0.285f;
 		}
 
 		//Melee
 		if (bDamageType(iDamageType, 7))
 		{
 			NewTime = 2.0f;
-			NewMFTime = 0.851f;
+			MeleeFreezeTime = Globals.GetCurrentTime() + 0.851f;
 		}
 
 		//Blast
 		if (bDamageType(iDamageType, 6))
 		{
 			NewTime = 1.85f;
-			NewMFTime = 0.275f;
+			MeleeFreezeTime = Globals.GetCurrentTime() + 0.275f;
 		}
 
 		//Blast Surface
 		if (bDamageType(iDamageType, 27))
 		{
 			NewTime = 1.40f;
-			NewMFTime = 0.21f;
+			MeleeFreezeTime = Globals.GetCurrentTime() + 0.21f;
 		}
 
 		//Fall
 		if (bDamageType(iDamageType, 5))
 		{
 			NewTime = 0.65f;
-			NewMFTime = 0.05f;
-		}
-
-		if (NewMFTime < CurrentMFTime)
-		{
-			NewMFTime = CurrentMFTime;
+			MeleeFreezeTime = Globals.GetCurrentTime() + 0.05f;
 		}
 
 		if (NewTime < CurrentTime)
@@ -341,7 +339,6 @@ class CSZMPlayer
 			SlowSpeed * CONST_SLOWDOWN_WEAKMULT;
 		}
 
-		MeleeFreezeTime = Globals.GetCurrentTime() + NewMFTime;
 		SlowTime = Globals.GetCurrentTime() + NewTime;
 		SpeedRT = Globals.GetCurrentTime() + CONST_RECOVER_UNIT;
 
@@ -366,7 +363,7 @@ class CSZMPlayer
 
 		if (InfectResist < CONST_MAX_INFECTRESIST && InfectResist > CONST_MAX_INFECTRESIST - 2)
 		{
-			SetAntidoteState(PlayerIndex, 1);
+			SetAntidoteState(PlayerIndex, ANTIDOTE_STATE_USEABLE);
 		}
 	}
 
@@ -378,6 +375,7 @@ class CSZMPlayer
 
 		IRITime = Globals.GetCurrentTime() + 1.12f;
 		InfectResist++;
+
 		Utils.ScreenFade(pPlayer, Color(30, 125, 35, 75), 0.25, 0, fade_in);
 		pPlayerEntity.SetHealth(pPlayerEntity.GetHealth() + Math::RandomInt(15, 25));
 		Engine.EmitSoundPosition(PlayerIndex, "items/smallmedkit1.wav", pPlayerEntity.EyePosition(), 0.5f, 75, 100);
@@ -388,7 +386,7 @@ class CSZMPlayer
 		{
 			InfectResist = CONST_MAX_INFECTRESIST;
 			Chat.CenterMessagePlayer(pBasePlayer, "You got Maximum Infection Resist: " + InfectResist);
-			SetAntidoteState(PlayerIndex, 0);
+			SetAntidoteState(PlayerIndex, ANTIDOTE_STATE_UNUSEABLE);
 		}
 
 		else 
@@ -524,7 +522,7 @@ class CSZMPlayer
 			{
 				if (VoiceTime <= Globals.GetCurrentTime())
 				{
-					this.EmitZMSound(CONST_ZM_IDLE);
+					this.EmitZMSound(VOICE_ZM_IDLE);
 
 					float Time_Low = 5.24f;
 					float Time_High = 14.25f;
@@ -881,7 +879,7 @@ HookReturnCode CSZM_OnPlayerConnected(CZP_Player@ pPlayer)
 
 		//Before inserting remove everything at this index
 		CSZMPlayerArray.removeAt(index);
-		CSZMPlayerArray.insertAt(index, CSZMPlayer(index, SPEED_DEFAULT));
+		CSZMPlayerArray.insertAt(index, CSZMPlayer(index));
 		
 		g_flFRespawnCD[index] = 0;
 		g_iInfectDelay[index] = 0;
@@ -1031,22 +1029,23 @@ HookReturnCode CSZM_OnPlayerSpawn(CZP_Player@ pPlayer)
 			break;
 		}
 
-		//Set CSS Arms (human type) if not zombie
+		//Set CSS Arms model
 		if (TeamNum != TEAM_ZOMBIES)
 		{
 			pPlayer.SetArmModel("models/cszm/weapons/c_css_arms.mdl");
 		}
 
-		//Don't set CSS Arms (zombie type) to The Carrier
 		else
 		{
+			//Keep The Carrier with his own arms model
 			if (!pPlayer.IsCarrier())
 			{
+				//CSS Arms model (zombie skin)
 				pPlayer.SetArmModel("models/cszm/weapons/c_css_zombie_arms.mdl");
 			}
 		}
 
-		//If in lobby team set the lobby guy player model
+		//If 'InLobby' team set the lobby guy player model
 		if (TeamNum == TEAM_LOBBYGUYS)
 		{
 			pBaseEnt.SetModel("models/cszm/lobby_guy.mdl");
@@ -1063,11 +1062,11 @@ HookReturnCode CSZM_OnPlayerSpawn(CZP_Player@ pPlayer)
 			}
 		}
 		
-		if (!bWarmUp)
+		if (!bWarmUp) // Is Warm Up = FALSE
 		{
 			if (TeamNum == TEAM_SPECTATORS)
 			{
-				spec_hint(pPlayer);
+				spec_hint(pPlayer); //Hint for spectator, probably not working
 			}
 
 			if (TeamNum == TEAM_ZOMBIES)
@@ -1111,7 +1110,7 @@ HookReturnCode CSZM_OnPlayerSpawn(CZP_Player@ pPlayer)
 						SetZMHealth(pBaseEnt);
 					}
 
-					EmitBloodExp(pPlayer, true);
+					EmitBloodEffect(pPlayer, true);
 				}
 				
 				else
@@ -1139,7 +1138,7 @@ HookReturnCode CSZM_OnPlayerSpawn(CZP_Player@ pPlayer)
 
 			PutPlrToPlayZone(pBaseEnt);
 
-			if (CountPlrs(0) <= 2 && iWUSeconds == CONST_WARMUP_TIME)
+			if (CountPlrs(TEAM_LOBBYGUYS) <= 2 && iWUSeconds == CONST_WARMUP_TIME)
 			{
 				flWUWait = Globals.GetCurrentTime();
 			}
@@ -1175,7 +1174,7 @@ HookReturnCode CSZM_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out Da
 
 		int InfRes = pVicCSZMPlayer.GetInfectResist();
 
-		if (Utils.StrEql(pEntityAttacker.GetEntityName(), "frendly_shrapnel") && iVicTeam == 2)
+		if (Utils.StrEql(pEntityAttacker.GetEntityName(), "frendly_shrapnel") && iVicTeam == TEAM_SURVIVORS)
 		{
 			DamageInfo.SetDamageType(0);
 			DamageInfo.SetDamage(0);
@@ -1199,9 +1198,8 @@ HookReturnCode CSZM_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out Da
 
 		const string strAttName = strAN;
 
-		if (iVicTeam == TEAM_SURVIVORS && iAttTeam == TEAM_ZOMBIES && iDamageType == 8196)
+		if (iVicTeam == TEAM_SURVIVORS && iAttTeam == TEAM_ZOMBIES && iDamageType == 8196) //Damage Type: DMG_ALWAYSGIB + DMG_SLASH
 		{
-			
 			if (InfRes > 0)
 			{
 				pVicCSZMPlayer.SubtractInfectResist();
@@ -1228,6 +1226,7 @@ HookReturnCode CSZM_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out Da
 			float VP_DAMP = Math::RandomFloat(0.047f , 0.095f);
 			float VP_KICK = Math::RandomFloat(0.25f , 1.35f);
 
+			//Fall DamageType
 			if (bDamageType(iDamageType, 5))
 			{
 				VP_X = Math::RandomFloat(-1.75f, -5.15f);
@@ -1250,7 +1249,7 @@ HookReturnCode CSZM_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out Da
 
 			if (flDamage < pBaseEnt.GetHealth() && flDamage > 0.5f)
 			{
-				pVicCSZMPlayer.EmitZMSound(CONST_ZM_PAIN);
+				pVicCSZMPlayer.EmitZMSound(VOICE_ZM_PAIN);
 			}
 
 			pVicCSZMPlayer.AddSlowdown(flDamage, iDamageType);
@@ -1262,6 +1261,7 @@ HookReturnCode CSZM_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out Da
 
 HookReturnCode CSZM_OnPlayerInfected(CZP_Player@ pPlayer, InfectionState iState)
 {
+	//Builtins infection is not allowed
 	if (iState != state_none && bIsCSZM)
 	{
 		pPlayer.SetInfection(false, 0);
@@ -1316,7 +1316,7 @@ HookReturnCode CSZM_OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in Dama
 
 		if (iVicTeam == TEAM_ZOMBIES)
 		{
-			pVicCSZMPlayer.EmitZMSound(CONST_ZM_DIE);
+			pVicCSZMPlayer.EmitZMSound(VOICE_ZM_DIE);
 
 			if (!bSuicide)
 			{
@@ -1942,14 +1942,14 @@ void TurnFirstInfected()
 
 	for(int i = 1; i <= iMaxPlayers; i++)
 	{
-		CBaseEntity@ pEntPlayer = FindEntityByEntIndex(i);
+		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(i);
 
-		if (pEntPlayer is null)
+		if (pPlayerEntity is null)
 		{
 			continue;
 		}
 
-		if (pEntPlayer.GetTeamNumber() != TEAM_LOBBYGUYS)
+		if (pPlayerEntity.GetTeamNumber() != TEAM_LOBBYGUYS)
 		{
 			continue;
 		}
@@ -1984,10 +1984,10 @@ void TurnToZ(const int &in index)
 			}
 
 			g_bIsWeakZombie[index] = false;
-			pCSZMPlayer.SetDefSpeed(SPEED_ZOMBIE);
 			pPlayer.SetArmModel("models/cszm/weapons/c_css_zombie_arms.mdl");
-			EmitBloodExp(pPlayer, false);
+			EmitBloodEffect(pPlayer, false);
 			pPlayer.CompleteInfection();
+			pCSZMPlayer.SetDefSpeed(SPEED_ZOMBIE);
 
 			if (g_bIsFirstInfected[index])
 			{
@@ -2033,7 +2033,7 @@ void SpawnWeakZombie(CZP_Player@ pPlayer)
 	Chat.PrintToChatPlayer(pPlrEnt, strWeakZombie);
 }
 
-void EmitBloodExp(CZP_Player@ pPlayer, const bool &in bSilent)
+void EmitBloodEffect(CZP_Player@ pPlayer, const bool &in bSilent)
 {
 	if (pPlayer is null)
 	{
@@ -2114,7 +2114,7 @@ void SetZMHealth(CBaseEntity@ pEntPlr)
 		g_iZMDeathCount[index] = 0;
 	}
 	
-	int iHPBonus = g_iZMDeathCount[index] * CONST_DEATH_BONUS_HP;
+	int iHPBonus = int(g_iZMDeathCount[index] * CONST_DEATH_BONUS_HP);
 	CZP_Player@ pPlayer = ToZPPlayer(pEntPlr);
 	int iArmor = pPlayer.GetArmor();
 
@@ -2126,27 +2126,27 @@ void SetZMHealth(CBaseEntity@ pEntPlr)
 	if (!pPlayer.IsCarrier())
 	{
 		pEntPlr.SetMaxHealth(pEntPlr.GetMaxHealth() + CONST_ZOMBIE_ADD_HP + iHPBonus);
-		pEntPlr.SetHealth(pEntPlr.GetHealth() + (CONST_ZOMBIE_ADD_HP / 4) + iHPBonus + iArmor);
+		pEntPlr.SetHealth(pEntPlr.GetHealth() + (CONST_ZOMBIE_ADD_HP / 4) + iHPBonus + (iArmor * 2));
 	}
 
 	else if (pPlayer.IsCarrier() && !g_bIsFirstInfected[index])
 	{
 		int iZombCount = Utils.GetNumPlayers(zombie, false);
-		float flMultiplier = 0.5;
+		float flAloneMult = 0.5;
 		
 		switch(iZombCount)
 		{
 			case 1:
-				flMultiplier = 1.95f;
+				flAloneMult = 1.95f;
 			break;
 			
 			case 2:
-				flMultiplier = 0.95f;
+				flAloneMult = 0.95f;
 			break;
 		}
 
-		pEntPlr.SetMaxHealth(pEntPlr.GetMaxHealth() + int(float(CONST_CARRIER_HP) + (float(iHPBonus) * flMultiplier)));
-		pEntPlr.SetHealth(pEntPlr.GetHealth() + int(float(CONST_CARRIER_HP) + (float(iHPBonus) * flMultiplier)) + iArmor);
+		pEntPlr.SetMaxHealth(pEntPlr.GetMaxHealth() + int(float(CONST_CARRIER_HP) + (float(iHPBonus) * flAloneMult)));
+		pEntPlr.SetHealth(pEntPlr.GetHealth() + int(float(CONST_CARRIER_HP) + (float(iHPBonus) * flAloneMult)) + iArmor);
 	}
 
 	else
@@ -2160,7 +2160,7 @@ void SetZMHealth(CBaseEntity@ pEntPlr)
 void WarmUpTimer()
 {
 	int iNumPlrs = 0;
-	iNumPlrs += CountPlrs(0);
+	iNumPlrs += CountPlrs(TEAM_LOBBYGUYS);
 
 	if (bWarmUp && iNumPlrs >= 2)
 	{
