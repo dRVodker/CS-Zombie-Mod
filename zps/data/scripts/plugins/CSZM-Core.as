@@ -47,7 +47,7 @@ const int SPEED_MINIMUM = 80;
 
 //Damage Slowdown
 const float CONST_MAX_SLOWTIME = 2.0f;	//Maximum amount of seconds a zombie could be slowed down
-const float CONST_RECOVER_UNIT = 0.285f;	//Amount of time in one tick of a speed recovery
+const float CONST_RECOVER_UNIT = 0.305f;	//Amount of time in one tick of a speed recovery
 const float CONST_SLOWDOWN_TIME = 0.2f;	//Amount of time in one tick of a speed recovery
 
 //Team Consts
@@ -78,7 +78,7 @@ const int CONST_ZOMBIE_LIVES = 32;	//Hold Zombie Lives at this level (Zombie Liv
 const float CONST_ROUND_TIME_GAME = 300;	//Hold IN-Game Round timer at this level (IN-Game Round timer unused in CSZM)
 const float CONST_SLOWDOWN_MULT = 40;	//36.0f
 const float CONST_SLOWDOWN_WEAKMULT = 30;
-const float CONST_SLOWDOWN_CRITDMG = 45.0f;
+const float CONST_SLOWDOWN_CRITDMG = 68.0f;
 const float CONST_ADRENALINE_DURATION = 12.0f;
 const int CONST_MAX_INFECTRESIST = 2;
 const float CONST_ZO_DISTANCE = 1684.0f;
@@ -173,6 +173,7 @@ class CSZMPlayer
 	float IRITime;
 	float MeleeFreezeTime;
 	float OutlineTime;
+	int PreviousHP;
 
 	CSZMPlayer(int index, int NormSpeed)
 	{
@@ -189,9 +190,10 @@ class CSZMPlayer
 		IRITime = 0;
 		MeleeFreezeTime = 0;
 		OutlineTime = 0;
+		PreviousHP = 0;
 	}
 
-	void Zeroing()
+	void Reset()
 	{
 		CZP_Player@ pPlayer = ToZPPlayer(PlayerIndex);
 		AdrenalineTime = 0;
@@ -200,6 +202,7 @@ class CSZMPlayer
 		InfectResist = 0;
 		IRITime = 0;
 		MeleeFreezeTime = 0;
+		PreviousHP = 0;
 		pPlayer.DoPlayerDSP(0);
 	}
 
@@ -216,6 +219,8 @@ class CSZMPlayer
 
 	void SetZMVoice(int VoiceIndex)
 	{
+		VoiceTime = Globals.GetCurrentTime() + Math::RandomFloat(4.75f, 14.2f);
+
 		if (VoiceIndex < 0)
 		{
 			Voice = 2;
@@ -263,10 +268,12 @@ class CSZMPlayer
 		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(PlayerIndex);
 		CZP_Player@ pPlayer = ToZPPlayer(PlayerIndex);
 
-		VoiceTime += Math::RandomFloat(0.24f, 0.33f);
+		VoiceTime += Math::RandomFloat(0.42f, 0.73f);
 
 		float CurrentTime = SlowTime - Globals.GetCurrentTime();
+		float CurrentMFTime = MeleeFreezeTime - Globals.GetCurrentTime();
 		float NewTime;
+		float NewMFTime;
 		int NewSpeed;
 
 		NewTime = CONST_SLOWDOWN_TIME;
@@ -274,34 +281,41 @@ class CSZMPlayer
 		//Add time if critical dmg
 		if (flDamage > CONST_SLOWDOWN_CRITDMG)
 		{
-			NewTime = 0.45f;
+			NewTime = 0.51f;
+			NewMFTime = 0.285f;
 		}
 
 		//Melee
 		if (bDamageType(iDamageType, 7))
 		{
 			NewTime = 2.0f;
-			MeleeFreezeTime = Globals.GetCurrentTime() + 0.851f;
+			NewMFTime = 0.851f;
 		}
 
 		//Blast
 		if (bDamageType(iDamageType, 6))
 		{
 			NewTime = 1.85f;
-			MeleeFreezeTime = Globals.GetCurrentTime() + 0.275f;
+			NewMFTime = 0.275f;
 		}
 
 		//Blast Surface
 		if (bDamageType(iDamageType, 27))
 		{
 			NewTime = 1.40f;
-			MeleeFreezeTime = Globals.GetCurrentTime() + 0.21f;
+			NewMFTime = 0.21f;
 		}
 
 		//Fall
 		if (bDamageType(iDamageType, 5))
 		{
 			NewTime = 0.65f;
+			NewMFTime = 0.05f;
+		}
+
+		if (NewMFTime < CurrentMFTime)
+		{
+			NewMFTime = CurrentMFTime;
 		}
 
 		if (NewTime < CurrentTime)
@@ -323,6 +337,7 @@ class CSZMPlayer
 			SlowSpeed * CONST_SLOWDOWN_WEAKMULT;
 		}
 
+		MeleeFreezeTime = Globals.GetCurrentTime() + NewMFTime;
 		SlowTime = Globals.GetCurrentTime() + NewTime;
 		SpeedRT = Globals.GetCurrentTime() + CONST_RECOVER_UNIT;
 
@@ -411,46 +426,68 @@ class CSZMPlayer
 		{
 			if (OutlineTime <= Globals.GetCurrentTime())
 			{
-				OutlineTime = Globals.GetCurrentTime() + 0.05f;
-				int cRed = 0;
-				int cGreen = 127;
-				int cBlue = 101;
-				float ExtraDistance = 0;
-				bool RenderUnOccluded = false;
-
-				if (pPlayer.IsCarrier() && !g_bIsFirstInfected[PlayerIndex])
+				if (pPlayerEntity.GetHealth() != PreviousHP || pPlayer.IsCarrier())
 				{
-					cRed = 190;
-					cGreen = 95;
-					cBlue = 0;
-					ExtraDistance = 600.0f;
+					OutlineTime = Globals.GetCurrentTime() + 0.05f;
+					PreviousHP = pPlayerEntity.GetHealth();
 
-					if (pPlayer.IsRoaring())
+					float MaxHP = pPlayerEntity.GetMaxHealth();
+					float HP = pPlayerEntity.GetHealth();
+					float HPP = (HP / MaxHP) * 100.0f;
+
+					if (HPP > 100)
+					{
+						HPP = 100.0f;
+					}
+
+					if (HPP < 0)
+					{
+						HPP = 0;
+					}
+
+					int cRed = 255 - int(2.55f * HPP);
+					int cGreen = int(2.55f * HPP);
+					int cBlue = 0;
+
+					float ExtraDistance = 0;
+					bool RenderUnOccluded = false;
+
+					if (cGreen < 130)
+					{
+						cGreen = 130;
+					}
+
+					if (HP > MaxHP + 126)
 					{
 						cRed = 255;
-						cGreen = 127;
-						ExtraDistance = 9000.0f;
-						RenderUnOccluded = true;
+						cBlue = 175;
+						cGreen = 64;
 					}
-				}
 
-				if (g_bIsFirstInfected[PlayerIndex])
-				{
-					cRed = 145;
-					cGreen = 95;
-					cBlue = 215;
-					ExtraDistance = 1045.0f;
-				}
+					if (pPlayer.IsCarrier())
+					{
+						if (HPP < 75)
+						{
+							ExtraDistance = 1521.0f;
+						}
 
-				if (g_bIsWeakZombie[PlayerIndex])
-				{
-					cRed = 82;
-					cGreen = 125;
-					cBlue = 191;
-					ExtraDistance = -64.0f;
-				}
+						if (pPlayer.IsRoaring())
+						{
+							RenderUnOccluded = true;
+							ExtraDistance = 9000.0f;
+						}
+					}
 
-				pPlayerEntity.SetOutline(true, filter_team, TEAM_ZOMBIES, Color(cRed, cGreen, cBlue), CONST_ZO_DISTANCE + ExtraDistance, true, RenderUnOccluded);
+					if (g_bIsWeakZombie[PlayerIndex])
+					{
+						cRed = 84;
+						cGreen = 135;
+						cBlue = 198;
+						ExtraDistance = -128.0f;
+					}
+
+					pPlayerEntity.SetOutline(true, filter_team, TEAM_ZOMBIES, Color(cRed, cGreen, cBlue), CONST_ZO_DISTANCE + ExtraDistance, true, RenderUnOccluded);
+				}
 			}
 
 			if (MeleeFreezeTime > Globals.GetCurrentTime())
@@ -514,19 +551,19 @@ class CSZMPlayer
 							Engine.EmitSoundEntity(pPlayerEntity, CONST_ZM_IDLE + Voice);
 						}
 
-						float Time_Low = 3.15f;
-						float Time_High = 12.10f;
+						float Time_Low = 4.24f;
+						float Time_High = 13.10f;
 
 						switch(Voice)
 						{
 							case 2:
-								Time_Low = 3.0f;
-								Time_High = 6.65f;
+								Time_Low = 4.1f;
+								Time_High = 9.85f;
 							break;
 							
 							case 3:
-								Time_Low = 3.75f;
-								Time_High = 9.75f;
+								Time_Low = 4.84f;
+								Time_High = 10.92f;
 							break;
 						}
 
@@ -547,7 +584,7 @@ class CSZMPlayer
 
 			CBaseEntity@ pWeapon = pPlayer.GetCurrentWeapon();
 
-			if ( IRITime <= Globals.GetCurrentTime() && Utils.StrContains("iantidote", pWeapon.GetEntityName()))
+			if (IRITime <= Globals.GetCurrentTime() && Utils.StrContains("iantidote", pWeapon.GetEntityName()))
 			{
 				IRITime = Globals.GetCurrentTime() + 1.12f;
 
@@ -1282,7 +1319,7 @@ HookReturnCode CSZM_OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in Dama
 
 		CSZMPlayer@ pVicCSZMPlayer = CSZMPlayerArray[iVicIndex];
 
-		pVicCSZMPlayer.Zeroing();
+		pVicCSZMPlayer.Reset();
 		
 		if (pEntityAttacker.IsPlayer()) 
 		{
@@ -1458,7 +1495,7 @@ void OnNewRound()
 
 			if (pCSZMPlayer !is null)
 			{
-				pCSZMPlayer.Zeroing();
+				pCSZMPlayer.Reset();
 			}
 
 			g_iZMDeathCount[i] = -1;
