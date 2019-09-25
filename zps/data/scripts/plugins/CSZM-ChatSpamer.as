@@ -1,13 +1,10 @@
+#include "./cszm_modules/chat.as"
+
 bool bIsCSZM = false;
 float flMsgWaitTime = Globals.GetCurrentTime() + Math::RandomFloat(3.50f, 10.00f);
 const string lb = "{blue}[";
 const string rb = "{blue}] ";
 const string strCSZM = lb + "{coral}cszm"+rb;
-
-void SD(const string &in strMSG)
-{
-	Chat.PrintToChat(all, strMSG);
-}
 
 array<string> g_strMsg =
 {

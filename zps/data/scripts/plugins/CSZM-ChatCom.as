@@ -1,5 +1,4 @@
-const int TEAM_LOBBYGUYS = 0;
-const int TEAM_SPECTATORS = 1;
+#include "./cszm_modules/teamnums.as"
 
 bool bIsCSZM = false;
 

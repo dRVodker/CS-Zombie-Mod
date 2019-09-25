@@ -1,10 +1,4 @@
-void SD(const string &in strMSG)
-{
-	Chat.PrintToChat(all, strMSG);
-}
-
-const int TEAM_SURVIVORS = 2;
-const int TEAM_ZOMBIES = 3;
+#include "./cszm_modules/teamnums.as"
 
 bool bIsCSZM = false;
 
@@ -91,11 +85,9 @@ HookReturnCode CSZM_SHP_OnPlrDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out D
 				}
 			}
 		}
-
-		return HOOK_HANDLED;
 	}
 	
-	return HOOK_HANDLED;
+	return HOOK_CONTINUE;
 }
 
 HookReturnCode CSZM_SHP_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out DamageInfo)
@@ -270,7 +262,7 @@ HookReturnCode CSZM_SHP_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out 
 		return HOOK_HANDLED;
 	}
 
-	return HOOK_HANDLED;
+	return HOOK_CONTINUE;
 }
 
 void ShowHP(CBasePlayer@ pBasePlayer, const int &in iHP, const bool &in bLeft, const bool &in bHide)
@@ -278,12 +270,12 @@ void ShowHP(CBasePlayer@ pBasePlayer, const int &in iHP, const bool &in bLeft, c
 	if (bHide)
 	{
 		Chat.CenterMessagePlayer(pBasePlayer, "");
-		return;
 	}
 
 	else
 	{
 		string strLeft = "";
+
 		if (bLeft)
 		{
 			strLeft = " Left";

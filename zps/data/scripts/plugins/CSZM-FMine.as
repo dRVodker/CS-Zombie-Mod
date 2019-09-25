@@ -1,16 +1,4 @@
-void SD(const string &in strMSG)
-{
-	Chat.PrintToChat(all, strMSG);
-}
-
-void CD(const string &in strMsg)
-{
-	Chat.CenterMessage(all, strMsg);
-}
-
-const int TEAM_SPECTATORS = 1;
-const int TEAM_SURVIVORS = 2;
-const int TEAM_ZOMBIES = 3;
+#include "./cszm_modules/teamnums.as"
 
 const float TIK_TIME = 0.1f;
 

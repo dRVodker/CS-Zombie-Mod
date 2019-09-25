@@ -1,8 +1,3 @@
-void SD(const string &in strMSG)
-{
-	Chat.PrintToChat(all, strMSG);
-}
-
 bool bIsCSZM = false;
 
 int iDroppedAmmoCount = 0;
@@ -163,24 +158,6 @@ class CItemRespawn
 	}
 }
 
-void OnProcessRound()
-{
-	if (bIsCSZM)
-	{
-		for (uint i = 0; i < ItemRespawnArray.length(); i++)
-		{
-			CItemRespawn@ pItemRespawn = ItemRespawnArray[i];
-			
-			if (pItemRespawn is null)
-			{
-				continue;
-			}
-
-			pItemRespawn.Think();
-		}
-	}
-}
-
 void OnPluginInit()
 {
 	PluginData::SetVersion("1.0");
@@ -189,6 +166,22 @@ void OnPluginInit()
 
 	Events::Entities::OnEntityCreation.Hook(@OnEntityCreation);
 	Events::Entities::OnEntityDestruction.Hook(@OnEntityDestruction);
+}
+
+void OnProcessRound()
+{
+	if (bIsCSZM)
+	{
+		for (uint i = 0; i < ItemRespawnArray.length(); i++)
+		{
+			CItemRespawn@ pItemRespawn = ItemRespawnArray[i];
+			
+			if (pItemRespawn !is null)
+			{
+				pItemRespawn.Think();
+			}
+		}
+	}
 }
 
 void OnMapInit()
@@ -226,7 +219,7 @@ void OnMatchBegin()
 {
 	if (bIsCSZM)
 	{
-		Schedule::Task(1.75f, "FindItems");
+		Schedule::Task(1.75f, "CSZM_RI_FindItems");
 	}
 }
 
@@ -332,7 +325,7 @@ HookReturnCode OnEntityDestruction(const string &in strClassname, CBaseEntity@ p
 	return HOOK_CONTINUE;
 }
 
-void FindItems()
+void CSZM_RI_FindItems()
 {
 	ClearIRArray();
 

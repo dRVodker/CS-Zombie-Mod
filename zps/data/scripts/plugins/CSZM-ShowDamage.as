@@ -1,8 +1,5 @@
 #include "../SendGameText"
-void SD(const string &in strMSG)
-{
-	Chat.PrintToChat(all, strMSG);
-}
+#include "./cszm_modules/teamnums.as"
 
 void OnPluginInit()
 {
@@ -13,11 +10,6 @@ void OnPluginInit()
 	Events::Player::OnPlayerConnected.Hook(@OnKPlayerConnected);
 	Events::Player::OnPlayerDamaged.Hook(@OnKPlayerDamaged);
 }
-
-const int TEAM_LOBBYGUYS = 0;
-const int TEAM_SPECTATORS = 1;
-const int TEAM_SURVIVORS = 2;
-const int TEAM_ZOMBIES = 3;
 
 const float CONST_SHOWDMG_RESET = 1.35f;
 const float CONST_SHOWDMG_WAIT = 0.005f;

@@ -6,15 +6,17 @@
 */
 
 #include "../SendGameText"
+#include "./cszm_modules/chat.as"
 #include "./cszm_modules/cache.as"
 #include "./cszm_modules/killfeed.as"
-#include "./cszm_modules/chat.as"
 #include "./cszm_modules/rprop.as"
 #include "./cszm_modules/entities.as"
 #include "./cszm_modules/antidote.as"
 #include "./cszm_modules/item_flare.as"
+#include "./cszm_modules/teamnums.as"
+#include "./cszm_modules/core_text.as"
+#include "./cszm_modules/core_const.as"
 
-//Some Data
 CASConVar@ pSoloMode = null;
 CASConVar@ pTestMode = null;
 CASConVar@ pINGWarmUp = null;
@@ -35,94 +37,6 @@ bool bWarmUp = true;
 int iHumanWin;
 int iZombieWin;
 
-//GamePlay Consts and Variables
-//Player Speed
-const int SPEED_DEFAULT = 225;
-const int SPEED_HUMAN = 212; 
-const int SPEED_ZOMBIE = 185;
-const int SPEED_CARRIER = 204;
-const int SPEED_WEAK = 231;
-const int SPEED_ADRENALINE = 80;
-const int SPEED_MINIMUM = 80;
-
-//Damage Slowdown
-const float CONST_MAX_SLOWTIME = 2.0f;	//Maximum amount of seconds a zombie could be slowed down
-const float CONST_RECOVER_UNIT = 0.305f;	//Speed recovery tick time
-const float CONST_SLOWDOWN_TIME = 0.2f;	//Amount of time zombie being slowed down (any damage)
-
-//Team Consts
-const int TEAM_LOBBYGUYS = 0;
-const int TEAM_SPECTATORS = 1;
-const int TEAM_SURVIVORS = 2;
-const int TEAM_ZOMBIES = 3;
-
-//Other Consts
-const float CONST_SPAWN_DELAY = 5.0f;	//Zombies spawn delay.
-const int CONST_FI_HEALTH_MULT = 125;	//HP multiplier of first infected.
-const int CONST_ZOMBIE_ADD_HP = 200;	//Additional HP to Max Health of a zombie.
-const int CONST_WEAK_ZOMBIE_HP = 125;	//Health of the weak zombies
-const int CONST_CARRIER_HP = 0;	//Additional HP to Max Health of the carrier.	(Currently equal 0 because the carrier is too OP)
-const int CONST_REWARD_HEALTH = 125;	//Give that amount of HP as reward of successful infection.
-const int CONST_GEARUP_TIME = 40;	//Time to gear up and find a good spot.
-const int CONST_TURNING_TIME = 20;	//Turning time.
-const int CONST_INFECT_DELAY = 2;	//Amount of rounds you have to wait to be the First Infected again.
-const int CONST_WARMUP_TIME = 10;	//Time of the warmup in seconds.		(default value is 75)
-const float CONST_WEAK_ZOMBIE_TIME = 45.0f;								
-const int CONST_SUBTRACT_DEATH = 1;	//Amount of units subtract from the death counter
-const int CONST_INFECT_ADDTIME = 15;	//Amount of time in seconds add to the round time in case of successful infection
-const int CONST_DEATH_BONUS_HP = 75;	//Multiplier of death hp bonus.
-const int CONST_DEATH_MAX = 8;	//Maximum amount of death to boost up the max health.
-const int CONST_ROUND_TIME = 300;	//Round time in seconds.
-const int CONST_ROUND_TIME_FULL = CONST_ROUND_TIME + CONST_GEARUP_TIME;	//Round time in seconds.
-const int CONST_ZOMBIE_LIVES = 32;	//Hold Zombie Lives at this level (Zombie Lives unused in CSZM) 
-const float CONST_ROUND_TIME_GAME = 300;	//Hold IN-Game Round timer at this level (IN-Game Round timer unused in CSZM)
-const float CONST_SLOWDOWN_MULT = 40;	//Old value - 36.0f
-const float CONST_SLOWDOWN_WEAKMULT = 30;
-const float CONST_SLOWDOWN_CRITDMG = 68.0f;
-const float CONST_ADRENALINE_DURATION = 12.0f;
-const int CONST_MAX_INFECTRESIST = 2;
-
-//Antidote state
-const int ANTIDOTE_STATE_UNUSEABLE = 0;
-const int ANTIDOTE_STATE_USEABLE = 1;
-
-//Zombie outline consts
-const float GLOW_BASE_DISTANCE = 1684.0f;
-const float GLOW_CARRIER_ADD_DISTANCE = 512.0f;
-const float GLOW_CARRIER_ROAR_DISTANCE = 10000.0f;
-const float GLOW_WEAK_ADD_DISTANCE = -128.0f;
-
-//ZM Voice related stuff
-const int VOICE_MAX_INDEX = 3;
-const string VOICE_ZM_PAIN = "CSPlayer_Z.Pain";
-const string VOICE_ZM_DIE = "CSPlayer_Z.Die";
-const string VOICE_ZM_IDLE = "CSPlayer.Idle";
-
-//Some text over here
-const string strRoundBegun = "{default}Round has begun, you have {lightgreen}"+CONST_GEARUP_TIME+" seconds{default} to gear up before the {lightseagreen}first infected{default} turns.";
-const string strCannotPlayFI = "{default}You cannot play as the {lightseagreen}first infected{default} every round...";
-const string strChooseToPlayFI = "{default}You choose to play as the {lightseagreen}first infected{default}.";
-const string strOnlyInLobby = "{default}Command should only be used in the {green}ready room{default}.";
-const string strBecomFI = "- You are the first infected -\n";
-const string strTurningIn = "Turning in ";
-const string strSecs = " seconds...";
-const string strSec = " second...";
-const string strOutbreakMsg = "!!! Outbreak has begun !!!";
-const string strBecameFi = " {default}became the {lightseagreen}first infected{default}.";
-const string strCannotJoinGame = "{default}You cannot join the game until the {lightseagreen}first infected{default} turns...";
-const string strCannotJoinZT0 = "{default}You cannot join the {red}zombie team{default} until the {lightseagreen}first infected{default} turns...";
-const string strCannotJoinZT1 = "{default}Round is already in progress, you cannot join the {red}zombie team{default} right now.";
-const string strHintF1 = "F1 - Humans Team";
-const string strHintF2Inf = "F2 - Be The First Infected";
-const string strHintF2 = "F2 - Zombie Team";
-const string strHintF3 = "F3 - Spectate";
-const string strHintF4 = "F4 - Back to the Lobby";
-const string strHintF4WU = "F4 - Respawn";
-const string strLastZLeave = "{red}WARNING{default}: Last player in the Zombie team has leave.\n{blue}Round Restarting....";
-const string strAMP = "Awaiting More Players";
-const string strWarmUp = "-= Warm Up! =-";
-const string strWeakZombie = "{cornflowerblue}*You're spawned as weak zombie!";
-
 //List of available ZM Player models (make sure your server has it)
 array<string> g_strModels = 
 {
@@ -137,7 +51,6 @@ array<string> g_strModels =
 array<string> g_strMDLToUse;
 
 //Other arrays (Don't even touch this)
-array<float> g_flFRespawnCD;
 array<int> g_iInfectDelay;
 array<int> g_iZMDeathCount;
 
@@ -166,6 +79,7 @@ float flWeakZombieWait;
 
 //misc.as
 #include "./cszm_modules/misc.as"
+#include "./cszm_modules/core_warmup.as"
 
 class CSZMPlayer
 {
@@ -183,6 +97,7 @@ class CSZMPlayer
 	float MeleeFreezeTime;
 	float OutlineTime;
 	int PreviousHP;
+	float LobbyRespawnDelay;
 
 	CSZMPlayer(int index)
 	{
@@ -200,6 +115,7 @@ class CSZMPlayer
 		MeleeFreezeTime = 0;
 		OutlineTime = 0;
 		PreviousHP = 0;
+		LobbyRespawnDelay = 0;
 	}
 
 	void Reset()
@@ -212,7 +128,21 @@ class CSZMPlayer
 		IRITime = 0;
 		MeleeFreezeTime = 0;
 		PreviousHP = 0;
+		LobbyRespawnDelay = 0;
 		pPlayer.DoPlayerDSP(0);
+	}
+
+	bool AllowLobbyRespawn()
+	{
+		bool ALR = false;
+		
+		if (LobbyRespawnDelay <= Globals.GetCurrentTime()) 
+		{
+			LobbyRespawnDelay = Globals.GetCurrentTime() + 0.3f;
+			ALR = true;
+		}
+		
+		return ALR;
 	}
 
 	void SetDefSpeed(int NewSpeed)
@@ -657,7 +587,6 @@ void OnMapInit()
 		RegisterEntities();
 		
 		//Resize
-		g_flFRespawnCD.resize(iMaxPlayers + 1);
 		g_bWasFirstInfected.resize(iMaxPlayers + 1);
 		g_bIsFirstInfected.resize(iMaxPlayers + 1);
 		g_bIsAbuser.resize(iMaxPlayers + 1);
@@ -719,7 +648,6 @@ void OnMapShutdown()
 		ClearIntArray(g_iVictims);
 		ClearIntArray(g_iInfectDelay);
 		ClearIntArray(g_iZMDeathCount);
-		ClearFloatArray(g_flFRespawnCD);
 	}
 }
 
@@ -811,13 +739,6 @@ void OnItemDeliverUsed(CZP_Player@ pPlayer, CBaseEntity@ pEntity, int &in iEntit
 	}
 }
 
-void SetUsed(const int &in index, CBaseEntity@ pItemDeliver)
-{
-	pItemDeliver.SetEntityName("used" + index);
-	Engine.Ent_Fire("used" + index, "addoutput", "itemstate 0");
-	Engine.Ent_Fire("used" + index, "kill", "0", "0.5");	
-}
-
 HookReturnCode CSZM_OnPlayerRagdollCreate(CZP_Player@ pPlayer, bool &in bHeadshot, bool &out bExploded)
 {
 	CBasePlayer@ pPlrEnt = pPlayer.opCast();
@@ -881,7 +802,6 @@ HookReturnCode CSZM_OnPlayerConnected(CZP_Player@ pPlayer)
 		CSZMPlayerArray.removeAt(index);
 		CSZMPlayerArray.insertAt(index, CSZMPlayer(index));
 		
-		g_flFRespawnCD[index] = 0;
 		g_iInfectDelay[index] = 0;
 		g_iZMDeathCount[index] = -1;
 
@@ -915,9 +835,8 @@ HookReturnCode CSZM_OnConCommand(CZP_Player@ pPlayer, CASCommand@ pArgs)
 			{
 				if (bWarmUp)
 				{
-					if (Utils.StrEql("choose4", pArgs.Arg(0)) && g_flFRespawnCD[index] <= Globals.GetCurrentTime())
+					if (Utils.StrEql("choose4", pArgs.Arg(0)) && pCSZMPlayer.AllowLobbyRespawn())
 					{
-						g_flFRespawnCD[index] = Globals.GetCurrentTime() + 0.45f;
 						pPlayer.ForceRespawn();
 					}
 					
@@ -1548,6 +1467,35 @@ void LocknLoad()
 	}
 }
 
+void ShowChatMsg(const string &in strMsg, const int &in iTeamNum)
+{
+	if (iTeamNum != -1)
+	{
+		for (int i = 1; i <= iMaxPlayers; i++)
+		{
+			CZP_Player@ pPlayer = ToZPPlayer(i);
+
+			if (pPlayer is null)
+			{
+				continue;
+			}
+
+			CBasePlayer@ pPlrEnt = pPlayer.opCast();
+			CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+			
+			if (pBaseEnt.GetTeamNumber() == iTeamNum)
+			{
+				Chat.PrintToChatPlayer(pPlrEnt, strMsg);
+			}
+		}
+	}
+	
+	else
+	{
+		Chat.PrintToChat(all, strMsg);
+	}
+}
+
 void OnMatchEnded() 
 {
 	if (bIsCSZM)
@@ -1565,139 +1513,6 @@ void OnMatchEnded()
 
 			ShowStatsEnd(pPlr, g_iKills[i], g_iVictims[i]);
 		}
-	}
-}
-
-int ChooseVolunteer()
-{
-	int iCount = 0;
-	int iVIndex = 0;
-	
-	array<int> p_VolunteerIndex = {0};
-	
-	for (int i = 1; i <= iMaxPlayers; i++)
-	{
-		CBaseEntity@ pPlrEntity = FindEntityByEntIndex(i);
-		
-		if (pPlrEntity is null)
-		{
-			continue;
-		}
-		
-		if (g_bIsVolunteer[i] && pPlrEntity.GetTeamNumber() == TEAM_SURVIVORS && pPlrEntity.IsAlive())
-		{
-			iCount++;
-			p_VolunteerIndex.insertLast(i);
-		}
-	}
-	
-	if (iCount != 0)
-	{
-		int iLength = p_VolunteerIndex.length() - 1;
-
-		if (iLength == 1)
-		{
-			iVIndex = p_VolunteerIndex[1];
-		}
-
-		else
-		{
-			iVIndex = p_VolunteerIndex[Math::RandomInt(1, iLength)];
-		}
-	}
-	
-	return iVIndex;
-}
-
-int ChooseVictim()
-{
-	int iCount = 0;
-	int iVicIndex = 0;
-	int iRND;
-	
-	array<int> p_VictimIndex = {0};
-	
-	for (int i = 1; i <= iMaxPlayers; i++)
-	{
-		CBaseEntity@ pPlrEntity = FindEntityByEntIndex(i);
-		
-		if (pPlrEntity is null)
-		{
-			continue;
-		}
-		
-		if (!g_bWasFirstInfected[i] && pPlrEntity.IsAlive() && pPlrEntity.GetTeamNumber() == TEAM_SURVIVORS && g_iInfectDelay[i] < 2)
-		{
-			iCount++;
-			p_VictimIndex.insertLast(i);
-		}
-	}
-	
-	if (iCount != 0)
-	{
-		int iLength = p_VictimIndex.length() - 1;
-
-		if (iLength > 1)
-		{
-			iVicIndex = p_VictimIndex[Math::RandomInt(1, iLength)];
-		}
-
-		else
-		{
-			iVicIndex = p_VictimIndex[1];
-		}
-	}
-
-	if (iCount == 0)
-	{
-		CZP_Player@ pVictim = GetRandomPlayer(survivor, true);
-		CBasePlayer@ pVPlrEnt = pVictim.opCast();
-		CBaseEntity@ pVBaseEnt = pVPlrEnt.opCast();
-
-		iVicIndex = pVBaseEnt.entindex();
-	}
-	
-	return iVicIndex;
-}
-
-void DecideFirstInfected()
-{
-	int iPlrWasFZ = 0;
-	int iPlr = 0;
-	
-	for (int i = 1; i <= iMaxPlayers; i++)
-	{
-		CZP_Player@ pPlayer = ToZPPlayer(i);
-		
-		if (pPlayer is null)
-		{
-			continue;
-		}
-		
-		iPlr++;
-
-		if (g_bWasFirstInfected[i])
-		{
-			iPlrWasFZ++;
-		}
-	}
-	
-	if (iPlrWasFZ >= iPlr)
-	{
-		for (int i = 1; i <= iMaxPlayers; i++)
-		{
-			g_bWasFirstInfected[i] = false;
-		}
-	}
-
-	if (iFZIndex == 0)
-	{
-		iFZIndex = ChooseVolunteer();
-	}
-
-	if (iFZIndex == 0)
-	{
-		iFZIndex = ChooseVictim();
 	}
 }
 
@@ -1731,7 +1546,7 @@ void RoundTimer()
 	{
 		flRTWait = 0;
 		flHTime = 10.25f;
-		EndGame();
+		CSZM_EndGame();
 	}
 
 	ShowTimer(flHTime);
@@ -1775,99 +1590,6 @@ void ShowFICountdown()
 	else
 	{
 		DecideFirstInfected();
-	}
-}
-
-void SetShowTime()
-{
-	flShowHours = floor(iSeconds / 3600);
-	flShowMinutes = floor((iSeconds - flShowHours * 3600) / 60);
-	flShowSeconds = floor(iSeconds - (flShowHours * 3600) - (flShowMinutes * 60));
-}
-
-void ShowTimer(float &in flHoldTime)
-{
-	SetShowTime();
-
-	string SZero = "0";
-	string MZero = "0";
-	
-	if (flShowMinutes <= 9)
-	{
-		MZero = "0";
-	}
-
-	else
-	{
-		MZero = "";
-	}
-	
-	if (flShowSeconds <= 9)
-	{
-		SZero = "0";
-	}
-
-	else
-	{
-		SZero = "";
-	}
-
-	string TimerText = MZero + flShowMinutes + ":" + SZero + flShowSeconds;
-
-	if (flHoldTime <= 0)
-	{
-		flHoldTime = 1.08f;
-	}
-	
-	SendGameText(any, TimerText, 0, 1, -1, 0, 0, 0, flHoldTime, Color(235, 235, 235), Color(0, 0, 0));
-}
-
-void ShowOutbreak(int &in index)
-{
-	CZP_Player@ pFirstInf = ToZPPlayer(index);
-	string strColor = "blue";
-
-	if (g_bIsVolunteer[index])
-	{
-		strColor = "violet";
-	}
-	
-	for (int i = 1; i <= iMaxPlayers; i++)
-	{
-		CZP_Player@ pPlayer = ToZPPlayer(i);
-		
-		if (pPlayer is null)
-		{
-			continue;
-		}
-		
-		CBasePlayer@ pPlrEnt = pPlayer.opCast();
-		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
-		
-		if (i != index)
-		{
-			Chat.PrintToChatPlayer(pPlrEnt, "{" + strColor + "}" + pFirstInf.GetPlayerName() + strBecameFi);
-		}
-	}
-
-	SendGameText(any, strOutbreakMsg, 1, 0, -1, 0.175, 0, 0.35, 6.75, Color(64, 255, 128), Color(0, 255, 0));
-}
-
-void EndGame()
-{
-	if (Utils.GetNumPlayers(survivor, true) > 0) 
-	{
-		RoundManager.SetWinState(ws_HumanWin);
-	}
-
-	else if (Utils.GetNumPlayers(zombie, true) == 0) 
-	{
-		RoundManager.SetWinState(ws_Stalemate);
-	}
-
-	else
-	{
-		RoundManager.SetWinState(ws_ZombieWin);
 	}
 }
 
@@ -2033,41 +1755,6 @@ void SpawnWeakZombie(CZP_Player@ pPlayer)
 	Chat.PrintToChatPlayer(pPlrEnt, strWeakZombie);
 }
 
-void EmitBloodEffect(CZP_Player@ pPlayer, const bool &in bSilent)
-{
-	if (pPlayer is null)
-	{
-		return;
-	}
-
-	Utils.ScreenFade(pPlayer, Color(125, 35, 30, 145), 0.375, 0, fade_in);
-
-	CBasePlayer@ pPlrEnt = pPlayer.opCast();
-	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
-
-	CEntityData@ CameraBloodIPD = EntityCreator::EntityData();
-	CameraBloodIPD.Add("targetname", "PS-Turn-Head");
-	CameraBloodIPD.Add("flag_as_weather", "0");
-	CameraBloodIPD.Add("start_active", "1");
-	CameraBloodIPD.Add("effect_name", "blood_impact_red_01_headshot");
-	CameraBloodIPD.Add("kill", "0", true, "0.05");
-
-	CEntityData@ BodyBloodIPD = EntityCreator::EntityData();
-	BodyBloodIPD.Add("targetname", "PS-Turn");
-	BodyBloodIPD.Add("flag_as_weather", "0");
-	BodyBloodIPD.Add("start_active", "1");
-	BodyBloodIPD.Add("effect_name", "blood_explode_01");
-	BodyBloodIPD.Add("kill", "0", true, "0.05");
-
-	EntityCreator::Create("info_particle_system", pBaseEnt.EyePosition(), pBaseEnt.EyeAngles(), CameraBloodIPD);
-	EntityCreator::Create("info_particle_system", pBaseEnt.GetAbsOrigin(), pBaseEnt.GetAbsAngles(), BodyBloodIPD);
-	
-	if (!bSilent)
-	{
-		Engine.EmitSoundEntity(pBaseEnt, "Flesh.HeadshotExplode");
-	}
-}
-
 void RndZModel(CZP_Player@ pPlayer, CBaseEntity@ pPlayerEntity)
 {
 	Utils.CosmeticWear(pPlayer, "models/cszm/weapons/w_knife_t.mdl");
@@ -2154,63 +1841,4 @@ void SetZMHealth(CBaseEntity@ pEntPlr)
 		pEntPlr.SetMaxHealth(iFirstInfectedHP / 3);
 		pEntPlr.SetHealth(iFirstInfectedHP + iArmor);
 	}
-}
-
-//WarmUp Related Funcs
-void WarmUpTimer()
-{
-	int iNumPlrs = 0;
-	iNumPlrs += CountPlrs(TEAM_LOBBYGUYS);
-
-	if (bWarmUp && iNumPlrs >= 2)
-	{
-		flWUWait = Globals.GetCurrentTime() + 1.0f;
-
-		string TimerText = "\n\n\n"+strWarmUp+"\n| "+iWUSeconds+" |";
-		SendGameText(any, TimerText, 1, 0, -1, 0, 0, 0, 1.10f, Color(255, 175, 85), Color(255, 95, 5));
-
-		if (iWUSeconds == 0)
-		{
-			WarmUpEnd();
-		}
-
-		if (iWUSeconds > 0)
-		{
-			iWUSeconds--;
-		}
-	}
-	
-	else if (iNumPlrs <= 1)
-	{
-		flWUWait = 0;
-		iWUSeconds = CONST_WARMUP_TIME;
-		SendGameText(any, strAMP, 1, 0, -1, 0, 0, 0, 600, Color(255, 255, 255), Color(255, 95, 5));
-	}
-}
-
-void WarmUpEnd()
-{
-	if (bWarmUp)
-	{
-		bWarmUp = false;
-	}
-	
-	flWUWait = 0;
-	Engine.EmitSound("@buttons/button3.wav");
-	string TimerText = "\n\n\n"+strWarmUp+"\n| 0 |";
-	SendGameText(any, TimerText, 1, 0, -1, 0, 0, 0.35f, 0.05f, Color(255, 175, 85), Color(255, 95, 5));
-	SendGameText(any, "", 3, 0, 0, 0, 0, 0, 0, Color(0, 0, 0), Color(0, 0, 0));
-	SendGameText(any, strHintF1, 3, 0, 0.05f, 0.10f, 0, 2.0f, 120, Color(64, 128, 255), Color(255, 95, 5));
-
-	if (!RoundManager.IsRoundOngoing(false))
-	{
-		SendGameText(any, "\n" + strHintF2Inf, 4, 0, 0.05f, 0.10f, 0, 2.0f, 120, Color(255, 32, 64), Color(255, 95, 5));
-	}
-
-	else
-	{
-		SendGameText(any, "\n" + strHintF2, 4, 0, 0.05f, 0.10f, 0, 2.0f, 120, Color(255, 32, 64), Color(255, 95, 5));
-	}
-
-	SendGameText(any, "\n\n" + strHintF3, 5, 0, 0.05f, 0.10f, 0, 2.0f, 120, Color(255, 255, 255), Color(255, 95, 5));
 }
