@@ -38,6 +38,7 @@ const float CONST_SLOWDOWN_WEAKMULT = 30;
 const float CONST_SLOWDOWN_CRITDMG = 68.0f;
 const float CONST_ADRENALINE_DURATION = 12.0f;
 const int CONST_MAX_INFECTRESIST = 2;
+const float CONST_ARMOR_MULT = 2.0f;
 
 //Antidote state
 const int ANTIDOTE_STATE_UNUSEABLE = 0;
@@ -54,3 +55,7 @@ const int VOICE_MAX_INDEX = 3;
 const string VOICE_ZM_PAIN = "CSPlayer_Z.Pain";
 const string VOICE_ZM_DIE = "CSPlayer_Z.Die";
 const string VOICE_ZM_IDLE = "CSPlayer.Idle";
+
+//CSZM Arms models
+const string MODEL_ZOMBIE_ARMS = "models/cszm/weapons/c_cszm_zombie_arms.mdl";
+const string MODEL_HUMAN_ARMS = "models/cszm/weapons/c_cszm_arms.mdl";

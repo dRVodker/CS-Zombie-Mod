@@ -269,13 +269,14 @@ int ChooseVolunteer()
 	for (int i = 1; i <= iMaxPlayers; i++)
 	{
 		CBaseEntity@ pPlrEntity = FindEntityByEntIndex(i);
+		CSZMPlayer@ pCSZMPlayer = CSZMPlayerArray[i];
 		
 		if (pPlrEntity is null)
 		{
 			continue;
 		}
 		
-		if (g_bIsVolunteer[i] && pPlrEntity.GetTeamNumber() == TEAM_SURVIVORS && pPlrEntity.IsAlive())
+		if (pCSZMPlayer.IsVolunteer() && pPlrEntity.GetTeamNumber() == TEAM_SURVIVORS && pPlrEntity.IsAlive())
 		{
 			iCount++;
 			p_VolunteerIndex.insertLast(i);
@@ -311,13 +312,14 @@ int ChooseVictim()
 	for (int i = 1; i <= iMaxPlayers; i++)
 	{
 		CBaseEntity@ pPlrEntity = FindEntityByEntIndex(i);
+		CSZMPlayer@ pCSZMPlayer = CSZMPlayerArray[i];
 		
 		if (pPlrEntity is null)
 		{
 			continue;
 		}
 		
-		if (!g_bWasFirstInfected[i] && pPlrEntity.IsAlive() && pPlrEntity.GetTeamNumber() == TEAM_SURVIVORS && g_iInfectDelay[i] < 2)
+		if (!g_bWasFirstInfected[i] && pPlrEntity.IsAlive() && pPlrEntity.GetTeamNumber() == TEAM_SURVIVORS && pCSZMPlayer.GetInfectDelay() < 2)
 		{
 			iCount++;
 			p_VictimIndex.insertLast(i);
@@ -439,9 +441,11 @@ void ShowTimer(float &in flHoldTime)
 void ShowOutbreak(int &in index)
 {
 	CZP_Player@ pFirstInf = ToZPPlayer(index);
+	CSZMPlayer@ pCSZMPlayer = CSZMPlayerArray[index];
+
 	string strColor = "blue";
 
-	if (g_bIsVolunteer[index])
+	if (pCSZMPlayer.IsVolunteer())
 	{
 		strColor = "violet";
 	}
