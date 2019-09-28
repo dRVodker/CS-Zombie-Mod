@@ -52,9 +52,6 @@ array<string> g_strMDLToUse;
 
 //Other arrays (Don't even touch this)
 array<bool> g_bWasFirstInfected;
-array<bool> g_bIsFirstInfected;
-array<bool> g_bIsAbuser;
-array<bool> g_bIsWeakZombie;
 
 //CSZM Player Array
 array<CSZMPlayer@> CSZMPlayerArray;
@@ -93,6 +90,9 @@ class CSZMPlayer
 	int InfectDelay;
 	bool Volunteer;
 	int ZMDeathCount;
+	bool WeakZombie;
+	bool Abuser;
+	bool FirstInfected;
 
 	CSZMPlayer(int index)
 	{
@@ -114,6 +114,9 @@ class CSZMPlayer
 		InfectDelay = 0;
 		Volunteer = false;
 		ZMDeathCount = 0;
+		WeakZombie = true;
+		Abuser = false;
+		FirstInfected = false;
 	}
 
 	void Reset()
@@ -129,6 +132,9 @@ class CSZMPlayer
 		PreviousHP = 0;
 		LobbyRespawnDelay = 0;
 		Volunteer = false;
+		WeakZombie = true;
+		Abuser = false;
+		FirstInfected = false;
 		ZMDeathCount = -1;
 		pPlayer.DoPlayerDSP(0);
 	}
@@ -147,6 +153,25 @@ class CSZMPlayer
 		AdrenalineTime = Globals.GetCurrentTime();
 	}
 
+	bool IsFirstInfected()
+	{
+		return FirstInfected;
+	}
+
+	void SetFirstInfected(bool SFI)
+	{
+		FirstInfected = SFI;
+	}
+
+	bool IsAbuser()
+	{
+		return Abuser;
+	}
+
+	void SetAbuser(bool SA)
+	{
+		Abuser = SA;
+	}
 	void SetVoiceTime(float NewTime)
 	{
 		VoiceTime = Globals.GetCurrentTime() + NewTime;
@@ -179,7 +204,7 @@ class CSZMPlayer
 
 	void IncreaseZMDC()
 	{
-		if (!g_bIsFirstInfected[PlayerIndex])
+		if (!FirstInfected)
 		{
 			ZMDeathCount++;
 
@@ -195,7 +220,17 @@ class CSZMPlayer
 		return Volunteer;
 	}
 
-	void SetVolunteer( bool SetV )
+	bool IsWeakZombie()
+	{
+		return WeakZombie;
+	}
+
+	void SetWeakZombie(bool SWZ)
+	{
+		WeakZombie = SWZ;
+	}
+
+	void SetVolunteer(bool SetV)
 	{
 		Volunteer = SetV;
 	}
@@ -299,7 +334,7 @@ class CSZMPlayer
 
 		bool bAllowPainSound = false;
 
-		if (pPlayer.IsCarrier() && g_bIsFirstInfected[PlayerIndex])
+		if (pPlayer.IsCarrier() && FirstInfected)
 		{
 			bAllowPainSound = true;
 		}
@@ -382,7 +417,7 @@ class CSZMPlayer
 		SlowSpeed = int((DefSpeed * 0.01) * CONST_SLOWDOWN_MULT);
 
 		//Reduce the slowdown speed if weak zombie
-		if (g_bIsWeakZombie[PlayerIndex])
+		if (WeakZombie)
 		{
 			SlowSpeed * CONST_SLOWDOWN_WEAKMULT;
 		}
@@ -464,6 +499,35 @@ class CSZMPlayer
 		SetUsed(PlayerIndex, pItemAdrenaline);
 	}
 
+	void SpawnWeakZombie()
+	{
+		if (bSpawnWeak && WeakZombie)
+		{
+			CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(PlayerIndex);
+			CBasePlayer@ pBasePlayer = ToBasePlayer(PlayerIndex);
+			CZP_Player@ pPlayer = ToZPPlayer(PlayerIndex);
+
+			if (pPlayer.IsCarrier()) 
+			{
+				pPlayerEntity.SetModel("models/cszm/carrier.mdl");
+				pPlayer.SetArmModel("models/weapons/arms/c_carrier.mdl");
+			}
+			
+			else 
+			{
+				pPlayerEntity.SetModel("models/cszm/zombie_charple.mdl");
+				pPlayer.SetArmModel(MODEL_ZOMBIE_ARMS);
+			}
+
+			Utils.CosmeticWear(pPlayer, "models/cszm/weapons/w_knife_t.mdl");
+			pPlayerEntity.SetMaxHealth(15);
+			pPlayerEntity.SetHealth(CONST_WEAK_ZOMBIE_HP);
+			DefSpeed = SPEED_WEAK;
+			Voice = 2;
+			Chat.PrintToChatPlayer(pBasePlayer, strWeakZombie);
+		}
+	}
+
 	void Think()
 	{
 		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(PlayerIndex);
@@ -474,6 +538,11 @@ class CSZMPlayer
 
 		if (TeamNum == TEAM_ZOMBIES)
 		{
+			if(!bSpawnWeak && WeakZombie)
+			{
+				WeakZombie = false;
+			}
+
 			if (OutlineTime <= Globals.GetCurrentTime())
 			{
 				if (pPlayerEntity.GetHealth() != PreviousHP || pPlayer.IsCarrier())
@@ -491,7 +560,7 @@ class CSZMPlayer
 					float ExtraDistance = 0;
 					bool RenderUnOccluded = false;
 
-					if (HPP < 1 && !g_bIsWeakZombie[PlayerIndex])
+					if (HPP < 1 && !WeakZombie)
 					{
 						BaseCChanel = (2.55f * HPP * 100);
 						cRed = int(255 - BaseCChanel);
@@ -516,7 +585,7 @@ class CSZMPlayer
 						}
 					}
 
-					if (g_bIsWeakZombie[PlayerIndex])
+					if (WeakZombie)
 					{
 						cRed = 84;
 						cGreen = 135;
@@ -710,9 +779,6 @@ void OnMapInit()
 		
 		//Resize
 		g_bWasFirstInfected.resize(iMaxPlayers + 1);
-		g_bIsFirstInfected.resize(iMaxPlayers + 1);
-		g_bIsAbuser.resize(iMaxPlayers + 1);
-		g_bIsWeakZombie.resize(iMaxPlayers + 1);
 		g_iKills.resize(iMaxPlayers + 1);
 		g_iVictims.resize(iMaxPlayers + 1);
 
@@ -724,7 +790,6 @@ void OnMapInit()
 		{
 			SetDoorFilter(TEAM_LOBBYGUYS);
 		}
-	
 	}
 
 	else
@@ -759,9 +824,6 @@ void OnMapShutdown()
 		CSZMPlayerArray.removeRange(0, CSZMPlayerArray.length());
 		
 		ClearBoolArray(g_bWasFirstInfected);
-		ClearBoolArray(g_bIsFirstInfected);
-		ClearBoolArray(g_bIsAbuser);
-		ClearBoolArray(g_bIsWeakZombie);
 		ClearIntArray(g_iKills);
 		ClearIntArray(g_iVictims);
 	}
@@ -922,9 +984,6 @@ HookReturnCode CSZM_OnPlayerConnected(CZP_Player@ pPlayer)
 		g_iVictims[index] = 0;
 			
 		g_bWasFirstInfected[index] = false;
-		g_bIsFirstInfected[index] = false;
-		g_bIsAbuser[index] = false;
-		g_bIsWeakZombie[index] = true;
 	}
 	
 	return HOOK_CONTINUE;
@@ -976,7 +1035,7 @@ HookReturnCode CSZM_OnConCommand(CZP_Player@ pPlayer, CASCommand@ pArgs)
 				{
 					if (!bAllowZombieSpawn)
 					{
-						if (g_bIsAbuser[index])
+						if (pCSZMPlayer.IsAbuser())
 						{
 							Chat.PrintToChatPlayer(pPlrEnt, strCannotJoinGame);
 							Engine.EmitSoundPlayer(pPlayer, "common/wpn_denyselect.wav");
@@ -984,7 +1043,7 @@ HookReturnCode CSZM_OnConCommand(CZP_Player@ pPlayer, CASCommand@ pArgs)
 							return HOOK_HANDLED;
 						}
 
-						if (!g_bIsAbuser[index])
+						if (!pCSZMPlayer.IsAbuser())
 						{
 							pBaseEnt.ChangeTeam(TEAM_SURVIVORS);
 							pPlayer.ForceRespawn();
@@ -994,7 +1053,7 @@ HookReturnCode CSZM_OnConCommand(CZP_Player@ pPlayer, CASCommand@ pArgs)
 						}
 					}
 
-					else if (g_bIsAbuser[index])
+					else if (pCSZMPlayer.IsAbuser())
 					{
 						pBaseEnt.ChangeTeam(TEAM_ZOMBIES);
 						pPlayer.ForceRespawn();
@@ -1112,26 +1171,13 @@ HookReturnCode CSZM_OnPlayerSpawn(CZP_Player@ pPlayer)
 						AmmoBankSetValue iAmmoType = AmmoBankSetValue(iRNG);
 						pPlayer.AmmoBank(add, iAmmoType, iAmmoCount);
 					}
-
-					if (!bSpawnWeak && g_bIsWeakZombie[index])
-					{
-						g_bIsWeakZombie[index] = false;
-					}
-
-					if (bSpawnWeak && g_bIsWeakZombie[index])
-					{
-						SpawnWeakZombie(pPlayer);
-					}
 					
-					else
-					{
-						RndZModel(pPlayer, pBaseEnt);
-						SetZMHealth(pBaseEnt);
-					}
+					RndZModel(pPlayer, pBaseEnt);
+					SetZMHealth(pBaseEnt);
 
 					EmitBloodEffect(pPlayer, true);
-
-					pCSZMPlayer.SetVoiceTime(0.1f);
+					pCSZMPlayer.SpawnWeakZombie();
+					pCSZMPlayer.SetVoiceTime(0.075f);
 				}
 				
 				else
@@ -1351,18 +1397,18 @@ HookReturnCode CSZM_OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in Dama
 		{
 			g_iVictims[iAttIndex]++;
 			ShowKills(pPlrAttacker, g_iVictims[iAttIndex], true);
-			g_bIsWeakZombie[iVicIndex] = false;
+			pVicCSZMPlayer.SetWeakZombie(false);
 			GotVictim(pPlrAttacker, pEntityAttacker);
 		}
 
-		if (g_bIsFirstInfected[iVicIndex])
+		if (pVicCSZMPlayer.IsFirstInfected())
 		{
-			g_bIsFirstInfected[iVicIndex] = false;
+			pVicCSZMPlayer.SetFirstInfected(false);
 		}
 
 		if (iVicTeam == TEAM_ZOMBIES && bSpawnWeak)
 		{
-			g_bIsAbuser[iVicIndex] = true;
+			pVicCSZMPlayer.SetAbuser(true);
 		}
 
 		if (iFZIndex == iVicIndex)
@@ -1482,10 +1528,6 @@ void OnNewRound()
 
 			g_iKills[i] = 0;
 			g_iVictims[i] = 0;
-				
-			g_bIsFirstInfected[i] = false;
-			g_bIsAbuser[i] = false;
-			g_bIsWeakZombie[i] = true;
 		}
 	}
 }
@@ -1741,8 +1783,9 @@ void TurnFirstInfected()
 		pCSZMPlayer.SetVolunteer(false);
 	}
 
-	g_bIsFirstInfected[iFZIndex] = true;
+	pCSZMPlayer.SetFirstInfected(true);
 	pCSZMPlayer.AddInfectDelay();
+
 	ShowOutbreak(iFZIndex);
 	TurnToZ(iFZIndex);
 
@@ -1781,7 +1824,7 @@ void TurnToZ(const int &in index)
 			CBasePlayer@ pPlrEnt = pPlayer.opCast();
 			CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 
-			if (g_bIsFirstInfected[index])
+			if (pCSZMPlayer.IsFirstInfected())
 			{
 				pSoloMode.SetValue("0");
 				bAllowZombieSpawn = true;
@@ -1789,13 +1832,13 @@ void TurnToZ(const int &in index)
 				g_bWasFirstInfected[index] = true;
 			}
 
-			g_bIsWeakZombie[index] = false;
+			pCSZMPlayer.SetWeakZombie(false);
 			pPlayer.SetArmModel(MODEL_ZOMBIE_ARMS);
 			EmitBloodEffect(pPlayer, false);
 			pPlayer.CompleteInfection();
 			pCSZMPlayer.SetDefSpeed(SPEED_ZOMBIE);
 
-			if (g_bIsFirstInfected[index])
+			if (pCSZMPlayer.IsFirstInfected())
 			{
 				pPlayer.SetCarrier(true);
 			}
@@ -1810,35 +1853,6 @@ void TurnToZ(const int &in index)
 	}
 }
 
-void SpawnWeakZombie(CZP_Player@ pPlayer)
-{
-	CBasePlayer@ pPlrEnt = pPlayer.opCast();
-	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
-
-	const int index = pBaseEnt.entindex();
-
-	CSZMPlayer@ pCSZMPlayer = CSZMPlayerArray[index];
-
-	if (pPlayer.IsCarrier()) 
-	{
-		pBaseEnt.SetModel("models/cszm/carrier.mdl");
-		pPlayer.SetArmModel("models/weapons/arms/c_carrier.mdl");
-	}
-	
-	else 
-	{
-		pBaseEnt.SetModel("models/cszm/zombie_charple.mdl");
-		pPlayer.SetArmModel(MODEL_ZOMBIE_ARMS);
-	}
-
-	Utils.CosmeticWear(pPlayer, "models/cszm/weapons/w_knife_t.mdl");
-	pBaseEnt.SetMaxHealth(15);
-	pBaseEnt.SetHealth(CONST_WEAK_ZOMBIE_HP);
-	pCSZMPlayer.SetDefSpeed(SPEED_WEAK);
-	pCSZMPlayer.SetZMVoice(-1);
-	Chat.PrintToChatPlayer(pPlrEnt, strWeakZombie);
-}
-
 void RndZModel(CZP_Player@ pPlayer, CBaseEntity@ pPlayerEntity)
 {
 	Utils.CosmeticWear(pPlayer, "models/cszm/weapons/w_knife_t.mdl");
@@ -1846,7 +1860,7 @@ void RndZModel(CZP_Player@ pPlayer, CBaseEntity@ pPlayerEntity)
 
 	pCSZMPlayer.SetZMVoice(Math::RandomInt(1,3));
 	
-	if (g_bIsFirstInfected[pPlayerEntity.entindex()])
+	if (pCSZMPlayer.IsFirstInfected())
 	{
 		pPlayerEntity.SetModel("models/cszm/zombie_morgue.mdl");
 	}
@@ -1897,7 +1911,7 @@ void SetZMHealth(CBaseEntity@ pPlayerEntity)
 		pPlayerEntity.SetHealth(pPlayerEntity.GetHealth() + (CONST_ZOMBIE_ADD_HP / 4) + iHPBonus + iArmor);
 	}
 
-	else if (pPlayer.IsCarrier() && !g_bIsFirstInfected[index])
+	else if (pPlayer.IsCarrier() && !pCSZMPlayer.IsFirstInfected())
 	{
 		int iZombCount = Utils.GetNumPlayers(zombie, false);
 		float flAloneMult = 0.5;
