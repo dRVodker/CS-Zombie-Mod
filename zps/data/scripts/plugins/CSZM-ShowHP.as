@@ -1,6 +1,6 @@
 #include "./cszm_modules/teamnums.as"
 
-bool bIsCSZM = false;
+bool bIsCSZM;
 
 bool bDamageType(int &in iSubjectDT, int &in iDMGNum)
 {
@@ -27,9 +27,6 @@ array<string> g_strEntities =
 	"prop_barricade" //8
 };
 
-array<int> g_PhysTPIndex;
-array<int> g_PhysTPOwner;
-
 void OnPluginInit()
 {
 	PluginData::SetVersion("1.0");
@@ -38,7 +35,6 @@ void OnPluginInit()
 
 	//Events
 	Events::Custom::OnEntityDamaged.Hook(@CSZM_SHP_OnEntDamaged);
-	Events::Custom::OnPlayerDamagedCustom.Hook(@CSZM_SHP_OnPlrDamaged);
 }
 
 void OnMapInit()
@@ -54,40 +50,7 @@ void OnMapShutdown()
 	if (bIsCSZM)
 	{
 		bIsCSZM = false;
-		OnNewRound();	
 	}
-}
-
-void OnNewRound()
-{
-	g_PhysTPIndex.removeRange(0, g_PhysTPIndex.length());
-	g_PhysTPOwner.removeRange(0, g_PhysTPOwner.length());
-}
-
-HookReturnCode CSZM_SHP_OnPlrDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out DamageInfo)
-{
-	CBaseEntity@ pAttacker = DamageInfo.GetAttacker();
-	CBasePlayer@ pPlrEnt = pPlayer.opCast();
-	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
-
-	if (Utils.StrContains("physics", pAttacker.GetClassname()) || Utils.StrContains("physbox", pAttacker.GetClassname()))
-	{
-		for (uint i = 0; i < g_PhysTPIndex.length(); i++)
-		{
-			if (pAttacker.entindex() == g_PhysTPIndex[i])
-			{
-				CBaseEntity@ pNewAttacker = FindEntityByEntIndex(g_PhysTPOwner[i]);
-				
-				if (pNewAttacker !is null) 
-				{
-					DamageInfo.SetInflictor(pNewAttacker);
-					DamageInfo.SetAttacker(pNewAttacker);
-				}
-			}
-		}
-	}
-	
-	return HOOK_CONTINUE;
 }
 
 HookReturnCode CSZM_SHP_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out DamageInfo)
@@ -160,33 +123,7 @@ HookReturnCode CSZM_SHP_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out 
 	{
 		if (pAttacker.IsPlayer())
 		{
-			int iIndex = pEntity.entindex();
-			bool bIsIndexValid = false;
-
 			pEntity.ChangeTeam(pAttacker.GetTeamNumber());
-
-			if (g_PhysTPIndex.length() > 0)
-			{
-				for (uint i = 0; i < g_PhysTPIndex.length(); i++)
-				{
-					if (bIsIndexValid)
-					{
-						continue;
-					}
-
-					if (iIndex == g_PhysTPIndex[i])
-					{
-						 bIsIndexValid = true;
-						g_PhysTPOwner[i] = pAttacker.entindex();
-					}
-				}
-			}
-
-			if (bIsIndexValid == false)
-			{
-				g_PhysTPIndex.insertLast(iIndex);
-				g_PhysTPOwner.insertLast(pAttacker.entindex());
-			}
 		}
 	}
 
@@ -197,7 +134,7 @@ HookReturnCode CSZM_SHP_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out 
 		string MDLName = pEntity.GetModelName();
 		int DMGType = DamageInfo.GetDamageType();
 		float DMG = DamageInfo.GetDamage();
-		float flMultiplier = 22.0f;
+		float flMultiplier = 23.0f;
 
 		//Only for survivors
 		if (pAttacker.IsPlayer() && pAttacker.GetTeamNumber() == TEAM_SURVIVORS)
