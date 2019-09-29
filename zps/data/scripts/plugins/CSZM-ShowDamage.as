@@ -42,7 +42,7 @@ class CShowDamage
 
 	void AddDamage(float flDamage, CBaseEntity@ pVictim)
 	{	
-		if (pVictim is null)
+		if (pVictim is null || flDamage < 1)
 		{
 			return;
 		}
