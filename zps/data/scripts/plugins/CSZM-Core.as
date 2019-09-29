@@ -744,7 +744,6 @@ void OnPluginInit()
 	Events::Player::OnPlayerKilled.Hook(@CSZM_OnPlayerKilled);
 	Events::Player::OnPlayerDisonnected.Hook(@CSZM_OnPlayerDisonnected);
 	Events::Rounds::RoundWin.Hook(@CSZM_RoundWin);
-	Events::Player::OnPlayerRagdollCreate.Hook(@CSZM_OnPlayerRagdollCreate);
 	Events::Player::OnConCommand.Hook(@CSZM_OnConCommand);
 }
 
@@ -915,20 +914,6 @@ void OnItemDeliverUsed(CZP_Player@ pPlayer, CBaseEntity@ pEntity, int &in iEntit
 	{
 		pCSZMPlayer.InjectAdrenaline(pEntity);
 	}
-}
-
-HookReturnCode CSZM_OnPlayerRagdollCreate(CZP_Player@ pPlayer, bool &in bHeadshot, bool &out bExploded)
-{
-	CBasePlayer@ pPlrEnt = pPlayer.opCast();
-	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
-
-	//Disable the headshot effects if cszm player model
-	if (Utils.StrContains("cszm", pBaseEnt.GetModelName()))
-	{
-		bHeadshot = false;
-	}
-
-	return HOOK_CONTINUE;
 }
 
 HookReturnCode CSZM_RoundWin(const string &in strMapname, RoundWinState iWinState)
