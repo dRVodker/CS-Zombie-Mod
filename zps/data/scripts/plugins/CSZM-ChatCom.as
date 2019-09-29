@@ -1,6 +1,13 @@
 #include "./cszm_modules/teamnums.as"
 
-bool bIsCSZM = false;
+const string TEXT_ALLOWED_IN_LOBBY = "{cornflowerblue}*Allowed only in the {green}lobby team{cornflowerblue}!";
+const string TEXT_YOUR_SCALE = "Your scale has been changed to ";
+const string TEXT_INVALID_VALUE = "{red}*Invalid value!";
+const string TARGETNAME_DLIGHT = "DLight_Origin";
+const string FILENAME_DENY = "common/wpn_denyselect.wav";
+const string FILENAME_BUTTONCLICK = "weapons/slam/buttonclick.wav";
+
+bool bIsCSZM;
 
 void OnPluginInit()
 {
@@ -18,9 +25,9 @@ void OnMapInit()
 	if (Utils.StrContains("cszm", Globals.GetCurrentMapName()))
 	{
 		bIsCSZM = true;
-		Engine.PrecacheFile(sound, "weapons/slam/buttonclick.wav");
 		Engine.PrecacheFile(sound, "buttons/lightswitch2.wav");
-		Engine.PrecacheFile(sound, "common/wpn_denyselect.wav");
+		Engine.PrecacheFile(sound, FILENAME_BUTTONCLICK);
+		Engine.PrecacheFile(sound, FILENAME_DENY);
 	}
 }
 
@@ -104,8 +111,8 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 
 			if (fltest == 0 || fltest < 0)
 			{
-				Chat.PrintToChatPlayer(pPlrEnt, "{red}*Invalid value!");
-				Engine.EmitSoundPlayer(pPlayer, "common/wpn_denyselect.wav");
+				Chat.PrintToChatPlayer(pPlrEnt, TEXT_INVALID_VALUE);
+				Engine.EmitSoundPlayer(pPlayer, FILENAME_DENY);
 				return HOOK_HANDLED;
 			}
 
@@ -127,17 +134,17 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 				}
 
 				Engine.Ent_Fire_Ent(pBaseEnt, "SetModelScale", "" + fltest);
-				Engine.EmitSoundPlayer(pPlayer, "weapons/slam/buttonclick.wav");
+				Engine.EmitSoundPlayer(pPlayer, FILENAME_BUTTONCLICK);
 			}
 
-			Chat.CenterMessagePlayer(pPlrEnt, "Your scale has been changed to " + fltest + sAddition);
+			Chat.CenterMessagePlayer(pPlrEnt, TEXT_YOUR_SCALE + fltest + sAddition);
 			return HOOK_HANDLED;
 		}
 
 		else
 		{
-			Chat.PrintToChatPlayer(pPlrEnt, "*Allowed only in {green}lobby team{default}!");
-			Engine.EmitSoundPlayer(pPlayer, "common/wpn_denyselect.wav");
+			Chat.PrintToChatPlayer(pPlrEnt, TEXT_ALLOWED_IN_LOBBY);
+			Engine.EmitSoundPlayer(pPlayer, FILENAME_DENY);
 		}
 
 		return HOOK_HANDLED;
@@ -153,8 +160,8 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 
 		else
 		{
-			Chat.PrintToChatPlayer(pPlrEnt, "*Allowed only in the {green}lobby team{default}!");
-			Engine.EmitSoundPlayer(pPlayer, "common/wpn_denyselect.wav");
+			Chat.PrintToChatPlayer(pPlrEnt, TEXT_ALLOWED_IN_LOBBY);
+			Engine.EmitSoundPlayer(pPlayer, FILENAME_DENY);
 		}
 
 		return HOOK_HANDLED;
@@ -171,10 +178,10 @@ void DLight(CZP_Player@ pPlayer, CBaseEntity@ pPlrEntity, const int &in iIndex)
 	{
 		Engine.EmitSoundEntity(pPlrEntity, "Buttons.snd14");
 
-		if (!Utils.StrContains("DLight_Origin", pWeapon.GetEntityName()))
+		if (!Utils.StrContains(TARGETNAME_DLIGHT, pWeapon.GetEntityName()))
 		{
-			pWeapon.SetEntityName("DLight_Origin" + iIndex);
-			Engine.Ent_Fire("DLight_Origin" + iIndex, "AddOutput", "Effects 2");
+			pWeapon.SetEntityName(TARGETNAME_DLIGHT + iIndex);
+			Engine.Ent_Fire(TARGETNAME_DLIGHT + iIndex, "AddOutput", "Effects 2");
 		}
 
 		else

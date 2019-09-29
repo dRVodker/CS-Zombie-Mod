@@ -1,9 +1,5 @@
-/*
-///////////////////////////////////////////////////////////////////
-/////////////////| Counter-Strike Zombie Mode  |///////////////////
-/////////////////|		 Core Script		 |///////////////////
-///////////////////////////////////////////////////////////////////
-*/
+//Counter-Strike Zombie Mode
+//Core Script File
 
 #include "../SendGameText"
 #include "./cszm_modules/chat.as"
@@ -20,8 +16,9 @@
 CASConVar@ pSoloMode = null;
 CASConVar@ pTestMode = null;
 CASConVar@ pINGWarmUp = null;
-CASConVar@ pFriendlyFire  = null;
-CASConVar@ pInfectionRate   = null;
+CASConVar@ pFriendlyFire = null;
+CASConVar@ pInfectionRate = null;
+CASConVar@ pZPSHardcore = null;
 
 int iMaxPlayers;
 int iDoorsState;	//Used for warm up (to allow everyone to open doors)
@@ -237,7 +234,7 @@ class CSZMPlayer
 
 	bool ChooseInfect()
 	{
-		CBasePlayer@ pBasePlayer =  ToBasePlayer(PlayerIndex);
+		CBasePlayer@ pBasePlayer = ToBasePlayer(PlayerIndex);
 		bool Handled = false;
 
 		if (InfectDelay > 0)
@@ -453,7 +450,7 @@ class CSZMPlayer
 	void InjectAntidote(CBaseEntity@ pItemAntidote)
 	{
 		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(PlayerIndex);
-		CBasePlayer@ pBasePlayer =  ToBasePlayer(PlayerIndex);
+		CBasePlayer@ pBasePlayer = ToBasePlayer(PlayerIndex);
 		CZP_Player@ pPlayer = ToZPPlayer(PlayerIndex);
 
 		IRITime = Globals.GetCurrentTime() + 1.12f;
@@ -531,7 +528,7 @@ class CSZMPlayer
 	void Think()
 	{
 		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(PlayerIndex);
-		CBasePlayer@ pBasePlayer =  ToBasePlayer(PlayerIndex);
+		CBasePlayer@ pBasePlayer = ToBasePlayer(PlayerIndex);
 		CZP_Player@ pPlayer = ToZPPlayer(PlayerIndex);
 
 		int TeamNum = pPlayerEntity.GetTeamNumber();
@@ -702,38 +699,21 @@ void OnPluginInit()
 
 	//Find 'sv_zps_solo' ConVar
 	@pSoloMode = ConVar::Find("sv_zps_solo");
-	if (pSoloMode !is null)
-	{
-		ConVar::Register(pSoloMode, "ConVar_SoloMode");
-	}
 
 	//Find 'sv_testmode' ConVar
 	@pTestMode = ConVar::Find("sv_testmode");
-	if (pTestMode !is null)
-	{
-		ConVar::Register(pTestMode, "ConVar_TestMode");
-	}
 
 	//Find 'sv_zps_warmup' ConVar
 	@pINGWarmUp = ConVar::Find("sv_zps_warmup");
-	if (pINGWarmUp !is null)
-	{
-		ConVar::Register(pINGWarmUp, "ConVar_WarmUpTime");
-	}
 
 	//Find 'mp_friendlyfire' ConVar
 	@pFriendlyFire = ConVar::Find("mp_friendlyfire");
-	if (pFriendlyFire !is null)
-	{
-		ConVar::Register(pFriendlyFire, "ConVar_FriendlyFire");
-	}
 
 	//Find 'sv_zps_infectionrate' ConVar
 	@pInfectionRate = ConVar::Find("sv_zps_infectionrate");
-	if (pInfectionRate !is null)
-	{
-		ConVar::Register(pInfectionRate, "ConVar_InfectionRate"); 
-	}
+
+	//Find 'sv_zps_hardcore' ConVar
+	@pZPSHardcore = ConVar::Find("sv_zps_hardcore");
 
 	//Events
 	Events::Player::OnPlayerInfected.Hook(@CSZM_OnPlayerInfected);
@@ -765,6 +745,7 @@ void OnMapInit()
 		pINGWarmUp.SetValue("0");
 		pFriendlyFire.SetValue("0");
 		pInfectionRate.SetValue("0");
+		pZPSHardcore.SetValue("0");
 		
 		//Cache
 		CacheModels();
@@ -943,8 +924,8 @@ HookReturnCode CSZM_RoundWin(const string &in strMapname, RoundWinState iWinStat
 			iZombieWin++;
 		}
 		
-		string strHW = "\n  Humans Win - " + iHumanWin;
-		string strZW = "\n  Zombies Win - " + iZombieWin;
+		string strHW = "\n Humans Win - " + iHumanWin;
+		string strZW = "\n Zombies Win - " + iZombieWin;
 		
 		SendGameText(any, "-=Win Counter=-" + strHW + strZW, 4, 0, 0, 0.35f, 0.25f, 0, 10.10f, Color(235, 235, 235), Color(255, 95, 5));
 	}
@@ -1062,7 +1043,7 @@ HookReturnCode CSZM_OnPlayerSpawn(CZP_Player@ pPlayer)
 		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 
 		int index = pBaseEnt.entindex();
-        int TeamNum = pBaseEnt.GetTeamNumber();
+		int TeamNum = pBaseEnt.GetTeamNumber();
 
 		CSZMPlayer@ pCSZMPlayer = CSZMPlayerArray[index];
 
