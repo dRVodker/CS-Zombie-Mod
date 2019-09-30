@@ -13,6 +13,8 @@
 #include "./cszm_modules/core_text.as"
 #include "./cszm_modules/core_const.as"
 
+#include "./cszm_modules/download_table.as"
+
 CASConVar@ pSoloMode = null;
 CASConVar@ pTestMode = null;
 CASConVar@ pINGWarmUp = null;
@@ -70,23 +72,25 @@ float flWeakZombieWait;
 class CSZMPlayer
 {
 	int PlayerIndex;
-	float SlowTime;
 	int SlowSpeed;
 	int DefSpeed;
-	float SpeedRT;
 	int Voice;
 	int PreviousVoice;
+	int InfectResist;
+	int PreviousHP;
+	int InfectDelay;
+	int ZMDeathCount;
+
+	float SlowTime;
+	float SpeedRT;
 	float VoiceTime;
 	float AdrenalineTime;
-	int InfectResist;
 	float IRITime;
 	float MeleeFreezeTime;
 	float OutlineTime;
-	int PreviousHP;
 	float LobbyRespawnDelay;
-	int InfectDelay;
+
 	bool Volunteer;
-	int ZMDeathCount;
 	bool WeakZombie;
 	bool Abuser;
 	bool FirstInfected;
@@ -109,8 +113,8 @@ class CSZMPlayer
 		PreviousHP = 0;
 		LobbyRespawnDelay = 0;
 		InfectDelay = 0;
-		Volunteer = false;
 		ZMDeathCount = 0;
+		Volunteer = false;
 		WeakZombie = true;
 		Abuser = false;
 		FirstInfected = false;
@@ -139,8 +143,10 @@ class CSZMPlayer
 	void DeathReset()
 	{
 		CZP_Player@ pPlayer = ToZPPlayer(PlayerIndex);
-		Volunteer = false;
 		pPlayer.DoPlayerDSP(0);
+
+		Volunteer = false;
+		FirstInfected = false;
 		LobbyRespawnDelay = 0;
 		MeleeFreezeTime = 0;
 		InfectResist = 0;
@@ -320,6 +326,7 @@ class CSZMPlayer
 				}
 			}
 
+			PreviousVoice = VoiceIndex;
 			Voice = VoiceIndex;
 		}
 	}
@@ -521,6 +528,7 @@ class CSZMPlayer
 			pPlayerEntity.SetHealth(CONST_WEAK_ZOMBIE_HP);
 			DefSpeed = SPEED_WEAK;
 			Voice = 2;
+			PreviousVoice = 2;
 			Chat.PrintToChatPlayer(pBasePlayer, strWeakZombie);
 		}
 	}
@@ -738,6 +746,10 @@ void OnMapInit()
 		flWUWait = 0;
 
 		Engine.EnableCustomSettings(true);
+
+		//Add all custom files of CSZM to Download Table
+		//Sounds, materials, models
+		AddToDownloadTable();
 		
 		//Set some ConVar to 0
 		pSoloMode.SetValue("0");
@@ -1159,8 +1171,8 @@ HookReturnCode CSZM_OnPlayerSpawn(CZP_Player@ pPlayer)
 		{
 			if (pPlrEnt.IsBot())									
 			{
-				pBaseEnt.ChangeTeam(TEAM_LOBBYGUYS);	//For debug purposes
-				pPlayer.ForceRespawn();					//Unused in actual gameplay
+				pBaseEnt.ChangeTeam(TEAM_LOBBYGUYS);
+				pPlayer.ForceRespawn();
 				pBaseEnt.SetModel("models/cszm/lobby_guy.mdl");
 			}
 
@@ -1365,11 +1377,6 @@ HookReturnCode CSZM_OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in Dama
 			ShowKills(pPlrAttacker, g_iVictims[iAttIndex], true);
 			pVicCSZMPlayer.SetWeakZombie(false);
 			GotVictim(pPlrAttacker, pEntityAttacker);
-		}
-
-		if (pVicCSZMPlayer.IsFirstInfected())
-		{
-			pVicCSZMPlayer.SetFirstInfected(false);
 		}
 
 		if (iVicTeam == TEAM_ZOMBIES && bSpawnWeak)
@@ -1596,14 +1603,14 @@ void OnMatchEnded()
 
 		for (int i = 1; i <= iMaxPlayers; i++) 
 		{
-			CZP_Player@ pPlr = ToZPPlayer(i);
+			CZP_Player@ pPlayer = ToZPPlayer(i);
 
-			if (pPlr is null)
+			if (pPlayer is null)
 			{
 				continue;
 			}
 
-			ShowStatsEnd(pPlr, g_iKills[i], g_iVictims[i]);
+			ShowStatsEnd(pPlayer, g_iKills[i], g_iVictims[i]);
 		}
 	}
 }
