@@ -733,6 +733,10 @@ void OnPluginInit()
 	Events::Player::OnPlayerDisonnected.Hook(@CSZM_OnPlayerDisonnected);
 	Events::Rounds::RoundWin.Hook(@CSZM_RoundWin);
 	Events::Player::OnConCommand.Hook(@CSZM_OnConCommand);
+
+	//Add all custom files of CSZM to Download Table
+	//Sounds, materials, models
+	AddToDownloadTable();
 }
 
 void OnMapInit()
@@ -746,10 +750,6 @@ void OnMapInit()
 		flWUWait = 0;
 
 		Engine.EnableCustomSettings(true);
-
-		//Add all custom files of CSZM to Download Table
-		//Sounds, materials, models
-		AddToDownloadTable();
 		
 		//Set some ConVar to 0
 		pSoloMode.SetValue("0");
