@@ -1,4 +1,4 @@
-#include "cszm/random_def"
+#include "cszm_modules/random_def"
 
 void SD( const string &in strMSG )
 {

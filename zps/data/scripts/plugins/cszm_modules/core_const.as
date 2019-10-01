@@ -5,12 +5,13 @@ const int SPEED_HUMAN = 212;
 const int SPEED_ZOMBIE = 185;
 const int SPEED_CARRIER = 204;
 const int SPEED_WEAK = 231;
-const int SPEED_ADRENALINE = 80;
+const int SPEED_ADRENALINE = 75;
 const int SPEED_MINIMUM = 80;
 
 //Damage Slowdown
 const float CONST_MAX_SLOWTIME = 2.0f;	//Maximum amount of seconds a zombie could be slowed down
-const float CONST_RECOVER_UNIT = 0.305f;	//Speed recovery tick time
+const float CONST_RECOVER_UNIT = 0.101f;	//Speed recovery tick time
+const int CONST_RECOVER_SPEED = 3;	//Amout of speed to recover per tick
 const float CONST_SLOWDOWN_TIME = 0.2f;	//Amount of time zombie being slowed down (any damage)
 
 //Other Consts

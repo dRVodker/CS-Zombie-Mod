@@ -1,4 +1,4 @@
-#include "cszm/random_def"
+#include "cszm_modules/random_def"
 
 int CalculateHealthPoints( int &in iMulti )
 {

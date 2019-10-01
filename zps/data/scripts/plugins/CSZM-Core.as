@@ -359,7 +359,7 @@ class CSZMPlayer
 		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(PlayerIndex);
 		CZP_Player@ pPlayer = ToZPPlayer(PlayerIndex);
 
-		VoiceTime += Math::RandomFloat(0.52f, 0.83f); //Increase VoiceTime if slowed down/took damage
+		VoiceTime += Math::RandomFloat(0.52f, 0.83f); //Increase VoiceTime if slowed down / took damage
 
 		float CurrentTime = SlowTime - Globals.GetCurrentTime();
 		float NewTime;	//Amount of time zombie being slowed down until start recovering a normal speed
@@ -604,13 +604,13 @@ class CSZMPlayer
 
 			if (MeleeFreezeTime > Globals.GetCurrentTime())
 			{
-				float x = 0;
-				float y = 0;
+				float x = 0.0f;
+				float y = 0.0f;
 				float z = pPlayerEntity.GetAbsVelocity().z;
 
 				if (z > 0)
 				{
-					z = 0;
+					z = 0.0f;
 				}
 
 				pPlayerEntity.SetAbsVelocity(Vector(x, y, z));
@@ -622,7 +622,7 @@ class CSZMPlayer
 				{
 					int NewSpeed;
 					SpeedRT = Globals.GetCurrentTime() + CONST_RECOVER_UNIT;
-					SlowSpeed -= 5;
+					SlowSpeed -= CONST_RECOVER_SPEED;
 
 					if (SlowSpeed < 0)
 					{
