@@ -497,7 +497,7 @@
 "CSPlayer.Idle1"
 {
 	"channel"		"CHAN_VOICE"
-	"volume"		"0.35, 0.475"
+	"volume"		"0.298, 0.374"
 	"pitch"			"90, 105"
 
 	"soundlevel"	"SNDLVL_80dB"
@@ -559,7 +559,7 @@
 "CSPlayer.Idle2"
 {
 	"channel"		"CHAN_VOICE"
-	"volume"		"0.35, 0.475"
+	"volume"		"0.298, 0.374"
 	"pitch"			"90, 105"
 
 	"soundlevel"	"SNDLVL_80dB"
@@ -616,7 +616,7 @@
 "CSPlayer.Idle3"
 {
 	"channel"		"CHAN_VOICE"
-	"volume"		"0.35, 0.47"
+	"volume"		"0.298, 0.374"
 	"pitch"			"90, 105"
 
 	"soundlevel"	"SNDLVL_80dB"
@@ -725,7 +725,10 @@
 	"wave"			"npc/combine_soldier/vo/_comma.wav"
 }
 
-"Character_Jessica_Z.Taunt"
+//////////////////////////////
+//Override Zombie Eugene set//
+//////////////////////////////
+"Character_Eugene_Z.BurnPain"
 {
 	"channel"		"CHAN_ITEM"
 	"volume"		"0"
@@ -734,7 +737,8 @@
 	"wave"			"npc/combine_soldier/vo/_comma.wav"
 }
 
-"Character_Lea_Z.Taunt"
+
+"Character_Eugene_Z.Jump"
 {
 	"channel"		"CHAN_ITEM"
 	"volume"		"0"
@@ -743,160 +747,28 @@
 	"wave"			"npc/combine_soldier/vo/_comma.wav"
 }
 
-"Character_Marcus_Z.Taunt"
+"Character_Eugene_Z.Berserk"
 {
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
+	"channel"		"CHAN_USER_BASE1"
+	"volume"		"0.8"
+	"pitch"			"90, 95"
+
+	"soundlevel"	"SNDLVL_85dB"
+
+	"rndwave"
+	{
+		"wave"	"zombies/eugene/berserk/zmale_berserk-01.wav"
+		"wave"	"zombies/eugene/berserk/zmale_berserk-02.wav"
+		"wave"	"zombies/eugene/berserk/zmale_berserk-03.wav"
+		"wave"	"zombies/eugene/berserk/zmale_berserk-04.wav"
+		"wave"	"zombies/eugene/berserk/zmale_berserk-05.wav"
+		"wave"	"zombies/eugene/berserk/zmale_berserk-06.wav"
+		"wave"	"zombies/eugene/berserk/zmale_berserk-07.wav"
+		"wave"	"zombies/eugene/berserk/zmale_berserk-08.wav"
+	}
 }
 
-"Character_Paul_Z.Taunt"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
-
-"Character_Pedro_Z.Taunt"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
-
-"Character_Vanessa_Z.Taunt"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
-
-"Character_Eugene_Z.Taunt"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
-
-"Character_Jessica_Z.Die"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
-
-"Character_Lea_Z.Die"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
-
-"Character_Marcus_Z.Die"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
-
-"Character_Paul_Z.Die"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
-
-"Character_Pedro_Z.Die"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
-
-"Character_Vanessa_Z.Die"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
-
-"Character_Eugene_Z.Die"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
-
-"Character_Jessica_Z.Pain"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
-
-"Character_Lea_Z.Pain"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
-
-"Character_Marcus_Z.Pain"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
-
-"Character_Paul_Z.Pain"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
-
-"Character_Pedro_Z.Pain"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
-
-"Character_Vanessa_Z.Pain"
+"Character_Eugene_Z.Melee"
 {
 	"channel"		"CHAN_ITEM"
 	"volume"		"0"
@@ -914,187 +786,24 @@
 	"wave"			"npc/combine_soldier/vo/_comma.wav"
 }
 
-"Character_Jessica_Z.Melee"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
-
-"Character_Lea_Z.Melee"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
-
-"Character_Marcus_Z.Melee"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
-
-"Character_Paul_Z.Melee"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
-
-"Character_Pedro_Z.Melee"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
-
-"Character_Vanessa_Z.Melee"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
-
-"Character_Eugene_Z.Melee"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
-
-"Character_Jessica_Z.Jump"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
-
-"Character_Lea_Z.Jump"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
-
-"Character_Marcus_Z.Jump"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
-
-"Character_Paul_Z.Jump"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
-
-"Character_Pedro_Z.Jump"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
-
-"Character_Vanessa_Z.Jump"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
-
-"Character_Eugene_Z.Jump"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
-
-"Character_Jessica_Z.UseDeny"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
-
-"Character_Lea_Z.UseDeny"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
-
-"Character_Marcus_Z.UseDeny"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
-
-"Character_Paul_Z.UseDeny"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
-
-"Character_Pedro_Z.UseDeny"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
-
-"Character_Vanessa_Z.UseDeny"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"0"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_50dB"
-	"wave"			"npc/combine_soldier/vo/_comma.wav"
-}
 
 "Character_Eugene_Z.UseDeny"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+"Character_Eugene_Z.Taunt"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+"Character_Eugene_Z.Die"
 {
 	"channel"		"CHAN_ITEM"
 	"volume"		"0"
