@@ -1332,8 +1332,6 @@ HookReturnCode CSZM_OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in Dama
 		const int iAttTeam = pEntityAttacker.GetTeamNumber();
 
 		CSZMPlayer@ pVicCSZMPlayer = CSZMPlayerArray[iVicIndex];
-
-		pVicCSZMPlayer.DeathReset();
 		
 		if (pEntityAttacker.IsPlayer()) 
 		{
@@ -1388,6 +1386,8 @@ HookReturnCode CSZM_OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in Dama
 		{
 			iFZIndex = 0;
 		}
+
+		pVicCSZMPlayer.DeathReset();
 	}
 
 	return HOOK_CONTINUE;
