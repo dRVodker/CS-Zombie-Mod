@@ -523,3 +523,22 @@ void EmitBloodEffect(CZP_Player@ pPlayer, const bool &in bSilent)
 		Engine.EmitSoundEntity(pBaseEnt, "Flesh.HeadshotExplode");
 	}
 }
+
+void ZombiePoints(CZP_Player@ pIgnorePlayer)
+{
+	pIgnorePlayer.AddScore(100, null);
+
+	for (int i = 1; i <= iMaxPlayers; i++) 
+	{
+		CZP_Player@ pPlayer = ToZPPlayer(i);
+		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(i);
+
+		if (pPlayer !is null)
+		{
+			if (pPlayerEntity.GetTeamNumber() == TEAM_ZOMBIES)
+			{
+				pPlayer.AddScore(-100, pIgnorePlayer);
+			}
+		}
+	}
+}
