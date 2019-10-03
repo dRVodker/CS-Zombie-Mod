@@ -311,7 +311,7 @@ class CSZMPlayer
 	{
 		VoiceTime = Globals.GetCurrentTime() + Math::RandomFloat(5.15f, 14.2f);
 
-		if (VoiceIndex < 0)
+		if (FirstInfected)
 		{
 			Voice = 2;
 		}
@@ -1253,6 +1253,7 @@ HookReturnCode CSZM_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out Da
 				ShowKills(pPlrAttacker, g_iVictims[iAttIndex], true);
 				KillFeed(strAttName, iAttTeam, strVicName, iVicTeam, true, false);
 				GotVictim(pPlrAttacker, pEntityAttacker);
+				ZombiePoints(pPlrAttacker);
 				TurnToZ(iVicIndex);
 			}
 		}
@@ -1835,6 +1836,7 @@ void RndZModel(CZP_Player@ pPlayer, CBaseEntity@ pPlayerEntity)
 	
 	if (pCSZMPlayer.IsFirstInfected())
 	{
+		pPlayer.SetVoice(eugene);
 		pPlayerEntity.SetModel("models/cszm/zombie_morgue.mdl");
 	}
 
@@ -1857,6 +1859,7 @@ void RndZModel(CZP_Player@ pPlayer, CBaseEntity@ pPlayerEntity)
 
 			int iRNG = Math::RandomInt(0, g_strMDLToUse.length() - 1);
 
+			pPlayer.SetVoice(eugene);
 			pPlayerEntity.SetModel(g_strMDLToUse[iRNG]);
 			g_strMDLToUse.removeAt(iRNG);
 		}
