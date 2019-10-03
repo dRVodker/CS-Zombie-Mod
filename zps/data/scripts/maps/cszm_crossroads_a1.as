@@ -1,5 +1,6 @@
 #include "cszm_modules/random_def"
 #include "cszm_modules/doorset"
+#include "cszm_modules/spawncrates"
 
 int CalculateHealthPoints( const int &in iMulti )
 {
@@ -15,6 +16,36 @@ void OnMapInit()
 {
 	Schedule::Task( 0.05f, "SetUpStuff" );
 	OverrideLimits();
+
+	iMinCrates = 0;
+	iMaxCrates = 4;
+
+	g_PICOrigin.insertLast(Vector(687.176, 518.164, 144.499));
+	g_PICAngles.insertLast(QAngle(0, -39.3396, 0));
+
+	g_PICOrigin.insertLast(Vector(215.928, 12.7174, 0.4998));
+	g_PICAngles.insertLast(QAngle(0, 37.7857, 0));
+
+	g_PICOrigin.insertLast(Vector(196.874, 2199.98, 0.487563));
+	g_PICAngles.insertLast(QAngle(0, 160.113, 0));
+
+	g_PICOrigin.insertLast(Vector(-869.544, 2198.39, -175.023));
+	g_PICAngles.insertLast(QAngle(0, -29.4917, 0));
+
+	g_PICOrigin.insertLast(Vector(320.141, 2748.25, 175.867));
+	g_PICAngles.insertLast(QAngle(0, 6.47761, 0));
+
+	g_PICOrigin.insertLast(Vector(198.54, 866.949, 292.692));
+	g_PICAngles.insertLast(QAngle(0, 156.909, 0));
+
+	g_PICOrigin.insertLast(Vector(-1188.67, 825.958, 16.4363));
+	g_PICAngles.insertLast(QAngle(0, 126.38, 0));
+
+	g_PICOrigin.insertLast(Vector(1034.61, 1747.99, -215.5));
+	g_PICAngles.insertLast(QAngle(0, -41.8031, 0));
+
+	g_PICOrigin.insertLast(Vector(-401.409, 1566.96, 152.901));
+	g_PICAngles.insertLast(QAngle(0, -53.3466, 0));
 }
 
 void OnNewRound()
@@ -27,6 +58,7 @@ void OnMatchBegin()
 {
 	PropsHP();
 	PropDoorHP();
+	SpawnCrates();
 }
 
 void SetUpStuff()

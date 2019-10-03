@@ -1,5 +1,6 @@
 #include "cszm_modules/random_def"
 #include "cszm_modules/doorset"
+#include "cszm_modules/spawncrates"
 
 void SD( const string &in strMSG )
 {
@@ -22,6 +23,37 @@ void OnMapInit()
 
 	Entities::RegisterUse( "func_button" );
 	Events::Trigger::OnStartTouch.Hook( @OnStartTouch );
+
+	iMinCrates = 0;
+	iMaxCrates = 3;
+
+	g_PICOrigin.insertLast(Vector(-852.261, -163.311, -191.5));
+	g_PICAngles.insertLast(QAngle(0, 40.4629, 0));
+
+	g_PICOrigin.insertLast(Vector(-562.468, -1020.97, 48.4892));
+	g_PICAngles.insertLast(QAngle(0, 23.0501, 0));
+
+	g_PICOrigin.insertLast(Vector(489.671, -1037.58, 48.487));
+	g_PICAngles.insertLast(QAngle(0, 27.1824, 0));
+
+	g_PICOrigin.insertLast(Vector(152.969, -681.461, -64.7168));
+	g_PICAngles.insertLast(QAngle(0, 35.3623, 0));
+
+	g_PICOrigin.insertLast(Vector(-85.5905, -282.227, -303.548));
+	g_PICAngles.insertLast(QAngle(0, -53.877, 0));
+
+	g_PICOrigin.insertLast(Vector(1381.25, -601.578, -447.509));
+	g_PICAngles.insertLast(QAngle(0, 40.262, 0));
+
+	g_PICOrigin.insertLast(Vector(442.822, -456.774, -543.508));
+	g_PICAngles.insertLast(QAngle(0, -18.2347, 0));
+
+	g_PICOrigin.insertLast(Vector(372.145, -1089.51, -303.5));
+	g_PICAngles.insertLast(QAngle(0, -43.6699, 0));
+
+	g_PICOrigin.insertLast(Vector(-465.154, -160.674, 0.4998));
+	g_PICAngles.insertLast(QAngle(0, 36.16, 0));
+
 	OverrideLimits();
 }
 
@@ -57,6 +89,7 @@ void OnMatchBegin()
 {
 	PropsHP();
 	PropDoorHP();
+	SpawnCrates();
 }
 
 void SetUpStuff()
