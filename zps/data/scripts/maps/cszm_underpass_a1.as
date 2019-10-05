@@ -1,4 +1,5 @@
 #include "cszm_modules/random_def"
+#include "cszm_modules/barricadeammo"
 
 int CalculateHealthPoints( int &in iMulti )
 {
@@ -13,6 +14,10 @@ int CalculateHealthPoints( int &in iMulti )
 void OnMapInit()
 {
 	Schedule::Task( 0.05f, "SetUpStuff" );
+
+	iMaxBarricade = 11;
+	iMinBarricade = 6;	
+
 	OverrideLimits();
 }
 
@@ -25,12 +30,13 @@ void OnNewRound()
 void OnMatchBegin() 
 {
 	PropsHP();
+	Schedule::Task(0.5f, "SpawnBarricades");
 }
 
 void SetUpStuff()
 {
+	FindBarricades();
 	Engine.Ent_Fire( "screenoverlay", "StartOverlays" );
-	RemoveAmmoBar();
 	CreatedByColors();
 }
 
@@ -45,22 +51,6 @@ void CreatedByColors()
 	int iB = Math::RandomInt( 32, 255 );
 	
 	Engine.Ent_Fire( "created_by", "color", ""+iR+" "+iG+" "+iB );
-}
-
-void RemoveAmmoBar()
-{
-	int iRND;
-	
-	CBaseEntity@ pEntity;
-	while ( ( @pEntity = FindEntityByClassname( pEntity, "item_ammo_barricade" ) ) !is null )
-	{
-		iRND = Math::RandomInt( 0, 100 );
-		
-		if( iRND < 70 )
-		{
-			pEntity.SUB_Remove();
-		}
-	}
 }
 
 void PropsHP()

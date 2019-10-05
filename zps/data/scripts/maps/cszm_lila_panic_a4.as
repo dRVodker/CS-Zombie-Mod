@@ -1,5 +1,6 @@
 #include "cszm_modules/random_def"
 #include "cszm_modules/doorset"
+#include "cszm_modules/barricadeammo"
 
 //MyDebugFunc
 void SD(const string &in strMSG)
@@ -32,6 +33,9 @@ void OnMapInit()
 	Engine.Ent_Fire("breencrate", "FireUser1", "", "0.01");
 	Schedule::Task(0.05f, "SetUpStuff");
 	OverrideLimits();
+
+	iMaxBarricade = 12;
+	iMinBarricade = 8;
 }
 
 HookReturnCode OnPlayerSpawn(CZP_Player@ pPlayer)
@@ -110,13 +114,14 @@ void OnMatchBegin()
 	PropDoorHP();
 	BreakableHP();
 	PropsHP();
+	Schedule::Task(0.5f, "SpawnBarricades");
 }
 
 void SetUpStuff()
 {
 	VMSkins();
 	RandomizePropCrate();
-	RemoveAmmoBar();
+	FindBarricades();
 }
 
 // Random Skins for the vending machines
@@ -169,23 +174,6 @@ void PropsHP()
 			int Health = int(pEntity.GetHealth() * 0.4f);
 			pEntity.SetMaxHealth(PlrCountHP(Health));
 			pEntity.SetHealth(PlrCountHP(Health));
-		}
-	}
-}
-
-//Remove extra 'item_ammo_barricade'
-void RemoveAmmoBar()
-{
-	int iRND;
-	
-	CBaseEntity@ pEntity;
-	while ((@pEntity = FindEntityByClassname(pEntity, "item_ammo_barricade")) !is null)
-	{
-		iRND = Math::RandomInt(1, 100);
-		
-		if (iRND < 80)
-		{
-			pEntity.SUB_Remove();
 		}
 	}
 }

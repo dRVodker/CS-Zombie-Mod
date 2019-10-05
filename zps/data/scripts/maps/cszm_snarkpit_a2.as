@@ -1,6 +1,7 @@
 #include "cszm_modules/random_def"
 #include "cszm_modules/doorset"
 #include "cszm_modules/spawncrates"
+#include "cszm_modules/barricadeammo"
 
 void SD( const string &in strMSG )
 {
@@ -23,6 +24,9 @@ void OnMapInit()
 
 	Entities::RegisterUse( "func_button" );
 	Events::Trigger::OnStartTouch.Hook( @OnStartTouch );
+
+	iMaxBarricade = 7;
+	iMinBarricade = 4;
 
 	iMinCrates = 0;
 	iMaxCrates = 3;
@@ -89,7 +93,8 @@ void OnMatchBegin()
 {
 	PropsHP();
 	PropDoorHP();
-	SpawnCrates();
+	Schedule::Task(0.5f, "SpawnCrates");
+	Schedule::Task(0.5f, "SpawnBarricades");
 }
 
 void SetUpStuff()
@@ -99,9 +104,10 @@ void SetUpStuff()
 	Engine.Ent_Fire( "vrad*", "Kill" );
 	
 	Engine.Ent_Fire( "tonemap", "SetBloomScale", "0.375" );
-	RemoveAmmoBar();
 
 	TurnOnFan1();
+
+	FindBarricades();
 }
 
 HookReturnCode OnStartTouch( CBaseEntity@ pTrigger, const string &in strEntityName, CBaseEntity@ pEntity )
@@ -282,22 +288,6 @@ void TurnOffFan2()
 		Fan2SNDStop();
 		Engine.Ent_Fire( "func_fan2", "stop" );
 		Engine.Ent_Fire( "fanpush2", "disable", "0", "0.75" );
-	}
-}
-
-void RemoveAmmoBar()
-{
-	int iRND;
-	
-	CBaseEntity@ pEntity;
-	while ( ( @pEntity = FindEntityByClassname( pEntity, "item_ammo_barricade" ) ) !is null )
-	{
-		iRND = Math::RandomInt( 0, 100 );
-		
-		if ( iRND < 65 )
-		{
-			pEntity.SUB_Remove();
-		}
 	}
 }
 

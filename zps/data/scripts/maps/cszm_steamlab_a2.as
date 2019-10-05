@@ -49,7 +49,7 @@ void OnNewRound()
 void OnMatchBegin() 
 {
 	PropsSettings();
-	SpawnCrates();
+	Schedule::Task(0.5f, "SpawnCrates");
 }
 
 void SetUpStuff()

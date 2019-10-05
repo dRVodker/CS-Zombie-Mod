@@ -1,6 +1,7 @@
 #include "cszm_modules/random_def"
 #include "cszm_modules/doorset"
 #include "cszm_modules/spawncrates"
+#include "cszm_modules/barricadeammo"
 
 int CalculateHealthPoints( int &in iMulti )
 {
@@ -16,6 +17,9 @@ void OnMapInit()
 {
 	Schedule::Task( 0.05f, "SetUpStuff" );
 	OverrideLimits();
+
+	iMaxBarricade = 8;
+	iMinBarricade = 6;
 
 	iMinCrates = 0;
 	iMaxCrates = 4;
@@ -54,7 +58,8 @@ void OnMatchBegin()
 	PropsHP();
 	BreakableHP();
 	PropDoorHP();
-	SpawnCrates();
+	Schedule::Task(0.5f, "SpawnCrates");
+	Schedule::Task(0.5f, "SpawnBarricades");
 }
 
 void SetUpStuff()
@@ -62,23 +67,7 @@ void SetUpStuff()
 	Engine.Ent_Fire( "screenoverlay", "StartOverlays" );
 	Engine.Ent_Fire( "Precache", "Kill" );
 	Engine.Ent_Fire( "SND-Ambient", "Volume", "10" );
-	RemoveAmmoBar();
-}
-
-void RemoveAmmoBar()
-{
-	int iRND;
-	
-	CBaseEntity@ pEntity;
-	while ( ( @pEntity = FindEntityByClassname( pEntity, "item_ammo_barricade" ) ) !is null )
-	{
-		iRND = Math::RandomInt( 0, 100 );
-		
-		if( iRND < 75 )
-		{
-			pEntity.SUB_Remove();
-		}
-	}
+	FindBarricades();
 }
 
 void PropsHP()

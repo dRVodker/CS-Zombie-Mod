@@ -1,5 +1,6 @@
 #include "cszm_modules/random_def"
 #include "cszm_modules/spawncrates"
+#include "cszm_modules/barricadeammo"
 
 //MyDebugFunc
 void SD(const string &in strMSG)
@@ -40,6 +41,9 @@ void OnMapInit()
 	iMinCrates = 1;
 	iMaxCrates = 4;
 
+	iMaxBarricade = 12;
+	iMinBarricade = 4;
+
 	g_PICOrigin.insertLast(Vector(-661.715, 487.519, -1215.51));
 	g_PICOrigin.insertLast(Vector(719.118, 1402.53, -1135.04));
 	g_PICOrigin.insertLast(Vector(714.735, 1335.2, -1135.58));
@@ -76,12 +80,13 @@ void OnMatchBegin()
 {
 	Engine.Ent_Fire("SND_Ambient", "PlaySound");
 	PropsSettings();
-	SpawnCrates();
+	Schedule::Task(0.5f, "SpawnCrates");
+	Schedule::Task(0.5f, "SpawnBarricades");
 }
 
 void SetUpStuff()
 {
-	RemoveAmmoBar();
+	FindBarricades();
 	RemoveItemCrate();
 	Schedule::Task(Math::RandomFloat(4.32f, 35.14f), "SND_Ambient_Rats");
 	Schedule::Task(Math::RandomFloat(12.85f, 175.35f), "SND_Ambient_Groan2");
@@ -197,22 +202,6 @@ void RemoveItemCrate()
 	while ((@pEntity = FindEntityByClassname(pEntity, "prop_itemcrate")) !is null)
 	{
 		pEntity.SUB_Remove();
-	}
-}
-
-void RemoveAmmoBar()
-{
-	int iRND;
-	
-	CBaseEntity@ pEntity;
-	while ((@pEntity = FindEntityByClassname(pEntity, "item_ammo_barricade")) !is null)
-	{
-		iRND = Math::RandomInt(1, 100);
-		
-		if(iRND < 60)
-		{
-			pEntity.SUB_Remove();
-		}
 	}
 }
 

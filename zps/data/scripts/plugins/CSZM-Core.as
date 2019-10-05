@@ -302,7 +302,7 @@ class CSZMPlayer
 		pPlayer.SetMaxSpeed(NewSpeed);
 
 		DefSpeed = NewSpeed;
-		SlowSpeed = NewSpeed;
+		SlowSpeed = 0;
 		SlowTime = 0;
 		SpeedRT = 0;
 	}
@@ -311,9 +311,10 @@ class CSZMPlayer
 	{
 		VoiceTime = Globals.GetCurrentTime() + Math::RandomFloat(5.15f, 14.2f);
 
-		if (FirstInfected)
+		if (WeakZombie)
 		{
 			Voice = 2;
+			PreviousVoice = 2;
 		}
 
 		else
@@ -360,12 +361,25 @@ class CSZMPlayer
 		CZP_Player@ pPlayer = ToZPPlayer(PlayerIndex);
 
 		VoiceTime += Math::RandomFloat(0.52f, 0.83f); //Increase VoiceTime if slowed down / took damage
+		SpeedRT = Globals.GetCurrentTime() + 0.5f;
 
-		float CurrentTime = SlowTime - Globals.GetCurrentTime();
-		float NewTime;	//Amount of time zombie being slowed down until start recovering a normal speed
 		int NewSpeed;	//Variabel to calculate new speed
 
-		NewTime = CONST_SLOWDOWN_TIME;
+		if (SlowTime < Globals.GetCurrentTime())
+		{
+			SlowTime = Globals.GetCurrentTime();
+		}
+
+		int DS_P = int((DefSpeed * 0.01) * CONST_SLOWDOWN_MULT);
+
+		NewSpeed = int(((DefSpeed * 0.0001) * CONST_SLOWDOWN_MULT) * ((flDamage / 175) * 100.0f));
+
+		if (flDamage < 2)
+		{
+			NewSpeed += 1;
+		}
+
+		SlowTime += 0.125f;
 
 		if (MeleeFreezeTime <= Globals.GetCurrentTime())
 		{
@@ -375,63 +389,60 @@ class CSZMPlayer
 		//Melee
 		if (bDamageType(iDamageType, 7))
 		{
-			NewTime = 2.0f;
-			MeleeFreezeTime += 0.851f;
+			SlowTime += 2.0f;
+			MeleeFreezeTime += 0.875f;
 		}
 
 		//Blast
 		if (bDamageType(iDamageType, 6))
 		{
-			NewTime = 1.85f;
-			MeleeFreezeTime += 0.275f;
+			SlowTime += 1.7f;
+			MeleeFreezeTime += 0.27f;
 		}
 
 		//Blast Surface
 		if (bDamageType(iDamageType, 27))
 		{
-			NewTime = 1.40f;
-			MeleeFreezeTime += 0.21f;
+			SlowTime += 0.20f;
+			MeleeFreezeTime += 0.075f;
 		}
 
 		//Fall
 		if (bDamageType(iDamageType, 5))
 		{
-			NewTime = 0.65f;
-			MeleeFreezeTime += 0.05f;
+			NewSpeed += 25;
+			SlowTime += 1.32f;
+			MeleeFreezeTime += 0.15f;
 		}
 
 		//Add time if critical dmg
 		if (flDamage > CONST_SLOWDOWN_CRITDMG)
 		{
-			NewTime += 0.31f;
-			MeleeFreezeTime += 0.194f;
-		}
-
-		if (NewTime < CurrentTime)
-		{
-			NewTime = CurrentTime; 
+			SlowTime += 0.25f;
+			MeleeFreezeTime += 0.1f;
 		}
 
 		//Cap slowdown time to our MAX
-		if (NewTime > CONST_MAX_SLOWTIME)
+		if (SlowTime - Globals.GetCurrentTime() > CONST_MAX_SLOWTIME)
 		{
-			NewTime = CONST_MAX_SLOWTIME;
+			SlowTime = Globals.GetCurrentTime() + CONST_MAX_SLOWTIME;
 		}
 
-		SlowSpeed = int((DefSpeed * 0.01) * CONST_SLOWDOWN_MULT);
+		SlowSpeed += NewSpeed;
 
-		//Reduce the slowdown speed if weak zombie
 		if (WeakZombie)
 		{
-			SlowSpeed * CONST_SLOWDOWN_WEAKMULT;
+			SlowTime = Globals.GetCurrentTime();
+			MeleeFreezeTime = Globals.GetCurrentTime();
+			NewSpeed = NewSpeed / 2;
 		}
 
-		SlowTime = Globals.GetCurrentTime() + NewTime;
-		SpeedRT = Globals.GetCurrentTime() + CONST_RECOVER_UNIT;
+		if (SlowSpeed > DS_P)
+		{
+			SlowSpeed = DS_P;
+		}
 
-		NewSpeed = DefSpeed - SlowSpeed;
-
-		pPlayer.SetMaxSpeed(NewSpeed);
+		pPlayer.SetMaxSpeed(DefSpeed - SlowSpeed);
 	}
 
 	int GetInfectResist()
@@ -526,9 +537,8 @@ class CSZMPlayer
 			Utils.CosmeticWear(pPlayer, "models/cszm/weapons/w_knife_t.mdl");
 			pPlayerEntity.SetMaxHealth(15);
 			pPlayerEntity.SetHealth(CONST_WEAK_ZOMBIE_HP);
-			DefSpeed = SPEED_WEAK;
-			Voice = 2;
-			PreviousVoice = 2;
+			this.SetDefSpeed(SPEED_WEAK);
+			this.SetZMVoice(2);
 			Chat.PrintToChatPlayer(pBasePlayer, strWeakZombie);
 		}
 	}
@@ -621,6 +631,7 @@ class CSZMPlayer
 				if (SpeedRT <= Globals.GetCurrentTime() && SpeedRT != 0)
 				{
 					int NewSpeed;
+
 					SpeedRT = Globals.GetCurrentTime() + CONST_RECOVER_UNIT;
 					SlowSpeed -= CONST_RECOVER_SPEED;
 
@@ -1524,7 +1535,6 @@ void OnMatchBegin()
 	if (bIsCSZM)
 	{
 		Schedule::Task(0.5f, "LocknLoad");
-		Schedule::Task((0.75f), "RemoveExtraPills");
 
 		if (iWUSeconds == 0)
 		{

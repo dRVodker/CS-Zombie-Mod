@@ -45,7 +45,7 @@ void OnProcessRound()
 	{
 		if (flMsgWaitTime <= Globals.GetCurrentTime())
 		{
-			flMsgWaitTime = Globals.GetCurrentTime() + Math::RandomFloat(30.00f, 50.00f);
+			flMsgWaitTime = Globals.GetCurrentTime() + Math::RandomFloat(45.00f, 120.00f);
 			ShowMsg();
 		}
 	}

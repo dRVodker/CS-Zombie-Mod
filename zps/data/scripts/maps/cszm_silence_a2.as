@@ -1,6 +1,7 @@
 #include "cszm_modules/random_def"
 #include "cszm_modules/doorset"
 #include "cszm_modules/spawncrates"
+#include "cszm_modules/barricadeammo"
 
 int iSurvInBasement;
 bool bIsBZSEnabled;
@@ -15,6 +16,9 @@ void OnMapInit()
 	Events::Trigger::OnEndTouch.Hook( @OnEndTouch );
 	Schedule::Task( 0.05f, "SetStuff" );
 	OverrideLimits();
+
+	iMaxBarricade = 15;
+	iMinBarricade = 8;
 
 	iMinCrates = 0;
 	iMaxCrates = 5;
@@ -98,16 +102,19 @@ void OnMatchBegin()
 	Engine.Ent_Fire( "zs_inside_pvs*", "EnableSpawn" );
 	Engine.Ent_Fire( "zs_basement_ns_pvs*", "EnableSpawn" );
 	Engine.Ent_Fire( "_temp_humanclip", "ForceSpawn" );
+
 	PropDoorHP();
 	PropsSettings();
-	SpawnCrates();
+	
+	Schedule::Task(0.5f, "SpawnCrates");
+	Schedule::Task(0.5f, "SpawnBarricades");
 }
 
 void SetStuff()
 {
 	Engine.Ent_Fire( "Precache", "kill" );
 	Engine.Ent_Fire( "shading", "StartOverlays" );
-	RemoveAmmoBar();
+	FindBarricades();
 }
 
 void PropsSettings()
@@ -212,20 +219,4 @@ void ManipulateZS( const string &in strInput )
 	Engine.Ent_Fire( "zs_inside_pvs", "" + strInput );
 	Engine.Ent_Fire( "zs_basement_ns_pvs", "" + strInput );
 	Engine.Ent_Fire( "zs_basement_pvs", "" + strInput );
-}
-
-void RemoveAmmoBar()
-{
-	int iRND;
-	
-	CBaseEntity@ pEntity;
-	while ( ( @pEntity = FindEntityByClassname( pEntity, "item_ammo_barricade" ) ) !is null )
-	{
-		iRND = Math::RandomInt( 0, 100 );
-		
-		if( iRND < 45 )
-		{
-			pEntity.SUB_Remove();
-		}
-	}
 }

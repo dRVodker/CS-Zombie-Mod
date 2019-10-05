@@ -17,7 +17,8 @@ array<string> g_strAmmoClass =
 	"item_ammo_pistol_clip",
 	"item_ammo_rifle_clip",
 	"item_ammo_revolver_clip",
-	"item_ammo_shotgun_clip"
+	"item_ammo_shotgun_clip",
+	"item_ammo_barricade_clip"
 };
 
 array<string> g_ItemClass =
@@ -25,6 +26,7 @@ array<string> g_ItemClass =
 	"item_ammo_pistol",
 	"item_ammo_rifle",
 	"item_ammo_shotgun",
+	"item_ammo_barricade",
 	"item_ammo_revolver",
 	"item_armor",
 	"item_deliver"
@@ -35,6 +37,7 @@ array<float> g_ItemRespawnTime =
 	7.0f,
 	22.0f,
 	27.0f,
+	20.1f,
 	36.0f,
 	39.0f,
 	10.0f
@@ -243,7 +246,7 @@ HookReturnCode OnEntityCreation(const string &in strClassname, CBaseEntity@ pEnt
 			Engine.Ent_Fire_Ent(pEntity, "DisableDamageForces");
 		}
 
-		if (Utils.StrContains("clip", strClassname) && strClassname != "item_ammo_barricade_clip")
+		if (Utils.StrContains("clip", strClassname) /*&& strClassname != "item_ammo_barricade_clip"*/)
 		{
 			pEntity.SetEntityName("dropped_ammo");
 
@@ -304,7 +307,7 @@ HookReturnCode OnEntityDestruction(const string &in strClassname, CBaseEntity@ p
 	{
 		RemoveObject(pEntity);
 
-		if (Utils.StrContains("clip", strClassname) && strClassname != "item_ammo_barricade_clip")
+		if (Utils.StrContains("clip", strClassname) /*&& strClassname != "item_ammo_barricade_clip"*/)
 		{
 			uint iType = 0;
 
