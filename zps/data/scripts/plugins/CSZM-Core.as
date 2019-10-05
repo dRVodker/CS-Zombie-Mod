@@ -363,41 +363,40 @@ class CSZMPlayer
 		VoiceTime += Math::RandomFloat(0.52f, 0.83f); //Increase VoiceTime if slowed down / took damage
 		SpeedRT = Globals.GetCurrentTime() + 0.5f;
 
-		int NewSpeed;	//Variabel to calculate new speed
+		int MinSlowSpeed = int((DefSpeed * 0.01) * CONST_SLOWDOWN_MULT);	//Minimum speed to slow down
+
+		int NewSlowSpeed;	//Variabel to calculate new speed
 
 		if (SlowTime < Globals.GetCurrentTime())
 		{
 			SlowTime = Globals.GetCurrentTime();
 		}
 
-		int DS_P = int((DefSpeed * 0.01) * CONST_SLOWDOWN_MULT);
-
-		NewSpeed = int(((DefSpeed * 0.0001) * CONST_SLOWDOWN_MULT) * ((flDamage / 175) * 100.0f));
+		SlowTime += 0.1425f;
+		NewSlowSpeed = int(((DefSpeed * 0.0001) * CONST_SLOWDOWN_MULT) * ((flDamage / 250) * 100.0f));
 
 		if (flDamage < 2)
 		{
-			NewSpeed += 1;
+			NewSlowSpeed += 1;
 		}
-
-		SlowTime += 0.125f;
 
 		if (MeleeFreezeTime <= Globals.GetCurrentTime())
 		{
-			MeleeFreezeTime = Globals.GetCurrentTime();
+			MeleeFreezeTime = Globals.GetCurrentTime() - 0.001f;
 		}
 
 		//Melee
 		if (bDamageType(iDamageType, 7))
 		{
 			SlowTime += 2.0f;
-			MeleeFreezeTime += 0.875f;
+			MeleeFreezeTime += 1.05f;
 		}
 
 		//Blast
 		if (bDamageType(iDamageType, 6))
 		{
 			SlowTime += 1.7f;
-			MeleeFreezeTime += 0.27f;
+			MeleeFreezeTime += 0.275f;
 		}
 
 		//Blast Surface
@@ -410,7 +409,7 @@ class CSZMPlayer
 		//Fall
 		if (bDamageType(iDamageType, 5))
 		{
-			NewSpeed += 25;
+			NewSlowSpeed += 25;
 			SlowTime += 1.32f;
 			MeleeFreezeTime += 0.15f;
 		}
@@ -418,7 +417,8 @@ class CSZMPlayer
 		//Add time if critical dmg
 		if (flDamage > CONST_SLOWDOWN_CRITDMG)
 		{
-			SlowTime += 0.25f;
+			NewSlowSpeed += 5;
+			SlowTime += 0.5f;
 			MeleeFreezeTime += 0.1f;
 		}
 
@@ -428,19 +428,25 @@ class CSZMPlayer
 			SlowTime = Globals.GetCurrentTime() + CONST_MAX_SLOWTIME;
 		}
 
-		SlowSpeed += NewSpeed;
+		SlowSpeed += NewSlowSpeed;
 
 		if (WeakZombie)
 		{
 			SlowTime = Globals.GetCurrentTime();
 			MeleeFreezeTime = Globals.GetCurrentTime();
-			NewSpeed = NewSpeed / 2;
+			NewSlowSpeed = int(float(NewSlowSpeed) * 0.5f);
 		}
 
-		if (SlowSpeed > DS_P)
+		if (SlowSpeed > MinSlowSpeed)
 		{
-			SlowSpeed = DS_P;
+			SlowSpeed = MinSlowSpeed;
 		}
+
+		SD("{green}----------------------------------");
+		SD("SlowTime: {blue}" + (SlowTime - Globals.GetCurrentTime()));
+		SD("SlowSpeed: {blue}" + SlowSpeed);
+		SD("PlayerSpeed: {blue}" + (DefSpeed - SlowSpeed));
+		SD("{green}----------------------------------");
 
 		pPlayer.SetMaxSpeed(DefSpeed - SlowSpeed);
 	}
@@ -626,29 +632,28 @@ class CSZMPlayer
 				pPlayerEntity.SetAbsVelocity(Vector(x, y, z));
 			}
 
-			if (SlowTime <= Globals.GetCurrentTime() && SlowTime != 0 && SlowSpeed != 0)
+			if (SlowTime <= Globals.GetCurrentTime() && SlowTime != 0 && SpeedRT <= Globals.GetCurrentTime() && SpeedRT != 0 && SlowSpeed != 0)
 			{
-				if (SpeedRT <= Globals.GetCurrentTime() && SpeedRT != 0)
+
+				int NewSpeed;
+
+				SpeedRT = Globals.GetCurrentTime() + CONST_RECOVER_UNIT;
+				SlowSpeed -= CONST_RECOVER_SPEED;
+
+				if (SlowSpeed < 0)
 				{
-					int NewSpeed;
-
-					SpeedRT = Globals.GetCurrentTime() + CONST_RECOVER_UNIT;
-					SlowSpeed -= CONST_RECOVER_SPEED;
-
-					if (SlowSpeed < 0)
-					{
-						SlowSpeed = 0;
-					}
-
-					NewSpeed = DefSpeed - SlowSpeed;
-
-					if (NewSpeed > DefSpeed)
-					{
-						NewSpeed = DefSpeed;
-					}
-
-					pPlayer.SetMaxSpeed(NewSpeed);
+					SlowSpeed = 0;
 				}
+
+				NewSpeed = DefSpeed - SlowSpeed;
+
+				if (NewSpeed > DefSpeed)
+				{
+					NewSpeed = DefSpeed;
+				}
+
+				pPlayer.SetMaxSpeed(NewSpeed);
+
 			}
 
 			if (pPlayerEntity.IsAlive())
