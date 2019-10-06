@@ -9,35 +9,37 @@ const int SPEED_ADRENALINE = 70;
 const int SPEED_MINIMUM = 80;
 
 //Damage Slowdown
-const float CONST_MAX_SLOWTIME = 2.0f;	//Maximum amount of seconds a zombie could be slowed down
-const float CONST_RECOVER_UNIT = 0.04f;	//Speed recovery tick time
-const int CONST_RECOVER_SPEED = 1;	//Amout of speed to recover per tick
-const float CONST_SLOWDOWN_TIME = 0.2f;	//Amount of time zombie being slowed down (any damage)
-const float CONST_SLOWDOWN_MULT = 36.0f;
-const float CONST_SLOWDOWN_CRITDMG = 68.0f;
+const float CONST_MAX_SLOWTIME = 2.0f;	//Максимальное время в секундах, которое зомби может быть замедлен
+const float CONST_RECOVER_UNIT = 0.04f;	//Кол-во времени, которое должно пройти, чтобы добавить "CONST_RECOVER_SPEED" к скорости зомби
+const int CONST_RECOVER_SPEED = 1;	//Кол-во скорости, которое зомби получает по истечении "CONST_RECOVER_UNIT"
+const float CONST_SLOWDOWN_TIME = 0.1425f;	//Время замедления, которое получает зомби при получении любого урона
+const int CONST_SLOWDOWN_HEALTH = 250;  //Кол-во HP, которое нужно нанести зомби, чтобы максимально замедлить его
+const float CONST_SLOWDOWN_MULT = 36.0f;    //Процент от максимальной скорости зомби, который будет ониматься при получении урона равному "CONST_SLOWDOWN_HEALTH"
+const float CONST_SLOWDOWN_CRITDMG = 68.0f; //Значение урона, до которого зомби не будет стопарится
 
 //Other Consts
-const float CONST_SPAWN_DELAY = 5.0f;	//Zombies spawn delay.
-const int CONST_FI_HEALTH_MULT = 125;	//HP multiplier of first infected.
-const int CONST_ZOMBIE_ADD_HP = 200;	//Additional HP to Max Health of a zombie.
-const int CONST_WEAK_ZOMBIE_HP = 135;	//Health of the weak zombies
-const int CONST_CARRIER_HP = 0;	//Additional HP to Max Health of the carrier.	(Currently equal 0 because the carrier is too OP)
-const int CONST_REWARD_HEALTH = 125;	//Give that amount of HP as reward of successful infection.
-const int CONST_GEARUP_TIME = 45;	//Time to gear up and find a good spot.
-const int CONST_TURNING_TIME = 20;	//Turning time.
-const int CONST_INFECT_DELAY = 2;	//Amount of rounds you have to wait to be the First Infected again.
-const int CONST_WARMUP_TIME = 10;	//Time of the warmup in seconds.		(default value is 75)
-const float CONST_WEAK_ZOMBIE_TIME = 45.0f;								
-const int CONST_SUBTRACT_DEATH = 1;	//Amount of units subtract from the death counter
-const int CONST_INFECT_ADDTIME = 15;	//Amount of time in seconds add to the round time in case of successful infection
-const int CONST_DEATH_BONUS_HP = 75;	//Multiplier of death hp bonus.
-const int CONST_DEATH_MAX = 8;	//Maximum amount of death to boost up the max health.
-const int CONST_ROUND_TIME = 300;	//Round time in seconds.
-const int CONST_ROUND_TIME_FULL = CONST_ROUND_TIME + CONST_GEARUP_TIME;	//Round time in seconds.
-const int CONST_ZOMBIE_LIVES = 32;	//Hold Zombie Lives at this level (Zombie Lives unused in CSZM) 
-const float CONST_ROUND_TIME_GAME = 300.05;	//Hold IN-Game Round timer at this level (IN-Game Round timer unused in CSZM)
-const float CONST_ADRENALINE_DURATION = 12.0f;
-const int CONST_MAX_INFECTRESIST = 2;
+const float CONST_SPAWN_DELAY = 5.0f;	//Время в секундах, которое должны будут ждать все погибшие игроки, чтобы снова возродиться
+const int CONST_FI_HEALTH_MULT = 125;	//Множитель HP для Первого зараженного (умножается на кол-во игроков)
+const int CONST_ZOMBIE_ADD_HP = 200;	//Дополнительные HP для максимального HP обычного зомби. (Zombie's max health + CONST_ZOMBIE_ADD_HP)
+const int CONST_WEAK_ZOMBIE_HP = 135;	//Здоровье слабых зомби
+const int CONST_CARRIER_HP = 0;	//Дополнительные HP для максимального HP белого зомби.
+const int CONST_REWARD_HEALTH = 125;	//Кол-во HP, которое зомби получит при удачном человека.
+const int CONST_GEARUP_TIME = 45;	//Время, через которое превратится Первый зараженный.
+const int CONST_TURNING_TIME = 20;	//Время превращения (Первый зараженный будет видеть обратный отсчёт этого времени).
+const int CONST_INFECT_DELAY = 2;	//Кол-во раундов, которое игрок должен ждать(играть за человека), чтобы снова зайти как Первый зараженный.
+const int CONST_WARMUP_TIME = 10;	//Время разминки в секундах.		(значение по умолчанию - 75)
+const float CONST_WEAK_ZOMBIE_TIME = 50.0f;		//Время в секундах после превращения Первого зараженного, на протяжении которого, все вновь присоединившиеся зомби будут спавниться как соабые зомби						
+const int CONST_SUBTRACT_DEATH = 1;	//Кол-во смертей, которое будет отниматься за удачное заражение человека
+const int CONST_INFECT_ADDTIME = 15;	//Кол-во времени в секундах, которое будет добавлятся к таймеру раунда при удачном заражении чеорвека (если время на таймере меньше чем "CONST_MIN_ROUNDTIMER")
+const int CONST_MIN_ROUNDTIMER = 35;    //Минимальное время таймера рауда, при котором разрешено добавлять время за заражение
+const int CONST_DEATH_BONUS_HP = 75;	//Множитель HP, который умноается на счётчик смертей для определения бонусного HP
+const int CONST_DEATH_MAX = 8;	//Максималное значение счётчика смертей.
+const int CONST_ROUND_TIME = 300;	//Время в секундах отведённое на раунд.
+const int CONST_ROUND_TIME_FULL = CONST_ROUND_TIME + CONST_GEARUP_TIME;	//Время в секундах отведённое на раунд (ПОЛНОЕ).
+const int CONST_ZOMBIE_LIVES = 32;	//Удерживать Зижни Зомби на этом уровне (Зижни Зомби не используются в CSZM) 
+const float CONST_ROUND_TIME_GAME = 300.05;	//Удерживать внутриигровой таймер раунда на этом уровне (внутриигровой таймер раунда не используются в CSZM)
+const float CONST_ADRENALINE_DURATION = 12.0f;  //Длительность действия адреналина в секундах
+const int CONST_MAX_INFECTRESIST = 2;   //Максимальное сопротивление инфекции
 const float CONST_ARMOR_MULT = 2.0f;
 
 //Antidote state

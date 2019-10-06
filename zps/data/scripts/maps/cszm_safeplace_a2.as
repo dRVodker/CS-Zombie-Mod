@@ -3,11 +3,11 @@
 #include "cszm_modules/spawncrates"
 #include "cszm_modules/barricadeammo"
 
-int CalculateHealthPoints( int &in iMulti )
+int CalculateHealthPoints(int &in iMulti)
 {
 	int iHP = 0;
-	int iSurvNum = Utils.GetNumPlayers( survivor, true );
-	if( iSurvNum < 4 ) iSurvNum = 5;
+	int iSurvNum = Utils.GetNumPlayers(survivor, true);
+	if(iSurvNum < 4) iSurvNum = 5;
 	iHP = iSurvNum * iMulti;
 	
 	return iHP;
@@ -15,7 +15,7 @@ int CalculateHealthPoints( int &in iMulti )
 
 void OnMapInit()
 {
-	Schedule::Task( 0.05f, "SetUpStuff" );
+	Schedule::Task(0.05f, "SetUpStuff");
 	OverrideLimits();
 
 	iMaxBarricade = 8;
@@ -49,7 +49,7 @@ void OnMapInit()
 
 void OnNewRound()
 {	
-	Schedule::Task( 0.05f, "SetUpStuff" );
+	Schedule::Task(0.05f, "SetUpStuff");
 	OverrideLimits();
 }
 
@@ -64,29 +64,31 @@ void OnMatchBegin()
 
 void SetUpStuff()
 {
-	Engine.Ent_Fire( "screenoverlay", "StartOverlays" );
-	Engine.Ent_Fire( "Precache", "Kill" );
-	Engine.Ent_Fire( "SND-Ambient", "Volume", "10" );
+	Engine.Ent_Fire("screenoverlay", "StartOverlays");
+	Engine.Ent_Fire("Precache", "Kill");
+	Engine.Ent_Fire("SND-Ambient", "Volume", "10");
+
+	Engine.Ent_Fire("blade", "SetDamageFilter", "filter_null");
 	FindBarricades();
 }
 
 void PropsHP()
 {
 	CBaseEntity@ pEntity;
-	while ( ( @pEntity = FindEntityByClassname( pEntity, "prop_physics_multiplayer" ) ) !is null )
+	while ((@pEntity = FindEntityByClassname(pEntity, "prop_physics_multiplayer")) !is null)
 	{
-		int Health = int( pEntity.GetHealth() * 0.65f );
-		pEntity.SetMaxHealth( PlrCountHP( Health ) );
-		pEntity.SetHealth( PlrCountHP( Health ) );
+		int Health = int(pEntity.GetHealth() * 0.65f);
+		pEntity.SetMaxHealth(PlrCountHP(Health));
+		pEntity.SetHealth(PlrCountHP(Health));
 	}
 }
 
 void BreakableHP()
 {
 	CBaseEntity@ pEntity;
-	while ( ( @pEntity = FindEntityByClassname( pEntity, "func_breakable" ) ) !is null )
+	while ((@pEntity = FindEntityByClassname(pEntity, "func_breakable")) !is null)
 	{
-		pEntity.SetMaxHealth( pEntity.GetHealth() + CalculateHealthPoints( 25 ) );
-		pEntity.SetHealth( pEntity.GetHealth() + CalculateHealthPoints( 25 ) );
+		pEntity.SetMaxHealth(pEntity.GetHealth() + CalculateHealthPoints(25));
+		pEntity.SetHealth(pEntity.GetHealth() + CalculateHealthPoints(25));
 	}
 }
