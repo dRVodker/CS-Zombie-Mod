@@ -13,7 +13,7 @@ const float CONST_MAX_SLOWTIME = 2.0f;	//Maximum amount of seconds a zombie coul
 const float CONST_RECOVER_UNIT = 0.04f;	//Speed recovery tick time
 const int CONST_RECOVER_SPEED = 1;	//Amout of speed to recover per tick
 const float CONST_SLOWDOWN_TIME = 0.2f;	//Amount of time zombie being slowed down (any damage)
-const float CONST_SLOWDOWN_MULT = 40.0f;	//Old value - 36.0f
+const float CONST_SLOWDOWN_MULT = 36.0f;
 const float CONST_SLOWDOWN_CRITDMG = 68.0f;
 
 //Other Consts

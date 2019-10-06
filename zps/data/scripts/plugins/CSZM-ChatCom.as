@@ -166,7 +166,13 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 
 		return HOOK_HANDLED;
 	}
-
+/*
+	if (Utils.StrContains("!hp", arg1))
+	{
+		pBaseEnt.SetHealth(99999);
+		return HOOK_HANDLED;
+	}
+*/
 	return HOOK_CONTINUE;
 }
 

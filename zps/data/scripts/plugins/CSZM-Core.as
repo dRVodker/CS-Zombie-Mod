@@ -361,11 +361,13 @@ class CSZMPlayer
 		CZP_Player@ pPlayer = ToZPPlayer(PlayerIndex);
 
 		VoiceTime += Math::RandomFloat(0.52f, 0.83f); //Increase VoiceTime if slowed down / took damage
-		SpeedRT = Globals.GetCurrentTime() + 0.5f;
+		SpeedRT = Globals.GetCurrentTime() + 0.105f;
 
 		int MinSlowSpeed = int((DefSpeed * 0.01) * CONST_SLOWDOWN_MULT);	//Minimum speed to slow down
 
 		int NewSlowSpeed;	//Variabel to calculate new speed
+
+		float NewFreezeTime = 0.0f;
 
 		if (SlowTime < Globals.GetCurrentTime())
 		{
@@ -379,31 +381,31 @@ class CSZMPlayer
 		{
 			NewSlowSpeed += 1;
 		}
-
-		if (MeleeFreezeTime <= Globals.GetCurrentTime())
+/*
+		if (MeleeFreezeTime < Globals.GetCurrentTime())
 		{
-			MeleeFreezeTime = Globals.GetCurrentTime() - 0.001f;
+			MeleeFreezeTime = Globals.GetCurrentTime() - 0.05f;
 		}
-
+*/
 		//Melee
 		if (bDamageType(iDamageType, 7))
 		{
 			SlowTime += 2.0f;
-			MeleeFreezeTime += 1.05f;
+			MeleeFreezeTime = Globals.GetCurrentTime() + 1.05f;
 		}
 
 		//Blast
 		if (bDamageType(iDamageType, 6))
 		{
 			SlowTime += 1.7f;
-			MeleeFreezeTime += 0.275f;
+			MeleeFreezeTime = Globals.GetCurrentTime() + 0.275f;
 		}
 
 		//Blast Surface
 		if (bDamageType(iDamageType, 27))
 		{
 			SlowTime += 0.20f;
-			MeleeFreezeTime += 0.075f;
+			MeleeFreezeTime = Globals.GetCurrentTime() + 0.075f;
 		}
 
 		//Fall
@@ -411,7 +413,7 @@ class CSZMPlayer
 		{
 			NewSlowSpeed += 25;
 			SlowTime += 1.32f;
-			MeleeFreezeTime += 0.15f;
+			MeleeFreezeTime = Globals.GetCurrentTime() + 0.15f;
 		}
 
 		//Add time if critical dmg
@@ -419,7 +421,7 @@ class CSZMPlayer
 		{
 			NewSlowSpeed += 5;
 			SlowTime += 0.5f;
-			MeleeFreezeTime += 0.1f;
+			MeleeFreezeTime = Globals.GetCurrentTime() + 0.1f;
 		}
 
 		//Cap slowdown time to our MAX
@@ -432,22 +434,24 @@ class CSZMPlayer
 
 		if (WeakZombie)
 		{
-			SlowTime = Globals.GetCurrentTime();
-			MeleeFreezeTime = Globals.GetCurrentTime();
-			NewSlowSpeed = int(float(NewSlowSpeed) * 0.5f);
+			SlowTime = Globals.GetCurrentTime() - 0.01f;
+			MeleeFreezeTime = 0.0f;
+			NewSlowSpeed = int(float(NewSlowSpeed) * 0.3f);
 		}
 
 		if (SlowSpeed > MinSlowSpeed)
 		{
 			SlowSpeed = MinSlowSpeed;
 		}
-
+/*
+		SD(" ");
 		SD("{green}----------------------------------");
 		SD("SlowTime: {blue}" + (SlowTime - Globals.GetCurrentTime()));
 		SD("SlowSpeed: {blue}" + SlowSpeed);
 		SD("PlayerSpeed: {blue}" + (DefSpeed - SlowSpeed));
+		SD("MeleeFreezeTime: {blue}" + (MeleeFreezeTime - Globals.GetCurrentTime()));
 		SD("{green}----------------------------------");
-
+*/
 		pPlayer.SetMaxSpeed(DefSpeed - SlowSpeed);
 	}
 
@@ -629,6 +633,7 @@ class CSZMPlayer
 					z = 0.0f;
 				}
 
+//				Chat.CenterMessagePlayer(pBasePlayer, "-=Freeze=-");
 				pPlayerEntity.SetAbsVelocity(Vector(x, y, z));
 			}
 
