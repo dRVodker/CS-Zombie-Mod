@@ -51,7 +51,7 @@ HookReturnCode OnPlayerSpawn(CZP_Player@ pPlayer)
 		Engine.Ent_Fire_Ent(pBaseEnt, "SetFogController", "main_insta_fog");
 	}
 
-	if (g_bIsFireFly[iIndex] == true && iTeamNum == 1)
+	if (g_bIsFireFly[iIndex] && iTeamNum == 1)
 	{
 		SpawnFirefly(pBaseEnt, iIndex);
 		g_bIsFireFly[iIndex] = false;	
@@ -67,7 +67,7 @@ HookReturnCode OnPlayerSpawn(CZP_Player@ pPlayer)
 
 HookReturnCode OnStartTouch(CBaseEntity@ pTrigger, const string &in strEntityName, CBaseEntity@ pEntity)
 {
-	if (pEntity.GetTeamNumber() == 0 && pEntity.IsPlayer() == true && strEntityName == "fog_volume_lobby")
+	if (pEntity.GetTeamNumber() == 0 && pEntity.IsPlayer() && Utils.StrEql(strEntityName, "fog_volume_lobby"))
 	{
 		Engine.Ent_Fire_Ent(pEntity, "SetFogController", "lobby_fog");
 	}

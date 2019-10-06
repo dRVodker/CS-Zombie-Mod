@@ -364,10 +364,14 @@ class CSZMPlayer
 		SpeedRT = Globals.GetCurrentTime() + 0.105f;
 
 		int MinSlowSpeed = int((DefSpeed * 0.01) * CONST_SLOWDOWN_MULT);	//Minimum speed to slow down
-
 		int NewSlowSpeed;	//Variabel to calculate new speed
+		float NewFreezeTime = 0.0f;
+		float CurrentFreezeTime = MeleeFreezeTime - Globals.GetCurrentTime();
 
-		float NewFreezeTime;
+		if (CurrentFreezeTime <= 0)
+		{
+			CurrentFreezeTime = 0;
+		}
 
 		if (SlowTime < Globals.GetCurrentTime())
 		{
@@ -381,53 +385,59 @@ class CSZMPlayer
 		{
 			NewSlowSpeed += 1;
 		}
-/*
-		if (MeleeFreezeTime < Globals.GetCurrentTime())
-		{
-			MeleeFreezeTime = Globals.GetCurrentTime() - 0.05f;
-		}
-*/
+
 		//Melee
 		if (bDamageType(iDamageType, 7))
 		{
 			SlowTime += 2.0f;
-			MeleeFreezeTime = Globals.GetCurrentTime() + 1.05f;
+			NewFreezeTime += 1.05f;
 		}
 
 		//Blast
-		if (bDamageType(iDamageType, 6))
+		else if (bDamageType(iDamageType, 6))
 		{
 			SlowTime += 1.7f;
-			MeleeFreezeTime = Globals.GetCurrentTime() + 0.275f;
+			NewFreezeTime += 0.275f;
 		}
 
 		//Blast Surface
-		if (bDamageType(iDamageType, 27))
+		else if (bDamageType(iDamageType, 27))
 		{
 			SlowTime += 0.20f;
-			MeleeFreezeTime = Globals.GetCurrentTime() + 0.075f;
+			NewFreezeTime += 0.075f;
 		}
 
 		//Fall
-		if (bDamageType(iDamageType, 5))
+		else if (bDamageType(iDamageType, 5))
 		{
 			NewSlowSpeed += 25;
 			SlowTime += 1.32f;
-			MeleeFreezeTime = Globals.GetCurrentTime() + 0.15f;
+			NewFreezeTime += 0.15f;
 		}
 
 		//Add time if critical dmg
 		if (flDamage > CONST_SLOWDOWN_CRITDMG)
 		{
-			NewSlowSpeed += 5;
-			SlowTime += 0.5f;
-			MeleeFreezeTime = Globals.GetCurrentTime() + 0.1f;
+			SlowTime += 0.65f;
+			NewFreezeTime += 0.125f;
 		}
 
 		//Cap slowdown time to our MAX
 		if (SlowTime - Globals.GetCurrentTime() > CONST_MAX_SLOWTIME)
 		{
 			SlowTime = Globals.GetCurrentTime() + CONST_MAX_SLOWTIME;
+		}
+
+		if (NewFreezeTime > 0)
+		{
+			NewFreezeTime += CurrentFreezeTime;
+
+			if (NewFreezeTime > CONST_MAX_SLOWTIME)
+			{
+				NewFreezeTime = CONST_MAX_SLOWTIME;
+			}
+
+			MeleeFreezeTime = Globals.GetCurrentTime() + NewFreezeTime;
 		}
 
 		SlowSpeed += NewSlowSpeed;
@@ -443,15 +453,15 @@ class CSZMPlayer
 		{
 			SlowSpeed = MinSlowSpeed;
 		}
-/*
-		SD(" ");
-		SD("{green}----------------------------------");
-		SD("SlowTime: {blue}" + (SlowTime - Globals.GetCurrentTime()));
-		SD("SlowSpeed: {blue}" + SlowSpeed);
-		SD("PlayerSpeed: {blue}" + (DefSpeed - SlowSpeed));
-		SD("MeleeFreezeTime: {blue}" + (MeleeFreezeTime - Globals.GetCurrentTime()));
-		SD("{green}----------------------------------");
-*/
+
+//		SD(" ");
+//		SD("{green}----------------------------------");
+//		SD("SlowTime: {blue}" + (SlowTime - Globals.GetCurrentTime()));
+//		SD("SlowSpeed: {blue}" + SlowSpeed);
+//		SD("PlayerSpeed: {blue}" + (DefSpeed - SlowSpeed));
+//		SD("MeleeFreezeTime: {blue}" + (MeleeFreezeTime - Globals.GetCurrentTime()));
+//		SD("{green}----------------------------------");
+
 		pPlayer.SetMaxSpeed(DefSpeed - SlowSpeed);
 	}
 
@@ -633,7 +643,7 @@ class CSZMPlayer
 					z = 0.0f;
 				}
 
-//				Chat.CenterMessagePlayer(pBasePlayer, "-=Freeze=-");
+				Chat.CenterMessagePlayer(pBasePlayer, "-=Freeze=-");
 				pPlayerEntity.SetAbsVelocity(Vector(x, y, z));
 			}
 
@@ -1291,8 +1301,8 @@ HookReturnCode CSZM_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out Da
 				bool bLeft = false;
 				float VP_X = 0;
 				float VP_Y = 0;
-				float VP_DAMP = Math::RandomFloat(0.047f , 0.095f);
-				float VP_KICK = Math::RandomFloat(0.25f , 1.35f);
+				float VP_DAMP = Math::RandomFloat(0.038f , 0.075f);
+				float VP_KICK = Math::RandomFloat(0.25f , 0.95f);
 
 				//Fall DamageType
 				if (bDamageType(iDamageType, 5))
