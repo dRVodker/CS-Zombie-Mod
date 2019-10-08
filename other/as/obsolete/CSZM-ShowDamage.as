@@ -118,6 +118,14 @@ void OnMapInit()
 	}
 }
 
+void OnMapShutdown()
+{
+	if (bIsCSZM)
+	{
+		bIsCSZM = false;
+	}
+}
+
 void OnProcessRound()
 {
 	if (bIsCSZM)

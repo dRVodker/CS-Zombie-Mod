@@ -23,20 +23,33 @@ CASConVar@ pInfectionRate = null;
 CASConVar@ pZPSHardcore = null;
 
 int iMaxPlayers;
-int iDoorsState;	//Used for warm up (to allow everyone to open doors)
 
-bool bIsCSZM;	//Is CSZM available? (Depends on a map)
-bool bAllowAddTime = true;	//Allow add time for successful infection
+bool bIsCSZM;	//Является CSZM доступным? (Зависит от карты)
+bool bAllowAddTime = true;	//Позволить добавлять время за удачное заражение
 
 bool bSpawnWeak = true;
 bool bAllowZombieSpawn;
 bool bWarmUp = true;
 
-//Win Countes
+//Счётчики побед
 int iHumanWin;
 int iZombieWin;
 
-//List of available ZM Player models (make sure your server has it)
+//Ентити которые будут показывать своё HP зомби
+array<string> g_strEntities = 
+{
+	"prop_door_rotating", //0
+	"prop_physics_multiplayer", //1
+	"prop_physics_override", //2
+	"prop_physics", //3
+	"func_door_rotating", //4
+	"func_door", //5
+	"func_breakable", //6
+	"func_physbox", //7
+	"prop_barricade" //8
+};
+
+//Список моделей которые используются для зомби
 array<string> g_strModels = 
 {
 	"models/cszm/zombie_classic.mdl",
@@ -49,11 +62,10 @@ array<string> g_strModels =
 
 array<string> g_strMDLToUse;
 
-//Other arrays (Don't even touch this)
-array<bool> g_bWasFirstInfected;
-
-//CSZM Player Array
+//Obj Arrays
 array<CSZMPlayer@> CSZMPlayerArray;
+array<CPhysProp@> PPArray;
+array<CShowDamage@> ShowDamageArray;
 
 //Other Data (Don't even touch this)
 int iFirstInfectedHP;
@@ -68,6 +80,129 @@ float flShowSeconds;
 float flShowMinutes;
 float flShowHours;
 float flWeakZombieWait;
+
+class CPhysProp
+{
+	int iAttakerIndex;
+	int iAttakerTeam;
+	int iEntIndex;
+
+	CPhysProp(int PlayerIndex, int PlayerTeam, int PropIndex)
+	{
+		iAttakerIndex = PlayerIndex;
+		iAttakerTeam = PlayerTeam;
+		iEntIndex = PropIndex;
+	}
+
+	int GetAttIndex()
+	{
+		return iAttakerIndex;
+	}
+
+	int GetAttTeam()
+	{
+		return iAttakerTeam;
+	}
+
+	int GetPropIndex()
+	{
+		return iEntIndex;
+	}
+
+	void SetAttackerInfo(int PlayerIndex, int PlayerTeam)
+	{
+		iAttakerIndex = PlayerIndex;
+		iAttakerTeam = PlayerTeam;
+	}
+}
+
+class CShowDamage
+{
+	int PlayerIndex;
+	int VicIndex; 
+	int Hits;
+	float DamageDealt;
+	float Reset;
+	float Wait;
+	bool Show;
+
+	CShowDamage(int index)
+	{
+		PlayerIndex = index;
+		VicIndex = 0;
+		Hits = 0;
+		DamageDealt = 0.0f;
+		Reset = 0.0f;
+		Wait = 0.0f;
+		Show = false;
+	}
+
+	void AddDamage(float flDamage, CBaseEntity@ pVictim)
+	{	
+		if (pVictim is null || flDamage < 1)
+		{
+			return;
+		}
+
+		int VicHP = pVictim.GetHealth();
+		VicIndex = pVictim.entindex();
+		Hits++;
+		Reset = Globals.GetCurrentTime() + CONST_SHOWDMG_RESET;
+		Wait = Globals.GetCurrentTime() + CONST_SHOWDMG_WAIT;
+		Show = true;
+
+		if (VicHP - flDamage <= 0)
+		{
+			DamageDealt += VicHP;
+		}
+
+		else
+		{
+			DamageDealt += flDamage;
+		}
+	}
+
+	void Think()
+	{
+		if (Reset <= Globals.GetCurrentTime() && Reset != 0)
+		{
+			Reset = 0.0f;
+			VicIndex = 0;
+			DamageDealt = 0.0f;
+			Hits = 0;
+			Show = false;
+		}
+
+		if (Show && Wait <= Globals.GetCurrentTime() && Wait != 0)
+		{
+			Wait = 0;
+			Show = false;
+
+			CBasePlayer@ pBasePlayer = ToBasePlayer(PlayerIndex);
+			CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(PlayerIndex);
+			CBaseEntity@ pVictim = FindEntityByEntIndex(VicIndex);
+
+			int VicHP = pVictim.GetHealth();
+
+			if (VicHP < 0)
+			{
+				VicHP = 0;
+			}
+
+			string strHits = " hits";
+
+			if (Hits == 1)
+			{
+				strHits = " hit";
+			}
+
+			if (pPlayerEntity.GetTeamNumber() == TEAM_SURVIVORS)
+			{
+				Chat.CenterMessagePlayer(pBasePlayer, "Damage dealt: " + int(DamageDealt) + "\nin " + Hits + strHits + "\nHealth left: " + VicHP);
+			}
+		}
+	}
+}
 
 class CSZMPlayer
 {
@@ -94,6 +229,7 @@ class CSZMPlayer
 	bool WeakZombie;
 	bool Abuser;
 	bool FirstInfected;
+	bool WFirstInfected;
 
 	CSZMPlayer(int index)
 	{
@@ -118,6 +254,7 @@ class CSZMPlayer
 		WeakZombie = true;
 		Abuser = false;
 		FirstInfected = false;
+		WFirstInfected = false;
 	}
 
 	void Reset()
@@ -154,6 +291,16 @@ class CSZMPlayer
 		SlowTime = Globals.GetCurrentTime();
 		VoiceTime = Globals.GetCurrentTime();
 		AdrenalineTime = Globals.GetCurrentTime();
+	}
+
+	bool WasFirstInfected()
+	{
+		return WFirstInfected;
+	}
+
+	void SetWFirstInfected(bool WFI)
+	{
+		WFirstInfected = WFI;
 	}
 
 	bool IsFirstInfected()
@@ -454,14 +601,6 @@ class CSZMPlayer
 			SlowSpeed = MinSlowSpeed;
 		}
 
-//		SD(" ");
-//		SD("{green}----------------------------------");
-//		SD("SlowTime: {blue}" + (SlowTime - Globals.GetCurrentTime()));
-//		SD("SlowSpeed: {blue}" + SlowSpeed);
-//		SD("PlayerSpeed: {blue}" + (DefSpeed - SlowSpeed));
-//		SD("MeleeFreezeTime: {blue}" + (MeleeFreezeTime - Globals.GetCurrentTime()));
-//		SD("{green}----------------------------------");
-
 		pPlayer.SetMaxSpeed(DefSpeed - SlowSpeed);
 	}
 
@@ -643,7 +782,6 @@ class CSZMPlayer
 					z = 0.0f;
 				}
 
-				Chat.CenterMessagePlayer(pBasePlayer, "-=Freeze=-");
 				pPlayerEntity.SetAbsVelocity(Vector(x, y, z));
 			}
 
@@ -759,7 +897,9 @@ void OnPluginInit()
 	Events::Player::OnPlayerConnected.Hook(@CSZM_OnPlayerConnected);
 	Events::Player::OnPlayerSpawn.Hook(@CSZM_OnPlayerSpawn);
 	Events::Entities::OnEntityCreation.Hook(@CSZM_OnEntityCreation);
-	Events::Custom::OnPlayerDamagedCustom.Hook(@CSZM_OnPlayerDamaged);
+	Events::Custom::OnEntityDamaged.Hook(@CSZM_OnEntDamaged);
+	Events::Custom::OnPlayerDamagedCustom_PRE.Hook(@CSZM_OnPlayerDamaged);
+	Events::Player::OnPlayerDamaged.Hook(@CSZM_POST_OnPlayerDamaged);
 	Events::Player::OnPlayerKilled.Hook(@CSZM_OnPlayerKilled);
 	Events::Player::OnPlayerDisonnected.Hook(@CSZM_OnPlayerDisonnected);
 	Events::Rounds::RoundWin.Hook(@CSZM_RoundWin);
@@ -801,12 +941,12 @@ void OnMapInit()
 		RegisterEntities();
 		
 		//Resize
-		g_bWasFirstInfected.resize(iMaxPlayers + 1);
 		g_iKills.resize(iMaxPlayers + 1);
 		g_iVictims.resize(iMaxPlayers + 1);
 
 		//CSZM Player array resize
 		CSZMPlayerArray.resize(iMaxPlayers + 1);
+		ShowDamageArray.resize(iMaxPlayers + 1);
 		
 		//Set Doors Filter to 0 (any team)
 		if (bWarmUp)
@@ -845,8 +985,9 @@ void OnMapShutdown()
 		bWarmUp = true;
 
 		CSZMPlayerArray.removeRange(0, CSZMPlayerArray.length());
+		ShowDamageArray.removeRange(0, ShowDamageArray.length());
+		PPArray.removeRange(0, PPArray.length());
 		
-		ClearBoolArray(g_bWasFirstInfected);
 		ClearIntArray(g_iKills);
 		ClearIntArray(g_iVictims);
 	}
@@ -989,10 +1130,11 @@ HookReturnCode CSZM_OnPlayerConnected(CZP_Player@ pPlayer)
 		CSZMPlayerArray.removeAt(index);
 		CSZMPlayerArray.insertAt(index, CSZMPlayer(index));
 
+		ShowDamageArray.removeAt(index);
+		ShowDamageArray.insertAt(index, CShowDamage(index));
+
 		g_iKills[index] = 0;
 		g_iVictims[index] = 0;
-			
-		g_bWasFirstInfected[index] = false;
 	}
 	
 	return HOOK_CONTINUE;
@@ -1250,23 +1392,60 @@ HookReturnCode CSZM_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out Da
 
 		int InfRes = pVicCSZMPlayer.GetInfectResist();
 
-		if (Utils.StrEql(pEntityAttacker.GetEntityName(), "frendly_shrapnel") && iVicTeam == TEAM_SURVIVORS)
+		if (!pEntityAttacker.IsPlayer())
 		{
-			DamageInfo.SetDamageType(0);
-			DamageInfo.SetDamage(0);
+			bool bSetZeroDMG = false;
 
-			return HOOK_HANDLED;
+			if (Utils.StrContains("physics", pEntityAttacker.GetClassname()) || Utils.StrContains("physbox", pEntityAttacker.GetClassname()))
+			{
+				int ArrayPos = ObjectPos(iAttIndex);
+
+				if (ArrayPos > -1)
+				{
+					CPhysProp@ pPhysProp = PPArray[ArrayPos];
+
+					CBaseEntity@ pNewAttacker = FindEntityByEntIndex(pPhysProp.GetAttIndex());
+					CZP_Player@ pPlayerAttacker = ToZPPlayer(pNewAttacker);
+
+					DamageInfo.SetAttacker(pNewAttacker);
+					DamageInfo.SetInflictor(pNewAttacker);
+				}
+			}
+
+			else if (Utils.StrContains("test_fragmine", pEntityAttacker.GetEntityName()))
+			{
+				CBaseEntity@ pMineOwner = pEntityAttacker.GetOwner();
+
+				if (DamageInfo.GetDamage() > 100)
+				{
+					DamageInfo.SetDamage(100);
+				}
+
+				if (pMineOwner !is null)
+				{
+					DamageInfo.SetAttacker(pMineOwner);
+					DamageInfo.SetInflictor(pMineOwner);
+				}
+			}
+
+			else if (Utils.StrEql(pEntityAttacker.GetEntityName(), "frendly_shrapnel") && iVicTeam == TEAM_SURVIVORS)
+			{
+				bSetZeroDMG = true;
+			}
+
+			else if (iAttTeam == iVicTeam)
+			{
+				bSetZeroDMG = true;
+			}
+
+			if (bSetZeroDMG)
+			{
+				DamageInfo.SetDamageType(0);
+				DamageInfo.SetDamage(0);
+			}
 		}
 
-		if (iAttTeam == iVicTeam && pBaseEnt !is pEntityAttacker)
-		{
-			DamageInfo.SetDamageType(0);
-			DamageInfo.SetDamage(0);
-
-			return HOOK_HANDLED;
-		}
-
-		if (pEntityAttacker.IsPlayer()) 
+		else
 		{
 			@pPlrAttacker = ToZPPlayer(iAttIndex);
 			strAN = pPlrAttacker.GetPlayerName();
@@ -1279,7 +1458,6 @@ HookReturnCode CSZM_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out Da
 			if (InfRes > 0)
 			{
 				pVicCSZMPlayer.SubtractInfectResist();
-				return HOOK_HANDLED;
 			}
 
 			else if (InfRes <= 0)
@@ -1298,6 +1476,7 @@ HookReturnCode CSZM_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out Da
 		{
 			if (flDamage < pBaseEnt.GetHealth() && flDamage >= 1.0f)
 			{
+				//ZM ViewPunch
 				bool bLeft = false;
 				float VP_X = 0;
 				float VP_Y = 0;
@@ -1329,6 +1508,46 @@ HookReturnCode CSZM_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out Da
 				pVicCSZMPlayer.EmitZMSound(VOICE_ZM_PAIN);
 				pVicCSZMPlayer.AddSlowdown(flDamage, iDamageType);
 			}
+		}
+	}
+
+	return HOOK_CONTINUE;
+}
+
+HookReturnCode CSZM_POST_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &in DamageInfo)
+{
+	if (bIsCSZM)
+	{
+		CZP_Player@ pPlrAttacker = null;
+
+		CBasePlayer@ pBPlrAttacker = null;
+
+		CBasePlayer@ pPlrEnt = pPlayer.opCast();
+		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+
+		CBaseEntity@ pEntityAttacker = DamageInfo.GetAttacker();
+		
+		const int iVicIndex = pBaseEnt.entindex();
+		const int iVicTeam = pBaseEnt.GetTeamNumber();
+		const int iAttIndex = pEntityAttacker.entindex();
+		const bool bIsAttPlayer = pEntityAttacker.IsPlayer();
+
+		CShowDamage@ pShowDamage = ShowDamageArray[iAttIndex];
+
+		if (bIsAttPlayer)
+		{
+			@pPlrAttacker = ToZPPlayer(iAttIndex);
+			@pBPlrAttacker = ToBasePlayer(iAttIndex);
+		}
+
+		else
+		{
+			return HOOK_HANDLED;
+		}
+
+		if (pEntityAttacker.GetTeamNumber() == TEAM_SURVIVORS && iVicTeam == TEAM_ZOMBIES)
+		{
+			pShowDamage.AddDamage(DamageInfo.GetDamage(), pBaseEnt);
 		}
 	}
 
@@ -1480,6 +1699,176 @@ HookReturnCode CSZM_OnEntityCreation(const string &in strClassname, CBaseEntity@
 	return HOOK_CONTINUE;
 }
 
+HookReturnCode CSZM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out DamageInfo)
+{
+	if (!bIsCSZM)
+	{
+		return HOOK_HANDLED;
+	}
+
+	CBaseEntity@ pAttacker = DamageInfo.GetAttacker();
+	int EntIndex = pEntity.entindex();
+	int iAttakerIndex = pAttacker.entindex();
+	int iAttakerTeam = pAttacker.GetTeamNumber();
+	bool bIsUnbreakable = false; 
+
+	if (Utils.StrContains("unbrk", pEntity.GetEntityName()) || Utils.StrContains("unbreakable", pEntity.GetEntityName()))
+	{
+		bIsUnbreakable = true;
+	}
+
+	if (Utils.StrContains("physics", pEntity.GetClassname()) || Utils.StrContains("physbox", pEntity.GetClassname()))
+	{
+		int ArrayPos = ObjectPos(EntIndex);
+
+		if (ArrayPos > -1)
+		{
+			CPhysProp@ pPhysProp = PPArray[ArrayPos];
+			pPhysProp.SetAttackerInfo(iAttakerIndex, iAttakerTeam);
+		}
+
+		else
+		{
+			PPArray.insertLast(CPhysProp(iAttakerIndex, iAttakerTeam, EntIndex));
+		}
+	}
+
+	//50% of damage resist for "prop_barricade"
+	if (Utils.StrEql(pEntity.GetClassname(), "prop_barricade"))
+	{
+		DamageInfo.SetDamage(DamageInfo.GetDamage() * 0.475f);
+	}
+
+	//Show HP
+	if (pAttacker.IsPlayer() && pAttacker.GetTeamNumber() == TEAM_ZOMBIES && !bIsUnbreakable)
+	{
+		int iSlot = iAttakerIndex;
+		bool bIsValid = false;
+
+		for (uint i = 0; i < g_strEntities.length(); i++)
+		{
+			if (bIsValid)
+			{
+				continue;
+			}
+
+			if (Utils.StrEql(pEntity.GetClassname(), g_strEntities[i]))
+			{
+				bIsValid = true;
+			}
+		}
+
+		if (bIsValid)
+		{
+			bool bLeft = false;
+			float flDMG = DamageInfo.GetDamage();
+			float flHP = pEntity.GetHealth();
+			float flResult = flHP - flDMG;
+
+			if (flDMG > 0)
+			{
+				bLeft = true;
+			}
+
+			if (flResult > 0)
+			{
+				ShowHP(ToBasePlayer(iSlot), int(flResult), bLeft, false);
+			}
+
+			else
+			{
+				ShowHP(ToBasePlayer(iSlot), int(flResult), bLeft, true);
+			}
+		}
+	}
+
+	//Other stuff
+	//Rule to prevent TK with physics
+	if (Utils.StrContains("physics", pEntity.GetClassname()) || Utils.StrContains("physbox", pEntity.GetClassname()))
+	{
+		if (pAttacker.IsPlayer())
+		{
+			pEntity.ChangeTeam(pAttacker.GetTeamNumber());
+		}
+	}
+
+	//Special rule for prop_physics
+	if (Utils.StrContains("physics", pEntity.GetClassname()))
+	{
+		//Getting some important data there
+		string MDLName = pEntity.GetModelName();
+		int DMGType = DamageInfo.GetDamageType();
+		float DMG = DamageInfo.GetDamage();
+		float flMultiplier = 27.0f;
+		bool ReduceDMG = true;
+
+		//Only for survivors
+		if (pAttacker.IsPlayer() && pAttacker.GetTeamNumber() == TEAM_SURVIVORS)
+		{
+			//If Damage Type is BULLET reduce amount of damage and increase force
+			if (bDamageType(DMGType, 1))
+			{
+				//If revolver bullet
+				if (bDamageType(DMGType, 13) && DMG > 30)
+				{
+					flMultiplier = 8.0f;
+				}
+
+				//If buckshot
+				else if (bDamageType(DMGType, 29))
+				{
+					flMultiplier = 1.02f;
+				}
+
+				//Set DMG_BULLET Damage Type, otherwise it won't push
+				DamageInfo.SetDamageType(1<<1);
+				DamageInfo.SetDamageForce(DamageInfo.GetDamageForce() * flMultiplier);
+
+				//Do not reduce damage if explosive props
+				if (Utils.StrContains("propanecanister001a", MDLName) ||
+				Utils.StrContains("oildrum001_explosive", MDLName) ||
+				Utils.StrContains("fire_extinguisher", MDLName) ||
+				Utils.StrContains("vent001", MDLName) ||
+				Utils.StrContains("canister01a", MDLName) ||
+				Utils.StrContains("canister02a", MDLName) ||
+				Utils.StrContains("propane_tank001a", MDLName) ||
+				Utils.StrContains("props_debris/wood_board", MDLName) ||
+				Utils.StrContains("gascan001a", MDLName))
+				{
+					ReduceDMG = false;
+				}
+				
+				if (ReduceDMG)
+				{
+					DamageInfo.SetDamage(DMG * 0.021f);
+				}
+			}
+		}
+	}
+
+	//Break "prop_itemcrate" if punt
+	if (Utils.StrEql(pEntity.GetClassname(), "prop_itemcrate") && DamageInfo.GetDamageType() == (1<<23))
+	{
+		DamageInfo.SetDamageType(1<<13);
+		DamageInfo.SetDamage(pEntity.GetHealth());
+	}
+
+	//Don't deal any damage if unbreakable
+	if (bIsUnbreakable)
+	{
+		DamageInfo.SetDamage(0);
+	}
+
+	//Don't push weapons and items
+	if (Utils.StrContains("weapon", pEntity.GetClassname()) || Utils.StrContains("item", pEntity.GetClassname()))
+	{
+		DamageInfo.SetDamageType((1<<11));
+		DamageInfo.SetDamageForce(Vector(0, 0, 0));
+	}
+
+	return HOOK_CONTINUE;
+}
+
 //CSZM Related Funcs
 void OnProcessRound()
 {
@@ -1506,10 +1895,16 @@ void OnProcessRound()
 		for (int i = 1; i <= iMaxPlayers; i++) 
 		{
 			CSZMPlayer@ pCSZMPlayer = CSZMPlayerArray[i];
+			CShowDamage@ pShowDamage = ShowDamageArray[i];
 
 			if (pCSZMPlayer !is null)
 			{
 				pCSZMPlayer.Think();
+			}
+
+			if (pShowDamage !is null)
+			{
+				pShowDamage.Think();
 			}
 		}
 	}
@@ -1525,6 +1920,8 @@ void OnNewRound()
 		flRTWait = 0;
 		flWUWait = 0;
 		flWeakZombieWait = 0;
+
+		PPArray.removeRange(0, PPArray.length());
 		
 		for (int i = 1; i <= iMaxPlayers; i++) 
 		{
@@ -1835,7 +2232,7 @@ void TurnToZ(const int &in index)
 				pSoloMode.SetValue("0");
 				bAllowZombieSpawn = true;
 				Engine.EmitSound("CS_FirstTurn");
-				g_bWasFirstInfected[index] = true;
+				pCSZMPlayer.SetWFirstInfected(true);
 			}
 
 			EmitBloodEffect(pPlayer, false);

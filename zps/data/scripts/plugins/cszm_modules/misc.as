@@ -319,7 +319,7 @@ int ChooseVictim()
 			continue;
 		}
 		
-		if (!g_bWasFirstInfected[i] && pPlrEntity.IsAlive() && pPlrEntity.GetTeamNumber() == TEAM_SURVIVORS && pCSZMPlayer.GetInfectDelay() < 2)
+		if (!pCSZMPlayer.WasFirstInfected() && pPlrEntity.IsAlive() && pPlrEntity.GetTeamNumber() == TEAM_SURVIVORS && pCSZMPlayer.GetInfectDelay() < 2)
 		{
 			iCount++;
 			p_VictimIndex.insertLast(i);
@@ -361,6 +361,7 @@ void DecideFirstInfected()
 	for (int i = 1; i <= iMaxPlayers; i++)
 	{
 		CZP_Player@ pPlayer = ToZPPlayer(i);
+		CSZMPlayer@ pCSZMPlayer = CSZMPlayerArray[i];
 		
 		if (pPlayer is null)
 		{
@@ -369,7 +370,7 @@ void DecideFirstInfected()
 		
 		iPlr++;
 
-		if (g_bWasFirstInfected[i])
+		if (pCSZMPlayer.WasFirstInfected())
 		{
 			iPlrWasFZ++;
 		}
@@ -379,7 +380,12 @@ void DecideFirstInfected()
 	{
 		for (int i = 1; i <= iMaxPlayers; i++)
 		{
-			g_bWasFirstInfected[i] = false;
+			CSZMPlayer@ pCSZMPlayer = CSZMPlayerArray[i];
+
+			if (pCSZMPlayer !is null)
+			{
+				pCSZMPlayer.SetWFirstInfected(false);
+			}
 		}
 	}
 
@@ -541,4 +547,45 @@ void ZombiePoints(CZP_Player@ pIgnorePlayer)
 			}
 		}
 	}
+}
+
+void ShowHP(CBasePlayer@ pBasePlayer, const int &in iHP, const bool &in bLeft, const bool &in bHide)
+{
+	if (bHide)
+	{
+		Chat.CenterMessagePlayer(pBasePlayer, "");
+	}
+
+	else
+	{
+		string strLeft = "";
+
+		if (bLeft)
+		{
+			strLeft = " Left";
+		}
+
+		Chat.CenterMessagePlayer(pBasePlayer, iHP + " HP" + strLeft);
+	}
+}
+
+int ObjectPos(const int &in index)
+{
+	int pos = -1;
+
+	for (uint q = 0; q < PPArray.length(); q++)
+	{
+		CPhysProp@ pPhysProp = PPArray[q];
+
+		if (pPhysProp !is null)
+		{
+			if (pPhysProp.GetPropIndex() == index)
+			{
+				pos = q;
+				return pos;
+			}
+		}
+	}
+
+	return pos;
 }

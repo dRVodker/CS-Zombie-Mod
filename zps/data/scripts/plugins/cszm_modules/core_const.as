@@ -41,6 +41,8 @@ const float CONST_ROUND_TIME_GAME = 300.05;	//Удерживать внутри�
 const float CONST_ADRENALINE_DURATION = 12.0f;  //Длительность действия адреналина в секундах
 const int CONST_MAX_INFECTRESIST = 2;   //Максимальное сопротивление инфекции
 const float CONST_ARMOR_MULT = 2.0f;
+const float CONST_SHOWDMG_RESET = 1.35f;
+const float CONST_SHOWDMG_WAIT = 0.005f;
 
 //Antidote state
 const int ANTIDOTE_STATE_UNUSEABLE = 0;
