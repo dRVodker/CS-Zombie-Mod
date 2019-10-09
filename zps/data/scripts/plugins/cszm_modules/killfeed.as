@@ -94,6 +94,7 @@ void ShowKills(CZP_Player@ pPlayer, const int &in iKills, const bool &in bIsVict
 		iG = 235;
 		iR = 16;
 		iB = 32;
+		
 		if(iKills == 1)
 		{
 			strMsgToShow = "Victim: ";

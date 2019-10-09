@@ -1,4 +1,4 @@
-//List of entity classnames which will be removed if a player spawns inside them
+//Список ентити, которые будут удаляться, если игрок заспавнится внутри этих ентити
 array<string> g_strPropsCN = 
 {
     "prop_physics_override",
@@ -6,7 +6,8 @@ array<string> g_strPropsCN =
     "prop_physics",
     "func_physbox",
     "prop_ragdoll",
-    "prop_barricade"
+    "prop_barricade",
+    "prop_itemcrate"
 };
 
 void RemoveProp(CBaseEntity@ pPlayer)
@@ -19,7 +20,15 @@ void RemoveProp(CBaseEntity@ pPlayer)
         {
             if (pProp.Intersects(pPlayer) == true  && pProp !is null)
             {
-                pProp.SUB_Remove();
+                if (Utils.StrEql("prop_itemcrate", g_strPropsCN[i]))
+                {
+                    Engine.Ent_Fire_Ent(pProp, "break");
+                }
+
+                else
+                {
+                    pProp.SUB_Remove();
+                }
             }
         }
     }

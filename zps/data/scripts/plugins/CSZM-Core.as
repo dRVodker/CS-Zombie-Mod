@@ -6,8 +6,6 @@
 #include "./cszm_modules/cache.as"
 #include "./cszm_modules/killfeed.as"
 #include "./cszm_modules/rprop.as"
-#include "./cszm_modules/entities.as"
-#include "./cszm_modules/antidote.as"
 #include "./cszm_modules/item_flare.as"
 #include "./cszm_modules/teamnums.as"
 #include "./cszm_modules/core_text.as"
@@ -62,12 +60,12 @@ array<string> g_strModels =
 
 array<string> g_strMDLToUse;
 
-//Obj Arrays
+//Массивы объектов
 array<CSZMPlayer@> CSZMPlayerArray;
 array<CPhysProp@> PPArray;
 array<CShowDamage@> ShowDamageArray;
 
-//Other Data (Don't even touch this)
+//Другие данные
 int iFirstInfectedHP;
 int iStartCoundDown;
 int iSeconds;
@@ -113,6 +111,24 @@ class CPhysProp
 	{
 		iAttakerIndex = PlayerIndex;
 		iAttakerTeam = PlayerTeam;
+	}
+
+	void CheckTeamNum()
+	{
+		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(iAttakerIndex);
+
+		if (iAttakerTeam != pPlayerEntity.GetTeamNumber())
+		{
+			for (uint q = 0; q < PPArray.length(); q++)
+			{
+				CPhysProp@ pPhysProp = PPArray[q];
+
+				if (this is pPhysProp)
+				{
+					PPArray.removeAt(q);
+				}
+			}
+		}
 	}
 }
 
@@ -897,6 +913,7 @@ void OnPluginInit()
 	Events::Player::OnPlayerConnected.Hook(@CSZM_OnPlayerConnected);
 	Events::Player::OnPlayerSpawn.Hook(@CSZM_OnPlayerSpawn);
 	Events::Entities::OnEntityCreation.Hook(@CSZM_OnEntityCreation);
+	Events::Entities::OnEntityDestruction.Hook(@CSZM_OnEntityDestruction);
 	Events::Custom::OnEntityDamaged.Hook(@CSZM_OnEntDamaged);
 	Events::Custom::OnPlayerDamagedCustom_PRE.Hook(@CSZM_OnPlayerDamaged);
 	Events::Player::OnPlayerDamaged.Hook(@CSZM_POST_OnPlayerDamaged);
@@ -1018,7 +1035,7 @@ void OnEntityPickedUp(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 		{
 			if (!Utils.StrContains("iantidote", pWeapon.GetEntityName()))
 			{
-				Chat.CenterMessagePlayer(pPlrEnt, "You got Maximum Infection Resist: " + InfRes);
+				Chat.CenterMessagePlayer(pPlrEnt, "You already has maximum of Infection Resist: " + InfRes);
 			}
 
 			Engine.Ent_Fire(index + "iantidote", "addoutput", "itemstate 0");
@@ -1699,6 +1716,18 @@ HookReturnCode CSZM_OnEntityCreation(const string &in strClassname, CBaseEntity@
 	return HOOK_CONTINUE;
 }
 
+HookReturnCode CSZM_OnEntityDestruction(const string &in strClassname, CBaseEntity@ pEntity)
+{
+	int ArrayPos = ObjectPos(pEntity.entindex());
+
+	if (ArrayPos > -1)
+	{
+		PPArray.removeAt(ArrayPos);
+	}
+
+	return HOOK_CONTINUE;
+}
+
 HookReturnCode CSZM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out DamageInfo)
 {
 	if (!bIsCSZM)
@@ -1887,7 +1916,7 @@ void OnProcessRound()
 			WarmUpTimer();
 		}
 
-		if (flWeakZombieWait != 0 && flWeakZombieWait <= Globals.GetCurrentTime())
+		if (flWeakZombieWait != 0 && bSpawnWeak && flWeakZombieWait <= Globals.GetCurrentTime())
 		{
 			bSpawnWeak = false;
 		}
@@ -1905,6 +1934,16 @@ void OnProcessRound()
 			if (pShowDamage !is null)
 			{
 				pShowDamage.Think();
+			}
+		}
+
+		for (uint q = 0; q < PPArray.length(); q++)
+		{
+			CPhysProp@ pPhysProp = PPArray[q];
+
+			if (pPhysProp !is null)
+			{
+				pPhysProp.CheckTeamNum();
 			}
 		}
 	}

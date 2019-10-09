@@ -1,5 +1,5 @@
-//GamePlay Consts and Variables
-//Player Speed
+//Постоянные игрового процесса
+//Скорости игрока
 const int SPEED_DEFAULT = 225;
 const int SPEED_HUMAN = 215;
 const int SPEED_ZOMBIE = 200;
@@ -17,7 +17,7 @@ const int CONST_SLOWDOWN_HEALTH = 250;  //Кол-во HP, которое нуж�
 const float CONST_SLOWDOWN_MULT = 36.0f;    //Процент от максимальной скорости зомби, который будет ониматься при получении урона равному "CONST_SLOWDOWN_HEALTH"
 const float CONST_SLOWDOWN_CRITDMG = 68.0f; //Значение урона, до которого зомби не будет стопарится
 
-//Other Consts
+//Другие постоянные
 const float CONST_SPAWN_DELAY = 5.0f;	//Время в секундах, которое должны будут ждать все погибшие игроки, чтобы снова возродиться
 const int CONST_FI_HEALTH_MULT = 125;	//Множитель HP для Первого зараженного (умножается на кол-во игроков)
 const int CONST_ZOMBIE_ADD_HP = 200;	//Дополнительные HP для максимального HP обычного зомби. (Zombie's max health + CONST_ZOMBIE_ADD_HP)
@@ -41,8 +41,8 @@ const float CONST_ROUND_TIME_GAME = 300.05;	//Удерживать внутри�
 const float CONST_ADRENALINE_DURATION = 12.0f;  //Длительность действия адреналина в секундах
 const int CONST_MAX_INFECTRESIST = 2;   //Максимальное сопротивление инфекции
 const float CONST_ARMOR_MULT = 2.0f;
-const float CONST_SHOWDMG_RESET = 1.35f;
-const float CONST_SHOWDMG_WAIT = 0.005f;
+const float CONST_SHOWDMG_RESET = 1.35f;    //Время в секундах, по истечению которого ShowDamage обнуляется
+const float CONST_SHOWDMG_WAIT = 0.001f;    //Задержка показа урона
 
 //Antidote state
 const int ANTIDOTE_STATE_UNUSEABLE = 0;
