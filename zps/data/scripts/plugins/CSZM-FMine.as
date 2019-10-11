@@ -117,7 +117,6 @@ class CFragMine
 			flTimer = Globals.GetCurrentTime() + CONST_FMINE_TIK;
 			pMineEntity.SetSkin(1);
 			Engine.EmitSoundPosition(iMineIndex, "weapons/slam/mine_mode.wav", pMineEntity.GetAbsOrigin(), 1.0f, 75, 105);
-//			pMineEntity.Teleport(pMineEntity.GetAbsOrigin(), pMineEntity.GetAbsAngles(), Vector(0, 0, -100));
 
 			if (pOwnerEntity.IsPlayer())
 			{
@@ -389,9 +388,7 @@ void OnEntityUsed(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 
 					else
 					{
-						CZP_Player@ pPlayerOwner = ToZPPlayer(pFragMine.GetOwnerIndex());
-
-						Chat.PrintToChatPlayer(pPlrEnt, "{gold}You cannot disarm and pick up the frag mine!\nOwner: {blue}" + pPlayerOwner.GetPlayerName());
+						Chat.PrintToChatPlayer(pPlrEnt, "This frag mine is not yours, you can't disarm and pick it up!");
 					}
 				}
 			}
@@ -533,28 +530,3 @@ CFragMine@ FindFragMineByEntIndex(const int &in EntIndex)
 
 	return pFM;
 }
-
-/*
-void CreateSPR(Vector vecOrigin)
-{
-	const int iR = 245;
-	const int iG = Math::RandomInt(32, 48);
-	const int iB = Math::RandomInt(32, 48);
-
-	CEntityData@ FFSpriteIPD = EntityCreator::EntityData();
-
-	FFSpriteIPD.Add("targetname", "test_sprite");
-	FFSpriteIPD.Add("model", "sprites/light_glow01.vmt");
-	FFSpriteIPD.Add("rendercolor", iR + " " + iG + " " + iB);
-	FFSpriteIPD.Add("rendermode", "5");
-	FFSpriteIPD.Add("renderamt", "240");
-	FFSpriteIPD.Add("scale", "0.1");
-	FFSpriteIPD.Add("spawnflags", "1");
-	FFSpriteIPD.Add("framerate", "0");
-
-
-	FFSpriteIPD.Add("kill", "0", true, "2.14");
-
-	EntityCreator::Create("env_sprite", vecOrigin, QAngle(0, 0, 0), FFSpriteIPD);
-}
-*/
