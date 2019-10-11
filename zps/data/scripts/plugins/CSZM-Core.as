@@ -1429,9 +1429,10 @@ HookReturnCode CSZM_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out Da
 				}
 			}
 
-			else if (Utils.StrContains("test_fragmine", pEntityAttacker.GetEntityName()))
+			else if (Utils.StrEql(pEntityAttacker.GetClassname(), "npc_fragmine"))
 			{
-				CBaseEntity@ pMineOwner = pEntityAttacker.GetOwner();
+				int iOwnerIndex = Utils.StringToInt(pEntityAttacker.GetEntityDescription());
+				CBaseEntity@ pMineOwner = FindEntityByEntIndex(iOwnerIndex);
 
 				if (DamageInfo.GetDamage() > 100)
 				{
@@ -1740,6 +1741,25 @@ HookReturnCode CSZM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out Dama
 	int iAttakerIndex = pAttacker.entindex();
 	int iAttakerTeam = pAttacker.GetTeamNumber();
 	bool bIsUnbreakable = false; 
+
+	if (Utils.StrEql(pAttacker.GetEntityName(), "frendly_shrapnel"))
+	{
+		DamageInfo.SetDamage(20);
+
+		if (pAttacker.GetHealth() > 0)
+		{
+			CBaseEntity@ pNewAttacker = FindEntityByEntIndex(pAttacker.GetHealth());
+
+			DamageInfo.SetAttacker(pNewAttacker);
+			DamageInfo.SetInflictor(pAttacker);
+			DamageInfo.SetWeapon(pAttacker);
+		}
+
+		else if (pEntity.GetTeamNumber() == TEAM_SURVIVORS && pEntity.IsPlayer())
+		{
+			DamageInfo.SetDamage(0);
+		}
+	}
 
 	if (Utils.StrContains("unbrk", pEntity.GetEntityName()) || Utils.StrContains("unbreakable", pEntity.GetEntityName()))
 	{
