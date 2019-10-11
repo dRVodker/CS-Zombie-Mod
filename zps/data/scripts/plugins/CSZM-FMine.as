@@ -271,12 +271,11 @@ void OnEntityDropped(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 
 void ThrowMine(const int &in iIndex, CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 {
-	CBasePlayer@ pPlrEnt = pPlayer.opCast();
-	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+    CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(iIndex);
 
-	Vector vecMVelocity = pBaseEnt.GetAbsVelocity();
+	Vector vecMVelocity = pPlayerEntity.GetAbsVelocity();
 
-	Globals.AngleVectors(pBaseEnt.EyeAngles(), vecMVelocity);
+	Globals.AngleVectors(pPlayerEntity.EyeAngles(), vecMVelocity);
 
 	CEntityData@ FragMineIPD = EntityCreator::EntityData();
 	FragMineIPD.Add("targetname", "test_fragmine_inactive");
@@ -293,13 +292,13 @@ void ThrowMine(const int &in iIndex, CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 
 	CBaseEntity@ pFragMine = EntityCreator::Create("prop_physics_override", Vector(0, 0, 0), QAngle(0, 0, 0), FragMineIPD);
 
-	pFragMine.SetOwner(pBaseEnt);
-	pFragMine.ChangeTeam(pBaseEnt.GetTeamNumber());
+	pFragMine.SetOwner(pPlayerEntity);
+	pFragMine.ChangeTeam(pPlayerEntity.GetTeamNumber());
 	pFragMine.SetHealth(100);
 
-	float angX = pBaseEnt.EyeAngles().x;
-	float angY = pBaseEnt.EyeAngles().y;
-	float angZ = pBaseEnt.EyeAngles().z;
+	float angX = pPlayerEntity.EyeAngles().x;
+	float angY = pPlayerEntity.EyeAngles().y;
+	float angZ = pPlayerEntity.EyeAngles().z;
 
 	if (angX > 30.0f)
 	{
@@ -311,11 +310,11 @@ void ThrowMine(const int &in iIndex, CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 		angX = -30.0f;
 	}
 
-	pFragMine.SetOutline(true, filter_entity, pBaseEnt.entindex(), Color(32, 245, 64), 384.0f, false, true);
+	pFragMine.SetOutline(true, filter_entity, pPlayerEntity.entindex(), Color(32, 245, 64), 384.0f, false, true);
 
-	pFragMine.Teleport(Vector(pBaseEnt.EyePosition().x, pBaseEnt.EyePosition().y, pBaseEnt.EyePosition().z - 12), QAngle(angX, angY, angZ), (pBaseEnt.GetAbsVelocity() * 0.5f) + (vecMVelocity * 200));
+	pFragMine.Teleport(Vector(pPlayerEntity.EyePosition().x, pPlayerEntity.EyePosition().y, pPlayerEntity.EyePosition().z - 12), QAngle(angX, angY, angZ), (pPlayerEntity.GetAbsVelocity() * 0.5f) + (vecMVelocity * 200));
 
-	Engine.EmitSoundPosition(pFragMine.entindex(), "weapons/slam/throw.wav", Vector(pBaseEnt.EyePosition().x, pBaseEnt.EyePosition().y, pBaseEnt.EyePosition().z - 12), 0.5f, 65, 85);
+	Engine.EmitSoundPosition(pFragMine.entindex(), "weapons/slam/throw.wav", Vector(pPlayerEntity.EyePosition().x, pPlayerEntity.EyePosition().y, pPlayerEntity.EyePosition().z - 12), 0.5f, 65, 85);
 
 	pEntity.SetRenderMode(kRenderNone);
 	pEntity.SetEntityName("wf_used" + iIndex);
@@ -395,23 +394,22 @@ void FragMineThink()
 				continue;
 			}
 
-			CBasePlayer@ pPlrEnt = pPlayer.opCast();
-			CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+            CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(i);
 
-			if (pBaseEnt.Intersects(pFMine) && pBaseEnt.IsAlive())
+			if (pPlayerEntity.Intersects(pFMine) && pPlayerEntity.IsAlive())
 			{
-				if (pFMine.GetOwner() is pBaseEnt) 
+				if (pFMine.GetOwner() is pPlayerEntity) 
 				{
 					ExplodeFragMine(pFMine);
 					return;
 				}
 
-				else if (pBaseEnt.GetTeamNumber() == pFMine.GetTeamNumber())
+				else if (pPlayerEntity.GetTeamNumber() == pFMine.GetTeamNumber())
 				{
 					continue;
 				}
 
-				if (pFMine.GetTeamNumber() != pBaseEnt.GetTeamNumber())
+				if (pFMine.GetTeamNumber() != pPlayerEntity.GetTeamNumber())
 				{
 					ExplodeFragMine(pFMine);
 				}

@@ -1035,7 +1035,7 @@ void OnEntityPickedUp(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 		{
 			if (!Utils.StrContains("iantidote", pWeapon.GetEntityName()))
 			{
-				Chat.CenterMessagePlayer(pPlrEnt, "You already has maximum of Infection Resist: " + InfRes);
+				Chat.CenterMessagePlayer(pPlrEnt, "You already has maximum of Infection Resist");
 			}
 
 			Engine.Ent_Fire(index + "iantidote", "addoutput", "itemstate 0");
