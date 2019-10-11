@@ -274,12 +274,12 @@ HookReturnCode CSZM_FM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out D
 			ImputData.Add("disableshadows", "1");
 			ImputData.Add("rendermode", "10");
 			ImputData.Add("solid", "0");
-
-			ImputData.Add("addoutput", "classname npc_shrapnel", true);
-			ImputData.Add("kill", "0", true, "0.02");
+			
+			ImputData.Add("kill", "0", true, "0.05");
 
 			CBaseEntity@ pShrapnel = EntityCreator::Create("prop_dynamic_override", Vector(0, 0, 0), QAngle(0, 0, 0), ImputData);
 
+			pShrapnel.SetClassname("npc_shrapnel");
 			pShrapnel.ChangeTeam(TEAM_SPECTATORS);
 
 			if (NoOwner)
@@ -425,14 +425,15 @@ void ThrowMine(const int &in iIndex, CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 	FragMineIPD.Add("skin", "0");
 	FragMineIPD.Add("overridescript", "mass,60,rotdamping,10000,damping,0,inertia,0,");
 	FragMineIPD.Add("nodamageforces", "1");
-	FragMineIPD.Add("ExplodeDamage", "371");	//423
+	FragMineIPD.Add("ExplodeDamage", "423");
 	FragMineIPD.Add("ExplodeRadius", "162");
 
-	FragMineIPD.Add("addoutput", "classname npc_fragmine", true);
+//	FragMineIPD.Add("addoutput", "classname npc_fragmine", true);
 
 	CBaseEntity@ pFragMine = EntityCreator::Create("prop_physics_override", Vector(0, 0, 0), QAngle(0, 0, 0), FragMineIPD);
 
 	FMArray.insertLast(CFragMine(iIndex, pFragMine.entindex(), iPlayerTeam, 0.98f));
+	pFragMine.SetClassname("npc_fragmine");
 	pFragMine.SetOwner(pPlayerEntity);
 	pFragMine.ChangeTeam(iPlayerTeam);
 	pFragMine.SetEntityDescription("" + iIndex);
@@ -496,10 +497,14 @@ void DefuseFragMine(CBaseEntity@ pFMine, CZP_Player@ pPlayer)
 	WFMIPD.Add("model", "models/cszm/weapons/w_minefrag.mdl");
 	WFMIPD.Add("itemstate", "1");
 	WFMIPD.Add("isimportant", "0");
+	WFMIPD.Add("carrystate", "6");
 	WFMIPD.Add("glowcolor", "0 128 245");
 	WFMIPD.Add("delivername", "FragMine");
-	WFMIPD.Add("sound_pickup", "HL2Player.PickupWeapon");
+	WFMIPD.Add("sound_pickup", "Player.PickupWeapon");
 	WFMIPD.Add("printname", "vgui/images/fragmine");
+	WFMIPD.Add("weight", "5");
+
+	WFMIPD.Add("DisableDamageForces", "0", true);
 
 	CBaseEntity@ pWPM = EntityCreator::Create("item_deliver", pFMine.GetAbsOrigin(), pFMine.GetAbsAngles(), WFMIPD);
 
