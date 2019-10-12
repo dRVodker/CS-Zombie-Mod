@@ -324,10 +324,10 @@ HookReturnCode CSZM_FM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out D
 				TracerIPD.Add("rendermode", "5");
 				TracerIPD.Add("spritename", "sprites/xbeam2.vmt");
 				TracerIPD.Add("startwidth", "" + Math::RandomFloat(1.85, 2.85));
-
 				TracerIPD.Add("kill", "0", true, "" + Math::RandomFloat(0.194, 0.842));
 
 				CBaseEntity@ pTracer = EntityCreator::Create("env_spritetrail", pEntity.GetAbsOrigin(), QAngle(0, 0, 0), TracerIPD);
+
 				Vector vUP;
 				Globals.AngleVectors(QAngle(Math::RandomFloat(-2, -72), Math::RandomFloat(0, 360), Math::RandomFloat(0, 360)), vUP);
 				pTracer.SetAbsVelocity(vUP * Math::RandomInt(2750, 2995));	
