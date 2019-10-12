@@ -1,6 +1,6 @@
 #include "./cszm_modules/teamnums.as"
 
-const float CONST_FMINE_TIK = 0.1f;
+const float CONST_FMINE_TIK = 0.05f;
 
 int iMaxPlayers;
 bool bIsCSZM = false;
@@ -106,7 +106,7 @@ class CFragMine
 			this.LoseOwnerIndex();
 		}
 
-		if (!pMineEntity.Intersects(pOwnerEntity) && pMineEntity.GetOwner() !is null)
+		if (!pMineEntity.Intersects(pOwnerEntity) && pMineEntity.GetOwner() !is null && flMineTimer <= Globals.GetCurrentTime())
 		{
 			pMineEntity.SetOwner(null);
 		}
@@ -198,7 +198,7 @@ HookReturnCode CSZM_FM_OnEntityCreation(const string &in strClassname, CBaseEnti
 	{
 		if (Utils.StrContains("weapon_machete", strClassname))
 		{
-			SpawnWepFragMine(pEntity);
+			Create_Weapon_FragMine(pEntity);
 		}
 	}
 
@@ -428,8 +428,6 @@ void ThrowMine(const int &in iIndex, CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 	FragMineIPD.Add("ExplodeDamage", "423");
 	FragMineIPD.Add("ExplodeRadius", "162");
 
-//	FragMineIPD.Add("addoutput", "classname npc_fragmine", true);
-
 	CBaseEntity@ pFragMine = EntityCreator::Create("prop_physics_override", Vector(0, 0, 0), QAngle(0, 0, 0), FragMineIPD);
 
 	FMArray.insertLast(CFragMine(iIndex, pFragMine.entindex(), iPlayerTeam, 0.98f));
@@ -467,56 +465,41 @@ void ThrowMine(const int &in iIndex, CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 	Engine.Ent_Fire("wf_used" + iIndex, "kill", "0", "0.3");
 }
 
-void SpawnWepFragMine(CBaseEntity@ pEntity)
-{
-	CEntityData@ WepFragMineIPD = EntityCreator::EntityData();
-	WepFragMineIPD.Add("targetname", "weapon_fragmine");
-	WepFragMineIPD.Add("viewmodel", "models/cszm/weapons/v_minefrag.mdl");
-	WepFragMineIPD.Add("model", "models/cszm/weapons/w_minefrag.mdl");
-	WepFragMineIPD.Add("itemstate", "1");
-	WepFragMineIPD.Add("isimportant", "0");
-	WepFragMineIPD.Add("carrystate", "6");
-	WepFragMineIPD.Add("glowcolor", "0 128 245");
-	WepFragMineIPD.Add("delivername", "FragMine");
-	WepFragMineIPD.Add("sound_pickup", "Player.PickupWeapon");
-	WepFragMineIPD.Add("printname", "vgui/images/fragmine");
-	WepFragMineIPD.Add("weight", "5");
-
-	WepFragMineIPD.Add("DisableDamageForces", "0", true);
-
-	EntityCreator::Create("item_deliver", pEntity.GetAbsOrigin(), pEntity.GetAbsAngles(), WepFragMineIPD);
-
-	pEntity.SUB_Remove();
-}
-
 void DefuseFragMine(CBaseEntity@ pFMine, CZP_Player@ pPlayer)
 {
-	CEntityData@ WFMIPD = EntityCreator::EntityData();
-	WFMIPD.Add("targetname", "weapon_fragmine");
-	WFMIPD.Add("viewmodel", "models/cszm/weapons/v_minefrag.mdl");
-	WFMIPD.Add("model", "models/cszm/weapons/w_minefrag.mdl");
-	WFMIPD.Add("itemstate", "1");
-	WFMIPD.Add("isimportant", "0");
-	WFMIPD.Add("carrystate", "6");
-	WFMIPD.Add("glowcolor", "0 128 245");
-	WFMIPD.Add("delivername", "FragMine");
-	WFMIPD.Add("sound_pickup", "Player.PickupWeapon");
-	WFMIPD.Add("printname", "vgui/images/fragmine");
-	WFMIPD.Add("weight", "5");
+	Vector Origin = pFMine.GetAbsOrigin();
+	CBaseEntity@ pMineEntity = Create_Weapon_FragMine(pFMine);
 
-	WFMIPD.Add("DisableDamageForces", "0", true);
-
-	CBaseEntity@ pWPM = EntityCreator::Create("item_deliver", pFMine.GetAbsOrigin(), pFMine.GetAbsAngles(), WFMIPD);
-
-	pFMine.SUB_Remove();
-
-	Engine.EmitSoundPosition(pWPM.entindex(), "weapons/slam/buttonclick.wav", pFMine.GetAbsOrigin(), 0.85f, 60, 105);
-	Engine.EmitSoundPosition(pWPM.entindex(), "weapons/357/357_reload3.wav", pFMine.GetAbsOrigin(), 0.9f, 70, 105);
+	Engine.EmitSoundPosition(pMineEntity.entindex(), "weapons/slam/buttonclick.wav", Origin, 0.85f, 60, 105);
+	Engine.EmitSoundPosition(pMineEntity.entindex(), "weapons/357/357_reload3.wav", Origin, 0.9f, 70, 105);
 	
 	if (pPlayer !is null)
 	{
-		pPlayer.PutToInventory(pWPM);
+		pPlayer.PutToInventory(pMineEntity);
 	}
+}
+
+CBaseEntity@ Create_Weapon_FragMine(CBaseEntity@ pEntity)
+{
+	CEntityData@ WeaponFragMine = EntityCreator::EntityData();
+	WeaponFragMine.Add("targetname", "weapon_fragmine");
+	WeaponFragMine.Add("viewmodel", "models/cszm/weapons/v_minefrag.mdl");
+	WeaponFragMine.Add("model", "models/cszm/weapons/w_minefrag.mdl");
+	WeaponFragMine.Add("itemstate", "1");
+	WeaponFragMine.Add("isimportant", "0");
+	WeaponFragMine.Add("carrystate", "6");
+	WeaponFragMine.Add("glowcolor", "0 128 245");
+	WeaponFragMine.Add("delivername", "FragMine");
+	WeaponFragMine.Add("sound_pickup", "Player.PickupWeapon");
+	WeaponFragMine.Add("printname", "vgui/images/fragmine");
+	WeaponFragMine.Add("weight", "5");
+	WeaponFragMine.Add("DisableDamageForces", "0", true);
+
+	CBaseEntity@ pMineEntity = EntityCreator::Create("item_deliver", pEntity.GetAbsOrigin(), pEntity.GetAbsAngles(), WeaponFragMine);
+
+	pEntity.SUB_Remove();
+
+	return pMineEntity;
 }
 
 CFragMine@ FindFragMineByEntIndex(const int &in EntIndex)
