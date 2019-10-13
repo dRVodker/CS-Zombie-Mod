@@ -569,27 +569,6 @@ void ShowHP(CBasePlayer@ pBasePlayer, const int &in iHP, const bool &in bLeft, c
 	}
 }
 
-int ObjectPos(const int &in index)
-{
-	int pos = -1;
-
-	for (uint q = 0; q < PPArray.length(); q++)
-	{
-		CPhysProp@ pPhysProp = PPArray[q];
-
-		if (pPhysProp !is null)
-		{
-			if (pPhysProp.GetPropIndex() == index)
-			{
-				pos = q;
-				return pos;
-			}
-		}
-	}
-
-	return pos;
-}
-
 void SetAntidoteState(const int &in iIndex, const int &in iAStage)
 {
 	bool bTest = false;
@@ -614,8 +593,4 @@ void RegisterEntities()
 	Entities::RegisterPickup("item_deliver");
 	Entities::RegisterUse("item_deliver");
 	Entities::RegisterDrop("item_deliver");
-
-//	Entities::RegisterUse("item_adrenaline");
-//	Entities::RegisterDrop("item_adrenaline");
-//	Entities::RegisterPickup("item_adrenaline");
 }

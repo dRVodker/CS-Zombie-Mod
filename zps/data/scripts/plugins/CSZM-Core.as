@@ -62,7 +62,6 @@ array<string> g_strMDLToUse;
 
 //Массивы объектов
 array<CSZMPlayer@> CSZMPlayerArray;
-array<CPhysProp@> PPArray;
 array<CShowDamage@> ShowDamageArray;
 
 //Другие данные
@@ -78,51 +77,6 @@ float flShowSeconds;
 float flShowMinutes;
 float flShowHours;
 float flWeakZombieWait;
-
-class CPhysProp
-{
-	int iAttakerIndex;
-	int iAttakerTeam;
-	int iEntIndex;
-
-	CPhysProp(int PlayerIndex, int PlayerTeam, int PropIndex)
-	{
-		iAttakerIndex = PlayerIndex;
-		iAttakerTeam = PlayerTeam;
-		iEntIndex = PropIndex;
-	}
-
-	int GetAttIndex()
-	{
-		return iAttakerIndex;
-	}
-
-	int GetAttTeam()
-	{
-		return iAttakerTeam;
-	}
-
-	int GetPropIndex()
-	{
-		return iEntIndex;
-	}
-
-	void SetAttackerInfo(int PlayerIndex, int PlayerTeam)
-	{
-		iAttakerIndex = PlayerIndex;
-		iAttakerTeam = PlayerTeam;
-	}
-
-	void CheckTeamNum(int iArrayPos)
-	{
-		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(iAttakerIndex);
-
-		if (iAttakerTeam != pPlayerEntity.GetTeamNumber() || !pPlayerEntity.IsAlive())
-		{
-			PPArray.removeAt(iArrayPos);
-		}
-	}
-}
 
 class CShowDamage
 {
@@ -1005,7 +959,6 @@ void OnMapShutdown()
 
 		CSZMPlayerArray.removeRange(0, CSZMPlayerArray.length());
 		ShowDamageArray.removeRange(0, ShowDamageArray.length());
-		PPArray.removeRange(0, PPArray.length());
 		
 		ClearIntArray(g_iKills);
 		ClearIntArray(g_iVictims);
@@ -1423,17 +1376,14 @@ HookReturnCode CSZM_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out Da
 
 			if (Utils.StrContains("physics", pEntityAttacker.GetClassname()) || Utils.StrContains("physbox", pEntityAttacker.GetClassname()))
 			{
-				int ArrayPos = ObjectPos(iAttIndex);
+				CASCommand@ pSplitArgs = StringToArgSplit(pEntityAttacker.GetEntityDescription(), ";");
 
-				if (ArrayPos > -1)
+				int iPhysAttacker = Utils.StringToInt(pSplitArgs.Arg(0));
+
+				if (iPhysAttacker > 0)
 				{
-					CPhysProp@ pPhysProp = PPArray[ArrayPos];
-
-					CBaseEntity@ pNewAttacker = FindEntityByEntIndex(pPhysProp.GetAttIndex());
-					CZP_Player@ pPlayerAttacker = ToZPPlayer(pNewAttacker);
-
-					DamageInfo.SetAttacker(pNewAttacker);
-					DamageInfo.SetInflictor(pNewAttacker);
+					CBaseEntity@ pNewPhysAttacker = FindEntityByEntIndex(iPhysAttacker);
+					DamageInfo.SetAttacker(pNewPhysAttacker);
 				}
 			}
 
@@ -1742,12 +1692,6 @@ HookReturnCode CSZM_OnEntityCreation(const string &in strClassname, CBaseEntity@
 
 HookReturnCode CSZM_OnEntityDestruction(const string &in strClassname, CBaseEntity@ pEntity)
 {
-	int ArrayPos = ObjectPos(pEntity.entindex());
-
-	if (ArrayPos > -1)
-	{
-		PPArray.removeAt(ArrayPos);
-	}
 
 	return HOOK_CONTINUE;
 }
@@ -1787,22 +1731,6 @@ HookReturnCode CSZM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out Dama
 	if (Utils.StrContains("unbrk", pEntity.GetEntityName()) || Utils.StrContains("unbreakable", pEntity.GetEntityName()))
 	{
 		bIsUnbreakable = true;
-	}
-
-	if (Utils.StrContains("physics", pEntity.GetClassname()) || Utils.StrContains("physbox", pEntity.GetClassname()))
-	{
-		int ArrayPos = ObjectPos(EntIndex);
-
-		if (ArrayPos > -1)
-		{
-			CPhysProp@ pPhysProp = PPArray[ArrayPos];
-			pPhysProp.SetAttackerInfo(iAttakerIndex, iAttakerTeam);
-		}
-
-		else
-		{
-			PPArray.insertLast(CPhysProp(iAttakerIndex, iAttakerTeam, EntIndex));
-		}
 	}
 
 	//50% of damage resist for "prop_barricade"
@@ -1860,7 +1788,22 @@ HookReturnCode CSZM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out Dama
 	{
 		if (pAttacker.IsPlayer())
 		{
-			pEntity.ChangeTeam(pAttacker.GetTeamNumber());
+			CASCommand@ pSplitArgs = StringToArgSplit(pEntity.GetEntityDescription(), ";");
+			bool bSetNewAttacker = true;
+
+			if (pSplitArgs.Args() > 1)
+			{
+				if (Utils.StringToFloat(pSplitArgs.Arg(1)) > Globals.GetCurrentTime() && Utils.StringToInt(pSplitArgs.Arg(0)) != iAttakerIndex)
+				{
+					bSetNewAttacker = false;
+				}
+			}
+
+			if (bSetNewAttacker)
+			{
+				pEntity.ChangeTeam(iAttakerTeam);
+				pEntity.SetEntityDescription("" + iAttakerIndex + ";" + "" + float(Globals.GetCurrentTime() + 7.04f));
+			}
 		}
 	}
 
@@ -1979,16 +1922,6 @@ void OnProcessRound()
 				pShowDamage.Think();
 			}
 		}
-
-		for (uint q = 0; q < PPArray.length(); q++)
-		{
-			CPhysProp@ pPhysProp = PPArray[q];
-
-			if (pPhysProp !is null)
-			{
-				pPhysProp.CheckTeamNum(q);
-			}
-		}
 	}
 }
 
@@ -2002,8 +1935,6 @@ void OnNewRound()
 		flRTWait = 0;
 		flWUWait = 0;
 		flWeakZombieWait = 0;
-
-		PPArray.removeRange(0, PPArray.length());
 		
 		for (int i = 1; i <= iMaxPlayers; i++) 
 		{
