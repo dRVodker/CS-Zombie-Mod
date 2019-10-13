@@ -113,21 +113,13 @@ class CPhysProp
 		iAttakerTeam = PlayerTeam;
 	}
 
-	void CheckTeamNum()
+	void CheckTeamNum(int iArrayPos)
 	{
 		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(iAttakerIndex);
 
 		if (iAttakerTeam != pPlayerEntity.GetTeamNumber())
 		{
-			for (uint q = 0; q < PPArray.length(); q++)
-			{
-				CPhysProp@ pPhysProp = PPArray[q];
-
-				if (this is pPhysProp)
-				{
-					PPArray.removeAt(q);
-				}
-			}
+			PPArray.removeAt(iArrayPos);
 		}
 	}
 }
@@ -1143,12 +1135,18 @@ HookReturnCode CSZM_OnPlayerConnected(CZP_Player@ pPlayer)
 
 		const int index = pBaseEnt.entindex();
 
-		//Before inserting remove everything at this index
-		CSZMPlayerArray.removeAt(index);
-		CSZMPlayerArray.insertAt(index, CSZMPlayer(index));
+		CShowDamage@ pShowDamage = CShowDamage(index);
+		CSZMPlayer@ pCSZMPlayer = CSZMPlayer(index);
 
-		ShowDamageArray.removeAt(index);
-		ShowDamageArray.insertAt(index, CShowDamage(index));
+		@CSZMPlayerArray[index] = pCSZMPlayer;
+		@ShowDamageArray[index] = pShowDamage;
+
+		//Before inserting remove everything at this index
+//		CSZMPlayerArray.removeAt(index);
+//		CSZMPlayerArray.insertAt(index, CSZMPlayer(index));
+
+//		ShowDamageArray.removeAt(index);
+//		ShowDamageArray.insertAt(index, CShowDamage(index));
 
 		g_iKills[index] = 0;
 		g_iVictims[index] = 0;
@@ -1672,8 +1670,13 @@ HookReturnCode CSZM_OnPlayerDisonnected(CZP_Player@ pPlayer)
 	{
 		CBasePlayer@ pPlrEnt = pPlayer.opCast();
 		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+
+		int index = pBaseEnt.entindex();
 		
-		if (iFZIndex == pBaseEnt.entindex())
+		@CSZMPlayerArray[index] = null;
+		@ShowDamageArray[index] = null;
+
+		if (iFZIndex == index)
 		{
 			iFZIndex = 0;
 		}
@@ -1963,7 +1966,7 @@ void OnProcessRound()
 
 			if (pPhysProp !is null)
 			{
-				pPhysProp.CheckTeamNum();
+				pPhysProp.CheckTeamNum(q);
 			}
 		}
 	}
@@ -1984,15 +1987,15 @@ void OnNewRound()
 		
 		for (int i = 1; i <= iMaxPlayers; i++) 
 		{
+			g_iKills[i] = 0;
+			g_iVictims[i] = 0;
+
 			CSZMPlayer@ pCSZMPlayer = CSZMPlayerArray[i];
 
 			if (pCSZMPlayer !is null)
 			{
 				pCSZMPlayer.Reset();
 			}
-
-			g_iKills[i] = 0;
-			g_iVictims[i] = 0;
 		}
 	}
 }
