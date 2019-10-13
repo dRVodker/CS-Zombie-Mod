@@ -117,7 +117,7 @@ class CPhysProp
 	{
 		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(iAttakerIndex);
 
-		if (iAttakerTeam != pPlayerEntity.GetTeamNumber())
+		if (iAttakerTeam != pPlayerEntity.GetTeamNumber() || !pPlayerEntity.IsAlive())
 		{
 			PPArray.removeAt(iArrayPos);
 		}
@@ -259,10 +259,19 @@ class CSZMPlayer
 		InfectDelay = 0;
 		ZMDeathCount = 0;
 		Volunteer = false;
-		WeakZombie = true;
 		Abuser = false;
 		FirstInfected = false;
 		WFirstInfected = false;
+
+		if (bSpawnWeak)
+		{
+			WeakZombie = true;
+		}
+
+		else
+		{
+			WeakZombie = false;
+		}
 	}
 
 	void Reset()
@@ -330,6 +339,7 @@ class CSZMPlayer
 	{
 		Abuser = SA;
 	}
+
 	void SetVoiceTime(float NewTime)
 	{
 		VoiceTime = Globals.GetCurrentTime() + NewTime;
@@ -466,7 +476,7 @@ class CSZMPlayer
 	{
 		VoiceTime = Globals.GetCurrentTime() + Math::RandomFloat(5.15f, 14.2f);
 
-		if (WeakZombie)
+		if (WeakZombie && !FirstInfected)
 		{
 			Voice = 2;
 			PreviousVoice = 2;
@@ -1603,6 +1613,8 @@ HookReturnCode CSZM_OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in Dama
 		const int iAttTeam = pEntityAttacker.GetTeamNumber();
 
 		CSZMPlayer@ pVicCSZMPlayer = CSZMPlayerArray[iVicIndex];
+
+		const int iDamageType = DamageInfo.GetDamageType();
 		
 		if (pEntityAttacker.IsPlayer()) 
 		{
@@ -1625,7 +1637,15 @@ HookReturnCode CSZM_OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in Dama
 
 		if (iVicTeam == TEAM_ZOMBIES)
 		{
-			pVicCSZMPlayer.EmitZMSound(VOICE_ZM_DIE);
+			if (!bDamageType(iDamageType, 6) || !bDamageType(iDamageType, 27))
+			{
+				pVicCSZMPlayer.EmitZMSound(VOICE_ZM_DIE);
+			}
+
+			else
+			{
+				Engine.EmitSoundEntity(pBaseEnt, "Flesh.HeadshotExplode");
+			}
 
 			if (!bSuicide)
 			{
@@ -1869,7 +1889,7 @@ HookReturnCode CSZM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out Dama
 				//If buckshot
 				else if (bDamageType(DMGType, 29))
 				{
-					flMultiplier = 1.02f;
+					flMultiplier = 10.02f;
 				}
 
 				//Set DMG_BULLET Damage Type, otherwise it won't push
