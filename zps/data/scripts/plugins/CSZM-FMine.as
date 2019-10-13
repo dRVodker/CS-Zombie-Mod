@@ -106,7 +106,7 @@ class CFragMine
 			this.LoseOwnerIndex();
 		}
 
-		if (!pMineEntity.Intersects(pOwnerEntity) && pMineEntity.GetOwner() !is null && flMineTimer <= Globals.GetCurrentTime())
+		if (!pMineEntity.Intersects(pOwnerEntity) && pMineEntity.GetOwner() !is null)
 		{
 			pMineEntity.SetOwner(null);
 		}
