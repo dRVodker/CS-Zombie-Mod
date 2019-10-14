@@ -198,7 +198,7 @@ HookReturnCode CSZM_FM_OnEntityCreation(const string &in strClassname, CBaseEnti
 	{
 		if (Utils.StrContains("weapon_machete", strClassname))
 		{
-			Create_Weapon_FragMine(pEntity);
+			CreateWeaponFragMine(pEntity);
 		}
 	}
 
@@ -207,15 +207,18 @@ HookReturnCode CSZM_FM_OnEntityCreation(const string &in strClassname, CBaseEnti
 
 HookReturnCode CSZM_FM_OnEntityDestruction(const string &in strClassname, CBaseEntity@ pEntity)
 {
-	for (uint q = 0; q < FMArray.length(); q++)
+	if (Utils.StrEql(strClassname, "npc_fragmine"))
 	{
-		CFragMine@ pFragMine = FMArray[q];
-
-		if (pFragMine !is null)
+		for (uint q = 0; q < FMArray.length(); q++)
 		{
-			if (pFragMine.GetMineIndex() == pEntity.entindex())
+			CFragMine@ pFragMine = FMArray[q];
+
+			if (pFragMine !is null)
 			{
-				FMArray.removeAt(q);
+				if (pFragMine.GetMineIndex() == pEntity.entindex())
+				{
+					FMArray.removeAt(q);
+				}
 			}
 		}
 	}
@@ -468,7 +471,7 @@ void ThrowMine(const int &in iIndex, CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 void DefuseFragMine(CBaseEntity@ pFMine, CZP_Player@ pPlayer)
 {
 	Vector Origin = pFMine.GetAbsOrigin();
-	CBaseEntity@ pMineEntity = Create_Weapon_FragMine(pFMine);
+	CBaseEntity@ pMineEntity = CreateWeaponFragMine(pFMine);
 
 	Engine.EmitSoundPosition(pMineEntity.entindex(), "weapons/slam/buttonclick.wav", Origin, 0.85f, 60, 105);
 	Engine.EmitSoundPosition(pMineEntity.entindex(), "weapons/357/357_reload3.wav", Origin, 0.9f, 70, 105);
@@ -479,7 +482,7 @@ void DefuseFragMine(CBaseEntity@ pFMine, CZP_Player@ pPlayer)
 	}
 }
 
-CBaseEntity@ Create_Weapon_FragMine(CBaseEntity@ pEntity)
+CBaseEntity@ CreateWeaponFragMine(CBaseEntity@ pEntity)
 {
 	CEntityData@ WeaponFragMine = EntityCreator::EntityData();
 	WeaponFragMine.Add("targetname", "weapon_fragmine");
