@@ -8,7 +8,10 @@ void SD(const string &in strMSG)
 	Chat.PrintToChat(all, strMSG);
 }
 
-//Some Data
+const int TEAM_LOBBYGUYS = 0;
+const int TEAM_SPECTATORS = 1;
+const int TEAM_SURVIVORS = 2;
+
 int iMaxPlayers;
 int iFireflyIndex;
 int iSSCount;
@@ -16,8 +19,50 @@ bool bIsFireflyPikedUp;
 
 array<bool> g_bIsFireFly;
 
-//Other Data (Don't even touch this)
 bool bAllowSPB = false;
+
+CBrushDoor@ pCDoor1;
+CBrushDoor@ pCDoor2;
+
+class CBrushDoor
+{
+	CBaseEntity@ pDoorEntity;
+	CBaseEntity@ pButtonEntity;
+	int iDoorIndex;
+	bool bAllowUse;
+
+	CBrushDoor(int EntIndex, CBaseEntity@ pDoor, CBaseEntity@ pButton)
+	{
+		@pDoorEntity = pDoor;
+		@pButtonEntity = pButton;
+		iDoorIndex = EntIndex;
+		bAllowUse = true;
+	}
+
+	void Toggle()
+	{
+		if (bAllowUse)
+		{
+			bAllowUse = false;
+			Engine.Ent_Fire_Ent(pDoorEntity, "Toggle");
+		}
+	}
+
+	void UpdateButton()
+	{
+		pButtonEntity.SetAbsAngles(pDoorEntity.GetAbsAngles());
+		bAllowUse = true;
+	}
+
+	void Remove(int EntIndex)
+	{
+		if (EntIndex == iDoorIndex)
+		{
+			pButtonEntity.SUB_Remove();
+			this is null;
+		}
+	}
+}
 
 void OnMapInit()
 {
@@ -25,8 +70,14 @@ void OnMapInit()
 
 	Events::Player::OnPlayerSpawn.Hook(@OnPlayerSpawn);
 	Events::Trigger::OnStartTouch.Hook(@OnStartTouch);
+	Events::Entities::OnEntityDestruction.Hook(@OnEntityDestruction);
 
 	Entities::RegisterUse("spec_button");
+
+	Entities::RegisterUse("func_button");
+
+	Entities::RegisterOutput("OnFullyClosed", "func_door_rotating");
+	Entities::RegisterOutput("OnFullyOpen", "func_door_rotating");
 
 	g_bIsFireFly.resize(iMaxPlayers + 1);
 
@@ -46,12 +97,12 @@ HookReturnCode OnPlayerSpawn(CZP_Player@ pPlayer)
 	int iIndex = pBaseEnt.entindex();
 	int iTeamNum = pBaseEnt.GetTeamNumber();
 
-	if (iTeamNum != 0)
+	if (iTeamNum != TEAM_LOBBYGUYS)
 	{
 		Engine.Ent_Fire_Ent(pBaseEnt, "SetFogController", "main_insta_fog");
 	}
 
-	if (g_bIsFireFly[iIndex] && iTeamNum == 1)
+	if (g_bIsFireFly[iIndex] && iTeamNum == TEAM_SPECTATORS)
 	{
 		SpawnFirefly(pBaseEnt, iIndex);
 		g_bIsFireFly[iIndex] = false;	
@@ -67,12 +118,23 @@ HookReturnCode OnPlayerSpawn(CZP_Player@ pPlayer)
 
 HookReturnCode OnStartTouch(CBaseEntity@ pTrigger, const string &in strEntityName, CBaseEntity@ pEntity)
 {
-	if (pEntity.GetTeamNumber() == 0 && pEntity.IsPlayer() && Utils.StrEql(strEntityName, "fog_volume_lobby"))
+	if (pEntity.GetTeamNumber() == TEAM_LOBBYGUYS && pEntity.IsPlayer() && Utils.StrEql(strEntityName, "fog_volume_lobby"))
 	{
 		Engine.Ent_Fire_Ent(pEntity, "SetFogController", "lobby_fog");
 	}
 
 	return HOOK_HANDLED;
+}
+
+HookReturnCode OnEntityDestruction(const string &in strClassname, CBaseEntity@ pEntity)
+{
+	if (Utils.StrEql(strClassname, "func_door_rotating"))
+	{
+		pCDoor1.Remove(pEntity.entindex());
+		pCDoor2.Remove(pEntity.entindex());
+	}
+
+	return HOOK_CONTINUE;
 }
 
 void OnEntityUsed(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
@@ -86,11 +148,43 @@ void OnEntityUsed(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 
 	int iIndex = pBaseEnt.entindex();
+	int iTeamNum = pBaseEnt.GetTeamNumber();
 	
 	if (Utils.StrEql(pEntity.GetEntityName(), "spec_button") && !g_bIsFireFly[iIndex])
 	{
 		Chat.PrintToChatPlayer(pPlrEnt, "{cornflowerblue}*You picked up a firefly.");
 		g_bIsFireFly[iIndex] = true;
+	}
+
+	if (iTeamNum == TEAM_SURVIVORS)
+	{
+		if (Utils.StrEql(pEntity.GetEntityName(), "CBD_Button1"))
+		{
+			pCDoor1.Toggle();
+		}
+
+		else if (Utils.StrEql(pEntity.GetEntityName(), "CBD_Button2"))
+		{
+			pCDoor2.Toggle();
+		} 
+	}
+}
+
+void OnEntityOutput(const string &in strOutput, CBaseEntity@ pActivator, CBaseEntity@ pCaller)
+{
+	if (pActivator is null || pCaller is null)
+	{
+		 return;
+	}
+
+	if (Utils.StrEql(pCaller.GetEntityName(), "ContainerBDoor1"))
+	{
+		pCDoor1.UpdateButton();
+	}
+
+	else if (Utils.StrEql(pCaller.GetEntityName(), "ContainerBDoor2"))
+	{
+		pCDoor2.UpdateButton();
 	}
 }
 
@@ -114,6 +208,7 @@ void OnMatchBegin()
 	PropDoorHP();
 	BreakableHP();
 	PropsHP();
+	FindCDoors();
 	Schedule::Task(0.5f, "SpawnBarricades");
 }
 
@@ -252,5 +347,30 @@ void RemoveFireFly(const int &in iIndex)
 	if (pSpriteEnt !is null)
 	{
 		pSpriteEnt.SUB_Remove();
+	}
+}
+
+void FindCDoors()
+{
+	pCDoor1 is null;
+	pCDoor2 is null;
+
+	CBaseEntity@ pDoor;
+	CBaseEntity@ pButton;
+
+	@pDoor = FindEntityByName(null, "ContainerBDoor1");
+	@pButton = FindEntityByName(null, "CBD_Button1");
+
+	if (pDoor !is null && pButton !is null)
+	{
+		@pCDoor1 = CBrushDoor(pDoor.entindex(), pDoor, pButton);
+	}
+
+	@pDoor = FindEntityByName(null, "ContainerBDoor2");
+	@pButton = FindEntityByName(null, "CBD_Button2");
+
+	if (pDoor !is null && pButton !is null)
+	{
+		@pCDoor2 = CBrushDoor(pDoor.entindex(), pDoor, pButton);
 	}
 }
