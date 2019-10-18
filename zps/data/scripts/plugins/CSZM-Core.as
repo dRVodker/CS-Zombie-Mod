@@ -64,7 +64,7 @@ array<string> g_strMDLToUse;
 array<CSZMPlayer@> CSZMPlayerArray;
 array<CShowDamage@> ShowDamageArray;
 
-//Другие данные
+//Другое
 int iFirstInfectedHP;
 int iStartCoundDown;
 int iSeconds;
@@ -86,17 +86,15 @@ class CShowDamage
 	float DamageDealt;
 	float Reset;
 	float Wait;
-	bool Show;
 
 	CShowDamage(int index)
 	{
 		PlayerIndex = index;
 		VicIndex = 0;
 		Hits = 0;
-		DamageDealt = 0.0f;
-		Reset = 0.0f;
-		Wait = 0.0f;
-		Show = false;
+		DamageDealt = 0;
+		Reset = 0;
+		Wait = 0;
 	}
 
 	void AddDamage(float flDamage, CBaseEntity@ pVictim)
@@ -111,7 +109,6 @@ class CShowDamage
 		Hits++;
 		Reset = Globals.GetCurrentTime() + CONST_SHOWDMG_RESET;
 		Wait = Globals.GetCurrentTime() + CONST_SHOWDMG_WAIT;
-		Show = true;
 
 		if (VicHP - flDamage <= 0)
 		{
@@ -128,17 +125,16 @@ class CShowDamage
 	{
 		if (Reset <= Globals.GetCurrentTime() && Reset != 0)
 		{
-			Reset = 0.0f;
+			Reset = 0;
 			VicIndex = 0;
-			DamageDealt = 0.0f;
+			DamageDealt = 0;
 			Hits = 0;
-			Show = false;
+			Wait = 0;
 		}
 
-		if (Show && Wait <= Globals.GetCurrentTime() && Wait != 0)
+		if (Wait <= Globals.GetCurrentTime() && Wait != 0)
 		{
 			Wait = 0;
-			Show = false;
 
 			CBasePlayer@ pBasePlayer = ToBasePlayer(PlayerIndex);
 			CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(PlayerIndex);
@@ -146,7 +142,7 @@ class CShowDamage
 
 			int VicHP = pVictim.GetHealth();
 
-			if (pPlayerEntity is null )
+			if (pPlayerEntity is null)
 			{
 				return;
 			}
@@ -173,30 +169,30 @@ class CShowDamage
 
 class CSZMPlayer
 {
-	int PlayerIndex;
-	int SlowSpeed;
-	int DefSpeed;
-	int Voice;
-	int PreviousVoice;
-	int InfectResist;
-	int PreviousHP;
-	int InfectDelay;
-	int ZMDeathCount;
+	int PlayerIndex;	//entindex игрока
+	int SlowSpeed;	//Скорость, которая вычитается из "DefSpeed"
+	int DefSpeed;	//Обычная скорость движения игрока
+	int Voice;	//Номер голоса для зомби (3 максимально кол-во)
+	int PreviousVoice;	//Номер предыдущего голоса
+	int InfectResist;	//Сопротивление инфекции
+	int PreviousHP;	//Предыдущее HP, используется для обводки зомби
+	int InfectDelay;	//Кол-во раундов, которое игрок должен отыграть за выжевшего, чтобы сновы начать раунд как Первый зараженный
+	int ZMDeathCount;	//Счётчик смертей зомби, используется для вычисления бонусного HP для зомби
 
-	float SlowTime;
-	float SpeedRT;
-	float VoiceTime;
-	float AdrenalineTime;
-	float IRITime;
-	float MeleeFreezeTime;
-	float OutlineTime;
-	float LobbyRespawnDelay;
+	float SlowTime;	//Время, которое должен ждать зомби, чтобы начать восстанавливать скорость
+	float SpeedRT;	//Время, по истечению которого зомби получет определенное кол-во скорости
+	float VoiceTime;	//Временные промежутки между IDLE звуками зомби
+	float AdrenalineTime;	//Время действия адреналина
+	float IRITime;	//Время, по истечению которого показывается сообщение об кол-ве сопротивления инфекции
+	float MeleeFreezeTime;	//Время, на протяжении которого на зомби будет действовать сильное замедление (ступор)
+	float OutlineTime;	//Время, по истечению которого обновляется обводка зомби
+	float LobbyRespawnDelay; //Время, которое должен ждать игрок в лобби, чтобы сново использовать "F4 Respawn"
 
-	bool Volunteer;
-	bool WeakZombie;
-	bool Abuser;
-	bool FirstInfected;
-	bool WFirstInfected;
+	bool Volunteer;	//Доброволец на роль Первого зараженного
+	bool WeakZombie;	//Слабый зомби
+	bool Abuser;	//Злоупотребляет механиками
+	bool FirstInfected;	//Является Первый зараженным
+	bool WFirstInfected; //Был Первым зараженным в сессии
 
 	CSZMPlayer(int index)
 	{
@@ -236,6 +232,8 @@ class CSZMPlayer
 	void Reset()
 	{
 		CZP_Player@ pPlayer = ToZPPlayer(PlayerIndex);
+		pPlayer.DoPlayerDSP(0);
+
 		AdrenalineTime = 0;
 		VoiceTime = 0;
 		SlowTime = 0;
@@ -250,7 +248,6 @@ class CSZMPlayer
 		Abuser = false;
 		FirstInfected = false;
 		ZMDeathCount = -1;
-		pPlayer.DoPlayerDSP(0);
 	}
 
 	void DeathReset()
@@ -484,12 +481,12 @@ class CSZMPlayer
 		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(PlayerIndex);
 		CZP_Player@ pPlayer = ToZPPlayer(PlayerIndex);
 
-		VoiceTime += Math::RandomFloat(0.52f, 0.83f); //Increase VoiceTime if slowed down / took damage
+		VoiceTime += Math::RandomFloat(0.67f, 0.98f); //Увеличить таймер "VoiceTime" если замедлился / получил урон
 		SpeedRT = Globals.GetCurrentTime() + 0.105f;
 
-		int MinSlowSpeed = int((DefSpeed * 0.01) * CONST_SLOWDOWN_MULT);	//Minimum speed to slow down
-		int NewSlowSpeed;	//Variabel to calculate new speed
-		float NewFreezeTime = 0.0f;
+		int MinSlowSpeed = int((DefSpeed * 0.01) * CONST_SLOWDOWN_MULT);	//Минимальная скорость для замедленного зомби
+		int NewSlowSpeed;	//Переменная для вычисления новой скорости
+		float NewFreezeTime = 0;
 		float CurrentFreezeTime = MeleeFreezeTime - Globals.GetCurrentTime();
 
 		if (CurrentFreezeTime <= 0)
@@ -503,7 +500,7 @@ class CSZMPlayer
 		}
 
 		SlowTime += CONST_SLOWDOWN_TIME;
-		NewSlowSpeed = int(((DefSpeed * 0.0001) * CONST_SLOWDOWN_MULT) * ((flDamage / CONST_SLOWDOWN_HEALTH) * 100.0f));
+		NewSlowSpeed = int(((DefSpeed * 0.0001f) * CONST_SLOWDOWN_MULT) * ((flDamage / CONST_SLOWDOWN_HEALTH) * 100));
 
 		if (flDamage < 2)
 		{
@@ -569,7 +566,7 @@ class CSZMPlayer
 		if (WeakZombie)
 		{
 			SlowTime = Globals.GetCurrentTime() - 0.01f;
-			MeleeFreezeTime = 0.0f;
+			MeleeFreezeTime = 0;
 			NewSlowSpeed = int(float(NewSlowSpeed) * 0.3f);
 		}
 
@@ -750,13 +747,13 @@ class CSZMPlayer
 
 			if (MeleeFreezeTime > Globals.GetCurrentTime())
 			{
-				float x = 0.0f;
-				float y = 0.0f;
+				float x = 0;
+				float y = 0;
 				float z = pPlayerEntity.GetAbsVelocity().z;
 
 				if (z > 0)
 				{
-					z = 0.0f;
+					z = 0;
 				}
 
 				pPlayerEntity.SetAbsVelocity(Vector(x, y, z));
