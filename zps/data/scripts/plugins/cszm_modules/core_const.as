@@ -1,7 +1,7 @@
 //Постоянные игрового процесса
 //Скорости игрока
 const int SPEED_DEFAULT = 225;
-const int SPEED_HUMAN = 215;
+const int SPEED_HUMAN = 205;
 const int SPEED_ZOMBIE = 200;
 const int SPEED_CARRIER = 210;
 const int SPEED_WEAK = 235;

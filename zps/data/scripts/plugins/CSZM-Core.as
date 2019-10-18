@@ -486,7 +486,7 @@ class CSZMPlayer
 
 		int MinSlowSpeed = int((DefSpeed * 0.01) * CONST_SLOWDOWN_MULT);	//Минимальная скорость для замедленного зомби
 		int NewSlowSpeed;	//Переменная для вычисления новой скорости
-		float NewFreezeTime = 0;
+		float NewFreezeTime = 0;	//Переменная для вычисления нового времени ступора
 		float CurrentFreezeTime = MeleeFreezeTime - Globals.GetCurrentTime();
 
 		if (CurrentFreezeTime <= 0)
@@ -631,6 +631,7 @@ class CSZMPlayer
 		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(PlayerIndex);
 		CZP_Player@ pPlayer = ToZPPlayer(PlayerIndex);
 
+		int AdrenaDamage = Math::RandomInt(20, 25);
 		int NewSpeed = pPlayer.GetMaxSpeed() + SPEED_ADRENALINE;
 
 		if (NewSpeed > SPEED_ADRENALINE + SPEED_HUMAN)
@@ -645,6 +646,20 @@ class CSZMPlayer
 		AdrenalineTime = Globals.GetCurrentTime() + CONST_ADRENALINE_DURATION;
 
 		SetUsed(PlayerIndex, pItemAdrenaline);
+
+		//Нанести некоторый урон при вкалывании адреналина
+		//Также уменьшить максимальное HP
+		pPlayerEntity.SetMaxHealth(pPlayerEntity.GetMaxHealth() - AdrenaDamage);
+
+		CTakeDamageInfo AdrenaDMG;
+
+		AdrenaDMG.SetInflictor(pPlayerEntity);
+		AdrenaDMG.SetAttacker(pPlayerEntity);
+		AdrenaDMG.SetWeapon(null);
+		AdrenaDMG.SetDamage(AdrenaDamage);
+		AdrenaDMG.SetDamageType(DMG_POISON);
+
+		pPlayerEntity.TakeDamage(AdrenaDMG);
 	}
 
 	void SpawnWeakZombie()
