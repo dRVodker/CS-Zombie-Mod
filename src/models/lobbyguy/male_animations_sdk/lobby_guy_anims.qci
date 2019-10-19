@@ -1,0 +1,417 @@
+$surfaceprop "flesh"
+
+$bbox -13 -13 0  13 13 72
+
+$poseparameter "move_yaw" -180 180 wrap
+$poseparameter "aim_pitch" -90 90 loop 360
+$poseparameter "aim_yaw" -90 90 loop 360
+
+$ikchain rhand "valvebiped.Bip01_R_Hand" Z 0
+$ikchain lhand "valvebiped.Bip01_L_Hand" Z 0
+$ikchain rfoot "valvebiped.Bip01_R_Foot" Z 0
+$ikchain lfoot "valvebiped.Bip01_L_Foot" Z 0
+
+$heirarchy "valvebiped.Bip01_L_Clavicle" "valvebiped.Bip01_Spine4" 
+$heirarchy "valvebiped.Bip01_R_Clavicle" "valvebiped.Bip01_Spine4" 
+$heirarchy "valvebiped.Bip01_L_Thigh" "valvebiped.Bip01_Pelvis" 
+$heirarchy "valvebiped.Bip01_R_Thigh" "valvebiped.Bip01_Pelvis" 
+
+$sequence Idle idle01 loop frames 0 358 fixuploop -15 0 activity ACT_ZP_IDLE_EMPTY -1
+
+//------------------------------------------------------------------------------------------------------------------------------
+
+//WALK
+$animation a_WalkS WalkS loop LX LY startloop 0 rotateto -180 {
+	alignto Idle
+}
+$animation a_WalkSE WalkSE loop LX LY startloop 0 rotateto -135 {
+	alignto Idle
+}
+$animation a_WalkE WalkE loop LX LY startloop 0 rotateto -90 {
+	alignto Idle
+}
+$animation a_WalkNE WalkNE loop LX LY startloop 0 rotateto -45 {
+	alignto Idle
+}
+$animation a_WalkN WalkN loop LX LY startloop 0 rotateto 0 {
+	alignto Idle
+}
+$animation a_WalkNW WalkNW loop LX LY startloop 0 rotateto 45 {
+	alignto Idle
+}
+$animation a_WalkW WalkW loop LX LY startloop 0 rotateto 90 {
+	alignto Idle
+}
+$animation a_WalkSW WalkSW loop LX LY startloop 0 rotateto 135 {
+	alignto Idle
+}
+
+//RUN
+$animation a_RunS RunS loop LX LY startloop 0 rotateto -180 fps 31 {
+	alignto Idle
+}
+$animation a_RunSE RunSE loop LX LY startloop 0 rotateto -135 fps 29 {
+	alignto Idle
+}
+$animation a_RunE RunE loop LX LY startloop 0 rotateto -90 fps 31 {
+	alignto Idle
+}
+$animation a_RunNE RunNE loop LX LY startloop 0 rotateto -45 fps 29 {
+	alignto Idle
+}
+$animation a_RunN RunN loop LX LY startloop 0 rotateto 0 {
+	alignto Idle
+}
+$animation a_RunNW RunNW loop LX LY startloop 0 rotateto 45 fps 28 {
+	alignto Idle
+}
+$animation a_RunW RunW loop LX LY startloop 0 rotateto 90 fps 32 {
+	alignto Idle
+}
+$animation a_RunSW RunSW loop LX LY startloop 0 rotateto 135 fps 31 {
+	alignto Idle
+}
+
+//CROUCH RUN
+$animation a_CrouchRunS Cop_Crouch_walkS loop LX LY startloop 0 rotateto -180 fps 31 {
+	alignto Idle
+}
+$animation a_CrouchRunSE Cop_Crouch_walkSE loop LX LY startloop 0 rotateto -135 fps 29 {
+	alignto Idle
+}
+$animation a_CrouchRunE Cop_Crouch_walkE loop LX LY startloop 0 rotateto -90 fps 31 {
+	alignto Idle
+}
+$animation a_CrouchRunNE Cop_Crouch_walkNE loop LX LY startloop 0 rotateto -45 fps 29 {
+	alignto Idle
+}
+$animation a_CrouchRunN Cop_Crouch_walkN loop LX LY startloop 0 rotateto 0 {
+	alignto Idle
+}
+$animation a_CrouchRunNW Cop_Crouch_walkNW loop LX LY startloop 0 rotateto 45 fps 28 {
+	alignto Idle
+}
+$animation a_CrouchRunW Cop_Crouch_walkW loop LX LY startloop 0 rotateto 90 fps 32 {
+	alignto Idle
+}
+$animation a_CrouchRunSW Cop_Crouch_walkSW loop LX LY startloop 0 rotateto 135 fps 31 {
+	alignto Idle
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+
+$weightlist UpperBodyReplace "Valvebiped.bip01_spine" 1.0
+
+$weightlist pelvisonly "Valvebiped.bip01_Pelvis" 1.0 "Valvebiped.bip01_Spine" 0.0 "ValveBiped.Bip01_L_Thigh" 0.0 "ValveBiped.Bip01_R_Thigh" 0.0 
+
+$weightlist Spine {
+	"ValveBiped.Bip01_Spine" 1
+	"ValveBiped.Bip01_Neck1" 0.5
+}
+
+$weightlist Spine4 {
+	"ValveBiped.Bip01_Pelvis" 0
+	"ValveBiped.Bip01_L_Thigh" 0
+	"ValveBiped.Bip01_R_Thigh" 0
+	"ValveBiped.Bip01_Spine" 0
+	"ValveBiped.Bip01_Spine1" 0
+	"ValveBiped.Bip01_Spine2" 1
+}
+
+$weightlist Grenade_WL_Idle {
+	"ValveBiped.Bip01_Pelvis" 0
+	"ValveBiped.Bip01_L_Thigh" 0
+	"ValveBiped.Bip01_R_Thigh" 0
+	"ValveBiped.Bip01_Spine" 0.15
+	"ValveBiped.Bip01_Spine1" 0.25
+	"ValveBiped.Bip01_Spine2" 0.65
+	"ValveBiped.Bip01_Spine4" 0.95
+	"ValveBiped.Bip01_R_Clavicle" 0.95
+	"ValveBiped.Bip01_L_Clavicle" 0.95
+	"ValveBiped.Bip01_Neck1" 0
+}
+
+$weightlist Grenade_WL_Throw {
+	"ValveBiped.Bip01_Pelvis" 0.85
+	"ValveBiped.Bip01_L_Thigh" 0.1
+	"ValveBiped.Bip01_R_Thigh" 0.1
+	"ValveBiped.Bip01_Spine" 0.40
+	"ValveBiped.Bip01_Spine1" 0.65
+	"ValveBiped.Bip01_Spine2" 0.85
+	"ValveBiped.Bip01_Spine4" 1
+	"ValveBiped.Bip01_L_Clavicle" 0.75
+}
+
+$weightlist Jump_Spine4 {
+	"ValveBiped.Bip01_Pelvis" 0
+	"ValveBiped.Bip01_L_Thigh" 0
+	"ValveBiped.Bip01_R_Thigh" 0
+	"ValveBiped.Bip01_Spine" 0
+	"ValveBiped.Bip01_Spine1" 0
+	"ValveBiped.Bip01_Spine2" 0.5
+	"ValveBiped.Bip01_Spine4" 0.95
+	"ValveBiped.Bip01_Spine4" 0.95
+	"ValveBiped.Bip01_R_Clavicle" 0.5
+	"ValveBiped.Bip01_L_Clavicle" 0.75
+	"ValveBiped.Bip01_Neck1" 0.5
+}
+
+$weightlist Clavicles {
+	"ValveBiped.Bip01_R_Clavicle" 0.1
+	"ValveBiped.Bip01_L_Clavicle" 0.1
+}
+
+$weightlist HipsUpperbodyReplace {
+	"valvebiped.bip01_Pelvis" 1.0
+	"ValveBiped.Bip01_L_Thigh" 0.0
+	"ValveBiped.Bip01_R_Thigh" 0.0 
+}
+
+$weightlist Grenade_WL_Run {
+	"ValveBiped.Bip01_Pelvis" 0.1 
+	"ValveBiped.Bip01_L_Thigh" 0.0 
+	"ValveBiped.Bip01_R_Thigh" 0.0 
+	"ValveBiped.Bip01_Spine" 0.2 
+	"ValveBiped.Bip01_Spine1" 0.4 
+	"ValveBiped.Bip01_Spine2" 0.6 
+	"ValveBiped.Bip01_Spine4" 0.4
+	"ValveBiped.Bip01_L_Clavicle" 0.10
+	"ValveBiped.Bip01_L_Upperarm" 0.15
+	"ValveBiped.Bip01_R_Clavicle" 0.65
+	"ValveBiped.Bip01_R_Upperarm" 0.75
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+
+$animation a_aim_neutral "aim_9_directions" frame 4 4 weightlist HipsUpperbodyReplace
+
+$animation a_run_aim_down_left Aim_9_directions frame 0 0 subtract a_aim_neutral 0 weightlist HipsUpperbodyReplace
+$animation a_run_aim_down_center Aim_9_directions frame 1 1 subtract a_aim_neutral 0 weightlist HipsUpperbodyReplace
+$animation a_run_aim_down_right Aim_9_directions frame 2 2 subtract a_aim_neutral 0 weightlist HipsUpperbodyReplace
+$animation a_run_aim_mid_left Aim_9_directions frame 3 3 subtract a_aim_neutral 0 weightlist HipsUpperbodyReplace
+$animation a_run_aim_mid_center Aim_9_directions frame 4 4 subtract a_aim_neutral 0 weightlist HipsUpperbodyReplace
+$animation a_run_aim_mid_right Aim_9_directions frame 5 5 subtract a_aim_neutral 0 weightlist HipsUpperbodyReplace
+$animation a_run_aim_up_left Aim_9_directions frame 6 6 subtract a_aim_neutral 0 weightlist HipsUpperbodyReplace 
+$animation a_run_aim_up_center Aim_9_directions frame 7 7 subtract a_aim_neutral 0 weightlist HipsUpperbodyReplace
+$animation a_run_aim_up_right Aim_9_directions frame 8 8 subtract a_aim_neutral 0 weightlist HipsUpperbodyReplace
+$animation a_run_aim_straight_up aim_straight_up frame 0 0 subtract a_aim_neutral 0 weightlist HipsUpperbodyReplace
+
+$sequence aimup aim_straight_up hidden
+
+$sequence Layer_Aim_All  {
+	a_run_aim_straight_up a_run_aim_straight_up a_run_aim_straight_up
+	a_run_aim_up_right a_run_aim_up_center a_run_aim_up_left 
+	a_run_aim_mid_right a_run_aim_mid_center a_run_aim_mid_left 
+	a_run_aim_down_right a_run_aim_down_center a_run_aim_down_left 
+	blendwidth 3
+	blend aim_yaw -45 45
+	blend aim_pitch -90 45
+	delta
+	iklock rfoot 1 0
+	iklock lfoot 1 0
+	hidden
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+
+$animation "a_idle_subtle" "Crouch_idle"
+$animation "a_jump" "jump" frames 0 0
+$animation "a_idle" "idle01" frames 0 0
+$animation "a_idle_angry" "idle_angry" frames 0 0
+
+$animation "a_grenade_attack" "Throw_Grenade" subtract a_grenade_attack 0
+$animation "a_armspose"	"idle_angry" subtract a_idle_subtle 0 weightlist "Spine4"
+$animation "a_jump_armspose" "crouchidlehide" subtract a_jump 0 weightlist "Jump_Spine4"
+$animation "a_grenade_pose" "MeleeAttack" frames 0 0 subtract a_idle 0 weightlist "Grenade_WL_Idle"
+$animation "a_grenade_runpose" "MeleeAttack" frames 0 0 subtract a_RunN 0 weightlist "Grenade_WL_Run"
+$animation "a_grenade_walkpose" "MeleeAttack" frames 0 0 subtract a_WalkN 0 weightlist "Grenade_WL_Run"
+$animation "a_grenade_bodypose" "idle01" frames 0 0 subtract a_idle_angry 0 weightlist "Spine"
+
+$sequence "Grenade_Throw" {
+	"Throw_Grenade"
+	fps 35
+	subtract "Grenade_Throw" 0
+	delta
+	activity "ACT_ZP_GESTURE_RANGE_ATTACK_GRENADE" -1
+	weightlist "Grenade_WL_Throw"
+	iklock "lfoot" 1 0
+	iklock "rfoot" 1 0
+}
+
+$sequence Grenade_WalkPose {
+	"a_grenade_walkpose"
+	fps 25
+	delta
+	weightlist "Grenade_WL_Run"
+	iklock "lfoot" 1 0
+	iklock "rfoot" 1 0
+	hidden
+}
+
+$sequence Grenade_RunPose {
+	"a_grenade_runpose"
+	fps 25
+	delta
+	weightlist "Grenade_WL_Run"
+	iklock "lfoot" 1 0
+	iklock "rfoot" 1 0
+	hidden
+}
+
+$sequence Grenade_BodyPose {
+	"a_grenade_bodypose"
+	fps 25
+	delta
+	weightlist "Spine"
+	iklock "lfoot" 1 0
+	iklock "rfoot" 1 0
+	hidden
+}
+
+$sequence Grenade_Pose {
+	"a_grenade_pose"
+	fps 25
+	delta
+	weightlist "Grenade_WL_Idle"
+	iklock "lfoot" 1 0
+	iklock "rfoot" 1 0
+	hidden
+}
+
+$sequence Jump_Armspose {
+	"a_jump_armspose"
+	fps 25
+	delta
+	weightlist "Jump_Spine4"
+	iklock "lfoot" 1 0
+	iklock "rfoot" 1 0
+	hidden
+}
+
+$sequence Crouch_Armspose {
+	"a_armspose"
+	fps 25
+	delta
+	weightlist "Spine4"
+	iklock "lfoot" 1 0
+	iklock "rfoot" 1 0
+	hidden
+}
+
+$sequence Idle_Grenade {
+	"idle_angry"
+	loop
+	activity ACT_ZP_IDLE_GRENADE -1
+	addlayer "Grenade_BodyPose"
+	addlayer "Grenade_Pose"
+	addlayer "Layer_Aim_All"
+}
+
+$sequence Crouch_Grenade {
+	"Crouch_idle"
+	fps 30
+	loop
+	activity "ACT_ZP_IDLE_CROUCH_GRENADE" -1
+	addlayer "Crouch_Armspose"
+	addlayer "Grenade_Pose"
+	addlayer "Grenade_BodyPose"
+	addlayer "Layer_Aim_All"
+}
+
+$sequence Crouch_Run_Grenade {
+	a_CrouchRunS a_CrouchRunSE a_CrouchRunE
+	a_CrouchRunNE a_CrouchRunN a_CrouchRunNW
+	a_CrouchRunW a_CrouchRunSW a_CrouchRunS
+	blendwidth 9
+	blend move_yaw -180 180
+	ACT_ZP_WALK_CROUCH_GRENADE -1
+	addlayer "Layer_Aim_All"
+}
+
+$sequence Run_Grenade {
+	a_runS a_runSE a_runE a_runNE a_runN a_runNW a_runW a_runSW a_runS
+	blendwidth 9 blend move_yaw -180 180 ACT_ZP_RUN_GRENADE 1
+	addlayer "Grenade_RunPose"
+	addlayer "Layer_Aim_All"
+}
+
+$sequence Walk_Grenade {
+	a_walkS a_walkSE a_walkE a_walkNE a_walkN a_walkNW a_walkW a_walkSW a_walkS
+	blendwidth 9 blend move_yaw -180 180 ACT_ZP_WALK_GRENADE 1
+	addlayer "Grenade_WalkPose"
+	addlayer "Layer_Aim_All"
+}
+
+$sequence "Jump_Grenade" {
+	"jump.smd"
+	activity "ACT_ZP_JUMP_GRENADE" 1
+	fps 10
+	addlayer "Jump_Armspose"
+	addlayer "Grenade_RunPose"
+	addlayer "Layer_Aim_All"
+	walkframe 13 LX LY LZ
+}
+
+$sequence "Push" {
+	"gesture_push"
+	fps 40
+	subtract "Push" 0
+	delta
+	activity "ACT_PUSHPROP" -1
+	iklock "lfoot" 1 0
+	iklock "rfoot" 1 0
+}
+
+$sequence Walk {
+	a_walkS a_walkSE a_walkE a_walkNE a_walkN a_walkNW a_walkW a_walkSW a_walkS
+	blendwidth 9 blend move_yaw -180 180 ACT_ZP_WALK_EMPTY 1
+}
+
+$sequence Run {
+	a_runS a_runSE a_runE a_runNE a_runN a_runNW a_runW a_runSW a_runS
+	blendwidth 9 blend move_yaw -180 180 ACT_ZP_RUN_EMPTY 1
+}
+
+$sequence "Jump" {
+	"jump.smd"
+	activity "ACT_ZP_JUMP_EMPTY" 1
+	fps 10
+	addlayer "Jump_Armspose"
+	walkframe 13 LX LY LZ
+}
+
+$sequence Crouch_idle {
+	"Crouch_idle"
+	fps 30
+	loop
+	activity ACT_ZP_IDLE_CROUCH_EMPTY -1
+	addlayer "Crouch_Armspose"
+}
+
+$sequence Crouch_Run {
+	a_CrouchRunS a_CrouchRunSE a_CrouchRunE
+	a_CrouchRunNE a_CrouchRunN a_CrouchRunNW
+	a_CrouchRunW a_CrouchRunSW a_CrouchRunS
+	blendwidth 9
+	blend move_yaw -180 180
+	ACT_ZP_WALK_CROUCH_EMPTY -1
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+
+$skiptransition "running" "walking" "walk_crouching" "run_crouching"
+
+$bonemerge "ValveBiped.Bip01_Pelvis"
+$bonemerge "ValveBiped.Bip01_Spine"
+$bonemerge "ValveBiped.Bip01_Spine1"
+$bonemerge "ValveBiped.Bip01_Spine2"
+$bonemerge "ValveBiped.Bip01_Spine4"
+$bonemerge "ValveBiped.Bip01_R_Clavicle"
+$bonemerge "ValveBiped.Bip01_R_UpperArm"
+$bonemerge "ValveBiped.Bip01_R_Forearm"
+$bonemerge "ValveBiped.Bip01_R_Hand"
+$bonemerge "ValveBiped.Anim_Attachment_RH"
+
+
+
+
