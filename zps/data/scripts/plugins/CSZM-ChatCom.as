@@ -150,12 +150,39 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 		return HOOK_HANDLED;
 	}
 
-	if (Utils.StrContains("!dlight", arg1) || Utils.StrContains("!dl", arg1))
+	else if (Utils.StrContains("!dlight", arg1) || Utils.StrContains("!dl", arg1))
 	{
 		if (pBaseEnt.GetTeamNumber() == TEAM_LOBBYGUYS)
 		{
 			DLight(pPlayer, pBaseEnt, pBaseEnt.entindex());
 			return HOOK_HANDLED;
+		}
+
+		else
+		{
+			Chat.PrintToChatPlayer(pPlrEnt, TEXT_ALLOWED_IN_LOBBY);
+			Engine.EmitSoundPlayer(pPlayer, FILENAME_DENY);
+		}
+
+		return HOOK_HANDLED;
+	}
+
+	else if (Utils.StrEql("!snowball", arg1))
+	{
+		if (pBaseEnt.GetTeamNumber() == TEAM_LOBBYGUYS)
+		{
+			CBaseEntity@ pWeapon = pPlayer.GetCurrentWeapon();
+
+			if (!Utils.StrEql("weapon_snowball", pWeapon.GetClassname()))
+			{
+				pPlayer.GiveWeapon("weapon_snowball");
+			}
+
+			else
+			{
+				Chat.PrintToChatPlayer(pPlrEnt, "{cornflowerblue}*You already have a snowball!");
+				Engine.EmitSoundPlayer(pPlayer, FILENAME_DENY);
+			}
 		}
 
 		else
