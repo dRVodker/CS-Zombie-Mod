@@ -482,12 +482,13 @@ class CSZMPlayer
 		CZP_Player@ pPlayer = ToZPPlayer(PlayerIndex);
 
 		VoiceTime += Math::RandomFloat(0.67f, 0.98f); //Увеличить таймер "VoiceTime" если замедлился / получил урон
-		SpeedRT = Globals.GetCurrentTime() + 0.105f;
+		SpeedRT = Globals.GetCurrentTime() + 0.125f;
 
 		int MinSlowSpeed = int((DefSpeed * 0.01) * CONST_SLOWDOWN_MULT);	//Минимальная скорость для замедленного зомби
 		int NewSlowSpeed;	//Переменная для вычисления новой скорости
 		float NewFreezeTime = 0;	//Переменная для вычисления нового времени ступора
 		float CurrentFreezeTime = MeleeFreezeTime - Globals.GetCurrentTime();
+		float WeakP = 0.0f;
 
 		if (CurrentFreezeTime <= 0)
 		{
@@ -499,8 +500,13 @@ class CSZMPlayer
 			SlowTime = Globals.GetCurrentTime();
 		}
 
+		if (WeakZombie)
+		{
+			WeakP = 11.22f;
+		}
+
 		SlowTime += CONST_SLOWDOWN_TIME;
-		NewSlowSpeed = int(((DefSpeed * 0.0001f) * CONST_SLOWDOWN_MULT) * ((flDamage / CONST_SLOWDOWN_HEALTH) * 100));
+		NewSlowSpeed = int(((DefSpeed * 0.0001f) * (CONST_SLOWDOWN_MULT + WeakP)) * ((flDamage / CONST_SLOWDOWN_HEALTH) * 100));
 
 		if (flDamage < 2)
 		{
@@ -510,8 +516,8 @@ class CSZMPlayer
 		//Melee
 		if (bDamageType(iDamageType, 7))
 		{
-			SlowTime += 2.0f;
-			NewFreezeTime += 1.05f;
+			SlowTime += 3.0f;
+			NewFreezeTime += 0.75f;
 		}
 
 		//Blast
@@ -632,6 +638,12 @@ class CSZMPlayer
 		CZP_Player@ pPlayer = ToZPPlayer(PlayerIndex);
 
 		int AdrenaDamage = Math::RandomInt(20, 25);
+
+		if (AdrenalineTime > Globals.GetCurrentTime())
+		{
+			AdrenaDamage *= 2;
+		}
+
 		int NewSpeed = pPlayer.GetMaxSpeed() + SPEED_ADRENALINE;
 
 		if (NewSpeed > SPEED_ADRENALINE + SPEED_HUMAN)
@@ -647,8 +659,6 @@ class CSZMPlayer
 
 		SetUsed(PlayerIndex, pItemAdrenaline);
 
-		//Нанести некоторый урон при вкалывании адреналина
-		//Также уменьшить максимальное HP
 		pPlayerEntity.SetMaxHealth(pPlayerEntity.GetMaxHealth() - AdrenaDamage);
 
 		CTakeDamageInfo AdrenaDMG;

@@ -10,11 +10,11 @@ const int SPEED_MINIMUM = 80;
 
 //Damage Slowdown
 const float CONST_MAX_SLOWTIME = 2.0f;	//Максимальное время в секундах, которое зомби может быть замедлен
-const float CONST_RECOVER_UNIT = 0.04f;	//Кол-во времени, которое должно пройти, чтобы добавить "CONST_RECOVER_SPEED" к скорости зомби
-const int CONST_RECOVER_SPEED = 1;	//Кол-во скорости, которое зомби получает по истечении "CONST_RECOVER_UNIT"
+const float CONST_RECOVER_UNIT = 0.12f;	//Кол-во времени, которое должно пройти, чтобы добавить "CONST_RECOVER_SPEED" к скорости зомби
+const int CONST_RECOVER_SPEED = 3;	//Кол-во скорости, которое зомби получает по истечении "CONST_RECOVER_UNIT"
 const float CONST_SLOWDOWN_TIME = 0.1425f;	//Время замедления, которое получает зомби при получении любого урона
 const int CONST_SLOWDOWN_HEALTH = 250;  //Кол-во HP, которое нужно нанести зомби, чтобы максимально замедлить его
-const float CONST_SLOWDOWN_MULT = 36.0f;    //Процент от максимальной скорости зомби, который будет ониматься при получении урона равному "CONST_SLOWDOWN_HEALTH"
+const float CONST_SLOWDOWN_MULT = 38.38f;    //Процент от максимальной скорости зомби, который будет ониматься при получении урона равному "CONST_SLOWDOWN_HEALTH"
 const float CONST_SLOWDOWN_CRITDMG = 68.0f; //Значение урона, до которого зомби не будет стопарится
 
 //Другие постоянные
