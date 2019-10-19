@@ -1684,7 +1684,12 @@ HookReturnCode CSZM_OnEntityCreation(const string &in strClassname, CBaseEntity@
 	{
 		if (Utils.StrEql("npc_grenade_frag", strClassname))
 		{
-			AttachTrail(pEntity);
+			AttachTrail(pEntity, "245 16 16");
+		}
+
+		else if (Utils.StrEql("projectile_nonhurtable", strClassname) && Utils.StrEql("models/weapons/w_snowball.mdl", pEntity.GetModelName()))
+		{
+			AttachTrail(pEntity, "16 137 255");
 		}
 
 		else if (Utils.StrEql("item_healthkit", strClassname))

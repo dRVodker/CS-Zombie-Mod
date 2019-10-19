@@ -212,12 +212,12 @@ void PutPlrToPlayZone(CBaseEntity@ pEntPlayer)
 	}
 }
 
-void AttachTrail(CBaseEntity@ pEntity)
+void AttachTrail(CBaseEntity@ pEntity, const string strColor)
 {
 		CEntityData@ SPRTrailIPD = EntityCreator::EntityData();
 		SPRTrailIPD.Add("lifetime", "0.25");
 		SPRTrailIPD.Add("renderamt", "255");
-		SPRTrailIPD.Add("rendercolor", "245 16 16");
+		SPRTrailIPD.Add("rendercolor", strColor);
 		SPRTrailIPD.Add("rendermode", "5");
 		SPRTrailIPD.Add("spritename", "sprites/lgtning.vmt");
 		SPRTrailIPD.Add("startwidth", "3.85");
@@ -227,7 +227,7 @@ void AttachTrail(CBaseEntity@ pEntity)
 		SpriteIPD.Add("GlowProxySize", "4");
 		SpriteIPD.Add("scale", "0.35");
 		SpriteIPD.Add("rendermode", "9");
-		SpriteIPD.Add("rendercolor", "245 16 16");
+		SpriteIPD.Add("rendercolor", strColor);
 		SpriteIPD.Add("renderamt", "255");
 		SpriteIPD.Add("model", "sprites/light_glow01.vmt");
 		SpriteIPD.Add("renderfx", "0");
@@ -239,7 +239,7 @@ void AttachTrail(CBaseEntity@ pEntity)
 		DLightIPD.Add("spawnflags", "0");
 		DLightIPD.Add("spotlight_radius", "0");
 		DLightIPD.Add("style", "0");
-		DLightIPD.Add("_light", "245 8 8 200");
+		DLightIPD.Add("_light", strColor + " 200");
 		DLightIPD.Add("brightness", "4");
 		DLightIPD.Add("distance", "48");
 
