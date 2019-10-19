@@ -1,6 +1,7 @@
 #include "./cszm_modules/teamnums.as"
 
 const string TEXT_ALLOWED_IN_LOBBY = "{cornflowerblue}*Allowed only in the {green}lobby team{cornflowerblue}!";
+const string TEXT_YOU_HAVE_SNOWBALL = "{cornflowerblue}*You already have a {white}snowball{cornflowerblue}!";
 const string TEXT_YOUR_SCALE = "Your scale has been changed to ";
 const string TEXT_INVALID_VALUE = "{red}*Invalid value!";
 const string TARGETNAME_DLIGHT = "DLight_Origin";
@@ -180,7 +181,7 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 
 			else
 			{
-				Chat.PrintToChatPlayer(pPlrEnt, "{cornflowerblue}*You already have a snowball!");
+				Chat.PrintToChatPlayer(pPlrEnt, TEXT_YOU_HAVE_SNOWBALL);
 				Engine.EmitSoundPlayer(pPlayer, FILENAME_DENY);
 			}
 		}
