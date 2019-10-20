@@ -1706,6 +1706,14 @@ HookReturnCode CSZM_OnEntityCreation(const string &in strClassname, CBaseEntity@
 		{
 			SpawnRandomItem(pEntity);
 		}
+
+		else if (Utils.StrContains("prop", strClassname) && !Utils.StrContains("unbreakable", pEntity.GetEntityDescription()))
+		{
+			if (Utils.StrContains("unbrk", pEntity.GetEntityName()) || Utils.StrContains("unbreakable", pEntity.GetEntityName()))
+			{
+				pEntity.SetEntityDescription(pEntity.GetEntityDescription() + ";unbreakable");
+			}
+		}
 	}
 
 	return HOOK_CONTINUE;
@@ -1743,7 +1751,7 @@ HookReturnCode CSZM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out Dama
 		}
 	}
 
-	if (Utils.StrContains("unbrk", pEntity.GetEntityName()) || Utils.StrContains("unbreakable", pEntity.GetEntityName()))
+	if (Utils.StrContains("unbrk", pEntity.GetEntityName()) || Utils.StrContains("unbreakable", pEntity.GetEntityName()) || Utils.StrContains("unbreakable", pEntity.GetEntityDescription()))
 	{
 		bIsUnbreakable = true;
 	}
