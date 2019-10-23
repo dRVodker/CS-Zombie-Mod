@@ -1,0 +1,12 @@
+"VertexLitGeneric"
+{
+	"$baseTexture"			"models/cszm/corpse/corpse2"
+	"$selfillummask"		"models/cszm/corpse/corpse2_glowmask"
+	"$selfillum"			"1"
+	"$selfillumtint"		"[2.5 0.9 0]"
+	
+	"$detail"					"detail/plaster_detail_01"
+	"$detailscale"				"3.5"
+	"$detailblendfactor"		"0.75"
+	"$detailblendmode"			"0"
+}
