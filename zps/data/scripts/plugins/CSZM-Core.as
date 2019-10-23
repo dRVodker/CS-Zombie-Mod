@@ -1607,6 +1607,12 @@ HookReturnCode CSZM_OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in Dama
 
 		if (iVicTeam == TEAM_ZOMBIES)
 		{
+			if(pVicCSZMPlayer.IsFirstInfected())
+			{
+				pBaseEnt.SetBodyGroup("EyesGlow", 0);
+				pBaseEnt.SetSkin(0);
+			}
+
 			//Don't emit die sound if blowed up
 			if (!bDamageType(iDamageType, 6))
 			{
@@ -2295,7 +2301,9 @@ void RndZModel(CZP_Player@ pPlayer, CBaseEntity@ pPlayerEntity)
 	
 	if (pCSZMPlayer.IsFirstInfected())
 	{
-		pPlayerEntity.SetModel("models/cszm/zombie_morgue.mdl");
+		pPlayerEntity.SetModel("models/cszm/zombie_corpse2.mdl");
+		pPlayerEntity.SetBodyGroup("EyesGlow", 1);
+		pPlayerEntity.SetSkin(1);
 	}
 
 	else 
