@@ -5,7 +5,7 @@ const string TEXT_YOU_HAVE_SNOWBALL = "{cornflowerblue}*You already have a {whit
 const string TEXT_YOUR_SCALE = "Your scale has been changed to ";
 const string TEXT_INVALID_VALUE = "{red}*Invalid value!";
 const string TARGETNAME_DLIGHT = "DLight_Origin";
-const string FILENAME_DENY = "common/wpn_denyselect.wav";
+const string FILENAME_DENY = "buttons/combine_button_locked.wav";
 const string FILENAME_BUTTONCLICK = "weapons/slam/buttonclick.wav";
 
 bool bIsCSZM;

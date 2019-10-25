@@ -2,9 +2,9 @@
 //Скорости игрока
 const int SPEED_DEFAULT = 225;
 const int SPEED_HUMAN = 205;
-const int SPEED_ZOMBIE = 200;
-const int SPEED_CARRIER = 210;
-const int SPEED_WEAK = 235;
+const int SPEED_ZOMBIE = 190;
+const int SPEED_CARRIER = 200;
+const int SPEED_WEAK = 230;
 const int SPEED_ADRENALINE = 70;
 const int SPEED_MINIMUM = 80;
 

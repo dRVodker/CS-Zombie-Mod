@@ -1187,7 +1187,7 @@ HookReturnCode CSZM_OnConCommand(CZP_Player@ pPlayer, CASCommand@ pArgs)
 						if (pCSZMPlayer.IsAbuser())
 						{
 							Chat.PrintToChatPlayer(pPlrEnt, strCannotJoinGame);
-							Engine.EmitSoundPlayer(pPlayer, "common/wpn_denyselect.wav");
+							Engine.EmitSoundPlayer(pPlayer, "buttons/combine_button_locked.wav");
 
 							return HOOK_HANDLED;
 						}
@@ -1338,7 +1338,7 @@ HookReturnCode CSZM_OnPlayerSpawn(CZP_Player@ pPlayer)
 				{
 					Chat.PrintToChatPlayer(pBaseEnt, strCannotJoinZT0);
 					MovePlrToSpec(pBaseEnt);
-					Engine.EmitSoundPlayer(pPlayer, "common/wpn_denyselect.wav");
+					Engine.EmitSoundPlayer(pPlayer, "buttons/combine_button_locked.wav");
 				}
 			}
 		}
@@ -1676,7 +1676,7 @@ HookReturnCode CSZM_OnPlayerDisonnected(CZP_Player@ pPlayer)
 		
 		if (pBaseEnt.GetTeamNumber() == TEAM_ZOMBIES && Utils.GetNumPlayers(zombie, false) <= 1 && RoundManager.IsRoundOngoing(false))
 		{
-			Engine.EmitSound("common/warning.wav");
+			Engine.EmitSound("buttons/button8.wav");
 			RoundManager.SetWinState(STATE_STALEMATE);
 			SD(strLastZLeave);
 		}

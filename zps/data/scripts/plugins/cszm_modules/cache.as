@@ -39,7 +39,7 @@ void CacheSounds()
 	Engine.PrecacheFile(sound, "cszm_fx/weapons/adrenaline_needle_in.wav");
 
     //Deny Choose/Spawn sound
-    Engine.PrecacheFile(sound, "common/wpn_denyselect.wav");
+    Engine.PrecacheFile(sound, "buttons/combine_button_locked.wav");
 
     //Boom HeadShot sound
     Engine.PrecacheFile(sound, ")impacts/flesh_impact_headshot-01.wav");
@@ -48,7 +48,7 @@ void CacheSounds()
     Engine.PrecacheFile(sound, "items/suitchargeok1.wav");
 	
 	//ZM Leave Warning sound
-    Engine.PrecacheFile(sound, "common/warning.wav");
+    Engine.PrecacheFile(sound, "buttons/button8.wav");
     
     //ZM First Turn sound
     Engine.PrecacheFile(sound, "@cszm_fx/misc/suspense.wav");
