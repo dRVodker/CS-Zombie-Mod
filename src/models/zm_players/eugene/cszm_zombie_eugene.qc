@@ -6,11 +6,12 @@ $include "../hitboxs.qci"
 
 $opaque
 
-$model "Zombie1" "zombie1_reference.smd" 
+$model "Zombie1" "zombie1_reference.smd"
+$model "Hands" "hands.smd"
 
-$cdmaterials "models\"
-$cdmaterials "models\humans\male\"
-$cdmaterials "models\zombies\zombie1\"
+$cdmaterials "models/"
+$cdmaterials "models/humans/male/"
+$cdmaterials "models/zombies/zombie1/"
 
 $attachment "forward" "ValveBiped.forward" 0 0 0 rotate 0 0 0
 $attachment "anim_attachment_RH" "ValveBiped.Anim_Attachment_RH" 0 0 0 rotate -90 -90 0
@@ -18,8 +19,6 @@ $attachment "anim_attachment_LH" "ValveBiped.Anim_Attachment_LH" 0 0 0 rotate -9
 $attachment "anim_attachment_head" "ValveBiped.Bip01_Head1" 0 0 0 rotate -90 -90 0
 
 $surfaceprop "flesh"
-
-$contents "solid"
 
 $bbox -16 -16 0 16 16 74
 
