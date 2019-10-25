@@ -12,6 +12,7 @@ void CacheModels()
     Engine.PrecacheFile(model, "models/cszm/zombie_charple2.mdl");
     Engine.PrecacheFile(model, "models/cszm/zombie_sawyer.mdl");
     Engine.PrecacheFile(model, "models/cszm/zombie_eugene.mdl");
+    Engine.PrecacheFile(model, "models/cszm/zombie_bald.mdl");
 
     //ZM First Infected Model
     Engine.PrecacheFile(model, "models/cszm/zombie_corpse2.mdl");

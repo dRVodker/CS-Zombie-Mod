@@ -55,6 +55,7 @@ array<string> g_strModels =
 	"models/cszm/zombie_corpse1.mdl",
 	"models/cszm/zombie_charple2.mdl",
 	"models/cszm/zombie_sawyer.mdl",
+	"models/cszm/zombie_bald.mdl",
 	"models/cszm/zombie_eugene.mdl"
 };
 

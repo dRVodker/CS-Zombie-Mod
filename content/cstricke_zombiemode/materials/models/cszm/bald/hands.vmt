@@ -1,0 +1,10 @@
+"VertexLitGeneric"
+{
+	"$basetexture"		"models/cszm/bald/hands"
+	"$halflambert"		"1"
+	
+	"$detail"					"detail/plaster_detail_01"
+	"$detailscale"				"0.85"
+	"$detailblendfactor"		"0.85"
+	"$detailblendmode"			"0"
+}

@@ -1,0 +1,16 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/cszm/bald/sheet"
+	"$bumpmap" "models/cszm/bald/sheet_normal"
+	"$halflambert" "1"
+	
+	"$phong" "1"
+	"$phongexponent" "6"
+	"$phongboost" "0.25"
+	"$phongfresnelranges" "[0 0.2 0.5]"
+	
+	"$detail"					"detail/plaster_detail_01"
+	"$detailscale"				"4"
+	"$detailblendfactor"		"1.25"
+	"$detailblendmode"			"0"
+}
