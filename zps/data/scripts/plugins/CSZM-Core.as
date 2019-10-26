@@ -2265,14 +2265,15 @@ void TurnToZ(const int &in index)
 		{
 			if (pCSZMPlayer.IsFirstInfected())
 			{
-				pSoloMode.SetValue("0");
 				bAllowZombieSpawn = true;
+				pSoloMode.SetValue("0");
 				Engine.EmitSound("CS_FirstTurn");
 				pCSZMPlayer.SetWFirstInfected(true);
 			}
 
 			EmitBloodEffect(pPlayer, false);
 			pCSZMPlayer.SetWeakZombie(false);
+			pPlayer.SetVoice(eugene);
 			pPlayer.CompleteInfection();
 			pPlayer.SetVoice(eugene);
 			pPlayer.SetArmModel(MODEL_ZOMBIE_ARMS);

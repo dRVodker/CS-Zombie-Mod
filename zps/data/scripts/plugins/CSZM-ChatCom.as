@@ -7,6 +7,7 @@ const string TEXT_INVALID_VALUE = "{red}*Invalid value!";
 const string TARGETNAME_DLIGHT = "DLight_Origin";
 const string FILENAME_DENY = "buttons/combine_button_locked.wav";
 const string FILENAME_BUTTONCLICK = "weapons/slam/buttonclick.wav";
+const string FILENAME_LIGHTSWITCH = "buttons/lightswitch2.wav";
 
 bool bIsCSZM;
 
@@ -26,7 +27,7 @@ void OnMapInit()
 	if (Utils.StrContains("cszm", Globals.GetCurrentMapName()))
 	{
 		bIsCSZM = true;
-		Engine.PrecacheFile(sound, "buttons/lightswitch2.wav");
+		Engine.PrecacheFile(sound, FILENAME_LIGHTSWITCH);
 		Engine.PrecacheFile(sound, FILENAME_BUTTONCLICK);
 		Engine.PrecacheFile(sound, FILENAME_DENY);
 	}
@@ -49,8 +50,6 @@ HookReturnCode CSZM_SetS_OnPlrSpawn(CZP_Player@ pPlayer)
 
 	CBasePlayer@ pPlrEnt = pPlayer.opCast();
 	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
-
-	string sEntName = pBaseEnt.GetEntityName();
 
 	if (pBaseEnt.GetTeamNumber() == TEAM_SPECTATORS)
 	{
@@ -76,7 +75,6 @@ HookReturnCode CSZM_SetS_OnConCommand(CZP_Player@ pPlayer, CASCommand@ pArgs)
 			if (Utils.StrContains("enhancevision", pArgs.Arg(0))) 
 			{
 				DLight(pPlayer, pBaseEnt, iIndex);
-				return HOOK_HANDLED;
 			}
 		}
 	}
@@ -86,12 +84,7 @@ HookReturnCode CSZM_SetS_OnConCommand(CZP_Player@ pPlayer, CASCommand@ pArgs)
 
 HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 {
-	if (!bIsCSZM) 
-	{
-		return HOOK_CONTINUE;
-	}
-
-	if (pArgs is null)
+	if (!bIsCSZM || pArgs is null) 
 	{
 		return HOOK_CONTINUE;
 	}
@@ -192,6 +185,16 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 			Engine.EmitSoundPlayer(pPlayer, FILENAME_DENY);
 		}
 
+		return HOOK_HANDLED;
+	}
+
+	else if (Utils.StrEql("!chatcom", arg1))
+	{
+		Chat.PrintToChatPlayer(pPlrEnt, "{gold}-=List of chat commands=-");	
+		Chat.PrintToChatPlayer(pPlrEnt, "{white}!setscale {gold}or {white}!scale {gold}- Set a player scale");
+		Chat.PrintToChatPlayer(pPlrEnt, "{white}!dlight {gold}or {white}!dl {gold}- Turn on a dynamic light");
+		Chat.PrintToChatPlayer(pPlrEnt, "{white}!snowball {gold}- Get a snowball");
+		Engine.EmitSoundPlayer(pPlayer, "HudChat.Message");
 		return HOOK_HANDLED;
 	}
 /*
