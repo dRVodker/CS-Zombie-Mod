@@ -9,6 +9,17 @@ const string FILENAME_DENY = "buttons/combine_button_locked.wav";
 const string FILENAME_BUTTONCLICK = "weapons/slam/buttonclick.wav";
 const string FILENAME_LIGHTSWITCH = "buttons/lightswitch2.wav";
 
+const string CLIST_COLOR_COMMAND = "{white}";
+const string CLIST_COLOR_DESCRIP = "{gold}";
+const string CLIST_COLOR_HEAD = "{gold}";
+
+array<string> g_ChatComs =
+{
+	"!setscale;!scale;Set a player scale",
+	"!dlight;!dl;Turn on a dynamic light",
+	"!snowball;Get a snowball"
+};
+
 bool bIsCSZM;
 
 void OnPluginInit()
@@ -190,11 +201,7 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 
 	else if (Utils.StrEql("!chatcom", arg1))
 	{
-		Chat.PrintToChatPlayer(pPlrEnt, "{gold}-=List of chat commands=-");	
-		Chat.PrintToChatPlayer(pPlrEnt, "{white}!setscale {gold}or {white}!scale {gold}- Set a player scale");
-		Chat.PrintToChatPlayer(pPlrEnt, "{white}!dlight {gold}or {white}!dl {gold}- Turn on a dynamic light");
-		Chat.PrintToChatPlayer(pPlrEnt, "{white}!snowball {gold}- Get a snowball");
-		Engine.EmitSoundPlayer(pPlayer, "HudChat.Message");
+		ShowCom(pPlrEnt);
 		return HOOK_HANDLED;
 	}
 /*
@@ -227,4 +234,35 @@ void DLight(CZP_Player@ pPlayer, CBaseEntity@ pPlrEntity, const int &in iIndex)
 			Engine.Ent_Fire("TrurnOff-DL" + iIndex, "AddOutput", "Effects 32");
 		}
 	}
+}
+
+void ShowCom(CBasePlayer@ pPlayer)
+{
+	Chat.PrintToChatPlayer(pPlayer, CLIST_COLOR_HEAD + "-=List of chat commands=-");
+
+	for (uint q = 0;q < g_ChatComs.length(); q++)
+	{
+		string strCommand;
+		string strShort;
+		string strDescription;
+
+		CASCommand@ pSplited = StringToArgSplit(g_ChatComs[q], ";");
+		strCommand = pSplited.Arg(0);
+
+		if (pSplited.Args() == 3)
+		{
+			strCommand += CLIST_COLOR_DESCRIP + " or";
+			strShort = pSplited.Arg(1);
+			strDescription = pSplited.Arg(2);
+		}
+
+		else if (pSplited.Args() == 2)
+		{
+			strDescription = pSplited.Arg(1);
+		}
+
+		Chat.PrintToChatPlayer(pPlayer, CLIST_COLOR_COMMAND + strCommand + " " + CLIST_COLOR_COMMAND + strShort + CLIST_COLOR_DESCRIP + " - " + strDescription);
+	}
+
+	Engine.EmitSoundPlayer(pPlayer, "HudChat.Message");
 }
