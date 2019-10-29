@@ -689,7 +689,7 @@ class CSZMPlayer
 			
 			else 
 			{
-				pPlayerEntity.SetModel("models/cszm/zombie_charple.mdl");
+				pPlayerEntity.SetModel("models/cszm/zombie_charple1.mdl");
 				pPlayer.SetArmModel(MODEL_ZOMBIE_ARMS);
 			}
 

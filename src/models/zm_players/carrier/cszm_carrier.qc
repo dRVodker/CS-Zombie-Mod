@@ -4,17 +4,31 @@ $include "../bones.qci"
 $include "../ruleshierarchy.qci"
 $include "../hitboxs.qci"
 
-$bodygroup "carrier"
+$bodygroup "Head"
 {
-	studio "cszm_carrier.smd"
+	studio "carrier_head.smd"
+	studio "carrier_gib0.smd"
+	studio "carrier_gib1.smd"
+	studio "carrier_gib2.smd"
 }
 
+$bodygroup "Body"
+{
+	studio "carrier_base.smd"
+}
+
+$cdmaterials "models\"
+$cdmaterials "models\gibs\"
 $cdmaterials "models/zombies/zombie0/"
 
 $attachment "forward" "ValveBiped.forward" 0 0 0 rotate 0 0 0
 $attachment "anim_attachment_RH" "ValveBiped.Anim_Attachment_RH" 0 0 0 rotate -90 -90 0
 $attachment "anim_attachment_LH" "ValveBiped.Anim_Attachment_LH" 0 0 0 rotate -90 -90 0
 $attachment "anim_attachment_head" "ValveBiped.Bip01_Head1" 0 0 0 rotate -90 -90 0
+
+$attachment "headshot1" "ValveBiped.Bip01_Head1" 0.00 0.00 0.00
+$attachment "headshot2" "ValveBiped.Bip01_Head1" 3.20 -3.40 -2.50 rotate 60 -70 -125
+$attachment "headshot3" "ValveBiped.Bip01_Head1" 4.75 -1.85 1.65 rotate -45 0 0
 
 $surfaceprop "flesh"
 

@@ -10,13 +10,22 @@ $bodygroup "EyesGlow"
 	studio "eyes.smd"
 }
 
-$model "Corpse2" "corpse2_reference.smd" 
+$bodygroup "Head"
+{
+	studio "corpse2_head.smd"
+	studio "corpse2_headless.smd"
+	studio "corpse2_headless.smd"
+	studio "corpse2_headless.smd"
+}
+
+$model "Body" "corpse2_body.smd" 
 
 $surfaceprop "flesh"
 
 $eyeposition 0 0 70
 
 $cdmaterials "models/cszm/corpse/"
+$cdmaterials "models/"
 
 $texturegroup "skinfamilies"
 {
@@ -28,6 +37,10 @@ $attachment "forward" "ValveBiped.forward" 0 0 0 rotate 0 0 0
 $attachment "anim_attachment_RH" "ValveBiped.Anim_Attachment_RH" 0 0 0 rotate -90 -90 0
 $attachment "anim_attachment_LH" "ValveBiped.Anim_Attachment_LH" 0 0 0 rotate -90 -90 0
 $attachment "anim_attachment_head" "ValveBiped.Bip01_Head1" 0 0 0 rotate -90 -90 0
+
+$attachment "headshot1" "ValveBiped.Bip01_Head1" -2.25 -0.75 0.00 rotate -0 0 0
+$attachment "headshot2" "ValveBiped.Bip01_Head1" -2.25 -0.75 0.00 rotate -0 0 0
+$attachment "headshot3" "ValveBiped.Bip01_Head1" -2.25 -0.75 0.00 rotate -0 0 0
 
 $bbox -16 -16 0 16 16 74
 

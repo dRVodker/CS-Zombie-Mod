@@ -4,13 +4,22 @@ $include "../bones.qci"
 $include "../ruleshierarchy.qci"
 $include "../hitboxs.qci"
 
-$model "zhead" "head.smd"
-$model "body" "body.smd"
-$model "hands" "hands.smd"
+$bodygroup "Head"
+{
+	studio "head.smd"
+	studio "neck.smd"
+	studio "neck.smd"
+	studio "neck.smd"
+}
+
+$model "Body" "body.smd"
+$model "Hands" "hands.smd"
 
 $surfaceprop "flesh"
 $eyeposition 0 0 70
+
 $cdmaterials "models/cszm/bald/"
+$cdmaterials "models/"
 
 $attachment "eyes" "ValveBiped.Bip01_Head1" 3.98 -3.72 0.03 rotate 0 -80.1 -90
 $attachment "mouth" "ValveBiped.Bip01_Head1" 1.2 -5.7 0 rotate 0 -80 -90
@@ -19,6 +28,10 @@ $attachment "forward" "ValveBiped.forward" 0 0 0 rotate 0 0 0
 $attachment "anim_attachment_RH" "ValveBiped.Anim_Attachment_RH" 0 0 0 rotate -90 -90 0
 $attachment "anim_attachment_LH" "ValveBiped.Anim_Attachment_LH" 0 0 0 rotate -90 -90 0
 $attachment "anim_attachment_head" "ValveBiped.Bip01_Head1" 0 0 0 rotate -90 -90 0
+
+$attachment "headshot1" "ValveBiped.Bip01_Head1" -1.5 -0.75 0.00
+$attachment "headshot2" "ValveBiped.Bip01_Head1" -1.5 -0.75 0.00
+$attachment "headshot3" "ValveBiped.Bip01_Head1" -1.5 -0.75 0.00
 
 $bbox -16 -16 0 16 16 74
 

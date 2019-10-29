@@ -6,8 +6,20 @@ $include "../hitboxs.qci"
 
 $opaque
 
-$model "Zombie1" "zombie1_reference.smd"
-$model "Hands" "hands.smd"
+$bodygroup "Body"
+{
+	studio "eugene_base.smd"
+}
+
+$bodygroup "Head"
+{
+	studio "eugene_head.smd"
+	studio "eugene_gib0.smd"
+	studio "eugene_gib1.smd"
+	studio "eugene_gib2.smd"
+}
+
+$model "Hands" "eugene_hands.smd"
 
 $cdmaterials "models/"
 $cdmaterials "models/humans/male/"
@@ -18,11 +30,15 @@ $attachment "anim_attachment_RH" "ValveBiped.Anim_Attachment_RH" 0 0 0 rotate -9
 $attachment "anim_attachment_LH" "ValveBiped.Anim_Attachment_LH" 0 0 0 rotate -90 -90 0
 $attachment "anim_attachment_head" "ValveBiped.Bip01_Head1" 0 0 0 rotate -90 -90 0
 
+$attachment "headshot1" "ValveBiped.Bip01_Head1" 4.75 -1.00 -1.50 rotate 35 0 0
+$attachment "headshot2" "ValveBiped.Bip01_Head1" 4.85 -1.00 0.00 rotate 0 13 0
+$attachment "headshot3" "ValveBiped.Bip01_Head1" 2.50 -3.50 1.00 rotate -15 -75 0
+
 $surfaceprop "flesh"
 
 $bbox -16 -16 0 16 16 74
 
-$sequence "ragdoll" "zombie1_reference.smd" {
+$sequence "ragdoll" "eugene_physics.smd" {
 	fps 30
 	activity "ACT_DIERAGDOLL" -1
 }
@@ -37,7 +53,7 @@ $ikchain "lfoot" "ValveBiped.Bip01_L_Foot" knee 0.707 -0.707 0
 $ikautoplaylock "rfoot" 1 0.1
 $ikautoplaylock "lfoot" 1 0.1
 
-$collisionjoints "zombie1_physics.smd"
+$collisionjoints "eugene_physics.smd"
 {
 	$mass 175
 	$inertia 10

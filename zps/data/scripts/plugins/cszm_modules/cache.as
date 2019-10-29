@@ -8,7 +8,7 @@ void CacheModels()
     Engine.PrecacheFile(model, "models/cszm/zombie_classic.mdl");
     Engine.PrecacheFile(model, "models/cszm/zombie_sci.mdl");
     Engine.PrecacheFile(model, "models/cszm/zombie_corpse1.mdl");
-    Engine.PrecacheFile(model, "models/cszm/zombie_charple.mdl");
+    Engine.PrecacheFile(model, "models/cszm/zombie_charple1.mdl");
     Engine.PrecacheFile(model, "models/cszm/zombie_charple2.mdl");
     Engine.PrecacheFile(model, "models/cszm/zombie_sawyer.mdl");
     Engine.PrecacheFile(model, "models/cszm/zombie_eugene.mdl");

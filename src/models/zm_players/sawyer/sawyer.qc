@@ -6,19 +6,31 @@ $include "../hitboxs.qci"
 
 $opaque
 
-$model "Sawyer" "sawyer_ref.smd" 
-$model "SawyerHairs" "sawyer_hairs_ref.smd" 
+$bodygroup "Head"
+{
+	studio "sawyer_head.smd"
+	studio "sawyer_neck.smd"
+	studio "sawyer_neck.smd"
+	studio "sawyer_neck.smd"
+}
+
+$model "Body" "sawyer_body.smd" 
 
 $surfaceprop "flesh"
 
 $eyeposition 0 0 70
 
 $cdmaterials "models/cszm/sawyer/"
+$cdmaterials "models/"
 
 $attachment "forward" "ValveBiped.forward" 0 0 0 rotate 0 0 0
 $attachment "anim_attachment_RH" "ValveBiped.Anim_Attachment_RH" 0 0 0 rotate -90 -90 0
 $attachment "anim_attachment_LH" "ValveBiped.Anim_Attachment_LH" 0 0 0 rotate -90 -90 0
 $attachment "anim_attachment_head" "ValveBiped.Bip01_Head1" 0 0 0 rotate -90 -90 0
+
+$attachment "headshot1" "ValveBiped.Bip01_Neck1" 4.15 -0.75 0.00 rotate -0 -2 0
+$attachment "headshot2" "ValveBiped.Bip01_Neck1" 4.15 -0.75 0.00 rotate -0 -2 0
+$attachment "headshot3" "ValveBiped.Bip01_Neck1" 4.15 -0.75 0.00 rotate -0 -2 0
 
 $bbox -16 -16 0 16 16 74
 
