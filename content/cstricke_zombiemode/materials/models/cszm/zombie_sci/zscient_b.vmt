@@ -4,6 +4,7 @@
 	"$bumpmap"				"models/cszm/zombie_sci/ZScient_bN"
 	"$surfaceprop"			"flesh"
 	"$multipass"			"1"
+	"$nocull"				"1"
 	
 	"$alphatest"			"1"
 	
