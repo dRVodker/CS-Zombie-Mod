@@ -251,7 +251,41 @@ void AttachTrail(CBaseEntity@ pEntity, const string strColor)
 		pEntSprite.SetParent(pEntity);
 		pDLight.SetParent(pEntity);
 }
+/*
+void AttachEyesLights(CBaseEntity@ pPlayerEntity)
+{
+	CEntityData@ L_EyeLight = EntityCreator::EntityData();
+	L_EyeLight.Add("HDRColorScale", "0.5");
+	L_EyeLight.Add("model", "sprites/light_glow01.vmt");
+	L_EyeLight.Add("renderamt", "255");
+	L_EyeLight.Add("rendercolor", "255 153 6");
+	L_EyeLight.Add("spawnflags", "1");
+	L_EyeLight.Add("rendermode", "9");
+	L_EyeLight.Add("scale", "0.195");
+	L_EyeLight.Add("GlowProxySize", "1.1");
+	L_EyeLight.Add("targetname", "LeftEye");
 
+    CEntityData@ R_EyeLight = EntityCreator::EntityData();
+	R_EyeLight.Add("HDRColorScale", "0.5");
+	R_EyeLight.Add("model", "sprites/light_glow01.vmt");
+	R_EyeLight.Add("renderamt", "255");
+	R_EyeLight.Add("rendercolor", "255 153 6");
+	R_EyeLight.Add("spawnflags", "1");
+	R_EyeLight.Add("rendermode", "9");
+	R_EyeLight.Add("scale", "0.195");
+	R_EyeLight.Add("GlowProxySize", "1.1");
+	R_EyeLight.Add("targetname", "RighrEye");
+
+	@pL_Eye = EntityCreator::Create("env_sprite", pPlayerEntity.GetAbsOrigin(), QAngle(0, 0, 0), L_EyeLight);
+	@pR_Eye = EntityCreator::Create("env_sprite", pPlayerEntity.GetAbsOrigin(), QAngle(0, 0, 0), R_EyeLight);
+	
+	pL_Eye.SetParent(pPlayerEntity);
+	pR_Eye.SetParent(pPlayerEntity);
+	
+    pL_Eye.SetParentAttachment("LeftEye", false);
+    pR_Eye.SetParentAttachment("RightEye", false);
+}
+*/
 void SetUsed(const int &in index, CBaseEntity@ pItemDeliver)
 {
 	pItemDeliver.SetEntityName("used" + index);
