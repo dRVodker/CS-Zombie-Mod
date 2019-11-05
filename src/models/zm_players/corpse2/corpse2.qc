@@ -38,6 +38,9 @@ $attachment "anim_attachment_RH" "ValveBiped.Anim_Attachment_RH" 0 0 0 rotate -9
 $attachment "anim_attachment_LH" "ValveBiped.Anim_Attachment_LH" 0 0 0 rotate -90 -90 0
 $attachment "anim_attachment_head" "ValveBiped.Bip01_Head1" 0 0 0 rotate -90 -90 0
 
+$attachment "RightEye" "ValveBiped.Bip01_Head1" 3.90 -4.00 1.45 rotate 0 -81 -90
+$attachment "LeftEye" "ValveBiped.Bip01_Head1" 3.90 -4.00 -1.20 rotate 0 -81 -90
+
 $attachment "headshot1" "ValveBiped.Bip01_Head1" -2.25 -0.75 0.00 rotate -0 0 0
 $attachment "headshot2" "ValveBiped.Bip01_Head1" -2.25 -0.75 0.00 rotate -0 0 0
 $attachment "headshot3" "ValveBiped.Bip01_Head1" -2.25 -0.75 0.00 rotate -0 0 0
@@ -64,7 +67,7 @@ $ikautoplaylock "rfoot" 1 0.1
 $ikautoplaylock "lfoot" 1 0.1
 
 $sequence "ragdoll" {
-	"corpse2_reference.smd"
+	"corpse2_body.smd"
 	activity "ACT_DIERAGDOLL" 1
 	fps 30
 	ikrule "rhand" release

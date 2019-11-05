@@ -89,7 +89,7 @@ $ikchain "rfoot" "ValveBiped.Bip01_R_Foot" knee 0.707 -0.707 0
 $ikchain "lfoot" "ValveBiped.Bip01_L_Foot" knee 0.707 -0.707 0
 
 $sequence "ragdoll" {
-	"ragdoll"
+	"ragdoll.smd"
 	activity "ACT_DIERAGDOLL" 1
 	fps 30
 	ikrule "rhand" release
