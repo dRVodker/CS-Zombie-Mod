@@ -69,6 +69,7 @@ array<CSZMPlayer@> CSZMPlayerArray;
 array<CShowDamage@> ShowDamageArray;
 
 //Другое
+int iPreviousZMVoiceIndex;
 int iFirstInfectedHP;
 int iStartCoundDown;
 int iSeconds;
@@ -832,6 +833,11 @@ class CSZMPlayer
 							Time_Low = 5.65f;
 							Time_High = 11.92f;
 						break;
+
+/*						case 4:
+							Time_Low = 4.65f;
+							Time_High = 8.92f;
+						break;*/
 					}
 
 					VoiceTime = Globals.GetCurrentTime() + Math::RandomFloat(Time_Low, Time_High);
@@ -2305,7 +2311,15 @@ void RndZModel(CZP_Player@ pPlayer, CBaseEntity@ pPlayerEntity)
 	Utils.CosmeticWear(pPlayer, "models/cszm/weapons/w_knife_t.mdl");
 	CSZMPlayer@ pCSZMPlayer = CSZMPlayerArray[pPlayerEntity.entindex()];
 
-	pCSZMPlayer.SetZMVoice(Math::RandomInt(1,3));
+	int iRNG_ZM_Voice = Math::RandomInt(1, VOICE_MAX_INDEX);
+
+	if (iRNG_ZM_Voice == iPreviousZMVoiceIndex)
+	{
+		iRNG_ZM_Voice = Math::RandomInt(1, VOICE_MAX_INDEX);
+	}
+
+	iPreviousZMVoiceIndex = iRNG_ZM_Voice;
+	pCSZMPlayer.SetZMVoice(iRNG_ZM_Voice);
 	
 	if (pCSZMPlayer.IsFirstInfected())
 	{
