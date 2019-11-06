@@ -20,8 +20,8 @@ CASConVar@ pFriendlyFire = null;
 CASConVar@ pInfectionRate = null;
 CASConVar@ pZPSHardcore = null;
 
-//CBaseEntity@ pL_Eye = null;
-//CBaseEntity@ pR_Eye = null;
+CBaseEntity@ pL_Eye = null;
+CBaseEntity@ pR_Eye = null;
 
 int iMaxPlayers;
 
@@ -1616,8 +1616,8 @@ HookReturnCode CSZM_OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in Dama
 				pBaseEnt.SetBodyGroup("EyesGlow", 0);
 				pBaseEnt.SetSkin(0);
 
-//				pL_Eye.SUB_Remove();
-//				pR_Eye.SUB_Remove();
+				pL_Eye.SUB_Remove();
+				pR_Eye.SUB_Remove();
 			}
 
 			//Don't emit die sound if blowed up
@@ -2313,7 +2313,7 @@ void RndZModel(CZP_Player@ pPlayer, CBaseEntity@ pPlayerEntity)
 		pPlayerEntity.SetBodyGroup("EyesGlow", 1);
 		pPlayerEntity.SetSkin(1);
 
-//		AttachEyesLights(pPlayerEntity);
+		AttachEyesLights(pPlayerEntity);
 	}
 
 	else 

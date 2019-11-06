@@ -251,7 +251,7 @@ void AttachTrail(CBaseEntity@ pEntity, const string strColor)
 		pEntSprite.SetParent(pEntity);
 		pDLight.SetParent(pEntity);
 }
-/*
+
 void AttachEyesLights(CBaseEntity@ pPlayerEntity)
 {
 	CEntityData@ L_EyeLight = EntityCreator::EntityData();
@@ -285,7 +285,7 @@ void AttachEyesLights(CBaseEntity@ pPlayerEntity)
     pL_Eye.SetParentAttachment("LeftEye", false);
     pR_Eye.SetParentAttachment("RightEye", false);
 }
-*/
+
 void SetUsed(const int &in index, CBaseEntity@ pItemDeliver)
 {
 	pItemDeliver.SetEntityName("used" + index);
