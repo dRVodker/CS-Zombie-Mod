@@ -1,6 +1,7 @@
 #include "cszm_modules/random_def"
 #include "cszm_modules/doorset"
 #include "cszm_modules/barricadeammo"
+#include "cszm_modules/lobbyambient"
 
 //MyDebugFunc
 void SD(const string &in strMSG)
@@ -100,6 +101,11 @@ HookReturnCode OnPlayerSpawn(CZP_Player@ pPlayer)
 	if (iTeamNum != TEAM_LOBBYGUYS)
 	{
 		Engine.Ent_Fire_Ent(pBaseEnt, "SetFogController", "main_insta_fog");
+	}
+
+	else
+	{
+		PlayLobbyAmbient();
 	}
 
 	if (g_bIsFireFly[iIndex] && iTeamNum == TEAM_SPECTATORS)
@@ -217,6 +223,7 @@ void SetUpStuff()
 	VMSkins();
 	RandomizePropCrate();
 	FindBarricades();
+	PlayLobbyAmbient();
 }
 
 // Random Skins for the vending machines

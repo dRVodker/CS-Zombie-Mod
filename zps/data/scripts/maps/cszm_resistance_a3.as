@@ -1,6 +1,9 @@
 #include "cszm_modules/random_def"
 #include "cszm_modules/spawncrates"
 #include "cszm_modules/barricadeammo"
+#include "cszm_modules/lobbyambient"
+
+const int TEAM_LOBBYGUYS = 0;
 
 //MyDebugFunc
 void SD(const string &in strMSG)
@@ -65,6 +68,8 @@ void OnMapInit()
 	g_PICAngles.insertLast(QAngle(-0.128871, -36.6698, -0.128876));
 	g_PICAngles.insertLast(QAngle(-0.0151184, -38.4389, 0.188698));
 	g_PICAngles.insertLast(QAngle(-0.781201, 41.2206, 0.181596));
+
+	Events::Player::OnPlayerSpawn.Hook(@OnPlrSpawn);
 }
 
 void OnNewRound()
@@ -96,6 +101,21 @@ void SetUpStuff()
 	Engine.Ent_Fire("Precache", "kill");
 	Engine.Ent_Fire("SND_Ambient", "PlaySound");
 	Engine.Ent_Fire("shading", "StartOverlays");
+
+	PlayLobbyAmbient();
+}
+
+HookReturnCode OnPlrSpawn(CZP_Player@ pPlayer)
+{
+	CBasePlayer@ pPlrEnt = pPlayer.opCast();
+	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+
+	if (pBaseEnt.GetTeamNumber() == TEAM_LOBBYGUYS)
+	{
+		PlayLobbyAmbient();
+	}
+
+	return HOOK_HANDLED;
 }
 
 void OnProcessRound()

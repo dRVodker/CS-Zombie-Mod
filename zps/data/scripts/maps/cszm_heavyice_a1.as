@@ -1,5 +1,6 @@
 #include "cszm_modules/random_def"
 #include "cszm_modules/barricadeammo"
+#include "cszm_modules/lobbyambient"
 #include "../SendGameText"
 
 void SD(const string &in strMSG)
@@ -541,15 +542,6 @@ void SetUpStuff()
 	FindCeilingEnts();
 	FindExpBarrels();
 	PlayLobbyAmbient();
-}
-
-void PlayLobbyAmbient()
-{
-	CBaseEntity@ pEntity;
-	while ((@pEntity = FindEntityByName(pEntity, "lobby_ambient_generic")) !is null)
-	{
-		Engine.Ent_Fire_Ent(pEntity, "Volume", "" + pEntity.GetHealth());
-	}
 }
 
 void FindExpBarrels()

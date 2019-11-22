@@ -1,6 +1,9 @@
 #include "cszm_modules/random_def"
 #include "cszm_modules/doorset"
 #include "cszm_modules/barricadeammo"
+#include "cszm_modules/lobbyambient"
+
+const int TEAM_LOBBYGUYS = 0;
 
 int CalculateHealthPoints( int &in iMulti ) 
 {
@@ -14,6 +17,8 @@ int CalculateHealthPoints( int &in iMulti )
 
 void OnMapInit() 
 {
+	Events::Player::OnPlayerSpawn.Hook(@OnPlrSpawn);
+
 	Schedule::Task( 0.05f, "SetUpStuff" );
 	iMaxBarricade = 12;
 	iMinBarricade = 6;
@@ -45,6 +50,20 @@ void SetUpStuff()
 	VMSkins();
 	RndSpawn();
 	OpenDoors();
+	PlayLobbyAmbient();
+}
+
+HookReturnCode OnPlrSpawn(CZP_Player@ pPlayer)
+{
+	CBasePlayer@ pPlrEnt = pPlayer.opCast();
+	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+
+	if (pBaseEnt.GetTeamNumber() == TEAM_LOBBYGUYS)
+	{
+		PlayLobbyAmbient();
+	}
+
+	return HOOK_HANDLED;
 }
 
 void OpenDoors() 

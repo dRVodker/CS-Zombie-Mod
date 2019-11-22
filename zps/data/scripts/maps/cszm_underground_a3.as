@@ -2,6 +2,7 @@
 #include "cszm_modules/doorset"
 #include "cszm_modules/spawncrates"
 #include "cszm_modules/barricadeammo"
+#include "cszm_modules/lobbyambient"
 
 //MyDebugFunc
 void SD(const string &in strMSG)
@@ -9,6 +10,7 @@ void SD(const string &in strMSG)
 	Chat.PrintToChat(all, strMSG);
 }
 
+const int TEAM_LOBBYGUYS = 0;
 const int TEAM_SURVIVORS = 2;
 
 int iMaxPlayers;
@@ -25,6 +27,8 @@ void OnMapInit()
 {
 	iMaxPlayers = Globals.GetMaxClients();
 	Schedule::Task(0.025f, "SetUpStuff");
+
+	Events::Player::OnPlayerSpawn.Hook(@OnPlayerSpawn);
 
 	iMaxBarricade = 19;
 	iMinBarricade = 7;
@@ -103,6 +107,20 @@ void SetUpStuff()
 	
 	FlickerLight1();
 	ChangeFog();
+	PlayLobbyAmbient();
+}
+
+HookReturnCode OnPlayerSpawn(CZP_Player@ pPlayer)
+{
+	CBasePlayer@ pPlrEnt = pPlayer.opCast();
+	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+
+	if (pBaseEnt.GetTeamNumber() == TEAM_LOBBYGUYS)
+	{
+		PlayLobbyAmbient();
+	}
+
+	return HOOK_CONTINUE;	
 }
 
 void FindZSpawns()

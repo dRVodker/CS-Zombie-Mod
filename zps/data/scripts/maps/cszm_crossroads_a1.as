@@ -2,6 +2,9 @@
 #include "cszm_modules/doorset"
 #include "cszm_modules/spawncrates"
 #include "cszm_modules/barricadeammo"
+#include "cszm_modules/lobbyambient"
+
+const int TEAM_LOBBYGUYS = 0;
 
 int CalculateHealthPoints( const int &in iMulti )
 {
@@ -50,6 +53,8 @@ void OnMapInit()
 
 	g_PICOrigin.insertLast(Vector(-401.409, 1566.96, 152.901));
 	g_PICAngles.insertLast(QAngle(0, -53.3466, 0));
+
+	Events::Player::OnPlayerSpawn.Hook(@OnPlrSpawn);
 }
 
 void OnNewRound()
@@ -75,6 +80,20 @@ void SetUpStuff()
 	FindBarricades();
 	PropSkins();
 	OpenDoors();
+	PlayLobbyAmbient();
+}
+
+HookReturnCode OnPlrSpawn(CZP_Player@ pPlayer)
+{
+	CBasePlayer@ pPlrEnt = pPlayer.opCast();
+	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
+
+	if (pBaseEnt.GetTeamNumber() == TEAM_LOBBYGUYS)
+	{
+		PlayLobbyAmbient();
+	}
+
+	return HOOK_HANDLED;
 }
 
 void OpenDoors()
