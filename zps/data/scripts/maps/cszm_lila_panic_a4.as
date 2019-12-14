@@ -155,13 +155,13 @@ void OnEntityUsed(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 
 	int iIndex = pBaseEnt.entindex();
 	int iTeamNum = pBaseEnt.GetTeamNumber();
-	
+/*	
 	if (Utils.StrEql(pEntity.GetEntityName(), "spec_button") && !g_bIsFireFly[iIndex])
 	{
 		Chat.PrintToChatPlayer(pPlrEnt, "{cornflowerblue}*You picked up a firefly.");
 		g_bIsFireFly[iIndex] = true;
 	}
-
+*/
 	if (iTeamNum == TEAM_SURVIVORS)
 	{
 		if (Utils.StrEql(pEntity.GetEntityName(), "CBD_Button1"))

@@ -3,8 +3,11 @@
 bool bIsCSZM;
 
 const string TEXT_ALLOWED_IN_LOBBY = "{cornflowerblue}*Allowed only in the {green}lobby team{cornflowerblue}!";
+const string TEXT_ALLOWED_IN_SPEC = "{cornflowerblue}*Allowed only in the {white}spectators team{cornflowerblue}!";
 const string TEXT_YOUR_SCALE = "Your scale has been changed to ";
 const string TEXT_INVALID_VALUE = "{red}*Invalid value!";
+const string TEXT_FIREFLY = "{cornflowerblue}*You became a {orange}firefly{cornflowerblue}.";
+const string TEXT_FIREFLY_COLOR = "{cornflowerblue}*The {orange}firefly {cornflowerblue}color has been changed!";
 const string TARGETNAME_DLIGHT = "DLight_Origin";
 const string FILENAME_DENY = "buttons/combine_button_locked.wav";
 const string FILENAME_BUTTONCLICK = "weapons/slam/buttonclick.wav";
@@ -17,9 +20,10 @@ const string CLIST_COLOR_HEAD = "{gold}";
 array<string> g_ChatComs =
 {
 	"!setscale;!scale;Set a player scale",
-	"!dlight;!dl;Turn on a dynamic light",
+	"!dlight;Turn on a dynamic light",
 	"!snowball;!sball;Get a snowball",
-	"!tennisball;!tball;Get a tennisball"
+	"!tennisball;!tball;Get a tennisball",
+	"!firefly;Become a {orange}Firefly"
 };
 
 void OnPluginInit()
@@ -67,6 +71,11 @@ HookReturnCode CSZM_SetS_OnPlrSpawn(CZP_Player@ pPlayer)
 		pPlayer.StripWeapon("weapon_emptyhand");
 	}
 
+	else
+	{
+		SetFirefly(pBaseEnt, pBaseEnt.entindex(), false);
+	}
+
 	Engine.Ent_Fire_Ent(pBaseEnt, "SetModelScale", "1.0");
 
 	return HOOK_CONTINUE;
@@ -100,7 +109,9 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 		return HOOK_CONTINUE;
 	}
 
+	int iCommTeam = -1;
 	string arg1 = pArgs.Arg(1);
+	bool bHandled;
 
 	CBasePlayer@ pPlrEnt = pPlayer.opCast();
 	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
@@ -118,7 +129,7 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 			{
 				Chat.PrintToChatPlayer(pPlrEnt, TEXT_INVALID_VALUE);
 				Engine.EmitSoundPlayer(pPlayer, FILENAME_DENY);
-				return HOOK_HANDLED;
+				bHandled = true;
 			}
 
 			else
@@ -143,31 +154,29 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 			}
 
 			Chat.CenterMessagePlayer(pPlrEnt, TEXT_YOUR_SCALE + fltest + sAddition);
-			return HOOK_HANDLED;
 		}
 
 		else
 		{
-			OnlyLobbyMSG(pPlayer);
+			iCommTeam = TEAM_LOBBYGUYS;
 		}
 
-		return HOOK_HANDLED;
+		bHandled = true;
 	}
 
-	else if (Utils.StrEql("!dlight", arg1) || Utils.StrEql("!dl", arg1))
+	else if (Utils.StrEql("!dlight", arg1))
 	{
 		if (pBaseEnt.GetTeamNumber() == TEAM_LOBBYGUYS)
 		{
-			DLight(pPlayer, pBaseEnt, pBaseEnt.entindex());
-			return HOOK_HANDLED;
+			DLight(pPlayer, pBaseEnt, pBaseEnt.entindex());				
 		}
 
 		else
 		{
-			OnlyLobbyMSG(pPlayer);
+			iCommTeam = TEAM_LOBBYGUYS;
 		}
 
-		return HOOK_HANDLED;
+		bHandled = true;
 	}
 
 	else if (Utils.StrEql("!snowball", arg1) || Utils.StrEql("!sball", arg1))
@@ -190,12 +199,12 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 
 		else
 		{
-			OnlyLobbyMSG(pPlayer);
+			iCommTeam = TEAM_LOBBYGUYS;
 		}
 
-		return HOOK_HANDLED;
+		bHandled = true;
 	}
-
+	
 	else if (Utils.StrEql("!tennisball", arg1) || Utils.StrEql("!tball", arg1))
 	{
 		if (pBaseEnt.GetTeamNumber() == TEAM_LOBBYGUYS)
@@ -211,32 +220,162 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 			{
 				pPlayer.StripWeapon(pWeapon.GetClassname());
 				pPlayer.GiveWeapon("weapon_tennisball");
+			}				
+		}
+
+		else
+		{
+			iCommTeam = TEAM_LOBBYGUYS;
+		}
+
+		bHandled = true;
+	}
+
+	else if (Utils.StrEql("!firefly", arg1))
+	{
+		if (pBaseEnt.GetTeamNumber() == TEAM_SPECTATORS)
+		{
+			if (!Utils.StrContains("firefly", pBaseEnt.GetEntityDescription()))
+			{
+				SetFirefly(pBaseEnt, pBaseEnt.entindex(), true);
+				Chat.PrintToChatPlayer(pPlrEnt, TEXT_FIREFLY);			
+			}
+
+			else
+			{
+				ColorFireFly(pBaseEnt, pBaseEnt.entindex());
+				Chat.PrintToChatPlayer(pPlrEnt, TEXT_FIREFLY_COLOR);	
 			}
 		}
 
 		else
 		{
-			OnlyLobbyMSG(pPlayer);
+			iCommTeam = TEAM_SPECTATORS;
 		}
 
-		return HOOK_HANDLED;
+		bHandled = true;
 	}
 
 	else if (Utils.StrEql("!chatcom", arg1))
 	{
 		ShowCom(pPlrEnt);
+		bHandled = true;
+	}
+
+	if (iCommTeam != -1)
+	{
+		if (iCommTeam == TEAM_LOBBYGUYS)
+		{
+			Chat.PrintToChatPlayer(pPlrEnt, TEXT_ALLOWED_IN_LOBBY);
+		}
+
+		else if (iCommTeam == TEAM_SPECTATORS)
+		{
+			Chat.PrintToChatPlayer(pPlrEnt, TEXT_ALLOWED_IN_SPEC);
+		}
+
+		Engine.EmitSoundPlayer(pPlayer, FILENAME_DENY);
+		bHandled = true;
+	}
+
+	if (bHandled)
+	{
 		return HOOK_HANDLED;
 	}
 
 	return HOOK_CONTINUE;
 }
 
-void OnlyLobbyMSG(CZP_Player@ pPlayer)
+void ColorFireFly(CBaseEntity@ pPlayerEntity, const int &in iIndex)
 {
-	CBasePlayer@ pPlrEnt = pPlayer.opCast();
+	CBaseEntity@ pSpriteEnt = null;
+	CBaseEntity@ pTrailEnt = null;
 
-	Chat.PrintToChatPlayer(pPlrEnt, TEXT_ALLOWED_IN_LOBBY);
-	Engine.EmitSoundPlayer(pPlayer, FILENAME_DENY);
+	const int iR = Math::RandomInt(1, 255);
+	const int iG = Math::RandomInt(iR - iR / 2, 255);
+	const int iB = Math::RandomInt(iG - iG / 2, 255);
+
+	@pSpriteEnt = FindEntityByName(pSpriteEnt, iIndex + "firefly_sprite");
+	@pTrailEnt = FindEntityByName(pTrailEnt, iIndex + "firefly_trail");
+
+	if (pSpriteEnt !is null)
+	{
+		Engine.Ent_Fire_Ent(pSpriteEnt, "color", "" + iR + " " + iG + " " + iB);
+		Engine.Ent_Fire_Ent(pTrailEnt, "color", "" + iR + " " + iG + " " + iB);		
+	}
+
+	Engine.EmitSoundPosition(iIndex, "ZPlayer.AmmoPickup", pPlayerEntity.GetAbsOrigin(), 0.75F, 80, 105);
+}
+
+void SetFirefly(CBaseEntity@ pPlayerEntity, const int &in iIndex, const bool &in bFirefly)
+{
+	string strPlrDisc = pPlayerEntity.GetEntityDescription();
+
+	if (bFirefly)
+	{
+		strPlrDisc = strPlrDisc + "|firefly|";
+
+		pPlayerEntity.SetEntityDescription(strPlrDisc);
+
+		const int iR = Math::RandomInt(128, 255);
+		const int iG = Math::RandomInt(128, 255);
+		const int iB = Math::RandomInt(128, 255);
+
+		CEntityData@ FFSpriteIPD = EntityCreator::EntityData();
+
+		FFSpriteIPD.Add("targetname", iIndex + "firefly_sprite");
+		FFSpriteIPD.Add("model", "sprites/light_glow01.vmt");
+		FFSpriteIPD.Add("rendercolor", iR + " " + iG + " " + iB);
+		FFSpriteIPD.Add("rendermode", "5");
+		FFSpriteIPD.Add("renderamt", "240");
+		FFSpriteIPD.Add("scale", "0.25");
+		FFSpriteIPD.Add("spawnflags", "1");
+		FFSpriteIPD.Add("framerate", "0");
+
+		CEntityData@ FFTrailIPD = EntityCreator::EntityData();
+
+		FFTrailIPD.Add("targetname", iIndex + "firefly_trail");
+		FFTrailIPD.Add("endwidth", "12");
+		FFTrailIPD.Add("lifetime", "0.145");
+		FFTrailIPD.Add("rendercolor", iR + " " + iG + " " + iB);
+		FFTrailIPD.Add("rendermode", "5");
+		FFTrailIPD.Add("renderamt", "84");
+		FFTrailIPD.Add("spritename", "sprites/xbeam2.vmt");
+		FFTrailIPD.Add("startwidth", "3");
+
+		EntityCreator::Create("env_spritetrail", pPlayerEntity.GetAbsOrigin(), pPlayerEntity.GetAbsAngles(), FFTrailIPD);
+		EntityCreator::Create("env_sprite", pPlayerEntity.GetAbsOrigin(), pPlayerEntity.GetAbsAngles(), FFSpriteIPD);
+
+		CBaseEntity@ pSpriteEnt = null;
+		CBaseEntity@ pTrailEnt = null;
+
+		@pSpriteEnt = FindEntityByName(pSpriteEnt, iIndex + "firefly_sprite");
+		@pTrailEnt = FindEntityByName(pTrailEnt, iIndex + "firefly_trail");
+
+		pTrailEnt.SetParent(pSpriteEnt);
+		pSpriteEnt.SetParent(pPlayerEntity);
+
+		Engine.EmitSoundPosition(iIndex, "Player.PickupWeapon", pPlayerEntity.GetAbsOrigin(), 0.75F, 80, 105);
+	}
+
+	else
+	{
+		CBaseEntity@ pSpriteEnt = null;
+
+		@pSpriteEnt = FindEntityByName(pSpriteEnt, iIndex + "firefly_sprite");
+
+		if (pSpriteEnt !is null)
+		{
+			pSpriteEnt.SUB_Remove();
+		}
+
+		if (Utils.StrContains("|firefly|", strPlrDisc))
+		{
+			strPlrDisc = Utils.StrReplace(strPlrDisc, "|firefly|", "");
+			
+			pPlayerEntity.SetEntityDescription(strPlrDisc);
+		}
+	}
 }
 
 void DLight(CZP_Player@ pPlayer, CBaseEntity@ pPlrEntity, const int &in iIndex)
