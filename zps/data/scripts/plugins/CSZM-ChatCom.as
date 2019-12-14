@@ -1,7 +1,8 @@
 #include "./cszm_modules/teamnums.as"
 
+bool bIsCSZM;
+
 const string TEXT_ALLOWED_IN_LOBBY = "{cornflowerblue}*Allowed only in the {green}lobby team{cornflowerblue}!";
-const string TEXT_YOU_HAVE_SNOWBALL = "{cornflowerblue}*You already have a {white}snowball{cornflowerblue}!";
 const string TEXT_YOUR_SCALE = "Your scale has been changed to ";
 const string TEXT_INVALID_VALUE = "{red}*Invalid value!";
 const string TARGETNAME_DLIGHT = "DLight_Origin";
@@ -17,10 +18,9 @@ array<string> g_ChatComs =
 {
 	"!setscale;!scale;Set a player scale",
 	"!dlight;!dl;Turn on a dynamic light",
-	"!snowball;Get a snowball"
+	"!snowball;!sball;Get a snowball",
+	"!tennisball;!tball;Get a tennisball"
 };
-
-bool bIsCSZM;
 
 void OnPluginInit()
 {
@@ -148,14 +148,13 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 
 		else
 		{
-			Chat.PrintToChatPlayer(pPlrEnt, TEXT_ALLOWED_IN_LOBBY);
-			Engine.EmitSoundPlayer(pPlayer, FILENAME_DENY);
+			OnlyLobbyMSG(pPlayer);
 		}
 
 		return HOOK_HANDLED;
 	}
 
-	else if (Utils.StrContains("!dlight", arg1) || Utils.StrContains("!dl", arg1))
+	else if (Utils.StrEql("!dlight", arg1) || Utils.StrEql("!dl", arg1))
 	{
 		if (pBaseEnt.GetTeamNumber() == TEAM_LOBBYGUYS)
 		{
@@ -165,35 +164,59 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 
 		else
 		{
-			Chat.PrintToChatPlayer(pPlrEnt, TEXT_ALLOWED_IN_LOBBY);
-			Engine.EmitSoundPlayer(pPlayer, FILENAME_DENY);
+			OnlyLobbyMSG(pPlayer);
 		}
 
 		return HOOK_HANDLED;
 	}
 
-	else if (Utils.StrEql("!snowball", arg1))
+	else if (Utils.StrEql("!snowball", arg1) || Utils.StrEql("!sball", arg1))
 	{
 		if (pBaseEnt.GetTeamNumber() == TEAM_LOBBYGUYS)
 		{
 			CBaseEntity@ pWeapon = pPlayer.GetCurrentWeapon();
 
-			if (!Utils.StrEql("weapon_snowball", pWeapon.GetClassname()))
+			if (Utils.StrEql("weapon_emptyhand", pWeapon.GetClassname()))
 			{
 				pPlayer.GiveWeapon("weapon_snowball");
 			}
 
 			else
 			{
-				Chat.PrintToChatPlayer(pPlrEnt, TEXT_YOU_HAVE_SNOWBALL);
-				Engine.EmitSoundPlayer(pPlayer, FILENAME_DENY);
+				pPlayer.StripWeapon(pWeapon.GetClassname());
+				pPlayer.GiveWeapon("weapon_snowball");
 			}
 		}
 
 		else
 		{
-			Chat.PrintToChatPlayer(pPlrEnt, TEXT_ALLOWED_IN_LOBBY);
-			Engine.EmitSoundPlayer(pPlayer, FILENAME_DENY);
+			OnlyLobbyMSG(pPlayer);
+		}
+
+		return HOOK_HANDLED;
+	}
+
+	else if (Utils.StrEql("!tennisball", arg1) || Utils.StrEql("!tball", arg1))
+	{
+		if (pBaseEnt.GetTeamNumber() == TEAM_LOBBYGUYS)
+		{
+			CBaseEntity@ pWeapon = pPlayer.GetCurrentWeapon();
+
+			if (Utils.StrEql("weapon_emptyhand", pWeapon.GetClassname()))
+			{
+				pPlayer.GiveWeapon("weapon_tennisball");
+			}
+
+			else
+			{
+				pPlayer.StripWeapon(pWeapon.GetClassname());
+				pPlayer.GiveWeapon("weapon_tennisball");
+			}
+		}
+
+		else
+		{
+			OnlyLobbyMSG(pPlayer);
 		}
 
 		return HOOK_HANDLED;
@@ -204,14 +227,16 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 		ShowCom(pPlrEnt);
 		return HOOK_HANDLED;
 	}
-/*
-	if (Utils.StrContains("!hp", arg1))
-	{
-		pBaseEnt.SetHealth(99999);
-		return HOOK_HANDLED;
-	}
-*/
+
 	return HOOK_CONTINUE;
+}
+
+void OnlyLobbyMSG(CZP_Player@ pPlayer)
+{
+	CBasePlayer@ pPlrEnt = pPlayer.opCast();
+
+	Chat.PrintToChatPlayer(pPlrEnt, TEXT_ALLOWED_IN_LOBBY);
+	Engine.EmitSoundPlayer(pPlayer, FILENAME_DENY);
 }
 
 void DLight(CZP_Player@ pPlayer, CBaseEntity@ pPlrEntity, const int &in iIndex)

@@ -1711,6 +1711,11 @@ HookReturnCode CSZM_OnEntityCreation(const string &in strClassname, CBaseEntity@
 			AttachTrail(pEntity, "16 137 255");
 		}
 
+		else if (Utils.StrEql("projectile_nonhurtable", strClassname) && Utils.StrEql("models/weapons/w_tennisball.mdl", pEntity.GetModelName()))
+		{
+			AttachTrail(pEntity, "255 230 0");
+		}
+
 		else if (Utils.StrEql("item_healthkit", strClassname))
 		{
 			SpawnAntidote(pEntity);
@@ -1731,6 +1736,17 @@ HookReturnCode CSZM_OnEntityCreation(const string &in strClassname, CBaseEntity@
 			if (Utils.StrContains("unbrk", pEntity.GetEntityName()) || Utils.StrContains("unbreakable", pEntity.GetEntityName()))
 			{
 				pEntity.SetEntityDescription(pEntity.GetEntityDescription() + ";unbreakable");
+			}
+		}
+
+		if (Utils.StrEql("projectile_nonhurtable", strClassname))
+		{
+			CBaseEntity@ pOwner = pEntity.GetOwner();
+
+			if (pOwner !is null && pOwner.IsPlayer() && pOwner.GetTeamNumber() == TEAM_LOBBYGUYS)
+			{
+				CZP_Player@ pPlayerOwner = ToZPPlayer(pOwner);
+				pPlayerOwner.AmmoWeapon(set, 15);
 			}
 		}
 	}
