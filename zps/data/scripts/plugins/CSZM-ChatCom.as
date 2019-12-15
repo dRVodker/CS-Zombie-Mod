@@ -2,8 +2,8 @@
 
 bool bIsCSZM;
 
-const string TEXT_ALLOWED_IN_LOBBY = "{cornflowerblue}*Allowed only in the {green}lobby team{cornflowerblue}!";
-const string TEXT_ALLOWED_IN_SPEC = "{cornflowerblue}*Allowed only in the {white}spectators team{cornflowerblue}!";
+const string TEXT_ALLOWED_IN_LOBBY = "{cornflowerblue}*The command available only in the {green}lobby team{cornflowerblue}!";
+const string TEXT_ALLOWED_IN_SPEC = "{cornflowerblue}*The command available only for {white}spectators{cornflowerblue}!";
 const string TEXT_YOUR_SCALE = "Your scale has been changed to ";
 const string TEXT_INVALID_VALUE = "{red}*Invalid value!";
 const string TEXT_FIREFLY = "{cornflowerblue}*You became a {orange}firefly{cornflowerblue}.";
@@ -317,9 +317,9 @@ void SetFirefly(CBaseEntity@ pPlayerEntity, const int &in iIndex, const bool &in
 
 		pPlayerEntity.SetEntityDescription(strPlrDisc);
 
-		const int iR = Math::RandomInt(128, 255);
-		const int iG = Math::RandomInt(128, 255);
-		const int iB = Math::RandomInt(128, 255);
+		const int iR = Math::RandomInt(1, 255);
+		const int iG = Math::RandomInt(iR - iR / 2, 255);
+		const int iB = Math::RandomInt(iG - iG / 2, 255);
 
 		CEntityData@ FFSpriteIPD = EntityCreator::EntityData();
 
