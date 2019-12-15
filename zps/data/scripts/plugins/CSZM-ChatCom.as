@@ -23,7 +23,7 @@ array<string> g_ChatComs =
 	"!dlight;Turn on a dynamic light",
 	"!snowball;!sball;Get a snowball",
 	"!tennisball;!tball;Get a tennisball",
-	"!firefly;Become a {orange}Firefly"
+	"!firefly;Become a {orange}Firefly{gold}. Supporting Custom {red}R{green}G{blue}B{gold}!"
 };
 
 void OnPluginInit()
