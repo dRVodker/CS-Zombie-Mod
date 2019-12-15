@@ -73,7 +73,7 @@ HookReturnCode CSZM_SetS_OnPlrSpawn(CZP_Player@ pPlayer)
 
 	else
 	{
-		SetFirefly(pBaseEnt, pBaseEnt.entindex(), false);
+		SetFirefly(pBaseEnt, pBaseEnt.entindex(), 0, 0, 0, false);
 	}
 
 	Engine.Ent_Fire_Ent(pBaseEnt, "SetModelScale", "1.0");
@@ -231,29 +231,78 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 		bHandled = true;
 	}
 
-	else if (Utils.StrEql("!firefly", arg1))
+	else if (Utils.StrContains("!firefly", arg1))
 	{
-		if (pBaseEnt.GetTeamNumber() == TEAM_SPECTATORS)
+		CASCommand@ pFFSplited = StringToArgSplit(arg1, " ");
+
+		if (!Utils.StrEql("!firefly", pFFSplited.Arg(0)))
 		{
+			bHandled = false;
+		}
+
+		else if (pBaseEnt.GetTeamNumber() == TEAM_SPECTATORS)
+		{
+			int FFColorR = Math::RandomInt(16, 255);
+			int FFColorG = Math::RandomInt(16, 255);
+			int FFColorB = Math::RandomInt(16, 255);
+
+			if (pFFSplited.Args() != 1)
+			{
+				if(Utils.NumbersOnly(pFFSplited.Arg(1)) && Utils.StringToInt(pFFSplited.Arg(1)) >= 0)
+				{
+					FFColorR = Utils.StringToInt(pFFSplited.Arg(1));
+
+					if (Utils.StringToInt(pFFSplited.Arg(1)) > 255)
+					{
+						FFColorR = 255;
+					}
+				}
+
+				if(Utils.NumbersOnly(pFFSplited.Arg(2)) && Utils.StringToInt(pFFSplited.Arg(2)) >= 0)
+				{
+					FFColorG = Utils.StringToInt(pFFSplited.Arg(2));
+
+					if (Utils.StringToInt(pFFSplited.Arg(2)) > 255)
+					{
+						FFColorG = 255;
+					}
+				}
+
+				if(Utils.NumbersOnly(pFFSplited.Arg(3)) && Utils.StringToInt(pFFSplited.Arg(3)) >= 0)
+				{
+					FFColorB = Utils.StringToInt(pFFSplited.Arg(3));
+
+					if (Utils.StringToInt(pFFSplited.Arg(3)) > 255)
+					{
+						FFColorB = 255;
+					}
+				}
+			}
+
+			Chat.PrintToConsolePlayer(pPlrEnt, "{gold}------------------------------------\n-= The Firefly Color ({red}R{green}G{blue}B{gold}) =-\n------------------------------------\n{red}Red: " + FFColorR + "\n{green}Green: " + FFColorG + "\n{blue}Blur: " + FFColorB + "\n{gold}------------------------------------");
+
 			if (!Utils.StrContains("firefly", pBaseEnt.GetEntityDescription()))
 			{
-				SetFirefly(pBaseEnt, pBaseEnt.entindex(), true);
+				SetFirefly(pBaseEnt, pBaseEnt.entindex(), FFColorR, FFColorG, FFColorB, true);
 				Chat.PrintToChatPlayer(pPlrEnt, TEXT_FIREFLY);			
 			}
 
 			else
 			{
-				ColorFireFly(pBaseEnt, pBaseEnt.entindex());
+				ColorFireFly(pBaseEnt, pBaseEnt.entindex(), FFColorR, FFColorG, FFColorB);
 				Chat.PrintToChatPlayer(pPlrEnt, TEXT_FIREFLY_COLOR);	
 			}
+
+			Chat.PrintToConsolePlayer(pPlrEnt, "{gold}------------------------------------");
+
+			bHandled = true;
 		}
 
 		else
 		{
 			iCommTeam = TEAM_SPECTATORS;
+			bHandled = true;
 		}
-
-		bHandled = true;
 	}
 
 	else if (Utils.StrEql("!chatcom", arg1))
@@ -286,14 +335,10 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 	return HOOK_CONTINUE;
 }
 
-void ColorFireFly(CBaseEntity@ pPlayerEntity, const int &in iIndex)
+void ColorFireFly(CBaseEntity@ pPlayerEntity, const int &in iIndex, int &in iR, int &in iG, int &in iB)
 {
 	CBaseEntity@ pSpriteEnt = null;
 	CBaseEntity@ pTrailEnt = null;
-
-	const int iR = Math::RandomInt(1, 255);
-	const int iG = Math::RandomInt(iR - iR / 2, 255);
-	const int iB = Math::RandomInt(iG - iG / 2, 255);
 
 	@pSpriteEnt = FindEntityByName(pSpriteEnt, iIndex + "firefly_sprite");
 	@pTrailEnt = FindEntityByName(pTrailEnt, iIndex + "firefly_trail");
@@ -307,7 +352,7 @@ void ColorFireFly(CBaseEntity@ pPlayerEntity, const int &in iIndex)
 	Engine.EmitSoundPosition(iIndex, "ZPlayer.AmmoPickup", pPlayerEntity.GetAbsOrigin(), 0.75F, 80, 105);
 }
 
-void SetFirefly(CBaseEntity@ pPlayerEntity, const int &in iIndex, const bool &in bFirefly)
+void SetFirefly(CBaseEntity@ pPlayerEntity, const int &in iIndex, int &in iR, int &in iG, int &in iB, const bool &in bFirefly)
 {
 	string strPlrDisc = pPlayerEntity.GetEntityDescription();
 
@@ -316,10 +361,6 @@ void SetFirefly(CBaseEntity@ pPlayerEntity, const int &in iIndex, const bool &in
 		strPlrDisc = strPlrDisc + "|firefly|";
 
 		pPlayerEntity.SetEntityDescription(strPlrDisc);
-
-		const int iR = Math::RandomInt(1, 255);
-		const int iG = Math::RandomInt(iR - iR / 2, 255);
-		const int iB = Math::RandomInt(iG - iG / 2, 255);
 
 		CEntityData@ FFSpriteIPD = EntityCreator::EntityData();
 
