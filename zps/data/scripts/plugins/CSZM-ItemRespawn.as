@@ -119,7 +119,9 @@ class CItemRespawn
 
 		else
 		{
-			for (uint i = 0; i < g_ItemClass.length(); i++)
+			uint iItemClassLength = g_ItemClass.length();
+			
+			for (uint i = 0; i < iItemClassLength; i++)
 			{
 				if (Utils.StrEql(g_ItemClass[i], Classname))
 				{
@@ -175,7 +177,9 @@ void OnProcessRound()
 {
 	if (bIsCSZM)
 	{
-		for (uint i = 0; i < ItemRespawnArray.length(); i++)
+		uint iIRALength = ItemRespawnArray.length();
+
+		for (uint i = 0; i < iIRALength; i++)
 		{
 			CItemRespawn@ pItemRespawn = ItemRespawnArray[i];
 			
@@ -230,7 +234,9 @@ void RegisterPickup()
 {
 	if (bIsCSZM)
 	{
-		for (uint i = 0; i < g_ItemClass.length(); i++)
+		uint iItemClassLength = g_ItemClass.length();
+
+		for (uint i = 0; i < iItemClassLength; i++)
 		{
 			Entities::RegisterPickup(g_ItemClass[i]);
 		}
@@ -251,8 +257,9 @@ HookReturnCode OnEntityCreation(const string &in strClassname, CBaseEntity@ pEnt
 			pEntity.SetEntityName("dropped_ammo");
 
 			uint iType = 0;
+			uint iAmmoClassLength = g_strAmmoClass.length();
 
-			for (uint ui = 0; ui < g_strAmmoClass.length(); ui++)
+			for (uint ui = 0; ui < iAmmoClassLength; ui++)
 			{
 				if (strClassname == g_strAmmoClass[ui])
 				{
@@ -282,8 +289,9 @@ void OnEntityPickedUp(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 	if (bIsCSZM)
 	{
 		int iIndex = pEntity.entindex();
+		uint iIRALength = ItemRespawnArray.length();
 
-		for (uint i = 0; i < ItemRespawnArray.length(); i++)
+		for (uint i = 0; i < iIRALength; i++)
 		{
 			CItemRespawn@ pItemRespawn = ItemRespawnArray[i];
 			
@@ -310,8 +318,9 @@ HookReturnCode OnEntityDestruction(const string &in strClassname, CBaseEntity@ p
 		if (Utils.StrContains("clip", strClassname) /*&& strClassname != "item_ammo_barricade_clip"*/)
 		{
 			uint iType = 0;
+			uint iAmmoClassLength = g_strAmmoClass.length();
 
-			for (uint ui = 0; ui < g_strAmmoClass.length(); ui++)
+			for (uint ui = 0; ui < iAmmoClassLength; ui++)
 			{
 				if (strClassname == g_strAmmoClass[ui])
 				{
@@ -334,7 +343,9 @@ void CSZM_RI_FindItems()
 
 	CBaseEntity@ pEntity;
 
-	for (uint i = 0; i < g_ItemClass.length(); i++)
+	uint iItemClassLength = g_ItemClass.length();
+
+	for (uint i = 0; i < iItemClassLength; i++)
 	{
 		while ((@pEntity = FindEntityByClassname(pEntity, g_ItemClass[i])) !is null)
 		{
@@ -374,8 +385,9 @@ void RemoveObject(CBaseEntity@ pEntity)
 	if (pEntity.GetHealth() != -1)
 	{
 		int iIndex = pEntity.entindex();
+		uint iIRALength = ItemRespawnArray.length();
 
-		for (uint i = 0; i < ItemRespawnArray.length(); i++)
+		for (uint i = 0; i < iIRALength; i++)
 		{
 			CItemRespawn@ pItemRespawn = ItemRespawnArray[i];
 

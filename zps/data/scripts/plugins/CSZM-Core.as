@@ -1801,8 +1801,9 @@ HookReturnCode CSZM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out Dama
 	{
 		int iSlot = iAttakerIndex;
 		bool bIsValid = false;
+		uint iEntsLength = g_strEntities.length();
 
-		for (uint i = 0; i < g_strEntities.length(); i++)
+		for (uint i = 0; i < iEntsLength; i++)
 		{
 			if (bIsValid)
 			{
@@ -2357,7 +2358,9 @@ void RndZModel(CZP_Player@ pPlayer, CBaseEntity@ pPlayerEntity)
 		{
 			if (g_strMDLToUse.length() == 0)
 			{
-				for (uint i = 0; i < g_strModels.length(); i++)
+				uint iModelsLength = g_strModels.length();
+
+				for (uint i = 0; i < iModelsLength; i++)
 				{
 					g_strMDLToUse.insertLast(g_strModels[i]);
 				}

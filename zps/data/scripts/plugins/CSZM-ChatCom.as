@@ -445,7 +445,9 @@ void ShowCom(CBasePlayer@ pPlayer)
 {
 	Chat.PrintToChatPlayer(pPlayer, CLIST_COLOR_HEAD + "-=List of chat commands=-");
 
-	for (uint q = 0; q < g_ChatComs.length(); q++)
+	uint iChatComsLength = g_ChatComs.length();
+
+	for (uint q = 0; q < iChatComsLength; q++)
 	{
 		string strCommand;
 		string strShort;

@@ -54,15 +54,17 @@ void OnProcessRound()
 
 void ShowMsg()
 {
-	if (g_strMsgToShow.length() == 0)
+	uint iLength = g_strMsgToShow.length();
+
+	if (iLength == 0)
 	{
-		for (uint i = 0; i < g_strMsg.length(); i++)
+		for (uint i = 0; i < iLength; i++)
 		{
 			g_strMsgToShow.insertLast(g_strMsg[i]);
 		}
 	}
 
-	int iRNG = Math::RandomInt(0, g_strMsgToShow.length() - 1);
+	int iRNG = Math::RandomInt(0, iLength - 1);
 
 	SD(g_strMsgToShow[iRNG]);
 	g_strMsgToShow.removeAt(iRNG);

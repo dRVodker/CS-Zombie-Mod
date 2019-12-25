@@ -287,7 +287,9 @@ array<string> g_CSZMFile =
 
 void AddToDownloadTable()
 {
-	for (uint q = 0; q < g_CSZMFile.length(); q++)
+	uint iLength = g_CSZMFile.length();
+
+	for (uint q = 0; q < iLength; q++)
 	{
 		Engine.AddToDownloadTable(g_CSZMFile[q]);
 	}

@@ -14,11 +14,13 @@ void RemoveProp(CBaseEntity@ pPlayer)
 {
 	CBaseEntity@ pProp = null;
 
-    for (uint i = 0; i < g_strPropsCN.length(); i++)
+    uint iLength = g_strPropsCN.length();
+
+    for (uint i = 0; i < iLength; i++)
     {
         while ((@pProp = FindEntityByClassname(pProp, g_strPropsCN[i])) !is null)
         {
-            if (pProp.Intersects(pPlayer) == true  && pProp !is null)
+            if (pProp.Intersects(pPlayer) && pProp !is null)
             {
                 if (Utils.StrEql("prop_itemcrate", g_strPropsCN[i]))
                 {

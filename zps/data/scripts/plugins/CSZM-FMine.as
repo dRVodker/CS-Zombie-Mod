@@ -180,7 +180,9 @@ void OnProcessRound()
 {
 	if (bIsCSZM)
 	{
-		for (uint q = 0; q < FMArray.length(); q++)
+		uint iFMArrLength = FMArray.length();
+
+		for (uint q = 0; q < iFMArrLength; q++)
 		{
 			CFragMine@ pFragMine = FMArray[q];
 
@@ -209,7 +211,9 @@ HookReturnCode CSZM_FM_OnEntityDestruction(const string &in strClassname, CBaseE
 {
 	if (Utils.StrEql(strClassname, "npc_fragmine"))
 	{
-		for (uint q = 0; q < FMArray.length(); q++)
+		uint iFMArrLength = FMArray.length();
+
+		for (uint q = 0; q < iFMArrLength; q++)
 		{
 			CFragMine@ pFragMine = FMArray[q];
 
@@ -376,7 +380,9 @@ void OnEntityUsed(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 	
 	if (Utils.StrEql(pEntity.GetClassname(), "npc_fragmine") && iTeamNum == TEAM_SURVIVORS)
 	{
-		for (uint q = 0; q < FMArray.length(); q++)
+		uint iFMArrLength = FMArray.length();
+
+		for (uint q = 0; q < iFMArrLength; q++)
 		{
 			CFragMine@ pFragMine = FMArray[q];
 
@@ -508,8 +514,9 @@ CBaseEntity@ CreateWeaponFragMine(CBaseEntity@ pEntity)
 CFragMine@ FindFragMineByEntIndex(const int &in EntIndex)
 {
 	CFragMine@ pFM;
+	uint iFMArrLength = FMArray.length();
 
-	for (uint q = 0; q < FMArray.length(); q++)
+	for (uint q = 0; q < iFMArrLength; q++)
 	{
 		CFragMine@ pFragMine = FMArray[q];
 
