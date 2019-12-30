@@ -62,7 +62,7 @@ array<string> g_strModels =
 	"models/cszm/zombie_eugene.mdl"
 };
 
-array<string> g_strMDLToUse;
+array<string> g_strMDLToChoose;
 
 //Массивы объектов
 array<CSZMPlayer@> CSZMPlayerArray;
@@ -2356,20 +2356,20 @@ void RndZModel(CZP_Player@ pPlayer, CBaseEntity@ pPlayerEntity)
 
 		else
 		{
-			if (g_strMDLToUse.length() == 0)
+			if (g_strMDLToChoose.length() == 0)
 			{
-				uint iModelsLength = g_strModels.length();
+				int iModelsLength = int(g_strModels.length());
 
-				for (uint i = 0; i < iModelsLength; i++)
+				for (int i = 0; i < iModelsLength; i++)
 				{
-					g_strMDLToUse.insertLast(g_strModels[i]);
+					g_strMDLToChoose.insertLast(g_strModels[i]);
 				}
 			}
 
-			int iRNG = Math::RandomInt(0, g_strMDLToUse.length() - 1);
+			int iRNG = Math::RandomInt(0, g_strMDLToChoose.length() - 1);
 
-			pPlayerEntity.SetModel(g_strMDLToUse[iRNG]);
-			g_strMDLToUse.removeAt(iRNG);
+			pPlayerEntity.SetModel(g_strMDLToChoose[iRNG]);
+			g_strMDLToChoose.removeAt(iRNG);
 		}
 	}
 }

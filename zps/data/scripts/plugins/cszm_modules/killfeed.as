@@ -51,10 +51,11 @@ void KillFeed(const string &in strAttName, const int &in iAttTeam, const string 
 		break;
 	}
 
-	if(bIsSuicide == false)
+	if(!bIsSuicide)
 	{
 		string strKill = "killed";
-		if(bIsInfect == true)
+		
+		if(bIsInfect)
 		{
 			strKill = "infected";
 			VicColor = "blue";
@@ -76,7 +77,7 @@ void ShowKills(CZP_Player@ pPlayer, const int &in iKills, const bool &in bIsVict
 	int iG = 16;
 	int iB = 32;
 	
-	if(bIsVictim == false)
+	if(!bIsVictim)
 	{
 		if(iKills == 1)
 		{

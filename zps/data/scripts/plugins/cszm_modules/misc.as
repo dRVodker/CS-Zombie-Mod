@@ -57,6 +57,7 @@ int CountPlrs(const int &in iTeamNum)
 void SetDoorFilter(const int &in iFilter)
 {
 	CBaseEntity@ pEntity;
+	
 	while ((@pEntity = FindEntityByClassname(pEntity, "prop_door_rotating")) !is null)
 	{
 		Engine.Ent_Fire_Ent(pEntity, "AddOutput", "doorfilter " + iFilter);
@@ -158,6 +159,7 @@ void PutPlrToLobby(CBaseEntity@ pEntPlayer)
 			}
 		}
 	}
+
 	else
 	{
 		pEntPlayer.SetAbsOrigin(g_pLobbySpawn[Math::RandomInt(1, iLength)].GetAbsOrigin());
@@ -426,11 +428,11 @@ void DecideFirstInfected()
 	if (iFZIndex == 0)
 	{
 		iFZIndex = ChooseVolunteer();
-	}
 
-	if (iFZIndex == 0)
-	{
-		iFZIndex = ChooseVictim();
+		if (iFZIndex == 0)
+		{
+			iFZIndex = ChooseVictim();
+		}
 	}
 }
 
