@@ -8,11 +8,16 @@ void SD(const string &in strMSG)
 	Chat.PrintToChat(all, strMSG);
 }
 
-int CHP(int &in iMulti)
+int CHP(int &in iMulti) //CalculateHealthPoints
 {
 	int iHP = 0;
 	int iSurvNum = Utils.GetNumPlayers(survivor, true);
-	if (iSurvNum < 4) iSurvNum = 5;
+
+	if (iSurvNum < 4) 
+	{
+		iSurvNum = 5;
+	}
+
 	iHP = iSurvNum * iMulti;
 	
 	return iHP;
@@ -206,7 +211,9 @@ void OnProcessRound()
 {
 	if (flExpBarrelsWaitTime != 0 && flExpBarrelsWaitTime <= Globals.GetCurrentTime())
 	{
-		for (uint i = 0; i < g_ExpBarrelRecover.length(); i++)
+		int ilength = int(g_ExpBarrelRecover.length());
+
+		for (int i = 0; i < ilength; i++)
 		{
 			if (g_ExpBarrelRecover[i] != 0 && g_ExpBarrelRecover[i] <= Globals.GetCurrentTime())
 			{
@@ -374,9 +381,11 @@ void OnEntityOutput(const string &in strOutput, CBaseEntity@ pActivator, CBaseEn
 			Schedule::Task(1.9f, "CheeseNooo");
 		}
 
-		if (Utils.StrEql(pCaller.GetEntityName(), "ExpBarrels"))
+		else if (Utils.StrEql(pCaller.GetEntityName(), "ExpBarrels"))
 		{
-			for (uint i = 0; i < g_ExpBarrelIndex.length(); i++)
+			int ilength = int(g_ExpBarrelIndex.length());
+
+			for (int i = 0; i < ilength; i++)
 			{
 				if (pCaller.entindex() == g_ExpBarrelIndex[i])
 				{
@@ -387,9 +396,11 @@ void OnEntityOutput(const string &in strOutput, CBaseEntity@ pActivator, CBaseEn
 			}
 		}
 
-		if (Utils.StrEql(pCaller.GetClassname(), "func_breakable"))
+		else if (Utils.StrEql(pCaller.GetClassname(), "func_breakable"))
 		{
-			for (uint i = 0; i < g_BreakIndex.length(); i++)
+			int ilength = int(g_BreakIndex.length());
+
+			for (int i = 0; i < ilength; i++)
 			{
 				if (pCaller.entindex() == g_BreakIndex[i])
 				{
@@ -397,6 +408,7 @@ void OnEntityOutput(const string &in strOutput, CBaseEntity@ pActivator, CBaseEn
 					{
 						g_BreakIndex[i] = 0;
 						Mysticism(pActivator);
+
 						break;
 					}
 
@@ -406,6 +418,7 @@ void OnEntityOutput(const string &in strOutput, CBaseEntity@ pActivator, CBaseEn
 						PowerBoxExplode(pCaller.GetAbsOrigin());
 						Engine.Ent_Fire("ho1_light", "FadeToPattern", "a");
 						Engine.EmitSoundPosition(0, "ambient/levels/labs/electric_explosion1.wav", Vector(1761.4, -790.36, 256), 1.0f, 135, Math::RandomInt(90, 125));
+
 						break;
 					}
 
@@ -413,6 +426,7 @@ void OnEntityOutput(const string &in strOutput, CBaseEntity@ pActivator, CBaseEn
 					{
 						g_BreakIndex[i] = 0;
 						PowerBoxExplode(pCaller.GetAbsOrigin());
+
 						if (g_BreakIndex[0] != 0)
 						{
 							Engine.Ent_Fire("ho2_light", "FadeToPattern", "a");
@@ -420,6 +434,7 @@ void OnEntityOutput(const string &in strOutput, CBaseEntity@ pActivator, CBaseEn
 							Engine.Ent_Fire("securitybutton_prop1", "skin", "1");
 							Engine.Ent_Fire("powerbox_shake", "powerbox_shake");
 						}
+
 						break;
 					}
 
@@ -427,6 +442,7 @@ void OnEntityOutput(const string &in strOutput, CBaseEntity@ pActivator, CBaseEn
 					{
 						g_BreakIndex[i] = 0;
 						SpawnCeilingEnts();
+
 						break;
 					}
 
@@ -434,6 +450,7 @@ void OnEntityOutput(const string &in strOutput, CBaseEntity@ pActivator, CBaseEn
 					{
 						g_BreakIndex[i] = 0;
 						Engine.EmitSoundPosition(0, "npc/fast_zombie/wake1.wav", Vector(630, 808, 309), 1.0f, 75, 100);
+
 						break;
 					}
 				}
@@ -441,7 +458,7 @@ void OnEntityOutput(const string &in strOutput, CBaseEntity@ pActivator, CBaseEn
 		}
 	}
 
-	if (Utils.StrEql(strOutput, "OnAwakened"))
+	else if (Utils.StrEql(strOutput, "OnAwakened"))
 	{
 		if (Utils.StrContains("heavy_props", pCaller.GetModelName()))
 		{
@@ -475,11 +492,13 @@ void GiveStartGear()
 
 		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(i);
 
-		if (pPlayerEntity.GetTeamNumber() == TEAM_SURVIVORS) 
+		if (pPlayerEntity.GetTeamNumber() == TEAM_SURVIVORS)
 		{
+			int ilength = int(g_strStartWeapons.length()) - 1;
+
 			pPlayer.AmmoBank(add, pistol, 30);
 			pPlayer.GiveWeapon("weapon_barricade");
-			pPlayer.GiveWeapon(g_strStartWeapons[ Math::RandomInt(0, g_strStartWeapons.length() - 1) ]);
+			pPlayer.GiveWeapon(g_strStartWeapons[Math::RandomInt(0, ilength)]);
 		}
 	}
 }
@@ -492,6 +511,8 @@ void DisableDamageForces()
 
 void SetUpStuff()
 {
+	int ilength = int(g_MExplosionOrigin.length());
+
 	iMysticismAttackerIndex = 0;
 
 	flExpBarrelsWaitTime = Globals.GetCurrentTime() + 0.1f;
@@ -533,7 +554,7 @@ void SetUpStuff()
 
 	g_vecActiveOrigin.removeRange(0, g_vecActiveOrigin.length());
 
-	for (uint i = 0; i < g_MExplosionOrigin.length(); i++)
+	for (int i = 0; i < ilength; i++)
 	{
 		g_vecActiveOrigin.insertLast(g_MExplosionOrigin[i]);
 	}
@@ -552,6 +573,7 @@ void FindExpBarrels()
 	g_ExpBarrelRecover.removeRange(0, g_ExpBarrelRecover.length());
 
 	CBaseEntity@ pEntity;
+
 	while ((@pEntity = FindEntityByName(pEntity, "ExpBarrels")) !is null)
 	{
 		g_ExpBarrelAngles.insertLast(pEntity.GetAbsAngles());
@@ -563,9 +585,10 @@ void FindExpBarrels()
 
 void FindBreakIndexes()
 {
+	int ilength = int(g_BreakName.length());
 	g_BreakIndex.resize(g_BreakName.length());
 
-	for (uint i = 0; i < g_BreakName.length(); i++)
+	for (int i = 0; i < ilength; i++)
 	{
 		CBaseEntity@ pEntity;
 		@pEntity = FindEntityByName(pEntity, g_BreakName[i]);
@@ -589,6 +612,7 @@ void FindCeilingEnts()
 	g_CeilingModel.removeRange(0, g_CeilingModel.length());
 
 	CBaseEntity@ pEntity;
+
 	while ((@pEntity = FindEntityByName(pEntity, "CeilingProps")) !is null)
 	{
 		g_CeilingAngles.insertLast(pEntity.GetAbsAngles());
@@ -645,7 +669,9 @@ void PowerBoxExplode(Vector &in Origin)
 
 void SpawnCeilingEnts()
 {
-	for (uint i = 0; i < g_CeilingModel.length(); i++)
+	int ilength = int(g_CeilingModel.length());
+
+	for (int i = 0; i < ilength; i++)
 	{
 		if (Utils.StrContains("weapon_", g_CeilingModel[i]))
 		{
@@ -769,7 +795,9 @@ void MysticismSpawnExplosion()
 
 void MadLaugh()
 {
-	for (uint i = 0; i < g_MadLaughOrigin.length(); i++)
+	int ilength = int(g_MadLaughOrigin.length());
+
+	for (int i = 0; i < ilength; i++)
 	{
 		CEntityData@ MadLaughIPD = EntityCreator::EntityData();
 		MadLaughIPD.Add("targetname", "MadLaugh_SND");
@@ -789,8 +817,9 @@ void MadLaugh()
 void HealthSettings()
 {
 	CBaseEntity@ pEntity;
+	int ilength = int(g_BreakableCN.length());
 
-	for (uint i = 0; i < g_BreakableCN.length(); i++)
+	for (int i = 0; i < ilength; i++)
 	{
 		while ((@pEntity = FindEntityByClassname(pEntity, g_BreakableCN[i])) !is null)
 		{
