@@ -58,17 +58,17 @@ bool bIsZombieSpawn(CBaseEntity@ pEntity)
 
 class CZSpawnManager
 {
+	array<int> p_SpawnEntIndex;
 	float flThinkTime;
 	int ilength;
-	array<int> p_SpawnEntIndex;
-	int iSpawnCount;
+	int iDisZSpawn;
 	int iLastSpawn;
 
 	CZSpawnManager()
 	{
 		flThinkTime = Globals.GetCurrentTime() + WAIT_TIME;
 		CBaseEntity@ pSpawn = null;
-		iSpawnCount = 0;
+		iDisZSpawn = 0;
 
 		int iZSCount = 0;
 
@@ -92,7 +92,6 @@ class CZSpawnManager
 
 	void Think()
 	{
-
 		if (flThinkTime <= Globals.GetCurrentTime() && flThinkTime != -1)
 		{
 			flThinkTime = Globals.GetCurrentTime() + WAIT_TIME;
@@ -159,9 +158,9 @@ class CZSpawnManager
 
 			if (Utils.StrEql("enabled", EntDesc))
 			{
-				iSpawnCount++;
+				iDisZSpawn++;
 
-				if (iSpawnCount == ilength)
+				if (iDisZSpawn == ilength)
 				{
 					iLastSpawn = pSpawn.entindex();	
 				}
@@ -184,7 +183,7 @@ class CZSpawnManager
 
 			if (Utils.StrEql("disabled", EntDesc))
 			{
-				iSpawnCount--;
+				iDisZSpawn--;
 				pSpawn.SetEntityDescription("enabled");
 				Engine.Ent_Fire_Ent(pSpawn, "EnableSpawn");	
 			}
@@ -205,8 +204,6 @@ class CZSpawnManager
 
 	void UpdateArrays()
 	{
-		SD("{red}-=UpdateArrays=-");
-
 		p_SpawnEntIndex.resize(0);
 		CBaseEntity@ pSpawn = null;
 
