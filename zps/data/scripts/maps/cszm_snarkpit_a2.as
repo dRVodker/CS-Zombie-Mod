@@ -6,6 +6,17 @@
 
 const int TEAM_LOBBYGUYS = 0;
 
+float flFan1FLTime = 0.0f;
+float flFan2FLTime = 0.0f;
+
+int iF1SPitch = 0;
+bool bFan1IsOn = false;
+float flFan1Delay = 0.0f;
+
+int iF2SPitch = 0;
+bool bFan2IsOn = false;
+float flFan2Delay = 0.0f;
+
 void SD(const string &in strMSG)
 {
 	Chat.PrintToChat(all, strMSG);
@@ -74,9 +85,6 @@ void OnNewRound()
 	Schedule::Task(0.05f, "SetUpStuff");
 	OverrideLimits();
 }
-
-float flFan1FLTime = 0.0f;
-float flFan2FLTime = 0.0f;
 
 void OnProcessRound()
 {
@@ -209,10 +217,6 @@ void OnEntityUsed(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 	}
 }
 
-int iF1SPitch = 0;
-bool bFan1IsOn = false;
-float flFan1Delay = 0.0f;
-
 void Fan1SNDPlay()
 {
 	if (iF1SPitch == 0)
@@ -246,10 +250,6 @@ void Fan1SNDStop()
 		Engine.Ent_Fire("snd_fan1", "Volume", "0");
 	}
 }
-
-int iF2SPitch = 0;
-bool bFan2IsOn = false;
-float flFan2Delay = 0.0f;
 
 void Fan2SNDPlay()
 {
