@@ -1,10 +1,13 @@
 array<string> g_CSZMFile =
 {
-	"materials/models/cszm/hands/arms.vmt",
-	"materials/models/cszm/hands/arms_color.vtf",
-	"materials/models/cszm/hands/arms_norm.vtf",
-	"materials/models/cszm/hands/zombie_arms_color.vtf",
-	"materials/models/cszm/hands/zombie_arms.vmt",
+	"materials/models/cszm/hands/human_arms_diff.vmt",
+	"materials/models/cszm/hands/human_arms_diff.vtf",
+	"materials/models/cszm/hands/human_arms_exp.vtf",
+	"materials/models/cszm/hands/human_arms_norm.vtf",
+	"materials/models/cszm/hands/zombie_arms_diff.vmt",
+	"materials/models/cszm/hands/zombie_arms_diff.vtf",
+	"materials/models/cszm/hands/zombie_arms_exp.vtf",
+	"materials/models/cszm/hands/zombie_arms_norm.vtf",
 
 	"materials/models/cszm/lobby_guy/sandro_facemap.vmt",
 	"materials/models/cszm/lobby_guy/sheet.vmt",
@@ -68,12 +71,12 @@ array<string> g_CSZMFile =
 	"materials/vgui/images/fragmine.vmt",
 	"materials/vgui/images/fragmine.vtf",
 
-	"models/cszm/weapons/c_cszm_arms.dx80.vtx",
-	"models/cszm/weapons/c_cszm_arms.dx90.vtx",
-	"models/cszm/weapons/c_cszm_arms.mdl",
-	"models/cszm/weapons/c_cszm_arms.sw.vtx",
-	"models/cszm/weapons/c_cszm_arms.vvd",
-
+	"models/cszm/weapons/c_cszm_human_arms.dx80.vtx",
+	"models/cszm/weapons/c_cszm_human_arms.dx90.vtx",
+	"models/cszm/weapons/c_cszm_human_arms.mdl",
+	"models/cszm/weapons/c_cszm_human_arms.sw.vtx",
+	"models/cszm/weapons/c_cszm_human_arms.vvd",
+	
 	"models/cszm/weapons/c_cszm_zombie_arms.dx80.vtx",
 	"models/cszm/weapons/c_cszm_zombie_arms.dx90.vtx",
 	"models/cszm/weapons/c_cszm_zombie_arms.mdl",

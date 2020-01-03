@@ -1,0 +1,13 @@
+VertexLitGeneric
+{
+	"$basetexture"				"models/cszm/hands/human_arms_diff"
+	"$bumpmap"					"models/cszm/hands/human_arms_norm"
+	
+	"$normalmapalphaenvmapmask"	"1"
+	"$halflambert"				"1"
+	
+	"$phong"					"1"
+	"$phongboost"				"32"
+	"$phongexponenttexture"		"models/cszm/hands/human_arms_exp"
+	"$phongfresnelranges"		"[.05 0.5 1]"
+}

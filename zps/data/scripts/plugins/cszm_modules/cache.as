@@ -24,7 +24,7 @@ void CacheModels()
     Engine.PrecacheFile(model, "models/cszm/weapons/w_knife_t.mdl");
 
     //ZM CSS Arms
-    Engine.PrecacheFile(model, "models/cszm/weapons/c_cszm_arms.mdl");
+    Engine.PrecacheFile(model, "models/cszm/weapons/c_cszm_human_arms.mdl");
     Engine.PrecacheFile(model, "models/cszm/weapons/c_cszm_zombie_arms.mdl");
 }
 
