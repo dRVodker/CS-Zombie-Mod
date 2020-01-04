@@ -8,6 +8,7 @@ const float WAIT_TIME = 0.25f;
 
 float flMaxZSDist = 1024.0f;
 float flMinZSDist = 512.0f;
+float flRoarDist = 512.0f;
 
 /*----------------------------------------------------------------------------------*/
 
@@ -15,79 +16,22 @@ CZSpawnManager@ ZSpawnManager = null;
 
 /*----------------------------------------------------------------------------------*/
 
-bool bIsValidPlayer(CBaseEntity@ pPlayerEntity)
-{
-	bool b = true;
-
-	if (pPlayerEntity is null)
-	{
-		b = false;
-	}
-
-	else if (!pPlayerEntity.IsPlayer())
-	{
-		b = false;
-	}
-
-	else if (pPlayerEntity.GetTeamNumber() != 2)
-	{
-		b = false;
-	}
-
-	return b;
-}
-
-bool bIsZombieSpawn(CBaseEntity@ pEntity)
-{
-	bool b = false;
-
-	if (pEntity is null)
-	{
-		return b;
-	}
-
-	if (Utils.StrEql("info_player_zombie", pEntity.GetClassname()))
-	{
-		b = true;
-	}
-
-	return b;
-}
-
-/*----------------------------------------------------------------------------------*/
-
 class CZSpawnManager
 {
-	array<int> p_SpawnEntIndex;
-	float flThinkTime;
-	int ilength;
-	int iDisZSpawn;
-	int iLastSpawn;
+	private array<int> p_SpawnEntIndex;
+	private float flThinkTime;
+	private int ilength;
+	private int iDisZSpawn;
+	private int iLastSpawn;
 
 	CZSpawnManager()
 	{
 		flThinkTime = Globals.GetCurrentTime() + WAIT_TIME;
 		CBaseEntity@ pSpawn = null;
 		iDisZSpawn = 0;
+		ilength = 0;
 
-		int iZSCount = 0;
-
-		while ((@pSpawn = FindEntityByClassname(pSpawn, "info_player_zombie")) !is null)
-		{
-			iZSCount++;
-			pSpawn.SetEntityName("ZSpawn" + iZSCount);
-
-			Engine.Ent_Fire_Ent(pSpawn, "AddOutput", "minspawns 0");
-			Engine.Ent_Fire_Ent(pSpawn, "AddOutput", "mintime 0");
-
-			Engine.Ent_Fire_Ent(pSpawn, "EnableSpawn");
-
-			pSpawn.SetEntityDescription("enabled");
-
-			p_SpawnEntIndex.insertLast(pSpawn.entindex());
-		}
-
-		ilength = int(p_SpawnEntIndex.length());
+		this.UpdateArrays();
 	}
 
 	void Think()
@@ -100,19 +44,18 @@ class CZSpawnManager
 			{
 				CBaseEntity@ pSpawn = FindEntityByEntIndex(p_SpawnEntIndex[i]);
 
-				if (!bIsZombieSpawn(pSpawn))
+				if (!this.IsZombieSpawn(pSpawn))
 				{
 					this.UpdateArrays();
 					break;
 				}
 
-				int iState = CheckSpawn(pSpawn);
-
+				int iState = this.CheckSpawn(pSpawn);
+				
 				if (iState == SS_ENABLED)
 				{
 					this.EnableSpawn(pSpawn);
 				}
-
 				else
 				{
 					this.DisableSpawn(pSpawn);
@@ -121,7 +64,7 @@ class CZSpawnManager
 		}
 	}
 
-	int CheckSpawn(CBaseEntity@ pSpawn)
+	private int CheckSpawn(CBaseEntity@ pSpawn)
 	{
 		int iState = SS_DISABLED;
 
@@ -129,19 +72,25 @@ class CZSpawnManager
 		{
 			CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(i);
 
-			if (!bIsValidPlayer(pPlayerEntity))
+			if (!this.IsValidPlayer(pPlayerEntity))
 			{
 				continue;
 			}
 
 			Vector PlrOrigin = pPlayerEntity.GetAbsOrigin();
+			float flDistance = pSpawn.Distance(PlrOrigin);
 
-			if (pSpawn.Distance(PlrOrigin) < flMaxZSDist && pSpawn.Distance(PlrOrigin) > flMinZSDist)
+			if (flDistance < flRoarDist && pPlayerEntity.GetTeamNumber() == 3)
 			{
 				iState = SS_ENABLED;
 			}
 
-			else if (pSpawn.Distance(PlrOrigin) < flMinZSDist)
+			else if (flDistance < flMaxZSDist && flDistance > flMinZSDist)
+			{
+				iState = SS_ENABLED;
+			}
+
+			else if (flDistance < flMinZSDist)
 			{
 				iState = SS_DISABLED;
 			}
@@ -150,76 +99,76 @@ class CZSpawnManager
 		return iState;
 	}
 
-	void DisableSpawn(CBaseEntity@ pSpawn)
+	private void DisableSpawn(CBaseEntity@ pSpawn)
 	{
-		if (bIsZombieSpawn(pSpawn))
+		if (!this.IsZombieSpawn(pSpawn))
 		{
-			string EntDesc = pSpawn.GetEntityDescription();
+			return;
+		}
 
-			if (Utils.StrEql("enabled", EntDesc))
+		if (Utils.StrEql("enabled", pSpawn.GetEntityDescription()))
+		{
+			iDisZSpawn++;
+
+			if (iDisZSpawn == ilength)
 			{
-				iDisZSpawn++;
-
-				if (iDisZSpawn == ilength)
-				{
-					iLastSpawn = pSpawn.entindex();	
-				}
-
-				else
-				{
-					Engine.Ent_Fire_Ent(pSpawn, "DisableSpawn");					
-				}	
-
-				pSpawn.SetEntityDescription("disabled");	
+				iLastSpawn = pSpawn.entindex();	
 			}
+			else
+			{
+				Engine.Ent_Fire_Ent(pSpawn, "DisableSpawn");					
+			}	
+
+			pSpawn.SetEntityDescription("disabled");	
 		}
 	}
 
-	void EnableSpawn(CBaseEntity@ pSpawn)
+	private void EnableSpawn(CBaseEntity@ pSpawn)
 	{
-		if (bIsZombieSpawn(pSpawn))
+		if (!this.IsZombieSpawn(pSpawn))
 		{
-			string EntDesc = pSpawn.GetEntityDescription();
+			return;
+		}
 
-			if (Utils.StrEql("disabled", EntDesc))
+		if (Utils.StrEql("disabled", pSpawn.GetEntityDescription()))
+		{
+			iDisZSpawn--;
+			pSpawn.SetEntityDescription("enabled");
+			Engine.Ent_Fire_Ent(pSpawn, "EnableSpawn");	
+		}
+
+		if (iLastSpawn != 0)
+		{
+			if (pSpawn.entindex() != iLastSpawn)
 			{
-				iDisZSpawn--;
-				pSpawn.SetEntityDescription("enabled");
-				Engine.Ent_Fire_Ent(pSpawn, "EnableSpawn");	
+				CBaseEntity@ pLastSpawn = FindEntityByEntIndex(iLastSpawn);
+				pLastSpawn.SetEntityDescription("disabled");
+				Engine.Ent_Fire_Ent(pLastSpawn, "DisableSpawn");					
 			}
 
-			if (iLastSpawn != 0)
-			{
-				if (pSpawn.entindex() != iLastSpawn)
-				{
-					CBaseEntity@ pLastSpawn = FindEntityByEntIndex(iLastSpawn);
-					pLastSpawn.SetEntityDescription("disabled");
-					Engine.Ent_Fire_Ent(pLastSpawn, "DisableSpawn");					
-				}
-
-				iLastSpawn = 0;
-			}
+			iLastSpawn = 0;
 		}
 	}
 
-	void UpdateArrays()
+	private void UpdateArrays()
 	{
-		p_SpawnEntIndex.resize(0);
+		if (ilength > 0)
+		{
+			p_SpawnEntIndex.resize(0);
+		}
+
 		CBaseEntity@ pSpawn = null;
 
 		while ((@pSpawn = FindEntityByClassname(pSpawn, "info_player_zombie")) !is null)
 		{
-			string strState = pSpawn.GetEntityDescription();
-			int iState = SS_ENABLED;
-
-			if (Utils.StrEql("disabled", strState))
+			if (!Utils.StrEql("disabled", pSpawn.GetEntityDescription()))
 			{
-				iState = SS_DISABLED;
-				Engine.Ent_Fire_Ent(pSpawn, "DisableSpawn");
-			}
+				if (!Utils.StrEql("enabled", pSpawn.GetEntityDescription()))
+				{
+					Engine.Ent_Fire_Ent(pSpawn, "AddOutput", "minspawns 0");
+					Engine.Ent_Fire_Ent(pSpawn, "AddOutput", "mintime 0");
+				}
 
-			else
-			{
 				pSpawn.SetEntityDescription("enabled");	
 				Engine.Ent_Fire_Ent(pSpawn, "EnableSpawn");			
 			}
@@ -228,6 +177,32 @@ class CZSpawnManager
 		}
 
 		ilength = int(p_SpawnEntIndex.length());
+	}
+
+	private bool IsValidPlayer(CBaseEntity@ pPlayerEntity)
+	{
+		bool b = false;
+
+		CZP_Player@ pPlayer =  ToZPPlayer(pPlayerEntity);
+
+		if (pPlayerEntity !is null)
+		{
+			b = pPlayerEntity.GetTeamNumber() == 2 || (pPlayerEntity.GetTeamNumber() == 3 && pPlayer.IsRoaring());
+		}
+
+		return b;
+	}
+
+	private bool IsZombieSpawn(CBaseEntity@ pEntity)
+	{
+		bool b = false;
+
+		if (pEntity !is null && Utils.StrEql("info_player_zombie", pEntity.GetClassname()))
+		{
+			b = true;
+		}
+
+		return b;
 	}
 }
 
