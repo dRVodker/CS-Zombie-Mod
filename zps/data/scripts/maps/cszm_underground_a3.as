@@ -110,7 +110,7 @@ void SetUpStuff()
 	
 	Engine.Ent_Fire("shading", "StartOverlays");
 	
-//	FlickerLight1();
+	FlickerLight1();
 	ChangeFog();
 	PlayLobbyAmbient();
 }
