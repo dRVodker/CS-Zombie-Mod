@@ -70,7 +70,6 @@ HookReturnCode CSZM_SetS_OnPlrSpawn(CZP_Player@ pPlayer)
 	{
 		pPlayer.StripWeapon("weapon_emptyhand");
 	}
-
 	else
 	{
 		SetFirefly(pBaseEnt, pBaseEnt.entindex(), 0, 0, 0, false);
@@ -131,19 +130,16 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 				Engine.EmitSoundPlayer(pPlayer, FILENAME_DENY);
 				bHandled = true;
 			}
-
 			else
 			{
 				if (fltest < 0.1f)
 				{
 					fltest = 0.1f;
 				}
-
 				if (fltest > 1.0f)
 				{
 					fltest = 1.0f;
 				}
-
 				if (fltest == 1)
 				{
 					sAddition = ".0";
@@ -155,7 +151,6 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 
 			Chat.CenterMessagePlayer(pPlrEnt, TEXT_YOUR_SCALE + fltest + sAddition);
 		}
-
 		else
 		{
 			iCommTeam = TEAM_LOBBYGUYS;
@@ -170,7 +165,6 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 		{
 			DLight(pPlayer, pBaseEnt, pBaseEnt.entindex());				
 		}
-
 		else
 		{
 			iCommTeam = TEAM_LOBBYGUYS;
@@ -183,20 +177,8 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 	{
 		if (pBaseEnt.GetTeamNumber() == TEAM_LOBBYGUYS)
 		{
-			CBaseEntity@ pWeapon = pPlayer.GetCurrentWeapon();
-
-			if (Utils.StrEql("weapon_emptyhand", pWeapon.GetClassname()))
-			{
-				pPlayer.GiveWeapon("weapon_snowball");
-			}
-
-			else
-			{
-				pPlayer.StripWeapon(pWeapon.GetClassname());
-				pPlayer.GiveWeapon("weapon_snowball");
-			}
+			GiveThrowable(pPlayer, "weapon_snowball");
 		}
-
 		else
 		{
 			iCommTeam = TEAM_LOBBYGUYS;
@@ -209,20 +191,8 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 	{
 		if (pBaseEnt.GetTeamNumber() == TEAM_LOBBYGUYS)
 		{
-			CBaseEntity@ pWeapon = pPlayer.GetCurrentWeapon();
-
-			if (Utils.StrEql("weapon_emptyhand", pWeapon.GetClassname()))
-			{
-				pPlayer.GiveWeapon("weapon_tennisball");
-			}
-
-			else
-			{
-				pPlayer.StripWeapon(pWeapon.GetClassname());
-				pPlayer.GiveWeapon("weapon_tennisball");
-			}				
+			GiveThrowable(pPlayer, "weapon_tennisball");
 		}
-
 		else
 		{
 			iCommTeam = TEAM_LOBBYGUYS;
@@ -257,7 +227,6 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 						FFColorR = 255;
 					}
 				}
-
 				if(Utils.NumbersOnly(pFFSplited.Arg(2)) && Utils.StringToInt(pFFSplited.Arg(2)) >= 0)
 				{
 					FFColorG = Utils.StringToInt(pFFSplited.Arg(2));
@@ -267,7 +236,6 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 						FFColorG = 255;
 					}
 				}
-
 				if(Utils.NumbersOnly(pFFSplited.Arg(3)) && Utils.StringToInt(pFFSplited.Arg(3)) >= 0)
 				{
 					FFColorB = Utils.StringToInt(pFFSplited.Arg(3));
@@ -286,7 +254,6 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 				SetFirefly(pBaseEnt, pBaseEnt.entindex(), FFColorR, FFColorG, FFColorB, true);
 				Chat.PrintToChatPlayer(pPlrEnt, TEXT_FIREFLY);			
 			}
-
 			else
 			{
 				ColorFireFly(pBaseEnt, pBaseEnt.entindex(), FFColorR, FFColorG, FFColorB);
@@ -297,7 +264,6 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 
 			bHandled = true;
 		}
-
 		else
 		{
 			iCommTeam = TEAM_SPECTATORS;
@@ -310,7 +276,6 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 		ShowCom(pPlrEnt);
 		bHandled = true;
 	}
-
 	if (iCommTeam != -1)
 	{
 		if (iCommTeam == TEAM_LOBBYGUYS)
@@ -326,7 +291,6 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 		Engine.EmitSoundPlayer(pPlayer, FILENAME_DENY);
 		bHandled = true;
 	}
-
 	if (bHandled)
 	{
 		return HOOK_HANDLED;
@@ -409,13 +373,32 @@ void SetFirefly(CBaseEntity@ pPlayerEntity, const int &in iIndex, int &in iR, in
 		{
 			pSpriteEnt.SUB_Remove();
 		}
-
 		if (Utils.StrContains("|firefly|", strPlrDisc))
 		{
 			strPlrDisc = Utils.StrReplace(strPlrDisc, "|firefly|", "");
 			
 			pPlayerEntity.SetEntityDescription(strPlrDisc);
 		}
+	}
+}
+
+void GiveThrowable(CZP_Player@ pPlayer, const string &in strClassname)
+{
+	CBaseEntity@ pWeapon = pPlayer.GetCurrentWeapon();
+	string strCurWepClassname = pWeapon.GetClassname();
+
+	if (Utils.StrEql("weapon_emptyhand", strCurWepClassname))
+	{
+		pPlayer.GiveWeapon(strClassname);
+	}
+	else if (Utils.StrEql(strClassname, strCurWepClassname))
+	{
+		pPlayer.StripWeapon(strCurWepClassname);
+	}
+	else
+	{
+		pPlayer.StripWeapon(pWeapon.GetClassname());
+		pPlayer.GiveWeapon(strClassname);
 	}
 }
 
@@ -432,7 +415,6 @@ void DLight(CZP_Player@ pPlayer, CBaseEntity@ pPlrEntity, const int &in iIndex)
 			pWeapon.SetEntityName(TARGETNAME_DLIGHT + iIndex);
 			Engine.Ent_Fire(TARGETNAME_DLIGHT + iIndex, "AddOutput", "Effects 2");
 		}
-
 		else
 		{
 			pWeapon.SetEntityName("TrurnOff-DL" + iIndex);
@@ -462,7 +444,6 @@ void ShowCom(CBasePlayer@ pPlayer)
 			strShort = pSplited.Arg(1);
 			strDescription = pSplited.Arg(2);
 		}
-
 		else if (pSplited.Args() == 2)
 		{
 			strDescription = pSplited.Arg(1);
