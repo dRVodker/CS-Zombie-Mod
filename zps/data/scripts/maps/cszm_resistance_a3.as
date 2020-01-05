@@ -1,4 +1,3 @@
-#include "cszm_modules/random_def"
 #include "cszm_modules/spawncrates"
 #include "cszm_modules/barricadeammo"
 #include "cszm_modules/lobbyambient"
@@ -39,7 +38,6 @@ void OnMapInit()
 	Engine.PrecacheFile(sound, "doors/default_move.wav");
 
 	g_TeleportDelay.resize(iMaxPlayers + 1);
-	OverrideLimits();
 
 	iMinCrates = 1;
 	iMaxCrates = 4;
@@ -78,7 +76,6 @@ void OnNewRound()
 	Engine.Ent_Fire("SND_Ambient", "PlaySound");
 	
 	Schedule::Task(0.05f, "SetUpStuff");
-	OverrideLimits();
 }
 
 void OnMatchBegin() 

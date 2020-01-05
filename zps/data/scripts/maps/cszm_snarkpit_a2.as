@@ -1,4 +1,3 @@
-#include "cszm_modules/random_def"
 #include "cszm_modules/doorset"
 #include "cszm_modules/spawncrates"
 #include "cszm_modules/barricadeammo"
@@ -72,8 +71,6 @@ void OnMapInit()
 
 	g_PICOrigin.insertLast(Vector(-465.154, -160.674, 0.4998));
 	g_PICAngles.insertLast(QAngle(0, 36.16, 0));
-
-	OverrideLimits();
 }
 
 void OnNewRound()
@@ -83,7 +80,6 @@ void OnNewRound()
 	iF1SPitch = 0;
 	iF2SPitch = 0;
 	Schedule::Task(0.05f, "SetUpStuff");
-	OverrideLimits();
 }
 
 void OnProcessRound()

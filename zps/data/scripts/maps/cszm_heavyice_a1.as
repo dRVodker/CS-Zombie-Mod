@@ -1,4 +1,3 @@
-#include "cszm_modules/random_def"
 #include "cszm_modules/barricadeammo"
 #include "cszm_modules/lobbyambient"
 #include "../SendGameText"
@@ -187,7 +186,6 @@ void OnMapInit()
 	Schedule::Task(0.01f, "SetUpStuff");
 
 	g_TeleportDelay.resize(iMaxPlayers + 1);
-	OverrideLimits();
 
 	iMaxBarricade = 12;
 	iMinBarricade = 4;
@@ -196,7 +194,6 @@ void OnMapInit()
 void OnNewRound()
 {
 	Schedule::Task(0.01f, "SetUpStuff");
-	OverrideLimits();
 }
 
 void OnMatchBegin()

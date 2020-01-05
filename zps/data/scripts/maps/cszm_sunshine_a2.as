@@ -1,5 +1,4 @@
 #include "../SendGameText"
-#include "cszm_modules/random_def"
 #include "cszm_modules/barricadeammo"
 
 void SD(const string &in strMSG)
@@ -115,7 +114,6 @@ void OnMapInit()
 	Events::Player::OnPlayerSpawn.Hook(@SH_OnPlayerSpawn);
 
 	Schedule::Task(0.01f, "SetUpStuff");
-	OverrideLimits();
 }
 
 int CHP(int &in iMulti) //CalculateHealthPoints
@@ -167,8 +165,6 @@ void OnNewRound()
 	{
 		bIsFirstRound = false;
 	}
-
-	OverrideLimits();
 }
 
 void OnMatchBegin()
@@ -225,7 +221,6 @@ void SetUpStuff()
 	SpawnCheese();
 	FindIPC();
 	CollectEntIndexs();
-	OverrideLimits();
 }
 
 HookReturnCode SH_OnEndTouch(CBaseEntity@ pTrigger, const string &in strEntityName, CBaseEntity@ pEntity)

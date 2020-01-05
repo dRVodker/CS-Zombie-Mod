@@ -1,4 +1,3 @@
-#include "cszm_modules/random_def"
 #include "cszm_modules/doorset"
 #include "cszm_modules/spawncrates"
 #include "cszm_modules/barricadeammo"
@@ -16,7 +15,6 @@ void OnMapInit()
 	Events::Trigger::OnStartTouch.Hook(@OnStartTouch);
 	Events::Trigger::OnEndTouch.Hook(@OnEndTouch);
 	Schedule::Task(0.05f, "SetStuff");
-	OverrideLimits();
 
 	iMaxBarricade = 15;
 	iMinBarricade = 8;
@@ -88,7 +86,6 @@ void OnMapInit()
 void OnNewRound()
 {
 	Schedule::Task(0.05f, "SetStuff");
-	OverrideLimits();
 }
 
 void OnMatchStarting()

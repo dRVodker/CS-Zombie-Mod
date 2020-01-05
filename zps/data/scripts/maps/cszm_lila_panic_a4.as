@@ -1,4 +1,3 @@
-#include "cszm_modules/random_def"
 #include "cszm_modules/doorset"
 #include "cszm_modules/barricadeammo"
 #include "cszm_modules/lobbyambient"
@@ -84,7 +83,6 @@ void OnMapInit()
 
 	Engine.Ent_Fire("breencrate", "FireUser1", "", "0.01");
 	Schedule::Task(0.05f, "SetUpStuff");
-	OverrideLimits();
 
 	iMaxBarricade = 12;
 	iMinBarricade = 8;
@@ -206,7 +204,6 @@ void OnNewRound()
 	}
 
 	Schedule::Task(0.05f, "SetUpStuff");
-	OverrideLimits();
 }
 
 void OnMatchBegin() 

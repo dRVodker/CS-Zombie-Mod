@@ -1,4 +1,3 @@
-#include "cszm_modules/random_def"
 #include "cszm_modules/doorset"
 #include "cszm_modules/spawncrates"
 #include "cszm_modules/barricadeammo"
@@ -19,7 +18,6 @@ int CalculateHealthPoints(int &in iMulti)
 void OnMapInit()
 {
 	Schedule::Task(0.05f, "SetUpStuff");
-	OverrideLimits();
 
 	iMaxBarricade = 8;
 	iMinBarricade = 6;
@@ -55,7 +53,6 @@ void OnMapInit()
 void OnNewRound()
 {	
 	Schedule::Task(0.05f, "SetUpStuff");
-	OverrideLimits();
 }
 
 void OnMatchBegin() 
