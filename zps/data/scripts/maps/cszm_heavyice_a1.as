@@ -514,6 +514,7 @@ void SetUpStuff()
 	Engine.Ent_Fire("KD-Core", "Open", "", "0");
 	Engine.Ent_Fire("sky_light1", "FadeToPattern", "f", "0");
 	Engine.Ent_Fire("Tram-Stair*", "AddOutput", "targetname Tram-Stair", "0");
+	Engine.Ent_Fire("hooks_special*", "AddOutput", "spawnflags 1024", "0");
 
 	Engine.Ent_Fire("watermelon_junk", "SetLightingOrigin", "", "10");
 	Engine.Ent_Fire("watermelon_junk", "SetLightingOrigin", "armor_lighting", "0");
