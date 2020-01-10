@@ -1,5 +1,4 @@
 #include "../SendGameText"
-#include "cszm_modules/barricadeammo"
 
 void SD(const string &in strMSG)
 {
@@ -73,9 +72,6 @@ void OnMapInit()
 
 	flWaitTime = Globals.GetCurrentTime() + 0.01f;
 
-	iMaxBarricade = 18;
-	iMinBarricade = 10;
-
 	Engine.PrecacheFile(sound, "sunshine_ambient/vo/sometimes01.wav");
 	Engine.PrecacheFile(sound, "@sunshine_ambient/vo/sometimes01.wav");
 	Engine.PrecacheFile(sound, "@sunshine_ambient/vo/no02.wav");
@@ -116,21 +112,6 @@ void OnMapInit()
 	Schedule::Task(0.01f, "SetUpStuff");
 }
 
-int CHP(int &in iMulti) //CalculateHealthPoints
-{
-	int iHP = 0;
-	int iSurvNum = Utils.GetNumPlayers(survivor, true);
-
-	if (iSurvNum < 4)
-	{
-		iSurvNum = 5;
-	}
-
-	iHP = iSurvNum * iMulti;
-	
-	return iHP;
-}
-
 void FindIPC()
 {
 	int iCount = 0;
@@ -169,8 +150,6 @@ void OnNewRound()
 
 void OnMatchBegin()
 {
-	Schedule::Task(0.5f, "SpawnBarricades");
-	HealthSettings();
 	FindItems();
 
 	Schedule::Task(0.35f, "GiveStartGear");
@@ -217,7 +196,6 @@ void SetUpStuff()
 	Engine.Ent_Fire("plr_manager", "Kill", "0", "0.00");
 	Engine.Ent_Fire("bust", "addoutput", "damagetoenablemotion 999998", "0.00");
 	
-	FindBarricades();
 	SpawnCheese();
 	FindIPC();
 	CollectEntIndexs();
@@ -432,113 +410,6 @@ void SpawnCheese()
 
 		pCheese.SetMaxHealth(256);
 		pCheese.SetHealth(256);
-	}
-}
-
-void HealthSettings()
-{
-	CBaseEntity@ pEntity;
-
-	while ((@pEntity = FindEntityByClassname(pEntity, "prop_physics_multiplayer")) !is null)
-	{
-		if (Utils.StrContains("oildrum001_explosive", pEntity.GetModelName()))
-		{
-			pEntity.SetHealth(20);
-		}
-
-		else if (Utils.StrContains("props_junk/glass", pEntity.GetModelName()))
-		{
-			pEntity.SetHealth(5);
-		}
-
-		else if (Utils.StrContains("bust", pEntity.GetEntityName()))
-		{
-			pEntity.SetMaxHealth(999999);
-			pEntity.SetHealth(999999);
-		}
-
-		else if (Utils.StrContains("cheese", pEntity.GetEntityName()))
-		{
-			continue;
-		}
-
-		else
-		{
-			pEntity.SetMaxHealth(CHP(pEntity.GetHealth()));
-			pEntity.SetHealth(CHP(pEntity.GetHealth()));
-		}
-	}
-
-	while ((@pEntity = FindEntityByClassname(pEntity, "func_breakable")) !is null)
-	{
-		if (Utils.StrContains("UselessBoards", pEntity.GetEntityName()))
-		{
-			pEntity.SetMaxHealth(CHP(3));
-			pEntity.SetHealth(CHP(3));
-		}
-
-		else if (Utils.StrEql(pEntity.GetEntityName(), "glass"))
-		{
-			pEntity.SetMaxHealth(1);
-			pEntity.SetHealth(1);
-		}
-
-		else if (Utils.StrEql(pEntity.GetEntityName(), "FB_Board"))
-		{
-			pEntity.SetMaxHealth(CHP(52));
-			pEntity.SetHealth(CHP(52));
-		}
-
-		else if (Utils.StrEql(pEntity.GetEntityName(), "BalconyWood"))
-		{
-			pEntity.SetMaxHealth(CHP(52));
-			pEntity.SetHealth(CHP(52));
-		}
-
-		else if (Utils.StrContains("CeilingHatch", pEntity.GetEntityName()))
-		{
-			pEntity.SetMaxHealth(CHP(50));
-			pEntity.SetHealth(CHP(50));
-		}
-
-		else if (Utils.StrContains("SewerCap", pEntity.GetEntityName()))
-		{
-			pEntity.SetMaxHealth(CHP(10));
-			pEntity.SetHealth(CHP(10));
-		}
-
-		else if (Utils.StrContains("lockers_breakable", pEntity.GetEntityName()))
-		{
-			pEntity.SetMaxHealth(CHP(10));
-			pEntity.SetHealth(CHP(10));
-		}
-
-		else if (Utils.StrContains("AtticHatch", pEntity.GetEntityName()))
-		{
-			pEntity.SetMaxHealth(CHP(45));
-			pEntity.SetHealth(CHP(45));
-		}
-
-		else if (Utils.StrContains("SewerCap", pEntity.GetEntityName()))
-		{
-			pEntity.SetMaxHealth(CHP(10));
-			pEntity.SetHealth(CHP(10));
-		}
-
-		else if (Utils.StrContains("lockers_breakable", pEntity.GetEntityName()))
-		{
-			pEntity.SetMaxHealth(CHP(11));
-			pEntity.SetHealth(CHP(11));
-		}
-	}
-
-	while ((@pEntity = FindEntityByClassname(pEntity, "func_physbox")) !is null)
-	{
-		if (Utils.StrContains("physd", pEntity.GetEntityName()))
-		{
-			pEntity.SetMaxHealth(CHP(52));
-			pEntity.SetHealth(CHP(52));
-		}
 	}
 }
 

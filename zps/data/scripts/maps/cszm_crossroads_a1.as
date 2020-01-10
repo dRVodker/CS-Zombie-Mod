@@ -1,26 +1,11 @@
-#include "cszm_modules/doorset"
 #include "cszm_modules/spawncrates"
-#include "cszm_modules/barricadeammo"
 #include "cszm_modules/lobbyambient"
 
 const int TEAM_LOBBYGUYS = 0;
 
-int CalculateHealthPoints(const int &in iMulti)
-{
-	int iHP = 0;
-	int iSurvNum = Utils.GetNumPlayers(survivor, true);
-	if(iSurvNum < 4) iSurvNum = 5;
-	iHP = iSurvNum * iMulti;
-	
-	return iHP;
-}
-
 void OnMapInit()
 {
 	Schedule::Task(0.05f, "SetUpStuff");
-
-	iMaxBarricade = 16;
-	iMinBarricade = 8;
 
 	iMinCrates = 0;
 	iMaxCrates = 4;
@@ -62,10 +47,7 @@ void OnNewRound()
 
 void OnMatchBegin() 
 {
-	PropsHP();
-	PropDoorHP();
 	Schedule::Task(0.5f, "SpawnCrates");
-	Schedule::Task(0.5f, "SpawnBarricades");
 }
 
 void SetUpStuff()
@@ -74,7 +56,6 @@ void SetUpStuff()
 	Engine.Ent_Fire("Precache", "Kill");
 	
 //	Engine.Ent_Fire("tonemap", "SetBloomScale", "0.475");
-	FindBarricades();
 	PropSkins();
 	OpenDoors();
 	PlayLobbyAmbient();
@@ -117,25 +98,6 @@ void PropSkins()
 		else if(Utils.StrContains("oildrum001", pEntity.GetModelName()))
 		{
 			Engine.Ent_Fire_Ent(pEntity, "Skin", "" + Math::RandomInt(0, 5));
-		}
-	}
-}
-
-void PropsHP()
-{
-	CBaseEntity@ pEntity;
-	while ((@pEntity = FindEntityByClassname(pEntity, "prop_physics_multiplayer")) !is null)
-	{
-		if (Utils.StrContains("oildrum001_explosive", pEntity.GetModelName()))
-		{
-			continue;
-		}
-
-		else
-		{
-			int Health = int(pEntity.GetHealth() * 0.6f);
-			pEntity.SetMaxHealth(PlrCountHP(Health));
-			pEntity.SetHealth(PlrCountHP(Health));
 		}
 	}
 }

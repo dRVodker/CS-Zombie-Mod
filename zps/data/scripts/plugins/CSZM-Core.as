@@ -1,6 +1,9 @@
 //Counter-Strike Zombie Mode
 //Core Script File
 
+#include "./cszm_modules/balance_arrays.as"
+#include "./cszm_modules/balance_funcs.as"
+
 #include "../SendGameText"
 #include "./cszm_modules/chat.as"
 #include "./cszm_modules/cache.as"
@@ -25,7 +28,7 @@ CBaseEntity@ pR_Eye = null;
 
 int iMaxPlayers;
 
-bool bIsCSZM;	//Является CSZM доступным? (Зависит от карты)
+bool bIsCSZM;	//Это CSZM карта?
 bool bAllowAddTime = true;	//Позволить добавлять время за удачное заражение
 
 bool bSpawnWeak = true;
@@ -36,7 +39,20 @@ bool bWarmUp = true;
 int iHumanWin;
 int iZombieWin;
 
-//Ентити которые будут показывать своё HP зомби
+//Ентити, которым нужно установить HP
+array<string> g_strBreakableEntities =
+{
+	"prop_physics",
+	"prop_physics_multiplayer",
+	"prop_physics_override",
+	"prop_door_rotating",
+	"func_breakable",
+	"func_physbox",
+	"func_door_rotating",
+	"func_door"
+};
+
+//Ентити, которые будут показывать своё HP зомби
 array<string> g_strEntities = 
 {
 	"prop_door_rotating", //0
@@ -50,7 +66,7 @@ array<string> g_strEntities =
 	"prop_barricade" //8
 };
 
-//Список моделей которые используются для зомби
+//Список моделей, которые используются для зомби
 array<string> g_strModels = 
 {
 	"models/cszm/zombie_classic.mdl",
@@ -85,12 +101,12 @@ float flWeakZombieWait;
 
 class CShowDamage
 {
-	int PlayerIndex;
-	int VicIndex; 
-	int Hits;
-	float DamageDealt;
-	float Reset;
-	float Wait;
+	private int PlayerIndex;
+	private int VicIndex; 
+	private int Hits;
+	private float DamageDealt;
+	private float Reset;
+	private float Wait;
 
 	CShowDamage(int index)
 	{
@@ -174,30 +190,30 @@ class CShowDamage
 
 class CSZMPlayer
 {
-	int PlayerIndex;	//entindex игрока
-	int SlowSpeed;	//Скорость, которая вычитается из "DefSpeed"
-	int DefSpeed;	//Обычная скорость движения игрока
-	int Voice;	//Номер голоса для зомби (3 максимально кол-во)
-	int PreviousVoice;	//Номер предыдущего голоса
-	int InfectResist;	//Сопротивление инфекции
-	int PreviousHP;	//Предыдущее HP, используется для обводки зомби
-	int InfectDelay;	//Кол-во раундов, которое игрок должен отыграть за выжевшего, чтобы сновы начать раунд как Первый зараженный
-	int ZMDeathCount;	//Счётчик смертей зомби, используется для вычисления бонусного HP для зомби
+	private int PlayerIndex;	//entindex игрока
+	private int SlowSpeed;	//Скорость, которая вычитается из "DefSpeed"
+	private int DefSpeed;	//Обычная скорость движения игрока
+	private int Voice;	//Номер голоса для зомби (3 максимально кол-во)
+	private int PreviousVoice;	//Номер предыдущего голоса
+	private int InfectResist;	//Сопротивление инфекции
+	private int PreviousHP;	//Предыдущее HP, используется для обводки зомби
+	private int InfectDelay;	//Кол-во раундов, которое игрок должен отыграть за выжевшего, чтобы сновы начать раунд как Первый зараженный
+	private int ZMDeathCount;	//Счётчик смертей зомби, используется для вычисления бонусного HP для зомби
 
-	float SlowTime;	//Время, которое должен ждать зомби, чтобы начать восстанавливать скорость
-	float SpeedRT;	//Время, по истечению которого зомби получет определенное кол-во скорости
-	float VoiceTime;	//Временные промежутки между IDLE звуками зомби
-	float AdrenalineTime;	//Время действия адреналина
-	float IRITime;	//Время, по истечению которого показывается сообщение об кол-ве сопротивления инфекции
-	float MeleeFreezeTime;	//Время, на протяжении которого на зомби будет действовать сильное замедление (ступор)
-	float OutlineTime;	//Время, по истечению которого обновляется обводка зомби
-	float LobbyRespawnDelay; //Время, которое должен ждать игрок в лобби, чтобы сново использовать "F4 Respawn"
+	private float SlowTime;	//Время, которое должен ждать зомби, чтобы начать восстанавливать скорость
+	private float SpeedRT;	//Время, по истечению которого зомби получет определенное кол-во скорости
+	private float VoiceTime;	//Временные промежутки между IDLE звуками зомби
+	private float AdrenalineTime;	//Время действия адреналина
+	private float IRITime;	//Время, по истечению которого показывается сообщение об кол-ве сопротивления инфекции
+	private float MeleeFreezeTime;	//Время, на протяжении которого на зомби будет действовать сильное замедление (ступор)
+	private float OutlineTime;	//Время, по истечению которого обновляется обводка зомби
+	private float LobbyRespawnDelay; //Время, которое должен ждать игрок в лобби, чтобы сново использовать "F4 Respawn"
 
-	bool Volunteer;	//Доброволец на роль Первого зараженного
-	bool WeakZombie;	//Слабый зомби
-	bool Abuser;	//Злоупотребляет механиками
-	bool FirstInfected;	//Является Первый зараженным
-	bool WFirstInfected; //Был Первым зараженным в сессии
+	private bool Volunteer;	//Доброволец на роль Первого зараженного
+	private bool WeakZombie;	//Слабый зомби
+	private bool Abuser;	//Злоупотребляет механиками
+	private bool FirstInfected;	//Является Первый зараженным
+	private bool WFirstInfected; //Был Первым зараженным в сессии
 
 	CSZMPlayer(int index)
 	{
@@ -465,10 +481,7 @@ class CSZMPlayer
 
 		bool bAllowPainSound = false;
 
-		if (pPlayer.IsCarrier() && FirstInfected)
-		{
-			bAllowPainSound = true;
-		}
+		bAllowPainSound = (pPlayer.IsCarrier() && FirstInfected);
 
 		if (!pPlayer.IsCarrier())
 		{
@@ -923,6 +936,15 @@ void OnMapInit()
 {
 	if (Utils.StrContains("cszm", Globals.GetCurrentMapName()))
 	{
+		if (Utils.StrContains("heavyice", Globals.GetCurrentMapName()))
+		{
+			UnlimitedRandom = true;
+		}
+		else
+		{
+			UnlimitedRandom = false;
+		}
+
 		Log.PrintToServerConsole(LOGTYPE_INFO, "CSZM", "[CSZM] Current map is valid for 'Counter-Strike Zombie Mode'");
 		bIsCSZM = true;
 		flWeakZombieWait = 0;
@@ -1405,8 +1427,8 @@ HookReturnCode CSZM_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out Da
 
 			if (Utils.StrContains("physics", pEntityAttacker.GetClassname()) || Utils.StrContains("physbox", pEntityAttacker.GetClassname()))
 			{
-				CASCommand@ pSplitArgs = StringToArgSplit(pEntityAttacker.GetEntityDescription(), ";");
-
+				string AttInfo = GetAttackerInfo(pEntityAttacker.GetEntityDescription());
+				CASCommand@ pSplitArgs = StringToArgSplit(AttInfo, ":");
 				int iPhysAttacker = Utils.StringToInt(pSplitArgs.Arg(0));
 
 				if (iPhysAttacker > 0)
@@ -1731,12 +1753,9 @@ HookReturnCode CSZM_OnEntityCreation(const string &in strClassname, CBaseEntity@
 			SpawnRandomItem(pEntity);
 		}
 
-		else if (Utils.StrContains("prop", strClassname) && !Utils.StrContains("unbreakable", pEntity.GetEntityDescription()))
+		else if (Utils.StrContains("prop", strClassname))
 		{
-			if (Utils.StrContains("unbrk", pEntity.GetEntityName()) || Utils.StrContains("unbreakable", pEntity.GetEntityName()))
-			{
-				pEntity.SetEntityDescription(pEntity.GetEntityDescription() + ";unbreakable");
-			}
+			CheckProp(pEntity, strClassname);
 		}
 
 		if (Utils.StrEql("projectile_nonhurtable", strClassname))
@@ -1765,7 +1784,10 @@ HookReturnCode CSZM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out Dama
 	int EntIndex = pEntity.entindex();
 	int iAttakerIndex = pAttacker.entindex();
 	int iAttakerTeam = pAttacker.GetTeamNumber();
-	bool bIsUnbreakable = false; 
+
+	bool bIsUnbreakable = bIsPropUnbreakable(pEntity); 
+	bool bIsJunk = bIsPropJunk(pEntity);
+	bool bIsExplosive = bIsPropExplosive(pEntity);
 
 	if (Utils.StrEql(pAttacker.GetEntityName(), "frendly_shrapnel"))
 	{
@@ -1786,14 +1808,9 @@ HookReturnCode CSZM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out Dama
 		}
 	}
 
-	if (Utils.StrContains("unbrk", pEntity.GetEntityName()) || Utils.StrContains("unbreakable", pEntity.GetEntityName()) || Utils.StrContains("unbreakable", pEntity.GetEntityDescription()))
-	{
-		bIsUnbreakable = true;
-	}
-
 	if (Utils.StrEql(pEntity.GetClassname(), "prop_barricade"))
 	{
-		DamageInfo.SetDamage(DamageInfo.GetDamage() * 0.475f);
+		DamageInfo.SetDamage(DamageInfo.GetDamage() * 0.91f);
 	}
 
 	//Show HP
@@ -1805,37 +1822,33 @@ HookReturnCode CSZM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out Dama
 
 		for (uint i = 0; i < iEntsLength; i++)
 		{
-			if (bIsValid)
-			{
-				continue;
-			}
-
 			if (Utils.StrEql(pEntity.GetClassname(), g_strEntities[i]))
 			{
 				bIsValid = true;
+				break;
 			}
 		}
 
 		if (bIsValid)
 		{
 			bool bLeft = false;
-			float flDMG = DamageInfo.GetDamage();
-			float flHP = pEntity.GetHealth();
-			float flResult = flHP - flDMG;
+			int iDMG = int(DamageInfo.GetDamage());
+			int iHP = pEntity.GetHealth();
+			int iResult = iHP - iDMG;
 
-			if (flDMG > 0)
+			if (iDMG > 0)
 			{
 				bLeft = true;
 			}
 
-			if (flResult > 0)
+			if (iResult > 0)
 			{
-				ShowHP(ToBasePlayer(iSlot), int(flResult), bLeft, false);
+				ShowHP(ToBasePlayer(iSlot), iResult, bLeft, false);
 			}
 
 			else
 			{
-				ShowHP(ToBasePlayer(iSlot), int(flResult), bLeft, true);
+				ShowHP(ToBasePlayer(iSlot), iResult, bLeft, true);
 			}
 		}
 	}
@@ -1846,9 +1859,11 @@ HookReturnCode CSZM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out Dama
 	{
 		if (pAttacker.IsPlayer())
 		{
-			CASCommand@ pSplitArgs = StringToArgSplit(pEntity.GetEntityDescription(), ";");
+			string EntDesc = pEntity.GetEntityDescription();
+			string AttInfo = GetAttackerInfo(EntDesc);
+			CASCommand@ pSplitArgs = StringToArgSplit(AttInfo, ":");
 			bool bSetNewAttacker = true;
-
+			EntDesc = EraseAttackerInfo(EntDesc);
 			if (pSplitArgs.Args() > 1)
 			{
 				if (Utils.StringToFloat(pSplitArgs.Arg(1)) > Globals.GetCurrentTime() && Utils.StringToInt(pSplitArgs.Arg(0)) != iAttakerIndex)
@@ -1860,7 +1875,7 @@ HookReturnCode CSZM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out Dama
 			if (bSetNewAttacker)
 			{
 				pEntity.ChangeTeam(iAttakerTeam);
-				pEntity.SetEntityDescription("" + iAttakerIndex + ";" + "" + float(Globals.GetCurrentTime() + 7.04f));
+				pEntity.SetEntityDescription(EntDesc + "|" + iAttakerIndex + ":" + "" + float(Globals.GetCurrentTime() + 7.04f) + "|");
 			}
 		}
 	}
@@ -1869,51 +1884,56 @@ HookReturnCode CSZM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out Dama
 	if (Utils.StrContains("physics", pEntity.GetClassname()))
 	{
 		//Getting some important data there
-		string MDLName = pEntity.GetModelName();
 		int DMGType = DamageInfo.GetDamageType();
 		float DMG = DamageInfo.GetDamage();
-		float flMultiplier = 27.0f;
-		bool ReduceDMG = true;
+		float flMass = pEntity.GetMass();
+		float flForceMultiplier = 1.0f;
 
 		//Only for survivors
-		if (pAttacker.IsPlayer() && pAttacker.GetTeamNumber() == TEAM_SURVIVORS)
+		//If Damage Type is BULLET reduce amount of damage and increase force by fake mass
+		if (bDamageType(DMGType, 1) && pAttacker.IsPlayer() && pAttacker.GetTeamNumber() == TEAM_SURVIVORS)
 		{
-			//If Damage Type is BULLET reduce amount of damage and increase force
-			if (bDamageType(DMGType, 1))
+			string WeaponName = (ToZPPlayer(pAttacker).GetCurrentWeapon()).GetClassname();
+			Vector DamageForce = DamageInfo.GetDamageForce();		
+			//Set DMG_BULLET Damage Type, otherwise it won't push
+			DamageInfo.SetDamageType(1<<1);
+			DamageInfo.ScaleDamageForce(1.0f);
+
+			if (Utils.StrEql("weapon_glock", WeaponName) || Utils.StrEql("weapon_usp", WeaponName) || Utils.StrEql("weapon_glock18c", WeaponName) || Utils.StrEql("weapon_mp5", WeaponName))
 			{
-				//If revolver bullet
-				if (bDamageType(DMGType, 13) && DMG > 30)
-				{
-					flMultiplier = 8.0f;
-				}
+				flForceMultiplier = 0.75f;
+			}
+			else if (Utils.StrEql("weapon_ppk", WeaponName))
+			{
+				flForceMultiplier = 2.75f;
+			}
+			else if (Utils.StrEql("weapon_m4", WeaponName) || Utils.StrEql("weapon_ak47", WeaponName))
+			{
+				flForceMultiplier = 1.15f;
+			}
+			else if (Utils.StrEql("weapon_870", WeaponName) || Utils.StrEql("weapon_winchester", WeaponName))
+			{
+				flForceMultiplier = 0.225f;
+			}
+			else if (Utils.StrEql("weapon_supershorty", WeaponName))
+			{
+				flForceMultiplier = 0.3f;
+			}
+			else if (Utils.StrEql("weapon_revolver", WeaponName))
+			{
+				flForceMultiplier = 0.1885f;
+			}
 
-				//If buckshot
-				else if (bDamageType(DMGType, 29))
-				{
-					flMultiplier = 10.02f;
-				}
+			flForceMultiplier *= (flMass * 0.25f);
 
-				//Set DMG_BULLET Damage Type, otherwise it won't push
-				DamageInfo.SetDamageType(1<<1);
-				DamageInfo.SetDamageForce(DamageInfo.GetDamageForce() * flMultiplier);
+			DamageInfo.SetDamageForce((DamageForce * flForceMultiplier));
 
-				//Do not reduce damage if explosive props
-				if (Utils.StrContains("propanecanister001a", MDLName) ||
-				Utils.StrContains("oildrum001_explosive", MDLName) ||
-				Utils.StrContains("fire_extinguisher", MDLName) ||
-				Utils.StrContains("vent001", MDLName) ||
-				Utils.StrContains("canister01a", MDLName) ||
-				Utils.StrContains("canister02a", MDLName) ||
-				Utils.StrContains("propane_tank001a", MDLName) ||
-				Utils.StrContains("props_debris/wood_board", MDLName) ||
-				Utils.StrContains("gascan001a", MDLName))
+			//Do not reduce damage if explosive props or junk
+			if (!bIsJunk)
+			{
+				if (!bIsExplosive)
 				{
-					ReduceDMG = false;
-				}
-				
-				if (ReduceDMG)
-				{
-					DamageInfo.SetDamage(DMG * 0.021f);
+					DamageInfo.SetDamage(DMG * 0.022f);				
 				}
 			}
 		}
@@ -2045,6 +2065,7 @@ void LocknLoad()
 	Globals.SetPlayerRespawnDelay(true, CONST_SPAWN_DELAY);
 	ShowChatMsg(strRoundBegun, TEAM_SURVIVORS);
 	DecideFirstInfected();
+	HealthSettings();
 
 	for(int i = 1; i <= iMaxPlayers; i++)
 	{

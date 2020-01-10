@@ -1,4 +1,3 @@
-#include "cszm_modules/barricadeammo"
 #include "cszm_modules/lobbyambient"
 #include "../SendGameText"
 
@@ -102,14 +101,6 @@ array<Vector> g_MExplosionOrigin =
 
 array<Vector> g_vecActiveOrigin;
 
-array<string> g_BreakableCN =
-{
-	"func_breakable",
-	"func_physbox",
-	"func_door",
-	"prop_physics_multiplayer"
-};
-
 array<string> g_FuncBreakName =
 {
 	"wood",//0
@@ -186,9 +177,6 @@ void OnMapInit()
 	Schedule::Task(0.01f, "SetUpStuff");
 
 	g_TeleportDelay.resize(iMaxPlayers + 1);
-
-	iMaxBarricade = 12;
-	iMinBarricade = 4;
 }
 
 void OnNewRound()
@@ -200,8 +188,6 @@ void OnMatchBegin()
 {
 	Schedule::Task(0.35f, "GiveStartGear");
 	Schedule::Task(1.00f, "DisableDamageForces");
-	Schedule::Task(0.5f, "SpawnBarricades");
-	HealthSettings();
 }
 
 void OnProcessRound()
@@ -320,7 +306,7 @@ HookReturnCode HI_OnEndTouch(CBaseEntity@ pTrigger, const string &in strEntityNa
 
 HookReturnCode HI_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out DamageInfo)
 {
-	if (Utils.StrEql(pEntity.GetEntityName(), "bust") && DamageInfo.GetDamage() > 1)
+	if (Utils.StrEql(pEntity.GetEntityName(), "bust_junk") && DamageInfo.GetDamage() > 1)
 	{
 		DamageInfo.SetDamage(0);
 		Engine.EmitSoundEntity(pEntity, "HeavyIce.BustPain");
@@ -531,7 +517,6 @@ void SetUpStuff()
 
 	Engine.Ent_Fire("watermelon", "SetLightingOrigin", "armor_lighting", "0");
 
-	FindBarricades();
 	SpawnCheese();
 
 	switch(Math::RandomInt(1, 3))
@@ -809,88 +794,4 @@ void MadLaugh()
 	}
 
 	Engine.Ent_Fire("MadLaugh_SND", "Kill", "0", "7.14");
-}
-
-void HealthSettings()
-{
-	CBaseEntity@ pEntity;
-	int ilength = int(g_BreakableCN.length());
-
-	for (int i = 0; i < ilength; i++)
-	{
-		while ((@pEntity = FindEntityByClassname(pEntity, g_BreakableCN[i])) !is null)
-		{
-			if (i == 0)
-			{
-				for (uint u = 0; u < g_FuncBreakName.length(); u++)
-				{
-					if (Utils.StrEql(pEntity.GetEntityName(), g_FuncBreakName[u]))
-					{
-						SetHP(pEntity, g_FuncBreakHP[u]);
-					}
-				}
-			}
-
-			if (i == 1 || i == 2)
-			{
-				SetHP(pEntity, 54);
-			}
-
-			if (i == 3)
-			{
-				if (Utils.StrContains("toycar", pEntity.GetModelName()))
-				{
-					pEntity.SetEntityName("unbrk_toycar");
-				}
-
-				if (Utils.StrContains("oildrum001_explosive", pEntity.GetModelName()))
-				{
-					Engine.Ent_Fire_Ent(pEntity, "addoutput", "ExplodeDamage 400");
-					Engine.Ent_Fire_Ent(pEntity, "addoutput", "ExplodeRadius 350");
-				}
-
-				else if (Utils.StrContains("watermelon", pEntity.GetEntityName()))
-				{
-					pEntity.SetMaxHealth(250);
-					pEntity.SetHealth(250);
-				}
-
-				else if (Utils.StrContains("BlueCrate", pEntity.GetEntityName()))
-				{
-					SetHP(pEntity, 32);
-				}
-
-				else if (Utils.StrContains("RedCrate", pEntity.GetEntityName()))
-				{
-					SetHP(pEntity, 64);
-				}
-
-				else if (Utils.StrContains("_tv", pEntity.GetEntityName()))
-				{
-					SetHP(pEntity, 42);
-				}
-
-				else if (Utils.StrContains("props_junk/glass", pEntity.GetModelName()))
-				{
-					pEntity.SetHealth(5);
-				}
-
-				else if (Utils.StrContains("cheese", pEntity.GetEntityName()))
-				{
-					continue;
-				}
-
-				else
-				{
-					SetHP(pEntity, int(floor(pEntity.GetHealth() * 0.75)));
-				}
-			}
-		}
-	}
-}
-
-void SetHP(CBaseEntity@ pEntity, const int iHP)
-{
-	pEntity.SetMaxHealth(CHP(iHP));
-	pEntity.SetHealth(CHP(iHP));
 }

@@ -1,6 +1,4 @@
-#include "cszm_modules/doorset"
 #include "cszm_modules/spawncrates"
-#include "cszm_modules/barricadeammo"
 #include "cszm_modules/lobbyambient"
 
 int iSurvInBasement;
@@ -16,11 +14,8 @@ void OnMapInit()
 	Events::Trigger::OnEndTouch.Hook(@OnEndTouch);
 	Schedule::Task(0.05f, "SetStuff");
 
-	iMaxBarricade = 15;
-	iMinBarricade = 8;
-
 	iMinCrates = 0;
-	iMaxCrates = 5;
+	iMaxCrates = 7;
 
 	g_PICOrigin.insertLast(Vector(563.168, 1158.57, -255.513));
 	g_PICAngles.insertLast(QAngle(0, -124.061, 0));
@@ -101,54 +96,14 @@ void OnMatchBegin()
 	Engine.Ent_Fire("zs_basement_ns_pvs*", "EnableSpawn");
 	Engine.Ent_Fire("_temp_humanclip", "ForceSpawn");
 
-	PropDoorHP();
-	PropsSettings();
-	
 	Schedule::Task(0.5f, "SpawnCrates");
-	Schedule::Task(0.5f, "SpawnBarricades");
 }
 
 void SetStuff()
 {
 	Engine.Ent_Fire("Precache", "kill");
 	Engine.Ent_Fire("shading", "StartOverlays");
-	FindBarricades();
 	PlayLobbyAmbient();
-}
-
-void PropsSettings()
-{
-	CBaseEntity@ pEntity;
-	while ((@pEntity = FindEntityByClassname(pEntity, "prop_physics_multiplayer")) !is null)
-	{
-		if (Utils.StrContains("gascan001a", pEntity.GetModelName()))
-		{
-			Engine.Ent_Fire_Ent(pEntity, "addoutput", "ExplodeDamage 85");
-			Engine.Ent_Fire_Ent(pEntity, "addoutput", "ExplodeRadius 256");
-			pEntity.SetHealth(5);
-		}
-
-		else if (Utils.StrContains("weak", pEntity.GetEntityName()))
-		{
-			pEntity.SetHealth(5);
-			pEntity.SetMaxHealth(5);
-		}
-
-		else
-		{
-			int Health = int(pEntity.GetHealth() * 0.45f);
-			pEntity.SetMaxHealth(PlrCountHP(Health));
-			pEntity.SetHealth(PlrCountHP(Health));
-		}
-	}
-}
-
-void DoorHP(int &in iWoodDoorHP, int &in iMetalDoorHP)
-{
-	Engine.Ent_Fire("WoodDoor*", "SetDoorHealth", "" + iWoodDoorHP);
-	Engine.Ent_Fire("FrontDoors", "SetDoorHealth", "" + iWoodDoorHP);
-	Engine.Ent_Fire("MetalDoor*", "SetDoorHealth", "" + iMetalDoorHP);
-	Engine.Ent_Fire("CrematoryDoors", "SetDoorHealth", "" + iMetalDoorHP);
 }
 
 HookReturnCode OnPlayerSpawn(CZP_Player@ pPlayer)

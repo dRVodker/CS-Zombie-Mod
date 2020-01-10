@@ -1,5 +1,4 @@
 #include "cszm_modules/spawncrates"
-#include "cszm_modules/barricadeammo"
 #include "cszm_modules/lobbyambient"
 
 const int TEAM_LOBBYGUYS = 0;
@@ -42,9 +41,6 @@ void OnMapInit()
 	iMinCrates = 1;
 	iMaxCrates = 4;
 
-	iMaxBarricade = 12;
-	iMinBarricade = 4;
-
 	g_PICOrigin.insertLast(Vector(-661.715, 487.519, -1215.51));
 	g_PICOrigin.insertLast(Vector(719.118, 1402.53, -1135.04));
 	g_PICOrigin.insertLast(Vector(714.735, 1335.2, -1135.58));
@@ -81,15 +77,11 @@ void OnNewRound()
 void OnMatchBegin() 
 {
 	Engine.Ent_Fire("SND_Ambient", "PlaySound");
-	PropsSettings();
 	Schedule::Task(0.5f, "SpawnCrates");
-	Schedule::Task(0.5f, "SpawnBarricades");
 }
 
 void SetUpStuff()
 {
-	FindBarricades();
-	RemoveItemCrate();
 	Schedule::Task(Math::RandomFloat(4.32f, 35.14f), "SND_Ambient_Rats");
 	Schedule::Task(Math::RandomFloat(12.85f, 175.35f), "SND_Ambient_Groan2");
 	Schedule::Task(Math::RandomFloat(35.24f, 225.25f), "SND_Ambient_Thunder");
@@ -172,64 +164,6 @@ void OnEntityUsed(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 		pBaseEnt.SetMoveType(MOVETYPE_NONE);
 		Engine.EmitSoundPosition(iIndex, "doors/default_move.wav", pBaseEnt.EyePosition(), 1.0f, 60, 105);
 	}
-}
-
-void PropsSettings()
-{
-	CBaseEntity@ pEntity;
-	while ((@pEntity = FindEntityByClassname(pEntity, "prop_physics_multiplayer")) !is null)
-	{
-		if (Utils.StrContains("oildrum001_explosive", pEntity.GetModelName()))
-		{
-			Engine.Ent_Fire_Ent(pEntity, "addoutput", "ExplodeDamage 200");
-			Engine.Ent_Fire_Ent(pEntity, "addoutput", "ExplodeRadius 256");
-		}
-
-		else if (Utils.StrContains("PropaneCanister001a", pEntity.GetModelName()))
-		{
-			Engine.Ent_Fire_Ent(pEntity, "addoutput", "ExplodeDamage 85");
-			Engine.Ent_Fire_Ent(pEntity, "addoutput", "ExplodeRadius 256");
-			pEntity.SetHealth(5);
-			pEntity.SetMaxHealth(5);
-		}
-
-		else if (Utils.StrContains("weak", pEntity.GetEntityName()))
-		{
-			pEntity.SetHealth(5);
-			pEntity.SetMaxHealth(5);
-		}
-
-		else if(Utils.StrContains("bluebarrel001", pEntity.GetModelName()) || Utils.StrContains("Wheebarrow01a", pEntity.GetModelName()) || Utils.StrContains("trashdumpster01a", pEntity.GetModelName()))
-		{
-			pEntity.SetEntityName("unbrk");
-		}
-
-		else
-		{
-			int Health = int(pEntity.GetHealth() * 0.65f);
-			pEntity.SetMaxHealth(PlrCountHP(Health));
-			pEntity.SetHealth(PlrCountHP(Health));
-		}
-	}
-}
-
-void RemoveItemCrate()
-{
-	CBaseEntity@ pEntity;
-	while ((@pEntity = FindEntityByClassname(pEntity, "prop_itemcrate")) !is null)
-	{
-		pEntity.SUB_Remove();
-	}
-}
-
-int PlrCountHP(int &in iMulti)
-{
-	int iHP = 0;
-	int iSurvNum = Utils.GetNumPlayers(survivor, true);
-	if(iSurvNum < 4) iSurvNum = 5;
-	iHP = iSurvNum * iMulti;
-	
-	return iHP;
 }
 
 void SND_Ambient_Rats()

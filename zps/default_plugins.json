@@ -24,52 +24,38 @@
 {
 	"plugins": [
 		{
-			"name": "Spray Checker",
-			"author": "JonnyBoy0719",
-			"version": "1.0.0.0",
-			"script": "SprayChecker.as",
-			"lifetime": "HOTRELOADABLE"
-		},
-		{
-			"name": "VooDoo",
-			"author": "dR.Vodker",
-			"version": "1.0.0.0",
-			"script": "voodoo.as",
-			"lifetime": "HOTRELOADABLE"
-		},
-		{
 			"name": "CS Zombie Mod",
-			"author": "dR.Vodker",
+			"author": "JonnyBoy0719",
 			"version": "1.0.0.0",
 			"script": "CSZM-Core.as",
 			"lifetime": "HOTRELOADABLE"
 		},
 		{
-			"name": "Show Damage",
-			"author": "dR.Vodker",
+			"name": "CSZM-FMine",
+			"author": "JonnyBoy0719",
 			"version": "1.0.0.0",
-			"script": "CSZM-Kills.as",
+			"script": "CSZM-FMine.as",
 			"lifetime": "HOTRELOADABLE"
 		},
 		{
-			"name": "CS ZM - ChatSpammer",
-			"author": "dR.Vodker",
-			"version": "1.0.0.0",
-			"script": "CSZM-ChatSpamer.as",
-			"lifetime": "HOTRELOADABLE"
-		},
-		{
-			"name": "Item Respawner",
-			"author": "dR.Vodker",
+			"name": "CSZM-ItemRespawn",
+			"author": "JonnyBoy0719",
 			"version": "1.0.0.0",
 			"script": "CSZM-ItemRespawn.as",
 			"lifetime": "HOTRELOADABLE"
 		},
 		{
-			"name": "Show Props HP",
-			"author": "dR.Vodker",
+			"name": "CSZM-ChatSpamer",
+			"author": "JonnyBoy0719",
 			"version": "1.0.0.0",
-			"script": "CSZM-ShowHP.as",
+			"script": "CSZM-ChatSpamer.as",
+			"lifetime": "HOTRELOADABLE"
+		},
+		{
+			"name": "CSZM-ChatCom",
+			"author": "JonnyBoy0719",
+			"version": "1.0.0.0",
+			"script": "CSZM-ChatCom.as",
 			"lifetime": "HOTRELOADABLE"
 		}
 	]

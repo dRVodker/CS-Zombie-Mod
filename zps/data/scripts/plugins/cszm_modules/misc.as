@@ -630,3 +630,170 @@ void RegisterEntities()
 	Entities::RegisterUse("item_deliver");
 	Entities::RegisterDrop("item_deliver");
 }
+
+string GetAttackerInfo(const string &in FullInfo)
+{
+	string AttakerInfo = ":";
+	if (Utils.StrContains("|", FullInfo))
+	{
+		int iFirst = FullInfo.findFirst("|", 0) + 1;
+		int iLast = FullInfo.findFirst("|", iFirst);
+		AttakerInfo = FullInfo.substr(iFirst, iLast - iFirst);			
+	}
+
+	return AttakerInfo;
+}
+
+string EraseAttackerInfo(string &in FullInfo)
+{
+	if (Utils.StrContains("|", FullInfo))
+	{
+		int iFirst = FullInfo.findFirst("|", 0) + 1;
+		int iLast = FullInfo.findFirst("|", iFirst);
+		FullInfo.erase(iFirst - 1, iLast - iFirst + 2);
+	}
+
+	return FullInfo;
+}
+
+bool bIsPropUnbreakable(CBaseEntity@ pEntity)
+{
+	bool b = false;
+
+	b = Utils.StrContains("unbreakable", pEntity.GetEntityDescription());
+
+	return b;
+}
+
+bool bIsPropJunk(CBaseEntity@ pEntity)
+{
+	bool b = false;
+
+	b = Utils.StrContains("junk", pEntity.GetEntityDescription());
+
+	return b;
+}
+
+bool bIsPropExplosive(CBaseEntity@ pEntity)
+{
+	bool b = false;
+
+	b = Utils.StrContains("explosive", pEntity.GetEntityDescription());
+
+	return b;
+}
+
+void HealthSettings()
+{
+	CBaseEntity@ pEntity = null;
+	int iPlrCount = Utils.GetNumPlayers(survivor, true);
+	int iLength = int(g_strBreakableEntities.length());
+
+	if (iPlrCount < 6)
+	{
+		iPlrCount = 5;
+	}
+
+	for (int i = 0; i < iLength; i++)
+	{
+		while ((@pEntity = FindEntityByClassname(pEntity, g_strBreakableEntities[i])) !is null)
+		{
+			if (i <= 2)
+			{
+				SetCustomPropHealth(pEntity, iPlrCount);
+			}
+			else if (i == 3)
+			{
+				SetCustomDoorHealth(pEntity, iPlrCount);
+			}
+			else
+			{
+				SetCustomFuncHealth(pEntity, iPlrCount);
+			}
+		}
+	}
+}
+
+void SetCustomPropHealth(CBaseEntity@ pEntity, const int &in iPlrCount)
+{
+	if (!bIsPropJunk(pEntity))
+	{
+		if (!bIsPropExplosive(pEntity))
+		{
+			int iCustomHealth = int((pEntity.GetHealth() * 0.25) * iPlrCount);
+
+			if (iCustomHealth > PROP_MAX_HEALTH)
+			{
+				iCustomHealth = PROP_MAX_HEALTH;
+			}
+
+			iCustomHealth += Math::RandomInt(0, 65);
+
+			pEntity.SetHealth(iCustomHealth);			
+		}
+	}
+}
+
+void SetCustomDoorHealth(CBaseEntity@ pEntity, const int &in iPlrCount)
+{
+	float flMultiplier = 6.0f;
+	if(Utils.StrContains("doormainmetal01", pEntity.GetModelName()))
+	{
+		flMultiplier = 7.9f;
+	}
+	else if(Utils.StrContains("doormain01", pEntity.GetModelName()))
+	{
+		flMultiplier = 8.8f;
+	}
+	else if(Utils.StrContains("door_zps_wood", pEntity.GetModelName()))
+	{
+		flMultiplier = 9.5f;
+	}
+	else if(Utils.StrContains("door_zps_metal", pEntity.GetModelName()))
+	{
+		flMultiplier = 8.1f;
+	}
+
+	Engine.Ent_Fire_Ent(pEntity, "SetDoorHealth", "" + int((iPlrCount * flMultiplier) + Math::RandomInt(0, 25)), "0.00");	
+}
+
+void SetCustomFuncHealth(CBaseEntity@ pEntity, const int &in iPlrCount)
+{
+	string strTargetname = pEntity.GetEntityName();
+
+	if (!Utils.StrContains("special", strTargetname))
+	{
+		int iCustomHealth = pEntity.GetHealth() * iPlrCount + Math::RandomInt(0, 75);
+
+		pEntity.SetHealth(iCustomHealth);		
+	}
+}
+
+void CheckProp(CBaseEntity@ pProp, const string &in strClassname)
+{
+	string ModelName = pProp.GetModelName();
+	string Targetname = pProp.GetEntityName();
+	pProp.SetMaxHealth(pProp.GetHealth());
+
+	if (!Utils.StrContains("unbreakable", pProp.GetEntityDescription()))
+	{
+		if (Utils.StrContains("unbrk", Targetname) || Utils.StrContains("unbreakable", Targetname))
+		{
+			pProp.SetEntityDescription(pProp.GetEntityDescription() + ";unbreakable");
+		}
+	}
+	if (!Utils.StrContains("junk", pProp.GetEntityDescription()))
+	{
+		if (Utils.StrContains("junk", Targetname) || Utils.StrContains("weak", Targetname))
+		{
+			pProp.SetEntityDescription(pProp.GetEntityDescription() + ";junk");
+		}
+	}
+	if (!Utils.StrContains("explosive", pProp.GetEntityDescription()))
+	{
+		if (Utils.StrContains("explosive", Targetname) || Utils.StrContains("propanecanister001a", ModelName) || Utils.StrContains("oildrum001_explosive", ModelName) || Utils.StrContains("fire_extinguisher", ModelName) || Utils.StrContains("vent001", ModelName) || Utils.StrContains("canister01a", ModelName) || Utils.StrContains("canister02a", ModelName) || Utils.StrContains("propane_tank001a", ModelName) || Utils.StrContains("props_debris/wood_board", ModelName) || Utils.StrContains("gascan001a", ModelName))
+		{
+			pProp.SetEntityDescription(pProp.GetEntityDescription() + ";explosive");
+		}
+	}
+}

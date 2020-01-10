@@ -725,6 +725,15 @@
 	"wave"			"npc/combine_soldier/vo/_comma.wav"
 }
 
+"Character_Larry.Go"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+
 //////////////////////////////
 //Override Zombie Eugene set//
 //////////////////////////////

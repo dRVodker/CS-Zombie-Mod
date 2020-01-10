@@ -1,6 +1,4 @@
-#include "cszm_modules/doorset"
 #include "cszm_modules/spawncrates"
-#include "cszm_modules/barricadeammo"
 #include "cszm_modules/lobbyambient"
 
 const int TEAM_LOBBYGUYS = 0;
@@ -21,16 +19,6 @@ void SD(const string &in strMSG)
 	Chat.PrintToChat(all, strMSG);
 }
 
-int CalculateHealthPoints(int &in iMulti)
-{
-	int iHP = 0;
-	int iSurvNum = Utils.GetNumPlayers(survivor, true);
-	if (iSurvNum < 4) iSurvNum = 5;
-	iHP = iSurvNum * iMulti;
-	
-	return iHP;
-}
-
 void OnMapInit()
 {
 	Schedule::Task(0.05f, "SetUpStuff");
@@ -38,9 +26,6 @@ void OnMapInit()
 	Entities::RegisterUse("func_button");
 	Events::Trigger::OnStartTouch.Hook(@OnStartTouch);
 	Events::Player::OnPlayerSpawn.Hook(@OnPlayerSpawn);
-
-	iMaxBarricade = 7;
-	iMinBarricade = 4;
 
 	iMinCrates = 0;
 	iMaxCrates = 3;
@@ -99,10 +84,7 @@ void OnProcessRound()
 
 void OnMatchBegin() 
 {
-	PropsHP();
-	PropDoorHP();
 	Schedule::Task(0.5f, "SpawnCrates");
-	Schedule::Task(0.5f, "SpawnBarricades");
 }
 
 void SetUpStuff()
@@ -115,7 +97,6 @@ void SetUpStuff()
 
 	TurnOnFan1();
 
-	FindBarricades();
 	PlayLobbyAmbient();
 }
 
@@ -302,31 +283,5 @@ void TurnOffFan2()
 		Fan2SNDStop();
 		Engine.Ent_Fire("func_fan2", "stop");
 		Engine.Ent_Fire("fanpush2", "disable", "0", "0.75");
-	}
-}
-
-void PropsHP()
-{
-	CBaseEntity@ pEntity;
-	while ((@pEntity = FindEntityByClassname(pEntity, "prop_physics_multiplayer")) !is null)
-	{
-		if (Utils.StrContains("oildrum001_explosive", pEntity.GetModelName()))
-		{
-			Engine.Ent_Fire_Ent(pEntity, "addoutput", "ExplodeDamage 200");
-			Engine.Ent_Fire_Ent(pEntity, "addoutput", "ExplodeRadius 256");
-		}
-
-		else if (Utils.StrContains("propane_tank001a", pEntity.GetModelName()))
-		{
-			Engine.Ent_Fire_Ent(pEntity, "addoutput", "ExplodeDamage 50");
-			Engine.Ent_Fire_Ent(pEntity, "addoutput", "ExplodeRadius 256");
-		}
-
-		else
-		{
-			int Health = int(pEntity.GetHealth() * 0.5f);
-			pEntity.SetMaxHealth(PlrCountHP(Health));
-			pEntity.SetHealth(PlrCountHP(Health));
-		}
 	}
 }

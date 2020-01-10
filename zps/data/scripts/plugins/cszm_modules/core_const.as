@@ -63,3 +63,6 @@ const string VOICE_ZM_IDLE = "CSPlayer.Idle";
 //CSZM Arms models
 const string MODEL_HUMAN_ARMS = "models/cszm/weapons/c_cszm_human_arms.mdl";
 const string MODEL_ZOMBIE_ARMS = "models/cszm/weapons/c_cszm_zombie_arms.mdl";
+
+//PROPS
+const int PROP_MAX_HEALTH = 1250;

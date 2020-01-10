@@ -1,6 +1,4 @@
-#include "cszm_modules/doorset"
 #include "cszm_modules/spawncrates"
-#include "cszm_modules/barricadeammo"
 #include "cszm_modules/lobbyambient"
 #include "cszm_modules/spawndist"
 
@@ -23,9 +21,6 @@ void OnMapInit()
 	Events::Player::OnPlayerSpawn.Hook(@OnPlayerSpawn);
 
 	flMinZSDist = 631.0f;
-
-	iMaxBarricade = 19;
-	iMinBarricade = 7;
 
 	iMinCrates = 0;
 	iMaxCrates = 5;
@@ -77,11 +72,7 @@ void OnNewRound()
 
 void OnMatchBegin() 
 {
-	PropsSettings();
-	PropDoorHP();
-
 	Schedule::Task(0.5f, "SpawnCrates");
-	Schedule::Task(0.5f, "SpawnBarricades");
 
 	Engine.Ent_Fire("SND_Ambient", "PlaySound");
 	
@@ -100,7 +91,6 @@ void OnMatchEnded()
 
 void SetUpStuff()
 {
-	FindBarricades();
 	Engine.Ent_Fire("Precache", "kill");
 	Engine.Ent_Fire("SND_Ambient", "PlaySound");
 	
@@ -130,50 +120,6 @@ HookReturnCode OnPlayerSpawn(CZP_Player@ pPlayer)
 	}
 
 	return HOOK_CONTINUE;	
-}
-
-void PropsSettings()
-{
-	CBaseEntity@ pEntity;
-	while ((@pEntity = FindEntityByClassname(pEntity, "prop_physics_multiplayer")) !is null)
-	{
-		if(Utils.StrContains("oildrum001_explosive", pEntity.GetModelName()))
-		{
-			Engine.Ent_Fire_Ent(pEntity, "addoutput", "ExplodeDamage 200");
-			Engine.Ent_Fire_Ent(pEntity, "addoutput", "ExplodeRadius 256");
-		}
-
-		else if(Utils.StrContains("wood_crate", pEntity.GetModelName()))
-		{
-			pEntity.SetMaxHealth(pEntity.GetHealth() + PlrCountHP(50));
-			pEntity.SetHealth(pEntity.GetHealth() + PlrCountHP(50));
-		}
-
-		else if(Utils.StrContains("plasma_53", pEntity.GetModelName()))
-		{
-			pEntity.SetMaxHealth(5);
-			pEntity.SetHealth(5);
-		}
-		
-		else if(Utils.StrContains("fire_extinguisher", pEntity.GetModelName()))
-		{
-			pEntity.SetMaxHealth(5);
-			pEntity.SetHealth(5);
-		}
-
-		else if(Utils.StrContains("interior_fence001g", pEntity.GetModelName()))
-		{
-			pEntity.SetMaxHealth(pEntity.GetHealth() + PlrCountHP(45));
-			pEntity.SetHealth(pEntity.GetHealth() + PlrCountHP(45));
-		}
-
-		else
-		{
-			int Health = int(pEntity.GetHealth() * 0.5f);
-			pEntity.SetMaxHealth(PlrCountHP(Health));
-			pEntity.SetHealth(PlrCountHP(Health));
-		}
-	}
 }
 
 void ChangeFog()

@@ -1,38 +1,17 @@
-#include "cszm_modules/doorset"
-#include "cszm_modules/barricadeammo"
 #include "cszm_modules/lobbyambient"
 
 const int TEAM_LOBBYGUYS = 0;
-
-int CalculateHealthPoints(int &in iMulti) 
-{
-	int iHP = 0;
-	int iSurvNum = Utils.GetNumPlayers(survivor, true);
-	if(iSurvNum < 4) iSurvNum = 5;
-	iHP = iSurvNum * iMulti;
-	
-	return iHP;
-}
 
 void OnMapInit() 
 {
 	Events::Player::OnPlayerSpawn.Hook(@OnPlrSpawn);
 
 	Schedule::Task(0.05f, "SetUpStuff");
-	iMaxBarricade = 12;
-	iMinBarricade = 6;
 }
 
 void OnNewRound() 
 {	
 	Schedule::Task(0.05f, "SetUpStuff");
-}
-
-void OnMatchBegin() 
-{
-	PropsHP();
-	PropDoorHP();
-	Schedule::Task(0.5f, "SpawnBarricades");
 }
 
 void SetUpStuff() 
@@ -43,7 +22,6 @@ void SetUpStuff()
 	Engine.Ent_Fire("tonemap", "SetBloomScale", "0.475");
 	Engine.Ent_Fire("extinguisher", "Addoutput", "damagetoenablemotion 500");
 
-	FindBarricades();
 	VMSkins();
 	RndSpawn();
 	OpenDoors();
@@ -101,25 +79,5 @@ void RndSpawn()
 	{
 		Engine.Ent_Fire("Zombie-CTerrorisSpawns", "Kill");
 		Engine.Ent_Fire("Human-TerrorisSpawns", "Kill");
-	}
-}
-
-void PropsHP() 
-{
-	CBaseEntity@ pEntity;
-	while ((@pEntity = FindEntityByClassname(pEntity, "prop_physics_multiplayer")) !is null) 
-	{
-		if (Utils.StrContains("fire_extinguisher", pEntity.GetModelName()))
-		{
-			pEntity.SetMaxHealth(10);
-			pEntity.SetHealth(10);
-		}
-
-		else
-		{
-			int Health = int(pEntity.GetHealth() * 0.6f);
-			pEntity.SetMaxHealth(PlrCountHP(Health));
-			pEntity.SetHealth(PlrCountHP(Health));
-		}
 	}
 }
