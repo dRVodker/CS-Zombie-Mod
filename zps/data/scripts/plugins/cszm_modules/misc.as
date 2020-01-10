@@ -1,13 +1,6 @@
 bool bDamageType(int &in iSubjectDT, int &in iDMGNum)
 {
-	bool bIsDTValid = false;
-
-	if (iSubjectDT & (1<<iDMGNum) == (1<<iDMGNum))
-	{
-		bIsDTValid = true;
-	}
-
-	return bIsDTValid;
+	return iSubjectDT & (1<<iDMGNum) == (1<<iDMGNum);;
 }
 
 void GetRandomVictim()
@@ -607,20 +600,14 @@ void ShowHP(CBasePlayer@ pBasePlayer, const int &in iHP, const bool &in bLeft, c
 
 void SetAntidoteState(const int &in iIndex, const int &in iAStage)
 {
-	bool bTest = false;
 	CBaseEntity@ pEntity;
-	
 	while ((@pEntity = FindEntityByClassname(pEntity, "item_deliver")) !is null)
 	{
 		if (Utils.StringToInt(pEntity.GetEntityName()) == iIndex && Utils.StrContains("iantidote", pEntity.GetEntityName()))
 		{
-			bTest = true;
+			Engine.Ent_Fire(iIndex + "iantidote", "addoutput", "itemstate " + iAStage);
+			break;
 		}
-	}
-
-	if (bTest)
-	{
-		Engine.Ent_Fire(iIndex + "iantidote", "addoutput", "itemstate " + iAStage);
 	}
 }
 
@@ -658,29 +645,17 @@ string EraseAttackerInfo(string &in FullInfo)
 
 bool bIsPropUnbreakable(CBaseEntity@ pEntity)
 {
-	bool b = false;
-
-	b = Utils.StrContains("unbreakable", pEntity.GetEntityDescription());
-
-	return b;
+	return Utils.StrContains("unbreakable", pEntity.GetEntityDescription());
 }
 
 bool bIsPropJunk(CBaseEntity@ pEntity)
 {
-	bool b = false;
-
-	b = Utils.StrContains("junk", pEntity.GetEntityDescription());
-
-	return b;
+	return Utils.StrContains("junk", pEntity.GetEntityDescription());
 }
 
 bool bIsPropExplosive(CBaseEntity@ pEntity)
 {
-	bool b = false;
-
-	b = Utils.StrContains("explosive", pEntity.GetEntityDescription());
-
-	return b;
+	return Utils.StrContains("explosive", pEntity.GetEntityDescription());
 }
 
 void HealthSettings()

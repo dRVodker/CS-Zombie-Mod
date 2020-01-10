@@ -1894,7 +1894,8 @@ HookReturnCode CSZM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out Dama
 		if (bDamageType(DMGType, 1) && pAttacker.IsPlayer() && pAttacker.GetTeamNumber() == TEAM_SURVIVORS)
 		{
 			string WeaponName = (ToZPPlayer(pAttacker).GetCurrentWeapon()).GetClassname();
-			Vector DamageForce = DamageInfo.GetDamageForce();		
+			Vector DamageForce = DamageInfo.GetDamageForce();
+				
 			//Set DMG_BULLET Damage Type, otherwise it won't push
 			DamageInfo.SetDamageType(1<<1);
 			DamageInfo.ScaleDamageForce(1.0f);
@@ -1905,7 +1906,7 @@ HookReturnCode CSZM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out Dama
 			}
 			else if (Utils.StrEql("weapon_ppk", WeaponName))
 			{
-				flForceMultiplier = 2.75f;
+				flForceMultiplier = 2.01f;
 			}
 			else if (Utils.StrEql("weapon_m4", WeaponName) || Utils.StrEql("weapon_ak47", WeaponName))
 			{

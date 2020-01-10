@@ -17,7 +17,7 @@ array<string> g_ThingsList =
 	"weapon_mp5;21=5;16=4;8=3;4=2;0=1;-1=-1",
 	"weapon_glock18c;12=4;6=3;0=2;-1=-1",
 	"weapon_revolver;24=4;18=3;12=2;6=1;0=0;-1=-1",
-	"weapon_ppk;0=1;-1=-1",
+	"weapon_ppk;0=1;-1=2",
 	"weapon_usp;12=8;6=4;0=2;-1=-1",
 	"weapon_glock;12=8;6=4;0=2;-1=-1",
 
@@ -27,7 +27,7 @@ array<string> g_ThingsList =
 	"weapon_machete;20=13;10=10;8=8;6=6;4=4;0=2;-1=-1",		//Replaced with the FragMine
 
 	// Support
-	"item_armor;10=4;8=3;6=2;4=1;-1=-1",
+	"item_armor;10=4;8=3;6=2;4=1;0=0;-1=-1",
 	"item_healthkit;12=1;6=1;0=0;-1=-1",		//Replaced with the Antidote
 	"item_pills;12=4;0=2;;-1=-1",			//Replaced with the Adrenaline
 
