@@ -74,12 +74,10 @@ HookReturnCode CSZM_SetS_OnPlrSpawn(CZP_Player@ pPlayer)
 		pPlayer.StripWeapon("weapon_tennisball");
 		pPlayer.StripWeapon("weapon_snowball");
 	}
-
 	else
 	{
 		SetFirefly(pBaseEnt, pBaseEnt.entindex(), 0, 0, 0, false);
 	}
-
 	if (Utils.StrContains(";scaled;", sEntDesc))
 	{
 		Engine.Ent_Fire_Ent(pBaseEnt, "SetModelScale", "1.0");
@@ -141,7 +139,6 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 				Engine.EmitSoundPlayer(pPlayer, FILENAME_DENY);
 				bHandled = true;
 			}
-
 			else
 			{
 				if (fltest < 0.1f)
@@ -171,7 +168,6 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 
 			Chat.CenterMessagePlayer(pPlrEnt, TEXT_YOUR_SCALE + fltest + sAddition);
 		}
-
 		else
 		{
 			iCommTeam = TEAM_LOBBYGUYS;
@@ -179,14 +175,12 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 
 		bHandled = true;
 	}
-
 	else if (Utils.StrEql("!dlight", arg1))
 	{
 		if (pBaseEnt.GetTeamNumber() == TEAM_LOBBYGUYS)
 		{
 			DLight(pPlayer, pBaseEnt, pBaseEnt.entindex());				
 		}
-
 		else
 		{
 			iCommTeam = TEAM_LOBBYGUYS;
@@ -194,14 +188,12 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 
 		bHandled = true;
 	}
-
 	else if (Utils.StrEql("!snowball", arg1) || Utils.StrEql("!sball", arg1))
 	{
 		if (pBaseEnt.GetTeamNumber() == TEAM_LOBBYGUYS)
 		{
 			GiveThrowable(pPlayer, "weapon_snowball");
 		}
-
 		else
 		{
 			iCommTeam = TEAM_LOBBYGUYS;
@@ -209,14 +201,12 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 
 		bHandled = true;
 	}
-	
 	else if (Utils.StrEql("!tennisball", arg1) || Utils.StrEql("!tball", arg1))
 	{
 		if (pBaseEnt.GetTeamNumber() == TEAM_LOBBYGUYS)
 		{
 			GiveThrowable(pPlayer, "weapon_tennisball");
 		}
-
 		else
 		{
 			iCommTeam = TEAM_LOBBYGUYS;
@@ -224,7 +214,6 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 
 		bHandled = true;
 	}
-
 	else if (Utils.StrContains("!firefly", arg1))
 	{
 		CASCommand@ pFFSplited = StringToArgSplit(arg1, " ");
@@ -251,7 +240,6 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 						FFColorR = 255;
 					}
 				}
-
 				if(Utils.NumbersOnly(pFFSplited.Arg(2)) && Utils.StringToInt(pFFSplited.Arg(2)) >= 0)
 				{
 					FFColorG = Utils.StringToInt(pFFSplited.Arg(2));
@@ -261,7 +249,6 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 						FFColorG = 255;
 					}
 				}
-
 				if(Utils.NumbersOnly(pFFSplited.Arg(3)) && Utils.StringToInt(pFFSplited.Arg(3)) >= 0)
 				{
 					FFColorB = Utils.StringToInt(pFFSplited.Arg(3));
@@ -280,7 +267,6 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 				SetFirefly(pBaseEnt, pBaseEnt.entindex(), FFColorR, FFColorG, FFColorB, true);
 				Chat.PrintToChatPlayer(pPlrEnt, TEXT_FIREFLY);			
 			}
-
 			else
 			{
 				ColorFireFly(pBaseEnt, pBaseEnt.entindex(), FFColorR, FFColorG, FFColorB);
@@ -310,7 +296,6 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 		{
 			Chat.PrintToChatPlayer(pPlrEnt, TEXT_ALLOWED_IN_LOBBY);
 		}
-
 		else if (iCommTeam == TEAM_SPECTATORS)
 		{
 			Chat.PrintToChatPlayer(pPlrEnt, TEXT_ALLOWED_IN_SPEC);

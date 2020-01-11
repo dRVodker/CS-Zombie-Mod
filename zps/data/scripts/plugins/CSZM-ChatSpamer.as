@@ -8,13 +8,13 @@ const string strCSZM = lb + "{coral}cszm"+rb;
 
 array<string> g_strMsg =
 {
-	strCSZM + "{gold}Press {red}F2{gold} to choose play as the {lightseagreen}First infected{gold}.",
-	strCSZM + "{gold}If you stuck in spectator mode, press {seagreen}F4{gold} to get back to the {green}ready room{gold}.",
-	strCSZM + "{gold}Picked up ammo and {green}antidote{gold} will respawn over a period of time.",
-	strCSZM + "{gold}Zombies getting the {lime}HP Bonus{gold} each death!",
-	strCSZM + "{gold}Commiting suicide as zombie won't give you the {lime}Death HP Bonus{gold}.",
-	strCSZM + "{gold}Use an {green}antidote{gold} to increase your resistance to the {green}infection{gold}.",
-	strCSZM + "{gold}Type {green}!chatcom {gold}to see all available chat commands."
+	"{gold}Press {red}F2{gold} to choose play as the {lightseagreen}First infected{gold}.",
+	"{gold}If you stuck in spectator mode, press {seagreen}F4{gold} to get back to the {green}ready room{gold}.",
+	"{gold}Picked up ammo and {green}antidote{gold} will respawn over a period of time.",
+	"{gold}Zombies getting the {lime}HP Bonus{gold} each death!",
+	"{gold}Commiting suicide as zombie won't give you the {lime}Death HP Bonus{gold}.",
+	"{gold}Use an {green}antidote{gold} to increase your resistance to the {green}infection{gold}.",
+	"{gold}Type {green}!chatcom {gold}to see all available chat commands."
 };
 
 array<string> g_strMsgToShow;
@@ -54,18 +54,17 @@ void OnProcessRound()
 
 void ShowMsg()
 {
-	uint iLength = g_strMsgToShow.length();
-
-	if (iLength == 0)
+	int iMSGToShowLength = int(g_strMsgToShow.length());
+	if (iMSGToShowLength == 0)
 	{
-		for (uint i = 0; i < iLength; i++)
+		int iMSGLength = int(g_strMsg.length());
+		for (int i = 0; i < iMSGLength; i++)
 		{
 			g_strMsgToShow.insertLast(g_strMsg[i]);
 		}
 	}
 
-	int iRNG = Math::RandomInt(0, iLength - 1);
-
-	SD(g_strMsgToShow[iRNG]);
+	int iRNG = Math::RandomInt(0, iMSGToShowLength - 1);
+	SD(strCSZM + g_strMsgToShow[iRNG]);
 	g_strMsgToShow.removeAt(iRNG);
 }

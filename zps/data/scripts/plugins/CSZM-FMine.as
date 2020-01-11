@@ -42,11 +42,11 @@ void OnMapInit()
 
 class CFragMine
 {
-	int iOwnerIndex;
-	int iMineIndex;
-	int iMineTeam;
-	float flMineTimer;
-	float flTimer;
+	private int iOwnerIndex;
+	private int iMineIndex;
+	private int iMineTeam;
+	private float flMineTimer;
+	private float flTimer;
 
 	CFragMine(int PlayerIndex, int EntIndex, int Team, float Time)
 	{
@@ -79,7 +79,7 @@ class CFragMine
 		return iMineTeam;
 	}
 
-	void LoseOwnerIndex()
+	private void LoseOwnerIndex()
 	{
 		CBaseEntity@ pMineEntity = FindEntityByEntIndex(iMineIndex);
 		iOwnerIndex = iMineIndex;
@@ -95,22 +95,18 @@ class CFragMine
 		{
 			this.LoseOwnerIndex();
 		}
-
 		else if (pOwnerEntity.GetTeamNumber() != iMineTeam)
 		{
 			this.LoseOwnerIndex();
 		}
-
 		else if (!pOwnerEntity.IsAlive())
 		{
 			this.LoseOwnerIndex();
 		}
-
 		if (!pMineEntity.Intersects(pOwnerEntity) && pMineEntity.GetOwner() !is null)
 		{
 			pMineEntity.SetOwner(null);
 		}
-
 		if (flMineTimer <= Globals.GetCurrentTime() && flMineTimer != 0)
 		{
 			flMineTimer = 0;
@@ -123,7 +119,6 @@ class CFragMine
 				pMineEntity.SetOutline(true, filter_entity, iOwnerIndex, Color(245, 32, 64), 384.0f, false, true);
 			}
 		}
-
 		if (flTimer <= Globals.GetCurrentTime() && flTimer != 0)
 		{
 			flTimer = Globals.GetCurrentTime() + CONST_FMINE_TIK;
@@ -217,12 +212,15 @@ HookReturnCode CSZM_FM_OnEntityDestruction(const string &in strClassname, CBaseE
 		{
 			CFragMine@ pFragMine = FMArray[q];
 
-			if (pFragMine !is null)
+			if (pFragMine is null)
 			{
-				if (pFragMine.GetMineIndex() == pEntity.entindex())
-				{
-					FMArray.removeAt(q);
-				}
+				continue;
+			}
+
+			if (pFragMine.GetMineIndex() == pEntity.entindex())
+			{
+				FMArray.removeAt(q);
+				break;
 			}
 		}
 	}
@@ -257,7 +255,6 @@ HookReturnCode CSZM_FM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out D
 				@pOwnerEntity = pAttacker;
 				NoOwner = false;
 			}
-
 			else if (iAttackerTeam == pFragMine.GetTeamNumber() && pOwnerEntity !is pAttacker)
 			{
 				Explode = false;
@@ -269,7 +266,6 @@ HookReturnCode CSZM_FM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out D
 			DamageInfo.SetDamage(0);
 			DamageInfo.SetDamageType(0);
 		}
-
 		else
 		{
 			CEntityData@ ImputData = EntityCreator::EntityData();
@@ -293,7 +289,6 @@ HookReturnCode CSZM_FM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out D
 			{
 				pShrapnel.SetHealth(-1);
 			}
-
 			else
 			{
 				pShrapnel.SetHealth(pOwnerEntity.entindex());
@@ -313,16 +308,18 @@ HookReturnCode CSZM_FM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out D
 				iTracerCount = -1;
 			}
 
-			for (int i = 0; i <= iShowerCount; i++)
+			while (iShowerCount > 0)
 			{
+				iShowerCount--;
 				CBaseEntity@ pShower = EntityCreator::Create("spark_shower", pEntity.GetAbsOrigin(), QAngle(0, 0, 0));
 				Vector vUP;
 				Globals.AngleVectors(QAngle(Math::RandomFloat(-55, -78), Math::RandomFloat(0, 270), Math::RandomFloat(0, 270)), vUP);
 				pShower.SetAbsVelocity(vUP * Math::RandomInt(247, 389));
 			}
 
-			for (int i = 0; i <= iTracerCount; i++)
+			while (iTracerCount > 0)
 			{
+				iTracerCount--;
 				CEntityData@ TracerIPD = EntityCreator::EntityData();
 				TracerIPD.Add("endwidth", "" + Math::RandomFloat(0.21, 0.37));
 				TracerIPD.Add("lifetime", "" + Math::RandomFloat(0.032, 0.196));
@@ -349,7 +346,7 @@ HookReturnCode CSZM_FM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out D
 
 void OnItemDeliverUsed(CZP_Player@ pPlayer, CBaseEntity@ pEntity, int &in iEntityOutput)
 {
-	if (!bIsCSZM || pPlayer is null || pEntity is null )
+	if (!bIsCSZM || pPlayer is null || pEntity is null)
 	{
 		return;
 	}
@@ -386,19 +383,20 @@ void OnEntityUsed(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 		{
 			CFragMine@ pFragMine = FMArray[q];
 
-			if (pFragMine !is null)
+			if (pFragMine is null)
 			{
-				if (pFragMine.GetMineIndex() == pEntity.entindex() )
-				{
-					if (pFragMine.GetOwnerIndex() == iIndex || pFragMine.GetOwnerIndex() == 0)
-					{
-						DefuseFragMine(pEntity, pPlayer);
-					}
+				continue;
+			}
 
-					else
-					{
-						Chat.PrintToChatPlayer(pPlrEnt, "This frag mine is not yours, you can't disarm and pick it up!");
-					}
+			if (pFragMine.GetMineIndex() == pEntity.entindex())
+			{
+				if (pFragMine.GetOwnerIndex() == iIndex || pFragMine.GetOwnerIndex() == 0)
+				{
+					DefuseFragMine(pEntity, pPlayer);
+				}
+				else
+				{
+					Chat.PrintToChatPlayer(pPlrEnt, "This frag mine is not yours, you can't disarm and pick it up!");
 				}
 			}
 		}
@@ -407,7 +405,7 @@ void OnEntityUsed(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 
 void OnEntityDropped(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 {
-	if (!bIsCSZM || pPlayer is null || pEntity is null )
+	if (!bIsCSZM || pPlayer is null || pEntity is null)
 	{
 		return;
 	}
@@ -523,6 +521,7 @@ CFragMine@ FindFragMineByEntIndex(const int &in EntIndex)
 		if (pFragMine !is null && pFragMine.GetMineIndex() == EntIndex)
 		{
 			@pFM = pFragMine;
+			break;
 		}
 	}
 

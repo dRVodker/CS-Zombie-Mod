@@ -226,7 +226,7 @@ void OnMatchBegin()
 {
 	if (bIsCSZM)
 	{
-		Schedule::Task(1.75f, "CSZM_RI_FindItems");
+		Schedule::Task(0.65f, "CSZM_RI_FindItems");
 	}
 }
 
@@ -275,7 +275,6 @@ HookReturnCode OnEntityCreation(const string &in strClassname, CBaseEntity@ pEnt
 				{
 					iResult = iDroppedAmmoCount - CONST_MAX_DROPPED_AMMO;
 				}
-
 				RemoveExtraClip(iResult);
 			}
 		}
@@ -351,24 +350,14 @@ void CSZM_RI_FindItems()
 		{
 			if (Utils.StrEql("item_deliver", pEntity.GetClassname()))
 			{
-				bool Valid = false;
-
-				if (Utils.StrEql("iantidote", pEntity.GetEntityName()))
+				if (!Utils.StrEql("iantidote", pEntity.GetEntityName()))
 				{
-					Valid = true;
-				}
-
-				else if (Utils.StrEql("item_adrenaline", pEntity.GetEntityName()))
-				{
-					Valid = true;
-				}
-
-				if ( !Valid )
-				{
-					continue;
+					if (!Utils.StrEql("item_adrenaline", pEntity.GetEntityName()))
+					{
+						continue;					
+					}
 				}
 			}
-
 			ItemRespawnArray.insertLast(CItemRespawn(pEntity.entindex(), pEntity.GetClassname(), pEntity.GetEntityName(), pEntity.GetAbsOrigin(), pEntity.GetAbsAngles()));
 		}
 	}
@@ -399,6 +388,7 @@ void RemoveObject(CBaseEntity@ pEntity)
 			if (pItemRespawn.GetIndex() == iIndex)
 			{
 				ItemRespawnArray.removeAt(i);
+				break;
 			}
 		}
 	}
@@ -514,12 +504,10 @@ void RemoveExtraClip(const uint &in iUnit)
 	{
 		g_pAmmoEntity.insertLast(pAmmoEntity);
 	}
-
 	if (iUnit == 1)
 	{
 		g_pAmmoEntity[0].SUB_Remove();
 	}
-
 	else
 	{
 		for (uint uii = 0; uii <= iUnit; uii++)
