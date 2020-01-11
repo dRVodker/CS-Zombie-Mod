@@ -1,5 +1,10 @@
 bool bIsCSZM = false;
 
+bool IsInvalidDeliver(CBaseEntity@ pEntity)
+{
+	return !(Utils.StrEql("iantidote", pEntity.GetEntityName()) || Utils.StrEql("item_adrenaline", pEntity.GetEntityName()));
+}
+
 int iDroppedAmmoCount = 0;
 const int CONST_MAX_DROPPED_AMMO = 32;
 
@@ -321,7 +326,7 @@ HookReturnCode OnEntityDestruction(const string &in strClassname, CBaseEntity@ p
 
 			for (uint ui = 0; ui < iAmmoClassLength; ui++)
 			{
-				if (strClassname == g_strAmmoClass[ui])
+				if (Utils.StrEql(strClassname, g_strAmmoClass[ui]))
 				{
 					iDroppedAmmoCount--;
 					if (iDroppedAmmoCount < 0)
@@ -339,24 +344,16 @@ HookReturnCode OnEntityDestruction(const string &in strClassname, CBaseEntity@ p
 void CSZM_RI_FindItems()
 {
 	ClearIRArray();
-
 	CBaseEntity@ pEntity;
-
 	uint iItemClassLength = g_ItemClass.length();
 
 	for (uint i = 0; i < iItemClassLength; i++)
 	{
 		while ((@pEntity = FindEntityByClassname(pEntity, g_ItemClass[i])) !is null)
 		{
-			if (Utils.StrEql("item_deliver", pEntity.GetClassname()))
+			if (i == 6 && IsInvalidDeliver(pEntity)) // 6 = "item_deliver"
 			{
-				if (!Utils.StrEql("iantidote", pEntity.GetEntityName()))
-				{
-					if (!Utils.StrEql("item_adrenaline", pEntity.GetEntityName()))
-					{
-						continue;					
-					}
-				}
+				continue;
 			}
 			ItemRespawnArray.insertLast(CItemRespawn(pEntity.entindex(), pEntity.GetClassname(), pEntity.GetEntityName(), pEntity.GetAbsOrigin(), pEntity.GetAbsAngles()));
 		}
