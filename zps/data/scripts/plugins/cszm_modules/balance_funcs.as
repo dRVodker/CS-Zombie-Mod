@@ -7,7 +7,6 @@ void OverrideLimits()
 	{
 		RoundManager.Limit_Enable(true);
 		RoundManager.Limit_Override(random_def, true);
-
 		int iSurvCount = 0;
 
 		if (UnlimitedRandom)
@@ -34,7 +33,6 @@ void SetLimits(const int &in iSurvCount)
 		int iLimit = Utils.StringToInt(pSplited.Arg(1));
 
 		RoundManager.Limit_Random(strClassname, iLimit);	
-		PrintDebug(strClassname, iLimit);
 	}
 }
 
@@ -63,15 +61,5 @@ string GetLimit(string &in strItem, const int &in iSurvCount)
 		}
 	}
 
-	strResult = strClassname + ";" + iLimit;
-
-	return strResult;
-}
-
-void PrintDebug(const string &in strClassname, const int &in iCount)
-{
-	if (iCount != 0)
-	{
-		Log.PrintToServerConsole(LOGTYPE_DEBUG, "New Balance v3.0", "{blue}[{violet}Name{gold}:{cyan} " + strClassname + "{gold};{violet} Limit{gold}:{cyan} " + iCount + "{blue}]");
-	}
+	return strResult = strClassname + ";" + iLimit;
 }

@@ -1782,6 +1782,7 @@ HookReturnCode CSZM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out Dama
 
 	CBaseEntity@ pAttacker = DamageInfo.GetAttacker();
 	int EntIndex = pEntity.entindex();
+	int iDMGType = DamageInfo.GetDamageType();
 	int iAttakerIndex = pAttacker.entindex();
 	int iAttakerTeam = pAttacker.GetTeamNumber();
 
@@ -1789,9 +1790,12 @@ HookReturnCode CSZM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out Dama
 	bool bIsJunk = bIsPropJunk(pEntity);
 	bool bIsExplosive = bIsPropExplosive(pEntity);
 
+	string strEntClassname = pEntity.GetClassname();
+
+	//Some custom shit for a shrapnel of the FragMine
 	if (Utils.StrEql(pAttacker.GetEntityName(), "frendly_shrapnel"))
 	{
-		DamageInfo.SetDamage(20);
+		DamageInfo.SetDamage(15 + Math::RandomInt(7, 18));
 
 		if (pAttacker.GetHealth() > 0)
 		{
@@ -1808,12 +1812,28 @@ HookReturnCode CSZM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out Dama
 		}
 	}
 
-	if (Utils.StrEql(pEntity.GetClassname(), "prop_barricade"))
+	// Some rules for "prop_door_rotating"
+	//Reduce input damage if it's "prop_door_rotating" and a damage type is BULLET
+	if (Utils.StrEql("prop_door_rotating", strEntClassname))
+	{
+		if (bDamageType(iDMGType, 1))	//If damage type is BULLET
+		{
+			DamageInfo.SetDamage(DamageInfo.GetDamage() * 0.25f);		
+		}
+		else if (bDamageType(iDMGType, 6))	//If damage type is BLAST
+		{
+			DamageInfo.SetDamage(DamageInfo.GetDamage() * 0.5f);
+			DamageInfo.SetDamageType(0);
+		}
+	}
+
+	//Slightly reduce input damage if it's "prop_barricade"
+	if (Utils.StrEql(strEntClassname, "prop_barricade"))
 	{
 		DamageInfo.SetDamage(DamageInfo.GetDamage() * 0.91f);
 	}
 
-	//Show HP
+	//Show HP to zombie attacker
 	if (pAttacker.IsPlayer() && pAttacker.GetTeamNumber() == TEAM_ZOMBIES && !bIsUnbreakable)
 	{
 		int iSlot = iAttakerIndex;
@@ -1822,7 +1842,7 @@ HookReturnCode CSZM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out Dama
 
 		for (uint i = 0; i < iEntsLength; i++)
 		{
-			if (Utils.StrEql(pEntity.GetClassname(), g_strEntities[i]))
+			if (Utils.StrEql(strEntClassname, g_strEntities[i]))
 			{
 				bIsValid = true;
 				break;
@@ -1855,7 +1875,7 @@ HookReturnCode CSZM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out Dama
 
 	//Other stuff
 	//Rule to prevent TK with physics
-	if (Utils.StrContains("physics", pEntity.GetClassname()) || Utils.StrContains("physbox", pEntity.GetClassname()))
+	if (Utils.StrContains("physics", strEntClassname) || Utils.StrContains("physbox", strEntClassname))
 	{
 		if (pAttacker.IsPlayer())
 		{
@@ -1871,27 +1891,24 @@ HookReturnCode CSZM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out Dama
 					bSetNewAttacker = false;
 				}
 			}
-
 			if (bSetNewAttacker)
 			{
 				pEntity.ChangeTeam(iAttakerTeam);
-				pEntity.SetEntityDescription(EntDesc + "|" + iAttakerIndex + ":" + "" + float(Globals.GetCurrentTime() + 7.04f) + "|");
+				pEntity.SetEntityDescription(EntDesc + "|" + iAttakerIndex + ":" + "" + (Globals.GetCurrentTime() + 7.04f) + "|");
 			}
 		}
 	}
 
 	//Special rule for prop_physics
-	if (Utils.StrContains("physics", pEntity.GetClassname()))
+	if (Utils.StrContains("physics", strEntClassname))
 	{
 		//Getting some important data there
-		int DMGType = DamageInfo.GetDamageType();
-		float DMG = DamageInfo.GetDamage();
 		float flMass = pEntity.GetMass();
 		float flForceMultiplier = 1.0f;
 
 		//Only for survivors
 		//If Damage Type is BULLET reduce amount of damage and increase force by fake mass
-		if (bDamageType(DMGType, 1) && pAttacker.IsPlayer() && pAttacker.GetTeamNumber() == TEAM_SURVIVORS)
+		if (bDamageType(iDMGType, 1) && pAttacker.IsPlayer() && pAttacker.GetTeamNumber() == TEAM_SURVIVORS)
 		{
 			string WeaponName = (ToZPPlayer(pAttacker).GetCurrentWeapon()).GetClassname();
 			Vector DamageForce = DamageInfo.GetDamageForce();
@@ -1934,14 +1951,14 @@ HookReturnCode CSZM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out Dama
 			{
 				if (!bIsExplosive)
 				{
-					DamageInfo.SetDamage(DMG * 0.022f);				
+					DamageInfo.SetDamage(DamageInfo.GetDamage() * 0.0225f);				
 				}
 			}
 		}
 	}
 
 	//Break "prop_itemcrate" if punt
-	if (Utils.StrEql(pEntity.GetClassname(), "prop_itemcrate") && DamageInfo.GetDamageType() == (1<<23))
+	if (Utils.StrEql("prop_itemcrate", strEntClassname) && DamageInfo.GetDamageType() == (1<<23))
 	{
 		DamageInfo.SetDamageType(1<<13);
 		DamageInfo.SetDamage(pEntity.GetHealth());
@@ -1954,7 +1971,7 @@ HookReturnCode CSZM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out Dama
 	}
 
 	//Don't push weapons and items
-	if (Utils.StrContains("weapon", pEntity.GetClassname()) || Utils.StrContains("item", pEntity.GetClassname()))
+	if (Utils.StrContains("weapon", strEntClassname) || Utils.StrContains("item", strEntClassname))
 	{
 		DamageInfo.SetDamageType((1<<11));
 		DamageInfo.SetDamageForce(Vector(0, 0, 0));

@@ -29,7 +29,7 @@ array<string> g_ThingsList =
 	// Support
 	"item_armor;10=4;8=3;6=2;4=1;0=0;-1=-1",
 	"item_healthkit;12=1;6=1;0=0;-1=-1",		//Replaced with the Antidote
-	"item_pills;12=4;0=2;;-1=-1",			//Replaced with the Adrenaline
+	"item_pills;12=4;0=2;-1=-1",			//Replaced with the Adrenaline
 
 	// Tools
 	"weapon_barricade;24=8;16=6;8=4;4=2;0=1;-1=1",
