@@ -846,11 +846,6 @@ class CSZMPlayer
 							Time_Low = 5.65f;
 							Time_High = 11.92f;
 						break;
-
-/*						case 4:
-							Time_Low = 4.65f;
-							Time_High = 8.92f;
-						break;*/
 					}
 
 					VoiceTime = Globals.GetCurrentTime() + Math::RandomFloat(Time_Low, Time_High);
@@ -1812,7 +1807,6 @@ HookReturnCode CSZM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out Dama
 		}
 	}
 
-	// Some rules for "prop_door_rotating"
 	//Reduce input damage if it's "prop_door_rotating" and a damage type is BULLET
 	if (Utils.StrEql("prop_door_rotating", strEntClassname))
 	{
@@ -2090,14 +2084,14 @@ void LocknLoad()
 		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(i);
 		CSZMPlayer@ pCSZMPlayer = CSZMPlayerArray[i];
 
-		if (pCSZMPlayer !is null)
-		{
-			pCSZMPlayer.SubtractInfectDelay();
-		}
-
 		if (pPlayerEntity is null)
 		{
 			continue;
+		}
+
+		if (pCSZMPlayer !is null)
+		{
+			pCSZMPlayer.SubtractInfectDelay();
 		}
 
 		if (pPlayerEntity.GetTeamNumber() == TEAM_LOBBYGUYS)
