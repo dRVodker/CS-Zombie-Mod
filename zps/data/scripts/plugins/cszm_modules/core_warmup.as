@@ -15,13 +15,11 @@ void WarmUpTimer()
 		{
 			WarmUpEnd();
 		}
-
 		if (iWUSeconds > 0)
 		{
 			iWUSeconds--;
 		}
 	}
-	
 	else if (iNumPlrs <= 1)
 	{
 		flWUWait = 0;
@@ -48,7 +46,6 @@ void WarmUpEnd()
 	{
 		SendGameText(any, "\n" + strHintF2Inf, 4, 0, 0.05f, 0.10f, 0, 2.0f, 120, Color(255, 32, 64), Color(255, 95, 5));
 	}
-
 	else
 	{
 		SendGameText(any, "\n" + strHintF2, 4, 0, 0.05f, 0.10f, 0, 2.0f, 120, Color(255, 32, 64), Color(255, 95, 5));

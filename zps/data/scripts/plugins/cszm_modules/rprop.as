@@ -13,7 +13,6 @@ array<string> g_strPropsCN =
 void RemoveProp(CBaseEntity@ pPlayer)
 {
 	CBaseEntity@ pProp = null;
-
     uint iLength = g_strPropsCN.length();
 
     for (uint i = 0; i < iLength; i++)
@@ -25,11 +24,12 @@ void RemoveProp(CBaseEntity@ pPlayer)
                 if (Utils.StrEql("prop_itemcrate", g_strPropsCN[i]))
                 {
                     Engine.Ent_Fire_Ent(pProp, "break");
+                    break;
                 }
-
                 else
                 {
                     pProp.SUB_Remove();
+                    break;
                 }
             }
         }

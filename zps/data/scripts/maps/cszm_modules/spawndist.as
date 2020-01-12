@@ -182,10 +182,9 @@ class CZSpawnManager
 	private bool IsValidPlayer(CBaseEntity@ pPlayerEntity)
 	{
 		bool b = false;
-
 		CZP_Player@ pPlayer =  ToZPPlayer(pPlayerEntity);
 
-		if (pPlayerEntity !is null)
+		if (pPlayerEntity !is null && pPlayerEntity.IsAlive())
 		{
 			b = pPlayerEntity.GetTeamNumber() == 2 || (pPlayerEntity.GetTeamNumber() == 3 && pPlayer.IsRoaring());
 		}

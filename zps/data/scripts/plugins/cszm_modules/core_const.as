@@ -44,6 +44,9 @@ const float CONST_ARMOR_MULT = 2.0f;
 const float CONST_SHOWDMG_RESET = 1.35f;    //Время в секундах, по истечению которого ShowDamage обнуляется
 const float CONST_SHOWDMG_WAIT = 0.001f;    //Задержка показа урона
 
+//PROPS
+const int PROP_MAX_HEALTH = 1250;
+
 //Antidote state
 const int ANTIDOTE_STATE_UNUSEABLE = 0;
 const int ANTIDOTE_STATE_USEABLE = 1;
@@ -63,6 +66,3 @@ const string VOICE_ZM_IDLE = "CSPlayer.Idle";
 //CSZM Arms models
 const string MODEL_HUMAN_ARMS = "models/cszm/weapons/c_cszm_human_arms.mdl";
 const string MODEL_ZOMBIE_ARMS = "models/cszm/weapons/c_cszm_zombie_arms.mdl";
-
-//PROPS
-const int PROP_MAX_HEALTH = 1250;

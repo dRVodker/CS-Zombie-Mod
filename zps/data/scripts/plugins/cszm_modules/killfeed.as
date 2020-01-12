@@ -26,11 +26,9 @@ void KillFeed(const string &in strAttName, const int &in iAttTeam, const string 
 		case 1:
 			AttColor = "green";
 		break;
-
 		case 2:
 			AttColor = "blue";
 		break;
-
 		case 3:
 			AttColor = "red";
 		break;
@@ -41,11 +39,9 @@ void KillFeed(const string &in strAttName, const int &in iAttTeam, const string 
 		case 1:
 			VicColor = "green";
 		break;
-
 		case 2:
 			VicColor = "blue";
 		break;
-
 		case 3:
 			VicColor = "red";
 		break;
@@ -63,7 +59,6 @@ void KillFeed(const string &in strAttName, const int &in iAttTeam, const string 
 
 		Chat.PrintToChat(all, "{"+VicColor+"}" + strVicName + " {default}" + strKill + " by {"+AttColor+"}" + strAttName +"{default}.");
 	}
-	
 	else
 	{
 		Chat.PrintToChat(all, "{"+VicColor+"}" + strVicName + "{default} committed suicide.");
@@ -83,7 +78,6 @@ void ShowKills(CZP_Player@ pPlayer, const int &in iKills, const bool &in bIsVict
 		{
 			strMsgToShow = "Kill: ";
 		}
-
 		else
 		{
 			strMsgToShow = "Kills: ";
@@ -100,7 +94,6 @@ void ShowKills(CZP_Player@ pPlayer, const int &in iKills, const bool &in bIsVict
 		{
 			strMsgToShow = "Victim: ";
 		}
-
 		else 
 		{
 			strMsgToShow = "Victims: ";

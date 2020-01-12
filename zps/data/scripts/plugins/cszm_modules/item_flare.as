@@ -56,17 +56,14 @@ void SpawnRandomItem(CBaseEntity@ pEntity)
 			length = g_strWeaponsCN.length() - 1;
 			classname = g_strWeaponsCN[Math::RandomInt(0, length)];
 		break;
-		
 		case 2:
 			length = g_strExpCN.length() - 1;
 			classname = g_strExpCN[Math::RandomInt(0, length)];
 		break;
-		
 		case 3:
 			length = g_strAmmoCN.length() - 1;
 			classname = g_strAmmoCN[Math::RandomInt(0, length)];
 		break;
-		
 		case 4:
 			length = g_strMedCN.length() - 1;
 			classname = g_strMedCN[Math::RandomInt(0, length)];
@@ -77,17 +74,14 @@ void SpawnRandomItem(CBaseEntity@ pEntity)
 	{
 		SpawnWepFragMine(pEntity);
 	}
-
 	else if (Utils.StrEql("item_healthkit", classname)) 
 	{
 		SpawnAntidote(pEntity);
 	}
-
 	else if (Utils.StrEql("item_pills", classname))
 	{
 		SpawnAdrenaline(pEntity);
 	}
-
 	else
 	{
 		CEntityData@ ItemIPD = EntityCreator::EntityData();
