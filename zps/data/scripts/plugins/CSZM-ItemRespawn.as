@@ -355,6 +355,7 @@ void CSZM_RI_FindItems()
 			{
 				continue;
 			}
+			
 			ItemRespawnArray.insertLast(CItemRespawn(pEntity.entindex(), pEntity.GetClassname(), pEntity.GetEntityName(), pEntity.GetAbsOrigin(), pEntity.GetAbsAngles()));
 		}
 	}
