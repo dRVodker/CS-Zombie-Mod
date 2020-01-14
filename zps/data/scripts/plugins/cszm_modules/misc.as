@@ -696,8 +696,7 @@ string GetJustModel(const string &in strFullModelName)
 {
 	int iLength = strFullModelName.length() - 4; //  4 = ".mdl"
 	int iLast = strFullModelName.findLast("/") + 1;	// 1 = "/"
-	string JustMDL = strFullModelName.substr(iLast, (iLength - iLast));
-	return JustMDL;
+	return strFullModelName.substr(iLast, (iLength - iLast));
 }
 
 void CheckProp(CBaseEntity@ pProp, const string &in strClassname)
