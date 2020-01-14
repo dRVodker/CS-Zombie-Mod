@@ -114,14 +114,12 @@ class CItemRespawn
 				NewTime = CONST_ANTIDOTE_RT;
 				DeliverType = CONST_DT_ANTIDOTE;
 			}
-
 			else if (Utils.StrEql("item_adrenaline", Targetname))
 			{
 				NewTime = CONST_ADRENALINE_RT;
 				DeliverType = CONST_DT_ADRENALINE;
 			}
 		}
-
 		else
 		{
 			uint iItemClassLength = g_ItemClass.length();

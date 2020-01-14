@@ -222,7 +222,6 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 		{
 			bHandled = false;
 		}
-
 		else if (pBaseEnt.GetTeamNumber() == TEAM_SPECTATORS)
 		{
 			int FFColorR = Math::RandomInt(16, 255);
@@ -240,6 +239,7 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 						FFColorR = 255;
 					}
 				}
+
 				if(Utils.NumbersOnly(pFFSplited.Arg(2)) && Utils.StringToInt(pFFSplited.Arg(2)) >= 0)
 				{
 					FFColorG = Utils.StringToInt(pFFSplited.Arg(2));
@@ -249,6 +249,7 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 						FFColorG = 255;
 					}
 				}
+
 				if(Utils.NumbersOnly(pFFSplited.Arg(3)) && Utils.StringToInt(pFFSplited.Arg(3)) >= 0)
 				{
 					FFColorB = Utils.StringToInt(pFFSplited.Arg(3));
@@ -283,7 +284,6 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 			bHandled = true;
 		}
 	}
-
 	else if (Utils.StrEql("!chatcom", arg1))
 	{
 		ShowCom(pPlrEnt);
@@ -376,7 +376,6 @@ void SetFirefly(CBaseEntity@ pPlayerEntity, const int &in iIndex, int &in iR, in
 
 		Engine.EmitSoundPosition(iIndex, "Player.PickupWeapon", pPlayerEntity.GetAbsOrigin(), 0.75F, 80, 105);
 	}
-
 	else
 	{
 		CBaseEntity@ pSpriteEnt = null;
