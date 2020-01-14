@@ -692,9 +692,17 @@ void SetCustomFuncHealth(CBaseEntity@ pEntity, const int &in iPlrCount)
 	}
 }
 
+string GetJustModel(const string &in strFullModelName)
+{
+	int iLength = strFullModelName.length() - 4; //  4 = ".mdl"
+	int iLast = strFullModelName.findLast("/") + 1;	// 1 = "/"
+	string JustMDL = strFullModelName.substr(iLast, (iLength - iLast));
+	return JustMDL;
+}
+
 void CheckProp(CBaseEntity@ pProp, const string &in strClassname)
 {
-	string ModelName = pProp.GetModelName();
+	string ModelName = GetJustModel(pProp.GetModelName());
 	string Targetname = pProp.GetEntityName();
 	pProp.SetMaxHealth(pProp.GetHealth());
 
@@ -705,16 +713,18 @@ void CheckProp(CBaseEntity@ pProp, const string &in strClassname)
 			pProp.SetEntityDescription(pProp.GetEntityDescription() + ";unbreakable");
 		}
 	}
+
 	if (!Utils.StrContains("junk", pProp.GetEntityDescription()))
 	{
-		if (Utils.StrContains("junk", Targetname) || Utils.StrContains("weak", Targetname))
+		if (Utils.StrContains("junk", Targetname) || Utils.StrContains("weak", Targetname) || Utils.StrContains("garbage_", ModelName) || Utils.StrContains(ModelName, JUNK_PROP_MODELS))
 		{
 			pProp.SetEntityDescription(pProp.GetEntityDescription() + ";junk");
 		}
 	}
+
 	if (!Utils.StrContains("explosive", pProp.GetEntityDescription()))
 	{
-		if (Utils.StrContains("explosive", Targetname) || Utils.StrContains("propanecanister001a", ModelName) || Utils.StrContains("oildrum001_explosive", ModelName) || Utils.StrContains("fire_extinguisher", ModelName) || Utils.StrContains("vent001", ModelName) || Utils.StrContains("canister01a", ModelName) || Utils.StrContains("canister02a", ModelName) || Utils.StrContains("propane_tank001a", ModelName) || Utils.StrContains("props_debris/wood_board", ModelName) || Utils.StrContains("gascan001a", ModelName))
+		if (Utils.StrContains("explosive", Targetname) || Utils.StrContains(ModelName, EXPLOSIVES_PROP_MODELS))
 		{
 			pProp.SetEntityDescription(pProp.GetEntityDescription() + ";explosive");
 		}

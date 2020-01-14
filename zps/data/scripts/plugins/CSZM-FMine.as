@@ -333,8 +333,9 @@ HookReturnCode CSZM_FM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out D
 				CBaseEntity@ pTracer = EntityCreator::Create("env_spritetrail", pEntity.GetAbsOrigin(), QAngle(0, 0, 0), TracerIPD);
 
 				Vector vUP;
+				pTracer.SetMoveType(MOVETYPE_FLY);
 				Globals.AngleVectors(QAngle(Math::RandomFloat(-2, -72), Math::RandomFloat(0, 360), Math::RandomFloat(0, 360)), vUP);
-				pTracer.SetAbsVelocity(vUP * Math::RandomInt(2750, 2995));	
+				pTracer.SetAbsVelocity(vUP * Math::RandomInt(2750, 2995));
 			}
 
 			Utils.CreateShrapnelEx(pShrapnel, 60, pEntity.GetAbsOrigin(), 0.0f); 

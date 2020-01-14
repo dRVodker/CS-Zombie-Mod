@@ -46,6 +46,8 @@ const float CONST_SHOWDMG_WAIT = 0.001f;    //Задержка показа ур
 
 //PROPS
 const int PROP_MAX_HEALTH = 1250;
+const string EXPLOSIVES_PROP_MODELS = "propanecanister001a;oildrum001_explosive;fire_extinguisher;canister01a;canister02a;propane_tank001a;gascan001a";
+const string JUNK_PROP_MODELS = "vent001;glassjug01;glassbottle01a;plasticcrate01a;popcan01a";
 
 //Antidote state
 const int ANTIDOTE_STATE_UNUSEABLE = 0;
