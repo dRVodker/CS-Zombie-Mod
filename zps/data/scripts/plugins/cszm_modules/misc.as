@@ -645,15 +645,14 @@ void SetCustomPropHealth(CBaseEntity@ pEntity, const int &in iPlrCount)
 	{
 		if (!bIsPropExplosive(pEntity))
 		{
-			int iCustomHealth = int((pEntity.GetHealth() * 0.25) * iPlrCount);
+			int iCustomHealth = int((pEntity.GetHealth() * 0.225) * iPlrCount);
 
 			if (iCustomHealth > PROP_MAX_HEALTH)
 			{
 				iCustomHealth = PROP_MAX_HEALTH;
 			}
 
-			iCustomHealth += Math::RandomInt(0, 65);
-			pEntity.SetHealth(iCustomHealth);			
+			pEntity.SetHealth(iCustomHealth + Math::RandomInt(0, 65));			
 		}
 	}
 }
@@ -703,7 +702,7 @@ void CheckProp(CBaseEntity@ pProp, const string &in strClassname)
 {
 	string ModelName = GetJustModel(pProp.GetModelName());
 	string Targetname = pProp.GetEntityName();
-	pProp.SetMaxHealth(pProp.GetHealth());
+	pProp.SetMaxHealth(PROP_MAX_HEALTH + 65);
 
 	if (!Utils.StrContains("unbreakable", pProp.GetEntityDescription()))
 	{
