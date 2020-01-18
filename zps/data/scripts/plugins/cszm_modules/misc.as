@@ -369,7 +369,7 @@ void DecideFirstInfected()
 
 			if (pCSZMPlayer !is null)
 			{
-				pCSZMPlayer.SetWFirstInfected(false);
+				pCSZMPlayer.SetFInfectedState(false);
 			}
 		}
 	}

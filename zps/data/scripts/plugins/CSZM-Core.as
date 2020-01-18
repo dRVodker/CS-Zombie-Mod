@@ -189,30 +189,30 @@ class CShowDamage
 
 class CSZMPlayer
 {
-	private int PlayerIndex;	//entindex игрока
-	private int SlowSpeed;	//Скорость, которая вычитается из "DefSpeed"
-	private int DefSpeed;	//Обычная скорость движения игрока
-	private int Voice;	//Номер голоса для зомби (3 максимально кол-во)
-	private int PreviousVoice;	//Номер предыдущего голоса
-	private int InfectResist;	//Сопротивление инфекции
-	private int PreviousHP;	//Предыдущее HP, используется для обводки зомби
-	private int InfectDelay;	//Кол-во раундов, которое игрок должен отыграть за выжевшего, чтобы сновы начать раунд как Первый зараженный
-	private int ZMDeathCount;	//Счётчик смертей зомби, используется для вычисления бонусного HP для зомби
+	private int PlayerIndex;			//entindex игрока
+	private int SlowSpeed;				//Скорость, которая вычитается из "DefSpeed"
+	private int DefSpeed;				//Обычная скорость движения игрока
+	private int Voice;					//Номер голоса для зомби (3 максимально кол-во)
+	private int PreviousVoice;			//Номер предыдущего голоса
+	private int InfectResist;			//Сопротивление инфекции
+	private int PreviousHP;				//Предыдущее HP, используется для обводки зомби
+	private int InfectDelay;			//Кол-во раундов, которое игрок должен отыграть за выжевшего, чтобы сновы начать раунд как Первый зараженный
+	private int ZMDeathCount;			//Счётчик смертей зомби, используется для вычисления бонусного HP для зомби
 
-	private float SlowTime;	//Время, которое должен ждать зомби, чтобы начать восстанавливать скорость
-	private float SpeedRT;	//Время, по истечению которого зомби получет определенное кол-во скорости
-	private float VoiceTime;	//Временные промежутки между IDLE звуками зомби
-	private float AdrenalineTime;	//Время действия адреналина
-	private float IRITime;	//Время, по истечению которого показывается сообщение об кол-ве сопротивления инфекции
-	private float MeleeFreezeTime;	//Время, на протяжении которого на зомби будет действовать сильное замедление (ступор)
-	private float OutlineTime;	//Время, по истечению которого обновляется обводка зомби
-	private float LobbyRespawnDelay; //Время, которое должен ждать игрок в лобби, чтобы сново использовать "F4 Respawn"
+	private float SlowTime;				//Время, которое должен ждать зомби, чтобы начать восстанавливать скорость
+	private float SpeedRT;				//Время, по истечению которого зомби получет определенное кол-во скорости
+	private float VoiceTime;			//Временные промежутки между IDLE звуками зомби
+	private float AdrenalineTime;		//Время действия адреналина
+	private float IRITime;				//Время, по истечению которого показывается сообщение об кол-ве сопротивления инфекции
+	private float MeleeFreezeTime;		//Время, на протяжении которого на зомби будет действовать сильное замедление (ступор)
+	private float OutlineTime;			//Время, по истечению которого обновляется обводка зомби
+	private float LobbyRespawnDelay;	//Время, которое должен ждать игрок в лобби, чтобы сново использовать "F4 Respawn"
 
-	private bool Volunteer;	//Доброволец на роль Первого зараженного
-	private bool WeakZombie;	//Слабый зомби
-	private bool Abuser;	//Злоупотребляет механиками
-	private bool FirstInfected;	//Является Первый зараженным
-	private bool WFirstInfected; //Был Первым зараженным в сессии
+	private bool Volunteer;				//Доброволец на роль Первого зараженного
+	private bool WeakZombie;			//Слабый зомби
+	private bool Abuser;				//Злоупотребляет механиками
+	private bool FirstInfected;			//Является Первый зараженным
+	private bool WasFInfectedInSession;		//Был Первым зараженным в сессии
 
 	CSZMPlayer(int index)
 	{
@@ -236,7 +236,7 @@ class CSZMPlayer
 		Volunteer = false;
 		Abuser = false;
 		FirstInfected = false;
-		WFirstInfected = false;
+		WasFInfectedInSession = false;
 
 		if (bSpawnWeak)
 		{
@@ -287,12 +287,12 @@ class CSZMPlayer
 
 	bool WasFirstInfected()
 	{
-		return WFirstInfected;
+		return WasFInfectedInSession;
 	}
 
-	void SetWFirstInfected(bool WFI)
+	void SetFInfectedState(bool WFI)
 	{
-		WFirstInfected = WFI;
+		WasFInfectedInSession = WFI;
 	}
 
 	bool IsFirstInfected()
@@ -495,11 +495,11 @@ class CSZMPlayer
 		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(PlayerIndex);
 		CZP_Player@ pPlayer = ToZPPlayer(PlayerIndex);
 
-		VoiceTime += Math::RandomFloat(0.67f, 0.98f); //Увеличить таймер "VoiceTime" если замедлился / получил урон
+		VoiceTime += Math::RandomFloat(0.67f, 0.98f);	//Увеличить таймер "VoiceTime" если замедлился / получил урон
 		SpeedRT = Globals.GetCurrentTime() + 0.125f;
 
-		int MinSlowSpeed = int((DefSpeed * 0.01) * CONST_SLOWDOWN_MULT);	//Минимальная скорость для замедленного зомби
-		int NewSlowSpeed;	//Переменная для вычисления новой скорости
+		const int MinSlowSpeed = int((DefSpeed * 0.01) * CONST_SLOWDOWN_MULT);	//Минимальная скорость для замедленного зомби
+		int NewSlowSpeed;			//Переменная для вычисления новой скорости
 		float NewFreezeTime = 0;	//Переменная для вычисления нового времени ступора
 		float CurrentFreezeTime = MeleeFreezeTime - Globals.GetCurrentTime();
 		float WeakP = 0.0f;
@@ -607,7 +607,7 @@ class CSZMPlayer
 
 		if (InfectResist < CONST_MAX_INFECTRESIST && InfectResist > CONST_MAX_INFECTRESIST - 2)
 		{
-			SetAntidoteState(PlayerIndex, ANTIDOTE_STATE_USEABLE);
+			SetAntidoteState(PlayerIndex, AS_USEABLE);
 		}
 	}
 
@@ -630,7 +630,7 @@ class CSZMPlayer
 		{
 			InfectResist = CONST_MAX_INFECTRESIST;
 			Chat.CenterMessagePlayer(pBasePlayer, "You got Maximum Infection Resist: " + InfectResist);
-			SetAntidoteState(PlayerIndex, ANTIDOTE_STATE_UNUSEABLE);
+			SetAntidoteState(PlayerIndex, AS_UNUSEABLE);
 		}
 		else 
 		{
@@ -644,6 +644,7 @@ class CSZMPlayer
 		CZP_Player@ pPlayer = ToZPPlayer(PlayerIndex);
 
 		int AdrenaDamage = Math::RandomInt(20, 25);
+		float flADuration = CONST_ADRENALINE_DURATION + Math::RandomFloat(0.25f, 3.15f);
 
 		if (AdrenalineTime > Globals.GetCurrentTime())
 		{
@@ -659,9 +660,9 @@ class CSZMPlayer
 
 		pPlayer.SetMaxSpeed(NewSpeed);
 		pPlayer.DoPlayerDSP(34);
-		Utils.ScreenFade(pPlayer, Color(8, 16, 64, 50), 0.25f, 11.75f, fade_in);
+		Utils.ScreenFade(pPlayer, Color(8, 16, 64, 50), 0.25f, (flADuration - 0.25f), fade_in);
 		Engine.EmitSoundPlayer(pPlayer, "ZPlayer.Panic");
-		AdrenalineTime = Globals.GetCurrentTime() + CONST_ADRENALINE_DURATION;
+		AdrenalineTime = Globals.GetCurrentTime() + flADuration;
 
 		SetUsed(PlayerIndex, pItemAdrenaline);
 
@@ -793,7 +794,7 @@ class CSZMPlayer
 
 				int NewSpeed;
 
-				SpeedRT = Globals.GetCurrentTime() + CONST_RECOVER_UNIT;
+				SpeedRT = Globals.GetCurrentTime() + CONST_RECOVER_TIME;
 				SlowSpeed -= CONST_RECOVER_SPEED;
 
 				if (SlowSpeed < 0)
@@ -1598,8 +1599,8 @@ HookReturnCode CSZM_OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in Dama
 
 				pL_Eye.SUB_Remove();
 				pR_Eye.SUB_Remove();
-				pL_Eye = null;
-				pR_Eye = null;
+				@pL_Eye = null;
+				@pR_Eye = null;
 			}
 
 			//Don't emit die sound if blowed up
@@ -2278,7 +2279,7 @@ void TurnToZ(const int &in index)
 				bAllowZombieSpawn = true;
 				pSoloMode.SetValue("0");
 				Engine.EmitSound("CS_FirstTurn");
-				pCSZMPlayer.SetWFirstInfected(true);
+				pCSZMPlayer.SetFInfectedState(true);
 			}
 
 			EmitBloodEffect(pPlayer, false);
