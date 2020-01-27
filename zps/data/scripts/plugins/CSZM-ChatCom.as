@@ -112,14 +112,14 @@ HookReturnCode CSZM_SetS_OnConCommand(CZP_Player@ pPlayer, CASCommand@ pArgs)
 
 HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 {
+	HookReturnCode HOOK_RESULT = HOOK_CONTINUE;
 	if (!bIsCSZM || pArgs is null) 
 	{
-		return HOOK_CONTINUE;
+		return HOOK_RESULT;
 	}
 
 	int iCommTeam = -1;
 	string arg1 = pArgs.Arg(1);
-	bool bHandled = false;
 
 	CBasePlayer@ pPlrEnt = pPlayer.opCast();
 	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
@@ -138,7 +138,7 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 			{
 				Chat.PrintToChatPlayer(pPlrEnt, TEXT_INVALID_VALUE);
 				Engine.EmitSoundPlayer(pPlayer, FILENAME_DENY);
-				bHandled = true;
+				HOOK_RESULT = HOOK_HANDLED;
 			}
 			else
 			{
@@ -174,7 +174,7 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 			iCommTeam = TEAM_LOBBYGUYS;
 		}
 
-		bHandled = true;
+		HOOK_RESULT = HOOK_HANDLED;
 	}
 	else if (Utils.StrEql("!dlight", arg1))
 	{
@@ -187,7 +187,7 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 			iCommTeam = TEAM_LOBBYGUYS;
 		}
 
-		bHandled = true;
+		HOOK_RESULT = HOOK_HANDLED;
 	}
 	else if (Utils.StrEql("!snowball", arg1) || Utils.StrEql("!sball", arg1))
 	{
@@ -200,7 +200,7 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 			iCommTeam = TEAM_LOBBYGUYS;
 		}
 
-		bHandled = true;
+		HOOK_RESULT = HOOK_HANDLED;
 	}
 	else if (Utils.StrEql("!tennisball", arg1) || Utils.StrEql("!tball", arg1))
 	{
@@ -213,7 +213,7 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 			iCommTeam = TEAM_LOBBYGUYS;
 		}
 
-		bHandled = true;
+		HOOK_RESULT = HOOK_HANDLED;
 	}
 	else if (Utils.StrContains("!firefly", arg1))
 	{
@@ -221,7 +221,7 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 
 		if (!Utils.StrEql("!firefly", pFFSplited.Arg(0)))
 		{
-			bHandled = false;
+			HOOK_RESULT = HOOK_HANDLED;
 		}
 		else if (pBaseEnt.GetTeamNumber() == TEAM_SPECTATORS)
 		{
@@ -277,18 +277,18 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 
 			Chat.PrintToConsolePlayer(pPlrEnt, "{gold}------------------------------------");
 
-			bHandled = true;
+			HOOK_RESULT = HOOK_HANDLED;
 		}
 		else
 		{
 			iCommTeam = TEAM_SPECTATORS;
-			bHandled = true;
+			HOOK_RESULT = HOOK_HANDLED;
 		}
 	}
 	else if (Utils.StrEql("!chatcom", arg1))
 	{
 		ShowCom(pPlrEnt);
-		bHandled = true;
+		HOOK_RESULT = HOOK_HANDLED;
 	}
 
 	if (iCommTeam != -1)
@@ -303,15 +303,14 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 		}
 
 		Engine.EmitSoundPlayer(pPlayer, FILENAME_DENY);
-		bHandled = true;
+
+		if (HOOK_RESULT != HOOK_HANDLED)
+		{
+			HOOK_RESULT = HOOK_HANDLED;
+		}
 	}
 
-	if (bHandled)
-	{
-		return HOOK_HANDLED;
-	}
-
-	return HOOK_CONTINUE;
+	return HOOK_RESULT;
 }
 
 void ColorFireFly(CBaseEntity@ pPlayerEntity, const int &in iIndex, int &in iR, int &in iG, int &in iB)
