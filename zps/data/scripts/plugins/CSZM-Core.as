@@ -907,10 +907,6 @@ void OnPluginInit()
 	Events::Player::OnPlayerDisonnected.Hook(@CSZM_OnPlayerDisonnected);
 	Events::Rounds::RoundWin.Hook(@CSZM_RoundWin);
 	Events::Player::OnConCommand.Hook(@CSZM_OnConCommand);
-
-	//Add all custom files of CSZM to Download Table
-	//Sounds, materials, models
-	AddToDownloadTable();
 }
 
 void OnMapInit()
@@ -945,6 +941,10 @@ void OnMapInit()
 		//Cache
 		CacheModels();
 		CacheSounds();
+
+		//Add all custom files of CSZM to Download Table
+		//Sounds, materials, models
+		AddToDownloadTable();
 
 		//Get MaxPlayers
 		iMaxPlayers = Globals.GetMaxClients();

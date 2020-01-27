@@ -144,12 +144,12 @@ array<string> g_CSZMFile =
 	"models/cszm/lobby_guy.vvd",
 	"models/cszm/lobby_guy.phy",
 
-	"models/cszm/zombie_charple.dx80.vtx",
-	"models/cszm/zombie_charple.dx90.vtx",
-	"models/cszm/zombie_charple.mdl",
-	"models/cszm/zombie_charple.sw.vtx",
-	"models/cszm/zombie_charple.vvd",
-	"models/cszm/zombie_charple.phy",
+	"models/cszm/zombie_charple1.dx80.vtx",
+	"models/cszm/zombie_charple1.dx90.vtx",
+	"models/cszm/zombie_charple1.mdl",
+	"models/cszm/zombie_charple1.sw.vtx",
+	"models/cszm/zombie_charple1.vvd",
+	"models/cszm/zombie_charple1.phy",
 
 	"models/cszm/zombie_charple2.dx80.vtx",
 	"models/cszm/zombie_charple2.dx90.vtx",

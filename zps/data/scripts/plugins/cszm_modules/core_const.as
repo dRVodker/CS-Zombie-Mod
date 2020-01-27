@@ -1,11 +1,11 @@
 //Постоянные игрового процесса
 //Скорости игрока
 const int SPEED_DEFAULT = 225;
-const int SPEED_HUMAN = 205;
-const int SPEED_ZOMBIE = 190;
-const int SPEED_CARRIER = 200;
+const int SPEED_HUMAN = 207;
+const int SPEED_ZOMBIE = 186;
+const int SPEED_CARRIER = 191;
 const int SPEED_WEAK = 230;
-const int SPEED_ADRENALINE = 70;
+const int SPEED_ADRENALINE = 68;
 
 //Damage Slowdown
 const float CONST_MAX_SLOWTIME = 2.0f;			//Максимальное время замедления в секундах
@@ -26,7 +26,7 @@ const int CONST_REWARD_HEALTH = 125;			//Кол-во HP, которое зомб
 const int CONST_GEARUP_TIME = 45;				//Время в секундах, через которое превратится Первый зараженный.
 const int CONST_TURNING_TIME = 20;				//Время превращения в секундах (Первый зараженный будет видеть обратный отсчёт этого времени).
 const int CONST_INFECT_DELAY = 2;				//Кол-во раундов, которое игрок должен ждать(играть за человека), чтобы снова играть за Первого зараженного.
-const int CONST_WARMUP_TIME = 10;				//Время разминки в секундах.		(значение по умолчанию - 75)
+const int CONST_WARMUP_TIME = 60;				//Время разминки в секундах.		(значение по умолчанию - 75)
 const float CONST_WEAK_ZOMBIE_TIME = 50.0f;		//Время в секундах после превращения Первого зараженного, на протяжении которого, все вновь присоединившиеся зомби будут спавниться как соабые зомби						
 const int CONST_SUBTRACT_DEATH = 1;				//Кол-во смертей, которое будет отниматься за удачное заражение человека
 const int CONST_INFECT_ADDTIME = 15;			//Кол-во времени в секундах, которое будет добавлятся к таймеру раунда при удачном заражении чеорвека (если время на таймере меньше чем "CONST_MIN_ROUNDTIMER")

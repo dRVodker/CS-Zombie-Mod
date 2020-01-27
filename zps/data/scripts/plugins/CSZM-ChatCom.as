@@ -1,4 +1,5 @@
 #include "./cszm_modules/teamnums.as"
+#include "./cszm_modules/chat.as"
 
 bool bIsCSZM;
 
@@ -118,7 +119,7 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 
 	int iCommTeam = -1;
 	string arg1 = pArgs.Arg(1);
-	bool bHandled;
+	bool bHandled = false;
 
 	CBasePlayer@ pPlrEnt = pPlayer.opCast();
 	CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
@@ -146,12 +147,12 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 					fltest = 0.1f;
 				}
 
-				if (fltest > 1.0f)
+				else if (fltest > 1.0f)
 				{
 					fltest = 1.0f;
 				}
 
-				if (fltest == 1)
+				else if (fltest == 1)
 				{
 					sAddition = ".0";
 				}
