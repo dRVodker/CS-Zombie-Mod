@@ -2285,6 +2285,7 @@ void TurnToZ(const int &in index)
 			EmitBloodEffect(pPlayer, false);
 			pCSZMPlayer.SetWeakZombie(false);
 			pPlayerEntity.SetModel("models/characters/survivors/eugene.mdl");
+			pPlayer.SetVoice(eugene);
 			pPlayer.CompleteInfection();
 			pPlayer.SetVoice(eugene);
 			pPlayer.SetArmModel(MODEL_ZOMBIE_ARMS);
