@@ -499,8 +499,8 @@ class CSZMPlayer
 		SpeedRT = Globals.GetCurrentTime() + 0.125f;
 
 		const int MinSlowSpeed = int((DefSpeed * 0.01) * CONST_SLOWDOWN_MULT);	//Минимальная скорость для замедленного зомби
-		int NewSlowSpeed;			//Переменная для вычисления новой скорости
-		float NewFreezeTime = 0;	//Переменная для вычисления нового времени ступора
+		int NewSlowSpeed;								//Переменная для вычисления новой скорости
+		float NewFreezeTime = 0;						//Переменная для вычисления нового времени ступора
 		float CurrentFreezeTime = MeleeFreezeTime - Globals.GetCurrentTime();
 		float WeakP = 0.0f;
 
@@ -2284,7 +2284,7 @@ void TurnToZ(const int &in index)
 
 			EmitBloodEffect(pPlayer, false);
 			pCSZMPlayer.SetWeakZombie(false);
-			pPlayer.SetVoice(eugene);
+			pPlayerEntity.SetModel("models/characters/survivors/eugene.mdl");
 			pPlayer.CompleteInfection();
 			pPlayer.SetVoice(eugene);
 			pPlayer.SetArmModel(MODEL_ZOMBIE_ARMS);
