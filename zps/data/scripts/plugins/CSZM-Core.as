@@ -418,9 +418,14 @@ class CSZMPlayer
 		}
 	}
 
-	void AddInfectDelay()
+	void AddInfectDelay(int Delay)
 	{
-		InfectDelay += CONST_INFECT_DELAY;
+		if (Delay < 0)
+		{
+			Delay = CONST_INFECT_DELAY;
+		}
+
+		InfectDelay += Delay;
 	}
 
 	void RespawnLobby()
@@ -516,7 +521,7 @@ class CSZMPlayer
 
 		if (WeakZombie)
 		{
-			WeakP = 11.22f;
+			WeakP = 12.45f;
 		}
 
 		SlowTime += CONST_SLOWDOWN_TIME;
@@ -530,7 +535,7 @@ class CSZMPlayer
 		if (bDamageType(iDamageType, 7))		//Melee
 		{
 			SlowTime += 3.0f;
-			NewFreezeTime += 0.75f;
+			NewFreezeTime += 0.8f;
 		}
 		else if (bDamageType(iDamageType, 6))	//Blast
 		{
@@ -1630,7 +1635,7 @@ HookReturnCode CSZM_OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in Dama
 			GotVictim(pPlrAttacker, pEntityAttacker);
 		}
 
-		if (iVicTeam == TEAM_ZOMBIES && bSpawnWeak)
+		if (iVicTeam == TEAM_SURVIVORS && bSpawnWeak)
 		{
 			pVicCSZMPlayer.SetAbuser(true);
 		}
@@ -1638,6 +1643,7 @@ HookReturnCode CSZM_OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in Dama
 		if (iFZIndex == iVicIndex)
 		{
 			iFZIndex = 0;
+			pVicCSZMPlayer.AddInfectDelay(5);
 		}
 
 		pVicCSZMPlayer.DeathReset();
@@ -2241,7 +2247,7 @@ void TurnFirstInfected()
 	}
 
 	pCSZMPlayer.SetFirstInfected(true);
-	pCSZMPlayer.AddInfectDelay();
+	pCSZMPlayer.AddInfectDelay(-1);
 
 	ShowOutbreak(iFZIndex);
 	TurnToZ(iFZIndex);
@@ -2363,7 +2369,7 @@ void SetZMHealth(CBaseEntity@ pPlayerEntity)
 	CSZMPlayer@ pCSZMPlayer = CSZMPlayerArray[index];
 	
 	int iHPBonus = pCSZMPlayer.GetHPBonus();
-	int iArmor = int(float(pPlayer.GetArmor()) * CONST_ARMOR_MULT);
+	int iArmor = int(float(pPlayer.GetArmor()) * (CONST_ARMOR_MULT + Math::RandomFloat(0.0f, 1.0f)));
 
 	if (iArmor > 0)
 	{
@@ -2383,11 +2389,19 @@ void SetZMHealth(CBaseEntity@ pPlayerEntity)
 		switch(iZombCount)
 		{
 			case 1:
-				flAloneMult = 1.95f;
+				flAloneMult = 1.975f;
 			break;
 			
 			case 2:
-				flAloneMult = 0.95f;
+				flAloneMult = 1.05f;
+			break;
+
+			case 3:
+				flAloneMult = 0.525f;
+			break;
+
+			case 12:
+				flAloneMult = 0.427f;
 			break;
 		}
 
@@ -2397,6 +2411,6 @@ void SetZMHealth(CBaseEntity@ pPlayerEntity)
 	else
 	{
 		pPlayerEntity.SetMaxHealth(pPlayerEntity.GetMaxHealth() + CONST_ZOMBIE_ADD_HP + iHPBonus);
-		pPlayerEntity.SetHealth(pPlayerEntity.GetHealth() + (CONST_ZOMBIE_ADD_HP / 4) + iHPBonus + iArmor);
+		pPlayerEntity.SetHealth(int(float(pPlayerEntity.GetHealth()) * 0.95 ) + int(CONST_ZOMBIE_ADD_HP * 0.125) + iHPBonus + iArmor);
 	}
 }
