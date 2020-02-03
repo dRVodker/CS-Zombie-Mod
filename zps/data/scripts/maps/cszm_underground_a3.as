@@ -20,10 +20,12 @@ void OnMapInit()
 
 	Events::Player::OnPlayerSpawn.Hook(@OnPlayerSpawn);
 
-	flMinZSDist = 631.0f;
+	flMaxZSDist = 2250.0f;
+	flMinZSDist = 1600.0f;
+	flRoarDist = 512.0f
 
-	iMinCrates = 0;
-	iMaxCrates = 5;
+	iMinCrates = 1;
+	iMaxCrates = 6;
 
 	g_PICOrigin.insertLast(Vector(-202.258, 3106.7, 36.4784));
 	g_PICAngles.insertLast(QAngle(0, -23.3962, 0));
@@ -75,8 +77,6 @@ void OnMatchBegin()
 	Schedule::Task(0.5f, "SpawnCrates");
 
 	Engine.Ent_Fire("SND_Ambient", "PlaySound");
-	
-	Schedule::Task(5.0f, "SpawnDist");
 }
 
 void OnMatchStarting()

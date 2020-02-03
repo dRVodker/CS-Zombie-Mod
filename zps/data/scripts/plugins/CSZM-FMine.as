@@ -132,7 +132,7 @@ class CFragMine
 					continue;
 				}
 
-    	        CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(i);
+				CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(i);
 
 				if (pPlayerEntity.GetTeamNumber() == TEAM_ZOMBIES || i == iOwnerIndex)
 				{
@@ -429,7 +429,7 @@ void ThrowMine(const int &in iIndex, CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 	CEntityData@ FragMineIPD = EntityCreator::EntityData();
 	FragMineIPD.Add("targetname", "test_fragmine");
 	FragMineIPD.Add("model", "models/cszm/weapons/w_minefrag.mdl");
-	FragMineIPD.Add("spawnflags", "10114");
+	FragMineIPD.Add("spawnflags", "10118"); //10114
 	FragMineIPD.Add("skin", "0");
 	FragMineIPD.Add("overridescript", "mass,60,rotdamping,10000,damping,0,inertia,0,");
 	FragMineIPD.Add("nodamageforces", "1");

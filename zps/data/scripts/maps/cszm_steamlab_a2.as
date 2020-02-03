@@ -1,4 +1,5 @@
 #include "cszm_modules/spawncrates"
+#include "cszm_modules/tspawn"
 
 void SD(const string &in strMSG)
 {
@@ -36,6 +37,10 @@ void OnMapInit()
 
 	g_PICOrigin.insertLast(Vector(-3250.75, 2402.12, 912.5));
 	g_PICAngles.insertLast(QAngle(0, -131.857, -180));
+
+	TerroristsSpawn.insertLast("270|-1176 2784 889|-1176 2832 889|-1128 2832 889|-1128 2784 889|-1080 2784 889|-1080 2832 889");
+	TerroristsSpawn.insertLast("90|-2090 1920 849|-2042 1920 849|-2042 1872 849|-2090 1872 849|-2090 1824 849|-2042 1824 849");
+	TerroristsSpawn.insertLast("270|-3104 3360 889|-3152 3360 889|-3152.01 3408 889|-3104 3408 889|-3056 3408 889|-3056 3360 889");
 }
 
 void OnNewRound()
@@ -46,6 +51,7 @@ void OnNewRound()
 void OnMatchBegin() 
 {
 	Schedule::Task(0.5f, "SpawnCrates");
+	CreateTerroristsSpawn();
 }
 
 void SetUpStuff()

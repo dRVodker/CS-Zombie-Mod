@@ -69,11 +69,21 @@ HookReturnCode CSZM_SetS_OnPlrSpawn(CZP_Player@ pPlayer)
 
 	string sEntDesc = pBaseEnt.GetEntityDescription();
 
+	pPlayer.StripWeapon("weapon_tennisball");
+	pPlayer.StripWeapon("weapon_snowball");
+
 	if (pBaseEnt.GetTeamNumber() == TEAM_SPECTATORS)
 	{
 		pPlayer.StripWeapon("weapon_emptyhand");
-		pPlayer.StripWeapon("weapon_tennisball");
-		pPlayer.StripWeapon("weapon_snowball");
+	}
+	else if (pBaseEnt.GetTeamNumber() != TEAM_LOBBYGUYS)
+	{
+		CBaseEntity@ pPlrDlight = FindEntityByName(null, (pBaseEnt.entindex() + TARGETNAME_DLIGHT));
+		if (pPlrDlight !is null)
+		{
+			Engine.EmitSoundEntity(pBaseEnt, "Buttons.snd14");
+			pPlrDlight.SUB_Remove();
+		}
 	}
 	else
 	{
@@ -147,9 +157,9 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 					fltest = 0.1f;
 				}
 
-				else if (fltest > 1.0f)
+				else if (fltest > 2.0f)
 				{
-					fltest = 1.0f;
+					fltest = 2.0f;
 				}
 
 				else if (fltest == 1)
@@ -165,9 +175,9 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 					sEntDesc = sEntDesc + ";scaled;";
 					pBaseEnt.SetEntityDescription(sEntDesc);
 				}
-			}
 
-			Chat.CenterMessagePlayer(pPlrEnt, TEXT_YOUR_SCALE + fltest + sAddition);
+				Chat.CenterMessagePlayer(pPlrEnt, TEXT_YOUR_SCALE + fltest + sAddition);
+			}
 		}
 		else
 		{
@@ -219,73 +229,72 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 	{
 		CASCommand@ pFFSplited = StringToArgSplit(arg1, " ");
 
-		if (!Utils.StrEql("!firefly", pFFSplited.Arg(0)))
+		if (Utils.StrEql("!firefly", pFFSplited.Arg(0)))
 		{
-			HOOK_RESULT = HOOK_HANDLED;
-		}
-		else if (pBaseEnt.GetTeamNumber() == TEAM_SPECTATORS)
-		{
-			int FFColorR = Math::RandomInt(16, 255);
-			int FFColorG = Math::RandomInt(16, 255);
-			int FFColorB = Math::RandomInt(16, 255);
-
-			if (pFFSplited.Args() != 1)
+			if (pBaseEnt.GetTeamNumber() == TEAM_SPECTATORS)
 			{
-				if(Utils.NumbersOnly(pFFSplited.Arg(1)) && Utils.StringToInt(pFFSplited.Arg(1)) >= 0)
-				{
-					FFColorR = Utils.StringToInt(pFFSplited.Arg(1));
+				int FFColorR = Math::RandomInt(16, 255);
+				int FFColorG = Math::RandomInt(16, 255);
+				int FFColorB = Math::RandomInt(16, 255);
 
-					if (Utils.StringToInt(pFFSplited.Arg(1)) > 255)
+				if (pFFSplited.Args() != 1)
+				{
+					if(Utils.NumbersOnly(pFFSplited.Arg(1)) && Utils.StringToInt(pFFSplited.Arg(1)) >= 0)
 					{
-						FFColorR = 255;
+						FFColorR = Utils.StringToInt(pFFSplited.Arg(1));
+
+						if (Utils.StringToInt(pFFSplited.Arg(1)) > 255)
+						{
+							FFColorR = 255;
+						}
+					}
+
+					if(Utils.NumbersOnly(pFFSplited.Arg(2)) && Utils.StringToInt(pFFSplited.Arg(2)) >= 0)
+					{
+						FFColorG = Utils.StringToInt(pFFSplited.Arg(2));
+
+						if (Utils.StringToInt(pFFSplited.Arg(2)) > 255)
+						{
+							FFColorG = 255;
+						}
+					}
+
+					if(Utils.NumbersOnly(pFFSplited.Arg(3)) && Utils.StringToInt(pFFSplited.Arg(3)) >= 0)
+					{
+						FFColorB = Utils.StringToInt(pFFSplited.Arg(3));
+
+						if (Utils.StringToInt(pFFSplited.Arg(3)) > 255)
+						{
+							FFColorB = 255;
+						}
 					}
 				}
 
-				if(Utils.NumbersOnly(pFFSplited.Arg(2)) && Utils.StringToInt(pFFSplited.Arg(2)) >= 0)
-				{
-					FFColorG = Utils.StringToInt(pFFSplited.Arg(2));
+				Chat.PrintToConsolePlayer(pPlrEnt, "{gold}------------------------------------\n-= The Firefly Color ({red}R{green}G{blue}B{gold}) =-\n------------------------------------\n{red}Red: " + FFColorR + "\n{green}Green: " + FFColorG + "\n{blue}Blur: " + FFColorB + "\n{gold}------------------------------------");
 
-					if (Utils.StringToInt(pFFSplited.Arg(2)) > 255)
-					{
-						FFColorG = 255;
-					}
+				if (!Utils.StrContains("firefly", pBaseEnt.GetEntityDescription()))
+				{
+					SetFirefly(pBaseEnt, pBaseEnt.entindex(), FFColorR, FFColorG, FFColorB, true);
+					Chat.PrintToChatPlayer(pPlrEnt, TEXT_FIREFLY);			
+				}
+				else
+				{
+					ColorFireFly(pBaseEnt, pBaseEnt.entindex(), FFColorR, FFColorG, FFColorB);
+					Chat.PrintToChatPlayer(pPlrEnt, TEXT_FIREFLY_COLOR);	
 				}
 
-				if(Utils.NumbersOnly(pFFSplited.Arg(3)) && Utils.StringToInt(pFFSplited.Arg(3)) >= 0)
-				{
-					FFColorB = Utils.StringToInt(pFFSplited.Arg(3));
+				Chat.PrintToConsolePlayer(pPlrEnt, "{gold}------------------------------------");
 
-					if (Utils.StringToInt(pFFSplited.Arg(3)) > 255)
-					{
-						FFColorB = 255;
-					}
-				}
-			}
-
-			Chat.PrintToConsolePlayer(pPlrEnt, "{gold}------------------------------------\n-= The Firefly Color ({red}R{green}G{blue}B{gold}) =-\n------------------------------------\n{red}Red: " + FFColorR + "\n{green}Green: " + FFColorG + "\n{blue}Blur: " + FFColorB + "\n{gold}------------------------------------");
-
-			if (!Utils.StrContains("firefly", pBaseEnt.GetEntityDescription()))
-			{
-				SetFirefly(pBaseEnt, pBaseEnt.entindex(), FFColorR, FFColorG, FFColorB, true);
-				Chat.PrintToChatPlayer(pPlrEnt, TEXT_FIREFLY);			
+				HOOK_RESULT = HOOK_HANDLED;
 			}
 			else
 			{
-				ColorFireFly(pBaseEnt, pBaseEnt.entindex(), FFColorR, FFColorG, FFColorB);
-				Chat.PrintToChatPlayer(pPlrEnt, TEXT_FIREFLY_COLOR);	
+				iCommTeam = TEAM_SPECTATORS;
+				HOOK_RESULT = HOOK_HANDLED;
 			}
-
-			Chat.PrintToConsolePlayer(pPlrEnt, "{gold}------------------------------------");
-
-			HOOK_RESULT = HOOK_HANDLED;
-		}
-		else
-		{
-			iCommTeam = TEAM_SPECTATORS;
-			HOOK_RESULT = HOOK_HANDLED;
 		}
 	}
-	else if (Utils.StrEql("!chatcom", arg1))
+	else if (Utils.StrEql("!chatcom", arg1) || Utils.StrEql("!help", arg1))
 	{
 		ShowCom(pPlrEnt);
 		HOOK_RESULT = HOOK_HANDLED;
@@ -415,24 +424,38 @@ void GiveThrowable(CZP_Player@ pPlayer, const string &in strClassname)
 	}
 }
 
-void DLight(CZP_Player@ pPlayer, CBaseEntity@ pPlrEntity, const int &in iIndex)
+void DLight(CZP_Player@ pPlayer, CBaseEntity@ pPlayerEntity, const int &in iIndex)
 {
-	CBaseEntity@ pWeapon = pPlayer.GetCurrentWeapon();
+	CBaseEntity@ pPlrDlight = FindEntityByName(null, (iIndex + TARGETNAME_DLIGHT));
 
-	if (pWeapon !is null)
+	Engine.EmitSoundEntity(pPlayerEntity, "Buttons.snd14");
+	//Engine.Ent_Fire(TARGETNAME_DLIGHT + iIndex, "AddOutput", "Effects 2");
+	if (pPlrDlight !is null)
 	{
-		Engine.EmitSoundEntity(pPlrEntity, "Buttons.snd14");
+		pPlrDlight.SUB_Remove();
+	}
+	else
+	{
+		CEntityData@ PropDynamicIPD = EntityCreator::EntityData();
 
-		if (!Utils.StrContains(TARGETNAME_DLIGHT, pWeapon.GetEntityName()))
-		{
-			pWeapon.SetEntityName(TARGETNAME_DLIGHT + iIndex);
-			Engine.Ent_Fire(TARGETNAME_DLIGHT + iIndex, "AddOutput", "Effects 2");
-		}
-		else
-		{
-			pWeapon.SetEntityName("TrurnOff-DL" + iIndex);
-			Engine.Ent_Fire("TrurnOff-DL" + iIndex, "AddOutput", "Effects 32");
-		}
+		PropDynamicIPD.Add("targetname", iIndex + TARGETNAME_DLIGHT);
+		PropDynamicIPD.Add("disableshadows", "1");
+		PropDynamicIPD.Add("solid", "0");
+		PropDynamicIPD.Add("DisableBoneFollowers", "1");
+		PropDynamicIPD.Add("spawnflags", "256");
+		PropDynamicIPD.Add("model", "models/props_junk/popcan01a.mdl");
+		PropDynamicIPD.Add("modelscale", "0.25");
+		PropDynamicIPD.Add("DefaultAnim", "idle");
+		PropDynamicIPD.Add("Effects", "2");
+		PropDynamicIPD.Add("rendermode", "10");
+		PropDynamicIPD.Add("health", "0");
+		PropDynamicIPD.Add("fademindist", "1");
+		PropDynamicIPD.Add("fademaxdist", "2");
+
+		CBaseEntity@ pDlight = EntityCreator::Create("prop_dynamic_override", pPlayerEntity.GetAbsOrigin(), pPlayerEntity.GetAbsAngles(), PropDynamicIPD);
+
+		pDlight.SetParent(pPlayerEntity);
+		pDlight.SetParentAttachment("anim_attachment_LH", false);
 	}
 }
 
@@ -465,5 +488,6 @@ void ShowCom(CBasePlayer@ pPlayer)
 		Chat.PrintToChatPlayer(pPlayer, CLIST_COLOR_COMMAND + strCommand + " " + CLIST_COLOR_COMMAND + strShort + CLIST_COLOR_DESCRIP + " - " + strDescription);
 	}
 
-	Engine.EmitSoundPlayer(pPlayer, "HudChat.Message");
+//	Engine.EmitSoundPlayer(pPlayer, "HudChat.Message");
+	Engine.EmitSoundPlayer(pPlayer, "cszm_fx/misc/talk.wav");
 }

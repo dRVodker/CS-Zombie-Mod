@@ -44,10 +44,10 @@ void SetDoorFilter(const int &in iFilter)
 
 void ClearIntArray(array<int> &iTarget)
 {
-    while (iTarget.length() > 0)
-    {
-        iTarget.removeAt(0);
-    }
+	while (iTarget.length() > 0)
+	{
+		iTarget.removeAt(0);
+	}
 }
 
 void lobby_hint(CZP_Player@ pPlayer)
@@ -218,7 +218,7 @@ void AttachEyesLights(CBaseEntity@ pPlayerEntity)
 	L_EyeLight.Add("GlowProxySize", "1.1");
 	L_EyeLight.Add("targetname", "LeftEye");
 
-    CEntityData@ R_EyeLight = EntityCreator::EntityData();
+	CEntityData@ R_EyeLight = EntityCreator::EntityData();
 	R_EyeLight.Add("HDRColorScale", "0.5");
 	R_EyeLight.Add("model", "sprites/light_glow01.vmt");
 	R_EyeLight.Add("renderamt", "255");
@@ -235,8 +235,8 @@ void AttachEyesLights(CBaseEntity@ pPlayerEntity)
 	pL_Eye.SetParent(pPlayerEntity);
 	pR_Eye.SetParent(pPlayerEntity);
 	
-    pL_Eye.SetParentAttachment("LeftEye", false);
-    pR_Eye.SetParentAttachment("RightEye", false);
+	pL_Eye.SetParentAttachment("LeftEye", false);
+	pR_Eye.SetParentAttachment("RightEye", false);
 }
 
 void SetUsed(const int &in index, CBaseEntity@ pItemDeliver)
@@ -727,4 +727,10 @@ void CheckProp(CBaseEntity@ pProp, const string &in strClassname)
 			pProp.SetEntityDescription(pProp.GetEntityDescription() + ";explosive");
 		}
 	}
+}
+
+void StripBalls(CZP_Player@ pPlayer)
+{
+	pPlayer.StripWeapon("weapon_tennisball");
+	pPlayer.StripWeapon("weapon_snowball");
 }

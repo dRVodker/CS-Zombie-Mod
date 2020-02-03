@@ -39,12 +39,12 @@ array<string> g_ItemClass =
 
 array<float> g_ItemRespawnTime =
 {
-	7.0f,
+	10.0f,
 	22.0f,
-	27.0f,
-	20.1f,
-	36.0f,
-	39.0f,
+	32.0f,
+	11.1f,
+	37.8f,
+	21.0f,
 	10.0f
 };
 
