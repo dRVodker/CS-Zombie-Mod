@@ -1455,7 +1455,7 @@ HookReturnCode CSZM_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out Da
 		if (!pEntityAttacker.IsPlayer())
 		{
 			bool bSetZeroDMG = false;
-			bSetZeroDMG = Utils.StrEql(pEntityAttacker.GetClassname(), "worldspawn");
+			bSetZeroDMG = (Utils.StrEql(pEntityAttacker.GetClassname(), "worldspawn") && bDamageType(iDamageType, 0));
 
 			if (Utils.StrEql(pEntityAttacker.GetClassname(), "npc_fragmine"))
 			{
