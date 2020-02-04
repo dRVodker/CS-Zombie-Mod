@@ -21,9 +21,6 @@ int CreateTerroristsSpawn()
 	CASCommand@ pSplited = StringToArgSplit(TerroristsSpawn[iRandomIndex], "|");
 	int Args = pSplited.Args();
 	float Angle_Yaw = Utils.StringToFloat(pSplited.Arg(0));
-	float Origin_X = 0;
-	float Origin_Y = 0;
-	float Origin_Z = 0;
 
 	if (pSplited.Arg(0) == "r")
 	{
