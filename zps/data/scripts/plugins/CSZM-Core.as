@@ -2118,7 +2118,7 @@ void LocknLoad()
 
 	Engine.EmitSound("CS_MatchBeginRadio");
 	Globals.SetPlayerRespawnDelay(false, CONST_SPAWN_DELAY);
-	Globals.SetPlayerRespawnDelay(true, CONST_SPAWN_DELAY + 7.0f);
+	Globals.SetPlayerRespawnDelay(true, CONST_SPAWN_DELAY + 3.5f);
 	ShowChatMsg(strRoundBegun, TEAM_SURVIVORS);
 	DecideFirstInfected();
 	HealthSettings();
