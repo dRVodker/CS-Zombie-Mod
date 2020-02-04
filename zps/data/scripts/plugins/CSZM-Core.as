@@ -2037,6 +2037,7 @@ void OnProcessRound()
 		if (flWeakZombieWait != 0 && bSpawnWeak && flWeakZombieWait <= Globals.GetCurrentTime())
 		{
 			bSpawnWeak = false;
+			Globals.SetPlayerRespawnDelay(true, CONST_SPAWN_DELAY);
 		}
 
 		for (int i = 1; i <= iMaxPlayers; i++) 
@@ -2117,6 +2118,7 @@ void LocknLoad()
 
 	Engine.EmitSound("CS_MatchBeginRadio");
 	Globals.SetPlayerRespawnDelay(false, CONST_SPAWN_DELAY);
+	Globals.SetPlayerRespawnDelay(true, CONST_SPAWN_DELAY + 7.0f);
 	ShowChatMsg(strRoundBegun, TEAM_SURVIVORS);
 	DecideFirstInfected();
 	HealthSettings();

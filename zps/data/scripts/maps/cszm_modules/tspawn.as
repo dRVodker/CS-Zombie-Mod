@@ -2,10 +2,14 @@ int iPreviousIndex = 0;
 
 array<string> TerroristsSpawn;
 
-void CreateTerroristsSpawn()
+int CreateTerroristsSpawn()
 {
 	int iRandomIndex = 0;
-
+	CBaseEntity@ pEntity;
+	while ((@pEntity = FindEntityByClassname(pEntity, "info_player_zombie")) !is null)
+	{
+		pEntity.SUB_Remove();
+	}
 	while(iRandomIndex == iPreviousIndex)
 	{
 		iRandomIndex = Math::RandomInt(0, TerroristsSpawn.length() - 1);
@@ -13,21 +17,43 @@ void CreateTerroristsSpawn()
 	
 	iPreviousIndex = iRandomIndex;
 
-	CBaseEntity@ pEntity;
 	CASCommand@ pSplitedOrigin = null;
 	CASCommand@ pSplited = StringToArgSplit(TerroristsSpawn[iRandomIndex], "|");
 	int Args = pSplited.Args();
+	float Angle_Yaw = Utils.StringToFloat(pSplited.Arg(0));
+	float Origin_X = 0;
+	float Origin_Y = 0;
+	float Origin_Z = 0;
 
-	while ((@pEntity = FindEntityByClassname(pEntity, "info_player_zombie")) !is null)
+	if (pSplited.Arg(0) == "r")
 	{
-		pEntity.SUB_Remove();
+		Angle_Yaw = Math::RandomFloat(0, 360);
 	}
 
 	for (int i = 1; i < Args; i++)
 	{
+		int Shift = 0;
 		@pSplitedOrigin = StringToArgSplit(pSplited.Arg(i), " ");
-		CreateSpawnEntity(Vector(Utils.StringToFloat(pSplitedOrigin.Arg(0)), Utils.StringToFloat(pSplitedOrigin.Arg(1)), Utils.StringToFloat(pSplitedOrigin.Arg(2))), QAngle(0, Utils.StringToFloat(pSplited.Arg(0)), 0));
+		
+		if (pSplitedOrigin.Args() == 4)
+		{
+			Angle_Yaw = Utils.StringToFloat(pSplitedOrigin.Arg(0));
+			Shift = 1;
+
+			if (pSplitedOrigin.Arg(0) == "r")
+			{
+				Angle_Yaw = Math::RandomFloat(0, 360);
+			}
+		}
+		else if (pSplitedOrigin.Args() != 3)
+		{
+			Chat.PrintToChat(all, "{red}-=Warning=-\n*{gold}Terrorist spawn has wrong origin coordinates!\n{violet}Index: {cyan} " + i);
+		}
+
+		CreateSpawnEntity(Vector(Utils.StringToFloat(pSplitedOrigin.Arg(0 + Shift)), Utils.StringToFloat(pSplitedOrigin.Arg(1 + Shift)), Utils.StringToFloat(pSplitedOrigin.Arg(2 + Shift))), QAngle(0, Angle_Yaw, 0));
 	}
+
+	return iRandomIndex;
 }
 
 void CreateSpawnEntity(Vector Origin, QAngle Angles)

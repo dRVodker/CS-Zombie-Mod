@@ -17,7 +17,7 @@ const float CONST_SLOWDOWN_MULT = 44.81f;   							//Процент максим
 const float CONST_SLOWDOWN_CRITDMG = 91.0f;								//Значение урона, до которого зомби не будет стопарится
 
 //Другие постоянные
-const float CONST_SPAWN_DELAY = 6.0f;									//Время в секундах, которое должны будут ждать все погибшие игроки, чтобы снова возродиться
+const float CONST_SPAWN_DELAY = 5.0f;									//Время в секундах, которое должны будут ждать все убитые игроки, чтобы снова возродиться
 const int CONST_FI_HEALTH_MULT = 135;									//Множитель HP для Первого зараженного (умножается на кол-во игроков)
 const int CONST_ZOMBIE_ADD_HP = 110;									//Дополнительные HP для максимального HP обычного зомби. (Zombie's max health + CONST_ZOMBIE_ADD_HP)
 const int CONST_WEAK_ZOMBIE_HP = 135;									//Здоровье слабых зомби
@@ -45,7 +45,7 @@ const int CONST_ROUND_TIME_FULL = CONST_ROUND_TIME + CONST_GEARUP_TIME;	//Вре
 
 //PROPS
 const int PROP_MAX_HEALTH = 1250;										//Максимальное HP для prop'ов
-const string EXPLOSIVES_PROP_MODELS = "propanecanister001a;oildrum001_explosive;fire_extinguisher;canister01a;canister02a;propane_tank001a;gascan001a";
+const string EXPLOSIVES_PROP_MODELS = "propanecanister001a;_explosive;fire_extinguisher;canister01a;canister02a;propane_tank001a;gascan001a";
 const string JUNK_PROP_MODELS = "vent001;glassjug01;glassbottle01a;plasticcrate01a;popcan01a";
 
 //Antidote state
