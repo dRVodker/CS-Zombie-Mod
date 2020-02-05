@@ -1,11 +1,14 @@
 #include "cszm_modules/spawncrates"
 #include "cszm_modules/lobbyambient"
+#include "cszm_modules/tspawn"
 
 const int TEAM_LOBBYGUYS = 0;
 
 void OnMapInit()
 {
 	Schedule::Task(0.05f, "SetUpStuff");
+
+	TerroristsSpawn.insertLast("0|-1443 1979 -214|-1443 2051 -214|-1443 2123 -214|-1443 2195 -214|180 1052 1355 -214|180 1052 1427 -214|180 1052 1499 -214|180 1052 1571 -214");
 
 	iMinCrates = 0;
 	iMaxCrates = 4;
@@ -59,6 +62,8 @@ void SetUpStuff()
 	PropSkins();
 	OpenDoors();
 	PlayLobbyAmbient();
+
+	CreateTerroristsSpawn();
 }
 
 HookReturnCode OnPlrSpawn(CZP_Player@ pPlayer)
