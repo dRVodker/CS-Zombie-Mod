@@ -10,12 +10,15 @@ int CreateTerroristsSpawn()
 	{
 		pEntity.SUB_Remove();
 	}
-	while(iRandomIndex == iPreviousIndex)
+
+	if (TerroristsSpawn.length() > 1)
 	{
-		iRandomIndex = Math::RandomInt(0, TerroristsSpawn.length() - 1);
+		while(iRandomIndex == iPreviousIndex)
+		{
+			iRandomIndex = Math::RandomInt(0, TerroristsSpawn.length() - 1);
+		}
+		iPreviousIndex = iRandomIndex;
 	}
-	
-	iPreviousIndex = iRandomIndex;
 
 	CASCommand@ pSplitedOrigin = null;
 	CASCommand@ pSplited = StringToArgSplit(TerroristsSpawn[iRandomIndex], "|");
