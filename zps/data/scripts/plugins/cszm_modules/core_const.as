@@ -4,7 +4,7 @@ const int SPEED_DEFAULT = 225;
 const int SPEED_HUMAN = 225;
 const int SPEED_ZOMBIE = 198;
 const int SPEED_CARRIER = 205;
-const int SPEED_WEAK = 205;
+const int SPEED_WEAK = 215;
 const int SPEED_ADRENALINE = 50;
 
 //Damage Slowdown
@@ -45,8 +45,8 @@ const int CONST_ROUND_TIME_FULL = CONST_ROUND_TIME + CONST_GEARUP_TIME;	//Вре
 
 //PROPS
 const int PROP_MAX_HEALTH = 1250;										//Максимальное HP для prop'ов
-const string EXPLOSIVES_PROP_MODELS = "propanecanister001a;_explosive;fire_extinguisher;canister01a;canister02a;propane_tank001a;gascan001a";
-const string JUNK_PROP_MODELS = "vent001;glassjug01;glassbottle01a;plasticcrate01a;popcan01a";
+const string EXPLOSIVES_PROP_MODELS = "propanecanister001a.mdl;oildrum001_explosive.mdl;fire_extinguisher.mdl;canister01a.mdl;canister02a.mdl;propane_tank001a.mdl;gascan001a.mdl";
+const string JUNK_PROP_MODELS = "vent001.mdl;glassjug01.mdl;glassbottle01a.mdl;plasticcrate01a.mdl;popcan01a.mdl";
 
 //Antidote state
 const int AS_UNUSEABLE = 0;

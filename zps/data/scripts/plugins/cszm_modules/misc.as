@@ -693,7 +693,7 @@ void SetCustomFuncHealth(CBaseEntity@ pEntity, const int &in iPlrCount)
 
 string GetJustModel(const string &in strFullModelName)
 {
-	int iLength = strFullModelName.length() - 4; //  4 = ".mdl"
+	int iLength = strFullModelName.length();
 	int iLast = strFullModelName.findLast("/") + 1;	// 1 = "/"
 	return strFullModelName.substr(iLast, (iLength - iLast));
 }

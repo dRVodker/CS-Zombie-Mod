@@ -5,17 +5,19 @@ array<string> TerroristsSpawn;
 int CreateTerroristsSpawn()
 {
 	int iRandomIndex = 0;
+	int TSLength = int(TerroristsSpawn.length());
 	CBaseEntity@ pEntity;
+
 	while ((@pEntity = FindEntityByClassname(pEntity, "info_player_zombie")) !is null)
 	{
 		pEntity.SUB_Remove();
 	}
-
-	if (TerroristsSpawn.length() > 1)
+	
+	if (TSLength > 1)
 	{
 		while(iRandomIndex == iPreviousIndex)
 		{
-			iRandomIndex = Math::RandomInt(0, TerroristsSpawn.length() - 1);
+			iRandomIndex = Math::RandomInt(0, TSLength - 1);
 		}
 		iPreviousIndex = iRandomIndex;
 	}
@@ -23,12 +25,7 @@ int CreateTerroristsSpawn()
 	CASCommand@ pSplitedOrigin = null;
 	CASCommand@ pSplited = StringToArgSplit(TerroristsSpawn[iRandomIndex], "|");
 	int Args = pSplited.Args();
-	float Angle_Yaw = Utils.StringToFloat(pSplited.Arg(0));
-
-	if (pSplited.Arg(0) == "r")
-	{
-		Angle_Yaw = Math::RandomFloat(0, 360);
-	}
+	float Angle_Yaw = YawAngle(pSplited.Arg(0));
 
 	for (int i = 1; i < Args; i++)
 	{
@@ -37,13 +34,8 @@ int CreateTerroristsSpawn()
 		
 		if (pSplitedOrigin.Args() == 4)
 		{
-			Angle_Yaw = Utils.StringToFloat(pSplitedOrigin.Arg(0));
+			Angle_Yaw = YawAngle(pSplitedOrigin.Arg(0));
 			Shift = 1;
-
-			if (pSplitedOrigin.Arg(0) == "r")
-			{
-				Angle_Yaw = Math::RandomFloat(0, 360);
-			}
 		}
 		else if (pSplitedOrigin.Args() != 3)
 		{
@@ -66,4 +58,16 @@ void CreateSpawnEntity(Vector Origin, QAngle Angles)
 	ImputData.Add("mintime", "1");
 
 	EntityCreator::Create("info_player_zombie", Origin, Angles, ImputData);
+}
+
+float YawAngle(const string &in strValue)
+{
+	float Yaw = Utils.StringToFloat(strValue);
+
+	if (strValue == "r")
+	{
+		Yaw = Math::RandomFloat(0, 360);
+	}
+
+	return Yaw;
 }
