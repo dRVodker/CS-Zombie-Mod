@@ -1017,6 +1017,8 @@ void OnMapInit()
 		//CSZM Player array resize
 		CSZMPlayerArray.resize(iMaxPlayers + 1);
 		ShowDamageArray.resize(iMaxPlayers + 1);
+
+		AutoMap();
 		
 		//Set Doors Filter to 0 (any team)
 		if (bWarmUp)
@@ -1026,7 +1028,7 @@ void OnMapInit()
 	}
 	else
 	{
-		Log.PrintToServerConsole(LOGTYPE_INFO, "CSZM", "[CSZM] Current map is not valid for 'Counter-Strike Zombie Mode'");
+		Log.PrintToServerConsole(LOGTYPE_INFO, "CSZM", "[CSZM] Current map is not valid for \"Counter-Strike Zombie Mode\"");
 	}
 }
 
@@ -2062,6 +2064,8 @@ void OnNewRound()
 {
 	if (bIsCSZM)
 	{
+		AutoMap();
+
 		bSpawnWeak = true;
 		bAllowZombieSpawn = false;
 		iFZIndex = 0;

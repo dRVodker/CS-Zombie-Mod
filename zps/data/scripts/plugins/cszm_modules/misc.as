@@ -1,3 +1,8 @@
+void AutoMap()
+{
+	Schedule::Task(0.05f, "Set_CSZM_ScreenOverlay");
+}
+
 bool bDamageType(int &in iSubjectDT, int &in iDMGNum)
 {
 	return iSubjectDT & (1<<iDMGNum) == (1<<iDMGNum);;
@@ -733,4 +738,20 @@ void StripBalls(CZP_Player@ pPlayer)
 {
 	pPlayer.StripWeapon("weapon_tennisball");
 	pPlayer.StripWeapon("weapon_snowball");
+}
+
+void Set_CSZM_ScreenOverlay()
+{
+	CBaseEntity@ pOverlay = FindEntityByClassname(pOverlay, "env_screenoverlay");
+	if (pOverlay is null)
+	{
+		CEntityData@ ScreenOverlayIPD = EntityCreator::EntityData();
+		ScreenOverlayIPD.Add("targetname", "cszm_screenoverlay");
+		ScreenOverlayIPD.Add("OverlayName1", "effects/sp_shading.vmf");
+		ScreenOverlayIPD.Add("OverlayTime1", "9999");
+
+		CBaseEntity@ pOverlayEntity = EntityCreator::Create("env_screenoverlay", Vector(0, 0, 0), QAngle(0, 0, 0), ScreenOverlayIPD);
+
+		Engine.Ent_Fire_Ent(pOverlayEntity, "StartOverlays");
+	}
 }

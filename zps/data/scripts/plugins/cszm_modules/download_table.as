@@ -1,5 +1,8 @@
 array<string> g_CSZMFile =
 {
+	"materials/effects/cszm_shading.vmt",
+	"materials/effects/cszm_shading.vtf",
+
 	"materials/models/cszm/hands/human_arms_diff.vmt",
 	"materials/models/cszm/hands/human_arms_diff.vtf",
 	"materials/models/cszm/hands/human_arms_exp.vtf",

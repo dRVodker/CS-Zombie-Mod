@@ -1,5 +1,6 @@
 #include "cszm_modules/spawncrates"
 #include "cszm_modules/lobbyambient"
+#include "cszm_modules/tspawn"
 
 const int TEAM_LOBBYGUYS = 0;
 
@@ -33,6 +34,10 @@ void OnMapInit()
 	g_PICOrigin.insertLast(Vector(660.53, 3056.13, 128.5));
 
 	Events::Player::OnPlayerSpawn.Hook(@OnPlrSpawn);
+
+	TerroristsSpawn.insertLast("90|1441 2065 129|1313 2065 129|270 1313 2287 129|270 1441 2287 129|0 -879 3105 129|0 -879 2977 129|180 -657 2977 129|180 -657 3105 129");
+	TerroristsSpawn.insertLast("0|-1536 1964 129|-1536 1920 129|-1536 1876 129|-1492 1964 129|-1492 1920 129|-1492 1876 129|-1204 1964 129|-1204 1876 129|90 288 1752 -127|90 224 1752 -127|90 160 1752 -127|270 288 1944 -127|270 224 1944 -127|270 160 1944 -127");
+	TerroristsSpawn.insertLast("0|45 -1648 1760 129|270 -768 3073 129|315 41 2003 -127|270 468 2132 1|180 1407 2176 129|315 160 1120 281|45 -224 1056 65|135 -428 938 129|-599 2090 129");
 }
 
 void OnNewRound()
@@ -42,7 +47,6 @@ void OnNewRound()
 
 void OnMatchBegin() 
 {
-	BreakableHP();
 	Schedule::Task(0.5f, "SpawnCrates");
 }
 
@@ -53,6 +57,7 @@ void SetUpStuff()
 	Engine.Ent_Fire("SND-Ambient", "Volume", "10");
 
 	PlayLobbyAmbient();
+	CreateTerroristsSpawn();
 }
 
 HookReturnCode OnPlrSpawn(CZP_Player@ pPlayer)

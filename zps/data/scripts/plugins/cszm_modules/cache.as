@@ -26,6 +26,9 @@ void CacheModels()
 	//ZM CSS Arms
 	Engine.PrecacheFile(model, "models/cszm/weapons/c_cszm_human_arms.mdl");
 	Engine.PrecacheFile(model, "models/cszm/weapons/c_cszm_zombie_arms.mdl");
+
+	//CSZM ScreenOverlay
+	Engine.PrecacheFile(material, "materials/effects/cszm_shading.vmt");
 }
 
 void CacheSounds()

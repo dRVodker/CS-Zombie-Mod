@@ -72,11 +72,7 @@ HookReturnCode CSZM_SetS_OnPlrSpawn(CZP_Player@ pPlayer)
 	pPlayer.StripWeapon("weapon_tennisball");
 	pPlayer.StripWeapon("weapon_snowball");
 
-	if (pBaseEnt.GetTeamNumber() == TEAM_SPECTATORS)
-	{
-		pPlayer.StripWeapon("weapon_emptyhand");
-	}
-	else if (pBaseEnt.GetTeamNumber() != TEAM_LOBBYGUYS)
+	if (pBaseEnt.GetTeamNumber() != TEAM_LOBBYGUYS)
 	{
 		CBaseEntity@ pPlrDlight = FindEntityByName(null, (pBaseEnt.entindex() + TARGETNAME_DLIGHT));
 		if (pPlrDlight !is null)
@@ -85,10 +81,16 @@ HookReturnCode CSZM_SetS_OnPlrSpawn(CZP_Player@ pPlayer)
 			pPlrDlight.SUB_Remove();
 		}
 	}
+
+	if (pBaseEnt.GetTeamNumber() == TEAM_SPECTATORS)
+	{
+		pPlayer.StripWeapon("weapon_emptyhand");
+	}
 	else
 	{
 		SetFirefly(pBaseEnt, pBaseEnt.entindex(), 0, 0, 0, false);
 	}
+
 	if (Utils.StrContains(";scaled;", sEntDesc))
 	{
 		Engine.Ent_Fire_Ent(pBaseEnt, "SetModelScale", "1.0");
@@ -324,13 +326,10 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 
 void ColorFireFly(CBaseEntity@ pPlayerEntity, const int &in iIndex, int &in iR, int &in iG, int &in iB)
 {
-	CBaseEntity@ pSpriteEnt = null;
-	CBaseEntity@ pTrailEnt = null;
+	CBaseEntity@ pSpriteEnt = FindEntityByName(pSpriteEnt, iIndex + "firefly_sprite");
+	CBaseEntity@ pTrailEnt = FindEntityByName(pTrailEnt, iIndex + "firefly_trail");
 
-	@pSpriteEnt = FindEntityByName(pSpriteEnt, iIndex + "firefly_sprite");
-	@pTrailEnt = FindEntityByName(pTrailEnt, iIndex + "firefly_trail");
-
-	if (pSpriteEnt !is null)
+	if (pSpriteEnt !is null && pTrailEnt !is null)
 	{
 		Engine.Ent_Fire_Ent(pSpriteEnt, "color", "" + iR + " " + iG + " " + iB);
 		Engine.Ent_Fire_Ent(pTrailEnt, "color", "" + iR + " " + iG + " " + iB);		
@@ -374,11 +373,8 @@ void SetFirefly(CBaseEntity@ pPlayerEntity, const int &in iIndex, int &in iR, in
 		EntityCreator::Create("env_spritetrail", pPlayerEntity.GetAbsOrigin(), pPlayerEntity.GetAbsAngles(), FFTrailIPD);
 		EntityCreator::Create("env_sprite", pPlayerEntity.GetAbsOrigin(), pPlayerEntity.GetAbsAngles(), FFSpriteIPD);
 
-		CBaseEntity@ pSpriteEnt = null;
-		CBaseEntity@ pTrailEnt = null;
-
-		@pSpriteEnt = FindEntityByName(pSpriteEnt, iIndex + "firefly_sprite");
-		@pTrailEnt = FindEntityByName(pTrailEnt, iIndex + "firefly_trail");
+		CBaseEntity@ pSpriteEnt = FindEntityByName(pSpriteEnt, iIndex + "firefly_sprite");
+		CBaseEntity@ pTrailEnt = FindEntityByName(pTrailEnt, iIndex + "firefly_trail");
 
 		pTrailEnt.SetParent(pSpriteEnt);
 		pSpriteEnt.SetParent(pPlayerEntity);
@@ -387,14 +383,13 @@ void SetFirefly(CBaseEntity@ pPlayerEntity, const int &in iIndex, int &in iR, in
 	}
 	else
 	{
-		CBaseEntity@ pSpriteEnt = null;
-
-		@pSpriteEnt = FindEntityByName(pSpriteEnt, iIndex + "firefly_sprite");
+		CBaseEntity@ pSpriteEnt = FindEntityByName(pSpriteEnt, iIndex + "firefly_sprite");
 
 		if (pSpriteEnt !is null)
 		{
 			pSpriteEnt.SUB_Remove();
 		}
+
 		if (Utils.StrContains("|firefly|", strPlrDisc))
 		{
 			strPlrDisc = Utils.StrReplace(strPlrDisc, "|firefly|", "");
@@ -429,7 +424,6 @@ void DLight(CZP_Player@ pPlayer, CBaseEntity@ pPlayerEntity, const int &in iInde
 	CBaseEntity@ pPlrDlight = FindEntityByName(null, (iIndex + TARGETNAME_DLIGHT));
 
 	Engine.EmitSoundEntity(pPlayerEntity, "Buttons.snd14");
-	//Engine.Ent_Fire(TARGETNAME_DLIGHT + iIndex, "AddOutput", "Effects 2");
 	if (pPlrDlight !is null)
 	{
 		pPlrDlight.SUB_Remove();
