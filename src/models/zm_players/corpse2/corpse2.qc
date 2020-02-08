@@ -1,5 +1,7 @@
 $modelname "cszm/zombie_corpse2.mdl"
 
+$opaque
+
 $include "../bones.qci"
 $include "../ruleshierarchy.qci"
 $include "../hitboxs.qci"

@@ -41,15 +41,6 @@ array<string> g_strFBNames =
 	"CeilingHatch"
 };
 
-array<string> g_strStartWeapons =
-{
-	"weapon_usp",
-	"weapon_ppk",
-	"weapon_glock",
-	"weapon_glock18c",
-	"weapon_mp5"
-};
-
 array<Vector> g_vecCheeseOrigin =
 {
 	Vector(-1240, -256, 48),
@@ -151,32 +142,6 @@ void OnNewRound()
 void OnMatchBegin()
 {
 	FindItems();
-
-	Schedule::Task(0.35f, "GiveStartGear");
-}
-
-void GiveStartGear()
-{
-	for (int i = 1; i <= iMaxPlayers; i++)
-	{
-		CZP_Player@ pPlayer = ToZPPlayer(i);
-							
-		if (pPlayer is null)
-		{
-			continue;
-		}
-
-		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(i);
-
-		if (pPlayerEntity.GetTeamNumber() == TEAM_SURVIVORS)
-		{
-			int ilength = int(g_strStartWeapons.length()) - 1;
-
-			pPlayer.AmmoBank(add, pistol, 30);
-			pPlayer.GiveWeapon("weapon_barricade");
-			pPlayer.GiveWeapon(g_strStartWeapons[Math::RandomInt(0, ilength)]);
-		}
-	}
 }
 
 void SetUpStuff()

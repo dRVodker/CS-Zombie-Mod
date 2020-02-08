@@ -31,15 +31,6 @@ float flExpBarrelsWaitTime = 0;
 
 array<float> g_TeleportDelay;
 
-array<string> g_strStartWeapons =
-{
-	"weapon_usp",
-	"weapon_ppk",
-	"weapon_glock",
-	"weapon_glock18c",
-	"weapon_mp5"
-};
-
 array<string> g_BreakName = 
 {
 	"mysticism",
@@ -186,7 +177,6 @@ void OnNewRound()
 
 void OnMatchBegin()
 {
-	Schedule::Task(0.35f, "GiveStartGear");
 	Schedule::Task(1.00f, "DisableDamageForces");
 }
 
@@ -459,30 +449,6 @@ void LittleStar(CBaseEntity@ pPlayerEntity)
 	{
 		pPlayerEntity.SetEntityName("plr_ littlestar" + iIndex);
 		Engine.Ent_Fire("plr_ littlestar" + iIndex, "SetLightingOrigin", "littlestar_lighting");
-	}
-}
-
-void GiveStartGear()
-{
-	for (int i = 1; i <= iMaxPlayers; i++)
-	{
-		CZP_Player@ pPlayer = ToZPPlayer(i);
-							
-		if (pPlayer is null)
-		{
-			continue;
-		}
-
-		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(i);
-
-		if (pPlayerEntity.GetTeamNumber() == TEAM_SURVIVORS)
-		{
-			int ilength = int(g_strStartWeapons.length()) - 1;
-
-			pPlayer.AmmoBank(add, pistol, 30);
-			pPlayer.GiveWeapon("weapon_barricade");
-			pPlayer.GiveWeapon(g_strStartWeapons[Math::RandomInt(0, ilength)]);
-		}
 	}
 }
 

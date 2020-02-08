@@ -734,12 +734,6 @@ void CheckProp(CBaseEntity@ pProp, const string &in strClassname)
 	}
 }
 
-void StripBalls(CZP_Player@ pPlayer)
-{
-	pPlayer.StripWeapon("weapon_tennisball");
-	pPlayer.StripWeapon("weapon_snowball");
-}
-
 void Set_CSZM_ScreenOverlay()
 {
 	CBaseEntity@ pOverlay = FindEntityByClassname(pOverlay, "env_screenoverlay");
@@ -754,4 +748,58 @@ void Set_CSZM_ScreenOverlay()
 
 		Engine.Ent_Fire_Ent(pOverlayEntity, "StartOverlays");
 	}
+}
+
+void GiveStartGear(CZP_Player@ pPlayer, const bool bPPK)
+{
+	int iWTSLength = int(g_strWeaponToStrip.length());
+	for (int i = 0; i < iWTSLength; i++)
+	{
+		if (pPlayer !is null)
+		{
+			StripWeapon(pPlayer, g_strWeaponToStrip[i]);
+		}
+	}
+
+	int iSWLength = int(g_strStartWeapons.length());
+	string firearm = g_strStartWeapons[Math::RandomInt(0, (iSWLength - 1))];
+	string melee = "weapon_barricade";
+	int pistol_ammo_count = 30;
+
+	if (bPPK)
+	{
+		firearm = "weapon_ppk";
+		pistol_ammo_count = 7;
+	}
+
+	pPlayer.AmmoBank(set, pistol, pistol_ammo_count);
+	pPlayer.AmmoBank(add, barricade, 1);
+	pPlayer.GiveWeapon(melee);
+	pPlayer.GiveWeapon(firearm);
+}
+
+void StripWeapon(CZP_Player@ pPlayer, const string &in strClassname)
+{
+	CBasePlayer@ pBasePlayer = pPlayer.opCast();
+	CBaseEntity@ pPlayerEntity = pBasePlayer.opCast();
+	CBaseEntity@ pWeapon;
+
+	pPlayer.StripWeapon(strClassname);
+
+	while ((@pWeapon = FindEntityByClassname(pWeapon, strClassname)) !is null)
+	{
+		CBaseEntity@ pOwner = pWeapon.GetOwner();
+
+		if (pPlayerEntity is pOwner)
+		{
+			pWeapon.SUB_Remove();
+		}
+	}
+}
+
+void HoldOut()
+{
+	UnlimitedRandom = true;
+	g_strStartWeapons.resize(iStartWeaponLength);
+	g_strStartWeapons.insertLast("weapon_mp5");
 }

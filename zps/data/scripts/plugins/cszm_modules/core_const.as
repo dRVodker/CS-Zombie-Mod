@@ -67,3 +67,32 @@ const string VOICE_ZM_IDLE = "CSPlayer.Idle";
 //CSZM Arms models
 const string MODEL_HUMAN_ARMS = "models/cszm/weapons/c_cszm_human_arms.mdl";
 const string MODEL_ZOMBIE_ARMS = "models/cszm/weapons/c_cszm_zombie_arms.mdl";
+
+array<string> g_strWeaponToStrip = 
+{
+	"weapon_baguette",
+	"weapon_crowbar",
+	"weapon_pot",
+	"weapon_spanner",
+	"weapon_fryingpan",
+	"weapon_pipewrench",
+	"weapon_wrench",
+	"weapon_racket",
+	"weapon_plank",
+	"weapon_keyboard",
+	"weapon_ppk",
+	"weapon_usp",
+	"weapon_glock",
+	"weapon_snowball",
+	"weapon_snowball",
+	"weapon_tennisball"
+};
+
+array<string> g_strStartWeapons =
+{
+	"weapon_usp",
+	"weapon_glock",
+	"weapon_glock18c"
+};
+
+const int iStartWeaponLength = int(g_strStartWeapons.length());

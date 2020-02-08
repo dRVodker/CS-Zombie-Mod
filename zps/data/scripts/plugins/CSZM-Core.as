@@ -969,15 +969,18 @@ void OnPluginInit()
 
 void OnMapInit()
 {
-	if (Utils.StrContains("cszm", Globals.GetCurrentMapName()))
+	const string MapName = Globals.GetCurrentMapName();
+
+	if (Utils.StrContains("cszm", MapName))
 	{
-		if (Utils.StrContains("heavyice", Globals.GetCurrentMapName()))
+		if (Utils.StrContains("heavyice", MapName) || Utils.StrContains("sunshine", MapName))
 		{
-			UnlimitedRandom = true;
+			HoldOut();
 		}
 		else
 		{
 			UnlimitedRandom = false;
+			g_strStartWeapons.resize(iStartWeaponLength);
 		}
 
 		Log.PrintToServerConsole(LOGTYPE_INFO, "CSZM", "[CSZM] Current map is valid for 'Counter-Strike Zombie Mode'");
@@ -1229,11 +1232,7 @@ HookReturnCode CSZM_OnConCommand(CZP_Player@ pPlayer, CASCommand@ pArgs)
 				{
 					if (Utils.StrEql("choose2", pArgs.Arg(0)))
 					{
-						if (!pCSZMPlayer.ChooseInfect())
-						{
-							StripBalls(pPlayer);
-						}
-						else
+						if (pCSZMPlayer.ChooseInfect())
 						{
 							HOOK_RESULT = HOOK_HANDLED;
 						}
@@ -1258,7 +1257,6 @@ HookReturnCode CSZM_OnConCommand(CZP_Player@ pPlayer, CASCommand@ pArgs)
 						}
 						else
 						{
-							StripBalls(pPlayer);
 							pBaseEnt.ChangeTeam(TEAM_SURVIVORS);
 							pPlayer.ForceRespawn();
 							pPlayer.SetHudVisibility(true);
@@ -1268,7 +1266,6 @@ HookReturnCode CSZM_OnConCommand(CZP_Player@ pPlayer, CASCommand@ pArgs)
 					}
 					else if (pCSZMPlayer.IsAbuser())
 					{
-						StripBalls(pPlayer);
 						pBaseEnt.ChangeTeam(TEAM_ZOMBIES);
 						pPlayer.ForceRespawn();
 						pPlayer.SetHudVisibility(true);
@@ -1297,6 +1294,11 @@ HookReturnCode CSZM_OnPlayerSpawn(CZP_Player@ pPlayer)
 
 		RemoveProp(pBaseEnt);
 		Engine.EmitSoundEntity(pBaseEnt, "CSPlayer.Mute");
+
+		if (RoundManager.IsRoundOngoing(false) && pBaseEnt.GetTeamNumber() == TEAM_SURVIVORS)
+		{
+			GiveStartGear(pPlayer, true);
+		}
 
 		//Apply the custom movement speed
 		switch(TeamNum)
@@ -2105,7 +2107,8 @@ void OnMatchBegin()
 {
 	if (bIsCSZM)
 	{
-		Schedule::Task(0.5f, "LocknLoad");
+		Schedule::Task(0.5f, "CSZM_LocknLoad");
+		Schedule::Task(0.35f, "CSZM_StartGear");
 
 		if (iWUSeconds == 0)
 		{
@@ -2116,7 +2119,27 @@ void OnMatchBegin()
 	}
 }
 
-void LocknLoad()
+void CSZM_StartGear()
+{
+	for (int i = 1; i <= iMaxPlayers; i++)
+	{
+		CZP_Player@ pPlayer = ToZPPlayer(i);
+							
+		if (pPlayer is null)
+		{
+			continue;
+		}
+
+		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(i);
+
+		if (pPlayerEntity.GetTeamNumber() == 2)
+		{
+			GiveStartGear(pPlayer, false);
+		}
+	}
+}
+
+void CSZM_LocknLoad()
 {
 	flRTWait = Globals.GetCurrentTime();
 

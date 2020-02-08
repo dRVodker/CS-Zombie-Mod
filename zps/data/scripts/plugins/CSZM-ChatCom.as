@@ -69,8 +69,8 @@ HookReturnCode CSZM_SetS_OnPlrSpawn(CZP_Player@ pPlayer)
 
 	string sEntDesc = pBaseEnt.GetEntityDescription();
 
-	pPlayer.StripWeapon("weapon_tennisball");
-	pPlayer.StripWeapon("weapon_snowball");
+	StripWeapon(pPlayer, "weapon_tennisball");
+	StripWeapon(pPlayer, "weapon_snowball");
 
 	if (pBaseEnt.GetTeamNumber() != TEAM_LOBBYGUYS)
 	{
@@ -84,7 +84,7 @@ HookReturnCode CSZM_SetS_OnPlrSpawn(CZP_Player@ pPlayer)
 
 	if (pBaseEnt.GetTeamNumber() == TEAM_SPECTATORS)
 	{
-		pPlayer.StripWeapon("weapon_emptyhand");
+		StripWeapon(pPlayer, "weapon_emptyhand");
 	}
 	else
 	{
@@ -115,6 +115,15 @@ HookReturnCode CSZM_SetS_OnConCommand(CZP_Player@ pPlayer, CASCommand@ pArgs)
 			if (Utils.StrContains("enhancevision", pArgs.Arg(0))) 
 			{
 				DLight(pPlayer, pBaseEnt, iIndex);
+			}
+			else if (Utils.StrContains("holster", pArgs.Arg(0)))
+			{
+				CBaseEntity@ pCurWep = pPlayer.GetCurrentWeapon();
+				const string CWClassname = pCurWep.GetClassname();
+				if (!Utils.StrEql("weapon_emptyhand", CWClassname))
+				{
+					StripWeapon(pPlayer, CWClassname);
+				}
 			}
 		}
 	}
@@ -410,11 +419,11 @@ void GiveThrowable(CZP_Player@ pPlayer, const string &in strClassname)
 	}
 	else if (Utils.StrEql(strClassname, strCurWepClassname))
 	{
-		pPlayer.StripWeapon(strCurWepClassname);
+		StripWeapon(pPlayer, strCurWepClassname);
 	}
 	else
 	{
-		pPlayer.StripWeapon(pWeapon.GetClassname());
+		StripWeapon(pPlayer, pWeapon.GetClassname());
 		pPlayer.GiveWeapon(strClassname);
 	}
 }
@@ -484,4 +493,23 @@ void ShowCom(CBasePlayer@ pPlayer)
 
 //	Engine.EmitSoundPlayer(pPlayer, "HudChat.Message");
 	Engine.EmitSoundPlayer(pPlayer, "cszm_fx/misc/talk.wav");
+}
+
+void StripWeapon(CZP_Player@ pPlayer, const string &in strClassname)
+{
+	CBasePlayer@ pBasePlayer = pPlayer.opCast();
+	CBaseEntity@ pPlayerEntity = pBasePlayer.opCast();
+	CBaseEntity@ pWeapon;
+
+	pPlayer.StripWeapon(strClassname);
+
+	while ((@pWeapon = FindEntityByClassname(pWeapon, strClassname)) !is null)
+	{
+		CBaseEntity@ pOwner = pWeapon.GetOwner();
+
+		if (pPlayerEntity is pOwner)
+		{
+			pWeapon.SUB_Remove();
+		}
+	}
 }
