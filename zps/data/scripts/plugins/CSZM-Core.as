@@ -204,6 +204,7 @@ class CSZMPlayer
 	private int ZMDeathCount;			//Счётчик смертей зомби, используется для вычисления бонусного HP для зомби
 
 	private int ZMHealth;
+	private float SwipeDelay;
 
 	private float SlowTime;				//Время, которое должен ждать зомби, чтобы начать восстанавливать скорость
 	private float SpeedRT;				//Время, по истечению которого зомби получет определенное кол-во скорости
@@ -241,6 +242,7 @@ class CSZMPlayer
 		InfectDelay = 0;
 		ZMDeathCount = 0;
 		ZMHealth = 0;
+		SwipeDelay = 0;
 		Volunteer = false;
 		Abuser = false;
 		FirstInfected = false;
@@ -329,6 +331,18 @@ class CSZMPlayer
 		{
 			WeakZombie = false;
 		}
+	}
+
+	bool AllowToInfect()
+	{
+		bool b = false;
+		if (SwipeDelay <= Globals.GetCurrentTime())
+		{
+			b = true;
+			SwipeDelay = Globals.GetCurrentTime() + CONST_SWIPE_DELAY;
+		}
+
+		return b;
 	}
 
 	void SetZombieHealth(int NewHealth)
@@ -1474,8 +1488,6 @@ HookReturnCode CSZM_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out Da
 
 		int InfRes = pVicCSZMPlayer.GetInfectResist();
 
-//		SD("{violet}Attacker: {cyan}" + pEntityAttacker.GetClassname() + "\n{violet}Index: {cyan}" + pEntityAttacker.entindex());
-
 		if (!pEntityAttacker.IsPlayer())
 		{
 			bool bSetZeroDMG = false;
@@ -1536,11 +1548,14 @@ HookReturnCode CSZM_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out Da
 
 		if (iVicTeam == TEAM_SURVIVORS && iAttTeam == TEAM_ZOMBIES && iDamageType == 8196) //Damage Type: DMG_ALWAYSGIB + DMG_SLASH
 		{
+			DamageInfo.SetDamage(Math::RandomInt(15, 20));
+			DamageInfo.SetDamageType((1<<9));
+
 			if (InfRes > 0)
 			{
 				pVicCSZMPlayer.SubtractInfectResist();
 			}
-			else if (InfRes <= 0)
+			else if (InfRes <= 0 && pAttCSZMPlayer.AllowToInfect())
 			{
 				DamageInfo.SetDamage(0);
 				g_iVictims[iAttIndex]++;
@@ -1548,7 +1563,7 @@ HookReturnCode CSZM_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out Da
 				KillFeed(strAttName, iAttTeam, strVicName, iVicTeam, true, false);
 				GotVictim(pPlrAttacker, pEntityAttacker, pAttCSZMPlayer.IsWeakZombie());
 				ZombiePoints(pPlrAttacker);
-				TurnToZ(iVicIndex);
+				TurnToZ(iVicIndex);					
 			}
 		}
 		

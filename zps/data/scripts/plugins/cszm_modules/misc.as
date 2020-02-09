@@ -667,19 +667,19 @@ void SetCustomDoorHealth(CBaseEntity@ pEntity, const int &in iPlrCount)
 	float flMultiplier = 6.0f;
 	if(Utils.StrContains("doormainmetal01", pEntity.GetModelName()))
 	{
-		flMultiplier = 7.9f;
+		flMultiplier = 8.9f;
 	}
 	else if(Utils.StrContains("doormain01", pEntity.GetModelName()))
 	{
-		flMultiplier = 8.8f;
+		flMultiplier = 9.8f;
 	}
 	else if(Utils.StrContains("door_zps_wood", pEntity.GetModelName()))
 	{
-		flMultiplier = 9.5f;
+		flMultiplier = 10.5f;
 	}
 	else if(Utils.StrContains("door_zps_metal", pEntity.GetModelName()))
 	{
-		flMultiplier = 8.1f;
+		flMultiplier = 9.1f;
 	}
 
 	Engine.Ent_Fire_Ent(pEntity, "SetDoorHealth", "" + int((iPlrCount * flMultiplier) + Math::RandomInt(0, 25)), "0.00");	

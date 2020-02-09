@@ -348,7 +348,7 @@ CBaseEntity@ CreateAmmoRegenItem(CBaseEntity@ pEntity)
 	AmmoRegenIDP.Add("delivername", "Ammo Regen 100%");
 	AmmoRegenIDP.Add("sound_pickup", "BaseCombatCharacter.AmmoPickup");
 	AmmoRegenIDP.Add("printname", "vgui/images/hud/ammobank/ammo_icons/rifle");
-	AmmoRegenIDP.Add("weight", "25");
+	AmmoRegenIDP.Add("weight", "15");
 	AmmoRegenIDP.Add("DisableDamageForces", "0", true);
 
 	CBaseEntity@ pAmmoRegenItem = EntityCreator::Create("item_deliver", pEntity.GetAbsOrigin(), pEntity.GetAbsAngles(), AmmoRegenIDP);

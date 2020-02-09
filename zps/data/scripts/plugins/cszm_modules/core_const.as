@@ -41,6 +41,7 @@ const int CONST_MAX_INFECTRESIST = 2;									//Максимальное соп�
 const float CONST_ARMOR_MULT = 2.0f;									//Множитель для вычисления дополнительного HP для превращенного выжившего, если у него был армор (ExtraHP = iArmor * CONST_ARMOR_MULT)
 const float CONST_SHOWDMG_RESET = 1.35f;								//Время в секундах, по истечению которого "ShowDamage" обнуляется
 const float CONST_SHOWDMG_WAIT = 0.001f;								//Задержка показа урона
+const float CONST_SWIPE_DELAY = 0.5f;
 const int CONST_ROUND_TIME_FULL = CONST_ROUND_TIME + CONST_GEARUP_TIME;	//Время в секундах отведённое на раунд (ПОЛНОЕ).
 
 //PROPS
