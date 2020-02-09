@@ -262,9 +262,23 @@ void OnMapInit()
 	{
 		bIsCSZM = true;
         iMaxPlayers = Globals.GetMaxClients();
+		g_AmmoRegen.removeRange(0, g_AmmoRegen.length());
         g_AmmoRegen_Index.resize(iMaxPlayers + 1);
 
         for (int i = 1; i <= iMaxPlayers; i++)
+        {
+            g_AmmoRegen_Index[i] = -1;
+        }
+	}
+}
+
+void OnNewRound()
+{
+	if (bIsCSZM) 
+	{
+		g_AmmoRegen.removeRange(0, g_AmmoRegen.length());
+		
+		for (int i = 1; i <= iMaxPlayers; i++)
         {
             g_AmmoRegen_Index[i] = -1;
         }
@@ -283,11 +297,11 @@ HookReturnCode AmmoRegen_OnEntDamaged(const string &in strClassname, CBaseEntity
 		return HOOK_CONTINUE;
 	}
 
-	if (pEntity.GetEntityName() == "ammoregen")
+/*	if (pEntity.GetEntityName() == "ammoregen")
 	{
 		pEntity.SetClassname("item_ammoregen");
 		g_AmmoRegen.insertLast(CAmmoRegen(pEntity.entindex()));
-	}
+	}*/
 
 	if (pEntity.GetClassname() == "weapon_pipe")
 	{
@@ -338,6 +352,7 @@ CBaseEntity@ CreateAmmoRegenItem(CBaseEntity@ pEntity)
 	AmmoRegenIDP.Add("DisableDamageForces", "0", true);
 
 	CBaseEntity@ pAmmoRegenItem = EntityCreator::Create("item_deliver", pEntity.GetAbsOrigin(), pEntity.GetAbsAngles(), AmmoRegenIDP);
+
     pAmmoRegenItem.SetClassname("item_ammoregen");
     g_AmmoRegen.insertLast(CAmmoRegen(pAmmoRegenItem.entindex()));
 
