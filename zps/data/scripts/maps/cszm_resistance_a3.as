@@ -1,5 +1,6 @@
 #include "cszm_modules/spawncrates"
 #include "cszm_modules/lobbyambient"
+#include "cszm_modules/spawndist"
 
 const int TEAM_LOBBYGUYS = 0;
 
@@ -38,6 +39,10 @@ void OnMapInit()
 
 	g_TeleportDelay.resize(iMaxPlayers + 1);
 
+	flMaxZSDist = 1024.0f;
+	flMinZSDist = 512.0f;
+	flRoarDist = 512.0f
+
 	iMinCrates = 1;
 	iMaxCrates = 4;
 
@@ -74,10 +79,20 @@ void OnNewRound()
 	Schedule::Task(0.05f, "SetUpStuff");
 }
 
+void OnMatchStarting()
+{
+	@ZSpawnManager = CZSpawnManager();
+}
+
 void OnMatchBegin() 
 {
 	Engine.Ent_Fire("SND_Ambient", "PlaySound");
 	Schedule::Task(0.5f, "SpawnCrates");
+}
+
+void OnMatchEnded()
+{
+	@ZSpawnManager = null;
 }
 
 void SetUpStuff()
@@ -132,6 +147,11 @@ void OnProcessRound()
 				Engine.EmitSoundPosition(i, "doors/default_stop.wav", pPlayerEntity.EyePosition(), 1.0f, 60, 105);
 			}
 		}
+	}
+
+	if (ZSpawnManager !is null)
+	{
+		ZSpawnManager.Think();
 	}
 }
 

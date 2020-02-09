@@ -203,6 +203,8 @@ class CSZMPlayer
 	private int InfectDelay;			//Кол-во раундов, которое игрок должен отыграть за выжевшего, чтобы сновы начать раунд как Первый зараженный
 	private int ZMDeathCount;			//Счётчик смертей зомби, используется для вычисления бонусного HP для зомби
 
+	private int ZMHealth;
+
 	private float SlowTime;				//Время, которое должен ждать зомби, чтобы начать восстанавливать скорость
 	private float SpeedRT;				//Время, по истечению которого зомби получет определенное кол-во скорости
 	private float VoiceTime;			//Временные промежутки между IDLE звуками зомби
@@ -238,6 +240,7 @@ class CSZMPlayer
 		LobbyRespawnDelay = 0;
 		InfectDelay = 0;
 		ZMDeathCount = 0;
+		ZMHealth = 0;
 		Volunteer = false;
 		Abuser = false;
 		FirstInfected = false;
@@ -326,6 +329,11 @@ class CSZMPlayer
 		{
 			WeakZombie = false;
 		}
+	}
+
+	void SetZombieHealth(int NewHealth)
+	{
+		ZMHealth = NewHealth;
 	}
 
 	bool WasFirstInfected()
@@ -632,13 +640,6 @@ class CSZMPlayer
 
 		SlowSpeed += NewSlowSpeed;
 
-/*		if (WeakZombie)
-		{
-			SlowTime = Globals.GetCurrentTime() - 0.01f;
-			MeleeFreezeTime = 0;
-			NewSlowSpeed = int(float(NewSlowSpeed) * 0.3f);
-		}*/
-
 		if (SlowSpeed > MinSlowSpeed)
 		{
 			SlowSpeed = MinSlowSpeed;
@@ -894,6 +895,25 @@ class CSZMPlayer
 
 					VoiceTime = Globals.GetCurrentTime() + Math::RandomFloat(Time_Low, Time_High);
 				}
+			}
+
+			if (pPlayerEntity.GetHealth() != ZMHealth && pPlayerEntity.GetHealth() < pPlayerEntity.GetMaxHealth())
+			{
+				int NewHealth = pPlayerEntity.GetHealth();
+				int AddHealth = NewHealth - ZMHealth;
+
+				if (pPlayerEntity.GetHealth() > ZMHealth)
+				{
+					NewHealth += AddHealth * Math::RandomInt(1, 3);
+				}
+
+				if (NewHealth > pPlayerEntity.GetMaxHealth())
+				{
+					NewHealth = pPlayerEntity.GetMaxHealth();
+				}
+
+				ZMHealth = NewHealth;
+				pPlayerEntity.SetHealth(NewHealth);
 			}
 		}
 		else if (TeamNum == TEAM_SURVIVORS)
@@ -2484,6 +2504,9 @@ void SetZMHealth(CBaseEntity@ pPlayerEntity)
 	int iHPBonus = pCSZMPlayer.GetHPBonus();
 	int iArmor = int(float(pPlayer.GetArmor()) * (CONST_ARMOR_MULT + Math::RandomFloat(0.0f, 1.0f)));
 
+	int NewZombieMaxHealth = 0;
+	int NewZombieHealth = 0;
+
 	if (iArmor > 0)
 	{
 		pPlayer.SetArmor(0);
@@ -2491,8 +2514,8 @@ void SetZMHealth(CBaseEntity@ pPlayerEntity)
 
 	if (pCSZMPlayer.IsFirstInfected())
 	{
-		pPlayerEntity.SetMaxHealth(int(iFirstInfectedHP * 0.785));
-		pPlayerEntity.SetHealth(iFirstInfectedHP + iArmor + Math::RandomInt(5, 20));
+		NewZombieMaxHealth = int(iFirstInfectedHP * 0.785);
+		NewZombieHealth = iFirstInfectedHP + iArmor + Math::RandomInt(5, 20);
 	}
 	else if (pPlayer.IsCarrier())
 	{
@@ -2518,12 +2541,16 @@ void SetZMHealth(CBaseEntity@ pPlayerEntity)
 			break;
 		}
 
-		pPlayerEntity.SetMaxHealth(pPlayerEntity.GetMaxHealth() + int(float(CONST_CARRIER_HP) + (float(iHPBonus) * flAloneMult)));
-		pPlayerEntity.SetHealth(pPlayerEntity.GetHealth() + int(float(CONST_CARRIER_HP) + (float(iHPBonus) * flAloneMult)) + iArmor);
+		NewZombieMaxHealth = pPlayerEntity.GetMaxHealth() + int(float(CONST_CARRIER_HP) + (float(iHPBonus) * flAloneMult));
+		NewZombieHealth = pPlayerEntity.GetHealth() + int(float(CONST_CARRIER_HP) + (float(iHPBonus) * flAloneMult)) + iArmor;
 	}
 	else
 	{
-		pPlayerEntity.SetMaxHealth(pPlayerEntity.GetMaxHealth() + CONST_ZOMBIE_ADD_HP + iHPBonus);
-		pPlayerEntity.SetHealth(int(float(pPlayerEntity.GetHealth()) * 0.95 ) + int(CONST_ZOMBIE_ADD_HP * 0.125) + iHPBonus + iArmor);
+		NewZombieMaxHealth = pPlayerEntity.GetMaxHealth() + CONST_ZOMBIE_ADD_HP + iHPBonus;
+		NewZombieHealth = int(float(pPlayerEntity.GetHealth()) * 0.95 ) + int(CONST_ZOMBIE_ADD_HP * 0.125) + iHPBonus + iArmor;
 	}
+
+	pPlayerEntity.SetMaxHealth(NewZombieMaxHealth);
+	pPlayerEntity.SetHealth(NewZombieHealth);
+	pCSZMPlayer.SetZombieHealth(NewZombieHealth);
 }

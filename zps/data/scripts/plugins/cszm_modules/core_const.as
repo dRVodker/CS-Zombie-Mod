@@ -19,9 +19,9 @@ const float CONST_SLOWDOWN_CRITDMG = 91.0f;								//Значение урона
 //Другие постоянные
 const float CONST_SPAWN_DELAY = 5.0f;									//Время в секундах, которое должны будут ждать все убитые игроки, чтобы снова возродиться
 const int CONST_FI_HEALTH_MULT = 135;									//Множитель HP для Первого зараженного (умножается на кол-во игроков)
-const int CONST_ZOMBIE_ADD_HP = 110;									//Дополнительные HP для максимального HP обычного зомби. (Zombie's max health + CONST_ZOMBIE_ADD_HP)
-const int CONST_WEAK_ZOMBIE_HP = 135;									//Здоровье слабых зомби
-const int CONST_CARRIER_HP = 10;										//Дополнительные HP для максимального HP белого зомби.
+const int CONST_ZOMBIE_ADD_HP = 200;									//Дополнительные HP для максимального HP обычного зомби. (Zombie's max health + CONST_ZOMBIE_ADD_HP)
+const int CONST_WEAK_ZOMBIE_HP = 125;									//Здоровье слабых зомби
+const int CONST_CARRIER_HP = 25;										//Дополнительные HP для максимального HP белого зомби.
 const int CONST_REWARD_HEALTH = 115;									//Кол-во HP, которое зомби получит при удачном заражении человека.
 const int CONST_GEARUP_TIME = 45;										//Время в секундах, через которое превратится Первый зараженный.
 const int CONST_TURNING_TIME = 20;										//Время превращения в секундах (Первый зараженный будет видеть обратный отсчёт этого времени).
