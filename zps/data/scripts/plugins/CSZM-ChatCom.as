@@ -449,7 +449,7 @@ void DLight(CZP_Player@ pPlayer, CBaseEntity@ pPlayerEntity, const int &in iInde
 		PropDynamicIPD.Add("model", "models/props_junk/popcan01a.mdl");
 		PropDynamicIPD.Add("modelscale", "0.25");
 		PropDynamicIPD.Add("DefaultAnim", "idle");
-		PropDynamicIPD.Add("Effects", "2");
+		PropDynamicIPD.Add("Effects", "18");	//2
 		PropDynamicIPD.Add("rendermode", "10");
 		PropDynamicIPD.Add("health", "0");
 		PropDynamicIPD.Add("fademindist", "1");
