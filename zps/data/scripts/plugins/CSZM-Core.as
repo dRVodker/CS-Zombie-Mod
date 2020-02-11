@@ -428,9 +428,9 @@ class CSZMPlayer
 		return Volunteer;
 	}
 
-	bool IsWeakZombie()
+	bool AllowInfReward()
 	{
-		return WeakZombie;
+		return !(WeakZombie || FirstInfected);
 	}
 
 	void SetWeakZombie(bool SWZ)
@@ -1425,8 +1425,8 @@ HookReturnCode CSZM_OnPlayerSpawn(CZP_Player@ pPlayer)
 						pPlayer.AmmoBank(add, iAmmoType, iAmmoCount);
 					}
 					
-					RndZModel(pPlayer, pBaseEnt);
-					SetZMHealth(pBaseEnt);
+					RandomZombieModel(pPlayer, pBaseEnt);
+					SetZombieHealth(pBaseEnt);
 
 					EmitBloodEffect(pPlayer, true);
 					pCSZMPlayer.SpawnWeakZombie();
@@ -1561,9 +1561,9 @@ HookReturnCode CSZM_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out Da
 				g_iVictims[iAttIndex]++;
 				ShowKills(pPlrAttacker, g_iVictims[iAttIndex], true);
 				KillFeed(strAttName, iAttTeam, strVicName, iVicTeam, true, false);
-				GotVictim(pPlrAttacker, pEntityAttacker, pAttCSZMPlayer.IsWeakZombie());
+				GotVictim(pPlrAttacker, pEntityAttacker, pAttCSZMPlayer.AllowInfReward());
 				ZombiePoints(pPlrAttacker);
-				TurnToZ(iVicIndex);					
+				TurnToZombie(iVicIndex);					
 			}
 		}
 		
@@ -1748,7 +1748,7 @@ HookReturnCode CSZM_OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in Dama
 			g_iVictims[iAttIndex]++;
 			ShowKills(pPlrAttacker, g_iVictims[iAttIndex], true);
 			pVicCSZMPlayer.SetWeakZombie(false);
-			GotVictim(pPlrAttacker, pEntityAttacker, pAttCSZMPlayer.IsWeakZombie());
+			GotVictim(pPlrAttacker, pEntityAttacker, pAttCSZMPlayer.AllowInfReward());
 		}
 
 		if (iVicTeam == TEAM_SURVIVORS && bSpawnWeak)
@@ -2331,12 +2331,12 @@ void ShowFICountdown()
 	}
 }
 
-void GotVictim(CZP_Player@ pAttacker, CBaseEntity@ pPlayerEntity, const bool &in bZMWeak)
+void GotVictim(CZP_Player@ pAttacker, CBaseEntity@ pPlayerEntity, const bool &in bAIR)
 {
 	CSZMPlayer@ pCSZMPlayer = CSZMPlayerArray[pPlayerEntity.entindex()];
 	pCSZMPlayer.DecreaseZMDC();
 		
-	if (pPlayerEntity.IsAlive() && !bZMWeak)
+	if (pPlayerEntity.IsAlive() && bAIR)
 	{
 		pPlayerEntity.SetHealth(pPlayerEntity.GetHealth() + CONST_REWARD_HEALTH);
 	}
@@ -2398,7 +2398,7 @@ void TurnFirstInfected()
 	pCSZMPlayer.AddInfectDelay(-1);
 
 	ShowOutbreak(iFZIndex);
-	TurnToZ(iFZIndex);
+	TurnToZombie(iFZIndex);
 
 	for(int i = 1; i <= iMaxPlayers; i++)
 	{
@@ -2413,9 +2413,9 @@ void TurnFirstInfected()
 	}
 }
 
-void TurnToZ(const int &in index)
+void TurnToZombie(const int &in index)
 {
-	if (index != 0 && index > 0)
+	if (index > 0)
 	{
 		if (index == iFZIndex)
 		{
@@ -2445,8 +2445,8 @@ void TurnToZ(const int &in index)
 			pPlayer.SetArmModel(MODEL_ZOMBIE_ARMS);
 			pCSZMPlayer.SetDefSpeed(SPEED_ZOMBIE);
 
-			RndZModel(pPlayer, pPlayerEntity);
-			SetZMHealth(pPlayerEntity);
+			RandomZombieModel(pPlayer, pPlayerEntity);
+			SetZombieHealth(pPlayerEntity);
 
 			Engine.EmitSoundEntity(pPlayerEntity, "CSPlayer.Mute");
 			Engine.EmitSoundEntity(pPlayerEntity, "Flesh.HeadshotExplode");
@@ -2460,7 +2460,7 @@ void TurnToZ(const int &in index)
 	}
 }
 
-void RndZModel(CZP_Player@ pPlayer, CBaseEntity@ pPlayerEntity)
+void RandomZombieModel(CZP_Player@ pPlayer, CBaseEntity@ pPlayerEntity)
 {
 	Utils.CosmeticWear(pPlayer, "models/cszm/weapons/w_knife_t.mdl");
 	CSZMPlayer@ pCSZMPlayer = CSZMPlayerArray[pPlayerEntity.entindex()];
@@ -2509,7 +2509,7 @@ void RndZModel(CZP_Player@ pPlayer, CBaseEntity@ pPlayerEntity)
 	}
 }
 
-void SetZMHealth(CBaseEntity@ pPlayerEntity)
+void SetZombieHealth(CBaseEntity@ pPlayerEntity)
 {
 	int index = pPlayerEntity.entindex();
 
