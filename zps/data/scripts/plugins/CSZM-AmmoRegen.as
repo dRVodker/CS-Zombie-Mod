@@ -297,12 +297,6 @@ HookReturnCode AmmoRegen_OnEntDamaged(const string &in strClassname, CBaseEntity
 		return HOOK_CONTINUE;
 	}
 
-/*	if (pEntity.GetEntityName() == "ammoregen")
-	{
-		pEntity.SetClassname("item_ammoregen");
-		g_AmmoRegen.insertLast(CAmmoRegen(pEntity.entindex()));
-	}*/
-
 	if (pEntity.GetClassname() == "weapon_pipe")
 	{
 		CreateAmmoRegenItem(pEntity);
