@@ -147,55 +147,59 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 
 	if (Utils.StrContains("!setscale", arg1) || Utils.StrContains("!scale", arg1))
 	{
-		if (pBaseEnt.GetTeamNumber() == TEAM_LOBBYGUYS)
-		{
-			CASCommand@ pSplited = StringToArgSplit(arg1, " ");
-			string sValue = pSplited.Arg(1);
-			string sAddition = "";
-			string sEntDesc = pBaseEnt.GetEntityDescription();
-			float fltest = Utils.StringToFloat(sValue);
+		CASCommand@ pSplited = StringToArgSplit(arg1, " ");
 
-			if (fltest == 0 || fltest < 0)
+		if (Utils.StrEql("!setscale", pSplited.Arg(0)) || Utils.StrEql("!scale", pSplited.Arg(0)))
+		{
+			if (pBaseEnt.GetTeamNumber() == TEAM_LOBBYGUYS)
 			{
-				Chat.PrintToChatPlayer(pPlrEnt, TEXT_INVALID_VALUE);
-				Engine.EmitSoundPlayer(pPlayer, FILENAME_DENY);
-				HOOK_RESULT = HOOK_HANDLED;
+				string sValue = pSplited.Arg(1);
+				string sAddition = "";
+				string sEntDesc = pBaseEnt.GetEntityDescription();
+				float fltest = Utils.StringToFloat(sValue);
+
+				if (fltest == 0 || fltest < 0)
+				{
+					Chat.PrintToChatPlayer(pPlrEnt, TEXT_INVALID_VALUE);
+					Engine.EmitSoundPlayer(pPlayer, FILENAME_DENY);
+					HOOK_RESULT = HOOK_HANDLED;
+				}
+				else
+				{
+					if (fltest < 0.1f)
+					{
+						fltest = 0.1f;
+					}
+
+					else if (fltest > 2.0f)
+					{
+						fltest = 2.0f;
+					}
+
+					else if (fltest == 1)
+					{
+						sAddition = ".0";
+					}
+
+					Engine.Ent_Fire_Ent(pBaseEnt, "SetModelScale", "" + fltest);
+					Engine.EmitSoundPlayer(pPlayer, FILENAME_BUTTONCLICK);
+
+					if (!Utils.StrContains(";scaled;", sEntDesc))
+					{
+						sEntDesc = sEntDesc + ";scaled;";
+						pBaseEnt.SetEntityDescription(sEntDesc);
+					}
+
+					Chat.CenterMessagePlayer(pPlrEnt, TEXT_YOUR_SCALE + fltest + sAddition);
+				}
 			}
 			else
 			{
-				if (fltest < 0.1f)
-				{
-					fltest = 0.1f;
-				}
-
-				else if (fltest > 2.0f)
-				{
-					fltest = 2.0f;
-				}
-
-				else if (fltest == 1)
-				{
-					sAddition = ".0";
-				}
-
-				Engine.Ent_Fire_Ent(pBaseEnt, "SetModelScale", "" + fltest);
-				Engine.EmitSoundPlayer(pPlayer, FILENAME_BUTTONCLICK);
-
-				if (!Utils.StrContains(";scaled;", sEntDesc))
-				{
-					sEntDesc = sEntDesc + ";scaled;";
-					pBaseEnt.SetEntityDescription(sEntDesc);
-				}
-
-				Chat.CenterMessagePlayer(pPlrEnt, TEXT_YOUR_SCALE + fltest + sAddition);
+				iCommTeam = TEAM_LOBBYGUYS;
 			}
-		}
-		else
-		{
-			iCommTeam = TEAM_LOBBYGUYS;
-		}
 
-		HOOK_RESULT = HOOK_HANDLED;
+			HOOK_RESULT = HOOK_HANDLED;
+		}
 	}
 	else if (Utils.StrEql("!dlight", arg1))
 	{

@@ -22,7 +22,7 @@ void OnMapInit()
 
 	flMaxZSDist = 2250.0f;
 	flMinZSDist = 1600.0f;
-	flRoarDist = 512.0f
+	flRoarDist = 512.0f;
 
 	iMinCrates = 1;
 	iMaxCrates = 6;

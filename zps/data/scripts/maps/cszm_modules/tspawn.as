@@ -1,4 +1,5 @@
-int iPreviousIndex = 0;
+int iPreviousTIndex = 0;
+string strPVS_Value = "0";
 
 array<string> TerroristsSpawn;
 
@@ -15,17 +16,17 @@ int CreateTerroristsSpawn()
 	
 	if (TSLength > 1)
 	{
-		while(iRandomIndex == iPreviousIndex)
+		while(iRandomIndex == iPreviousTIndex)
 		{
 			iRandomIndex = Math::RandomInt(0, TSLength - 1);
 		}
-		iPreviousIndex = iRandomIndex;
+		iPreviousTIndex = iRandomIndex;
 	}
 
 	CASCommand@ pSplitedOrigin = null;
 	CASCommand@ pSplited = StringToArgSplit(TerroristsSpawn[iRandomIndex], "|");
 	int Args = pSplited.Args();
-	float Angle_Yaw = YawAngle(pSplited.Arg(0));
+	float Angle_Yaw = TS_YawAngle(pSplited.Arg(0));
 
 	for (int i = 1; i < Args; i++)
 	{
@@ -34,39 +35,44 @@ int CreateTerroristsSpawn()
 		
 		if (pSplitedOrigin.Args() == 4)
 		{
-			Angle_Yaw = YawAngle(pSplitedOrigin.Arg(0));
+			Angle_Yaw = TS_YawAngle(pSplitedOrigin.Arg(0));
 			Shift = 1;
 		}
 		else if (pSplitedOrigin.Args() != 3)
 		{
-			Chat.PrintToChat(all, "{red}-=Warning=-\n*{gold}Terrorist spawn has wrong origin coordinates!\n{violet}Index: {cyan} " + i);
+			Chat.PrintToChat(all, "{red}-=Warning=-\n*{red}Terrorist {gold}spawn has wrong origin coordinates!\n{violet}Index: {cyan} " + i);
 		}
 
-		CreateSpawnEntity(Vector(Utils.StringToFloat(pSplitedOrigin.Arg(0 + Shift)), Utils.StringToFloat(pSplitedOrigin.Arg(1 + Shift)), Utils.StringToFloat(pSplitedOrigin.Arg(2 + Shift))), QAngle(0, Angle_Yaw, 0));
+		CreateTSpawnEntity(Vector(Utils.StringToFloat(pSplitedOrigin.Arg(0 + Shift)), Utils.StringToFloat(pSplitedOrigin.Arg(1 + Shift)), Utils.StringToFloat(pSplitedOrigin.Arg(2 + Shift))), QAngle(0, Angle_Yaw, 0));
 	}
 
 	return iRandomIndex;
 }
 
-void CreateSpawnEntity(Vector Origin, QAngle Angles)
+void CreateTSpawnEntity(Vector Origin, QAngle Angles)
 {
 	CEntityData@ ImputData = EntityCreator::EntityData();
 	ImputData.Add("targetname", "terrorists_spawn");
 	ImputData.Add("startdisabled", "0");
 	ImputData.Add("minspawns", "0");
-	ImputData.Add("pvsmode", "0");
+	ImputData.Add("pvsmode", strPVS_Value);
 	ImputData.Add("mintime", "1");
 
 	EntityCreator::Create("info_player_zombie", Origin, Angles, ImputData);
 }
 
-float YawAngle(const string &in strValue)
+float TS_YawAngle(const string &in strValue)
 {
 	float Yaw = Utils.StringToFloat(strValue);
 
 	if (strValue == "r")
 	{
 		Yaw = Math::RandomFloat(0, 360);
+		strPVS_Value = "1";
+	}
+	else
+	{
+		strPVS_Value = "0";
 	}
 
 	return Yaw;

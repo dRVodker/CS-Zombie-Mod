@@ -31,7 +31,7 @@ void OnMatchBegin()
 void SetUpStuff()
 {
 	Engine.Ent_Fire("AmbientG", "PlaySound");
-	Engine.Ent_Fire("shading", "StartOverlays");
+	PlayLobbyAmbient();
 }
 
 void Hydro_FindCrates()
