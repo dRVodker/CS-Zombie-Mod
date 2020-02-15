@@ -54,9 +54,9 @@ void CreateTSpawnEntity(Vector Origin, QAngle Angles)
 	CEntityData@ ImputData = EntityCreator::EntityData();
 	ImputData.Add("targetname", "terrorists_spawn");
 	ImputData.Add("startdisabled", "0");
-	ImputData.Add("minspawns", "0");
+	ImputData.Add("minspawns", "100");
 	ImputData.Add("pvsmode", strPVS_Value);
-	ImputData.Add("mintime", "1");
+	ImputData.Add("mintime", "0");
 
 	EntityCreator::Create("info_player_zombie", Origin, Angles, ImputData);
 }

@@ -1826,6 +1826,10 @@ HookReturnCode CSZM_OnEntityCreation(const string &in strClassname, CBaseEntity@
 		{
 			SpawnRandomItem(pEntity);
 		}
+		else if (Utils.StrContains("prop_barricade", strClassname))
+		{
+			Engine.Ent_Fire_Ent(pEntity, "DisableShadow");
+		}
 		else if (Utils.StrContains("prop", strClassname))
 		{
 			CheckProp(pEntity, strClassname);

@@ -42,7 +42,7 @@ array<float> g_ItemRespawnTime =
 	10.0f,
 	22.0f,
 	32.0f,
-	11.1f,
+	17.6f,
 	37.8f,
 	21.0f,
 	10.0f
