@@ -67,6 +67,7 @@ void Stuff()
 	int iTSpawnIndex = CreateTerroristsSpawn();
 	CreateCounterTerroristsSpawn();
 	PlayLobbyAmbient();
+	Shadows();
 
 	if (iTSpawnIndex == 4)
 	{
@@ -112,5 +113,14 @@ void OnEntityOutput(const string &in strOutput, CBaseEntity@ pActivator, CBaseEn
 		Engine.Ent_Fire("fan_switch", "SetPlaybackRate", "0", "0.85");
 		Engine.Ent_Fire("fan_enable", "Trigger", "0", "1.5");
 		Engine.Ent_Fire("fan_switch", "SetAnimation", "idle", "24.85");
+	}
+}
+
+void Shadows()
+{
+	CBaseEntity@ pShadowControl = FindEntityByClassname(pShadowControl, "shadow_control");
+	if (pShadowControl !is null)
+	{
+		Engine.Ent_Fire_Ent(pShadowControl, "SetShadowsDisabled", "0");
 	}
 }
