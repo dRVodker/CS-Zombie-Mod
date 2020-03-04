@@ -691,8 +691,7 @@ void SetCustomFuncHealth(CBaseEntity@ pEntity, const int &in iPlrCount)
 
 	if (!Utils.StrContains("special", strTargetname))
 	{
-		int iCustomHealth = pEntity.GetHealth() * iPlrCount + Math::RandomInt(0, 75);
-		pEntity.SetHealth(iCustomHealth);		
+		pEntity.SetHealth(pEntity.GetHealth() * iPlrCount + Math::RandomInt(0, 75));		
 	}
 }
 
