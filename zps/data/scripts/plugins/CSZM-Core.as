@@ -1372,7 +1372,7 @@ HookReturnCode CSZM_OnPlayerSpawn(CZP_Player@ pPlayer)
 			}
 		}
 
-		//If 'InLobby' team set the lobby guy player model
+		//If 'Lobby' team set the lobby guy player model
 		if (TeamNum == TEAM_LOBBYGUYS)
 		{
 			pBaseEnt.SetModel("models/cszm/lobby_guy.mdl");
@@ -1442,14 +1442,14 @@ HookReturnCode CSZM_OnPlayerSpawn(CZP_Player@ pPlayer)
 		}
 		else
 		{
+			PutPlrToPlayZone(pBaseEnt);
+
 			if (pPlrEnt.IsBot())									
 			{
 				pBaseEnt.ChangeTeam(TEAM_LOBBYGUYS);
 				pPlayer.ForceRespawn();
 				pBaseEnt.SetModel("models/cszm/lobby_guy.mdl");
 			}
-
-			PutPlrToPlayZone(pBaseEnt);
 
 			if (CountPlrs(TEAM_LOBBYGUYS) <= 2 && iWUSeconds == CONST_WARMUP_TIME)
 			{
@@ -1650,7 +1650,7 @@ HookReturnCode CSZM_OnPlayerInfected(CZP_Player@ pPlayer, InfectionState iState)
 	//Built-in infection is not allowed
 	if (iState != state_none && bIsCSZM)
 	{
-		pPlayer.SetInfection(true, 1200.0f);
+		pPlayer.SetInfection(true, 9999.0f);
 		pPlayer.SetInfection(false, 0);
 	}
 
@@ -1724,7 +1724,7 @@ HookReturnCode CSZM_OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in Dama
 				}
 			}
 
-			//Don't emit die sound if blowed up
+			//Don't emit die sound if blowed up or crushed
 			if (!(bDamageType(iDamageType, 6) || bDamageType(iDamageType, 0)))
 			{
 				pVicCSZMPlayer.EmitZMSound(VOICE_ZM_DIE);
