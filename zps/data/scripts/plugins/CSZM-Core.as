@@ -1725,7 +1725,7 @@ HookReturnCode CSZM_OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in Dama
 			}
 
 			//Don't emit die sound if blowed up
-			if (!bDamageType(iDamageType, 6))
+			if (!(bDamageType(iDamageType, 6) || bDamageType(iDamageType, 0)))
 			{
 				pVicCSZMPlayer.EmitZMSound(VOICE_ZM_DIE);
 			}
