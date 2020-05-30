@@ -832,3 +832,78 @@
 	"soundlevel"	"SNDLVL_50dB"
 	"wave"			"npc/combine_soldier/vo/_comma.wav"
 }
+//////////////////////////////
+//////Mute Zombie Taunts//////
+//////////////////////////////
+"Character_Vanessa_Z.Taunt"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+"Character_Pedro_Z.Taunt"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+"Character_Paul_Z.Taunt"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+"Character_Marcus_Z.Taunt"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+"Character_Lea_Z.Taunt"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+"Character_Larry_Z.Taunt"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+"Character_Larry_Z.Taunt"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+"Character_Jessica_Z.Taunt"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+"Character_Jessica_Z.Taunt"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
