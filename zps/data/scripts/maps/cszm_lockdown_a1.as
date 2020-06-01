@@ -1,8 +1,111 @@
 #include "cszm_modules/spawncrates"
 #include "cszm_modules/lobbyambient"
-#include "cszm_modules/ctspawn"
-#include "cszm_modules/tspawn"
-#include "cszm_modules/spawndist"
+#include "cszm_modules/newspawn"
+
+array<array<CSpawnPoint@>> LockDown_Spawns =
+{
+	{
+		CSpawnPoint(Vector(-2471.73, 4126.19, 128.031), QAngle(25.6278, -121.435, 0)),
+		CSpawnPoint(Vector(-2763.2, 3092.31, 128.031), QAngle(2.90391, -51.6174, 0)),
+		CSpawnPoint(Vector(-2765.12, 1588.18, 128.031), QAngle(12.3782, 130.077, 0)),
+		CSpawnPoint(Vector(-3664.14, 1863.72, 0.03125), QAngle(0.798516, -36.8427, 0)),
+		CSpawnPoint(Vector(-3879.64, 1456.25, 0.03125), QAngle(9.18379, 111.456, 0)),
+		CSpawnPoint(Vector(-3126.8, 2262.25, -1.81313), QAngle(4.79144, 71.235, 0)),
+		CSpawnPoint(Vector(-2881.7, 3191.5, 0.03125), QAngle(4.28324, -133.619, 0)),
+		CSpawnPoint(Vector(-3912.55, 3164.73, 15.8928), QAngle(14.2294, -47.1894, 0)),
+		CSpawnPoint(Vector(-3676.02, 3427.99, 0.03125), QAngle(1.95994, 18.8041, 0)),
+		CSpawnPoint(Vector(-2695.17, 3849.22, 128.031), QAngle(13.2857, 50.3128, 0)),
+		CSpawnPoint(Vector(-2763.2, 3092.31, 128.031), QAngle(2.90391, -51.6174, 0)),
+		CSpawnPoint(Vector(-2765.12, 1588.18, 128.031), QAngle(12.3782, 130.077, 0)),
+		CSpawnPoint(Vector(-3664.14, 1863.72, 0.03125), QAngle(0.798516, -36.8427, 0)),
+		CSpawnPoint(Vector(-3879.64, 1456.25, 0.03125), QAngle(9.18379, 111.456, 0)),
+		CSpawnPoint(Vector(-3643.13, 2022.72, -2.27134), QAngle(8.63929, 75.7725, 0)),
+		CSpawnPoint(Vector(-3126.8, 2262.25, -1.81313), QAngle(4.79144, 71.235, 0)),
+		CSpawnPoint(Vector(-2881.7, 3191.5, 0.03125), QAngle(4.28324, -133.619, 0)),
+		CSpawnPoint(Vector(-3912.55, 3164.73, 15.8928), QAngle(14.2294, -47.1894, 0)),
+		CSpawnPoint(Vector(-3676.02, 3427.99, 0.03125), QAngle(1.95994, 18.8041, 0)),
+		CSpawnPoint(Vector(-3254.46, 3991.86, 128.031), QAngle(3.19407, 131.334, 0)),
+		CSpawnPoint(Vector(-4159.97, 4337.43, 128.031), QAngle(3.66595, -18.7671, 0)),
+		CSpawnPoint(Vector(-3333.5, 4492.15, 128.031), QAngle(4.64603, 33.033, 0)),
+		CSpawnPoint(Vector(-3053.36, 4651.96, 128.031), QAngle(26.4986, -34.957, 0)),
+		CSpawnPoint(Vector(-2811.54, 5041.15, 128.031), QAngle(16.625, -112.276, 0)),
+		CSpawnPoint(Vector(-4138.02, 4435.66, 0.03125), QAngle(15.4633, 43.028, 0)),
+		CSpawnPoint(Vector(-3799.61, 4528.19, 0.03125), QAngle(-2.39624, -62.3511, 0)),
+		CSpawnPoint(Vector(-3856.05, 4951.17, 64.0313), QAngle(23.4131, -17.1709, 0)),
+		CSpawnPoint(Vector(-3580.23, 5222.88, 0.03125), QAngle(4.31934, -110.316, 0)),
+		CSpawnPoint(Vector(-4023.05, 5381.5, 0.03125), QAngle(2.86735, 44.4799, 0)),
+		CSpawnPoint(Vector(-3989.78, 6137.8, 0.03125), QAngle(13.5758, -55.3087, 0)),
+		CSpawnPoint(Vector(-3282.86, 5666.66, 0.03125), QAngle(2.25023, -158.945, 0)),
+		CSpawnPoint(Vector(-2794.21, 5185.11, 0.03125), QAngle(2.86735, -115.457, 0)),
+
+		CSpawnPoint(Vector(-3143.61, 4700.43, 0.03125), QAngle(7.72393, -35.4161, 0), "info_player_zombie"),
+		CSpawnPoint(Vector(-3171.13, 4534.35, 0.03125), QAngle(1.51662, 26.9473, 0), "info_player_zombie"),
+		CSpawnPoint(Vector(-3893.45, 5974.71, 0.03125), QAngle(8.59507, -90.8471, 0), "info_player_zombie"),
+		CSpawnPoint(Vector(-3735.01, 1445.78, 0.03125), QAngle(2.02473, 41.0675, 0), "info_player_zombie")
+	},
+	{
+		CSpawnPoint(Vector(-3612.69, 2206.06, -3.29223), QAngle(9.80061, 101.785, 0)),
+		CSpawnPoint(Vector(-3395.86, 2308.33, -1.90202), QAngle(7.04182, 55.5023, 0)),
+		CSpawnPoint(Vector(-3037.89, 3091.56, -2.4802), QAngle(8.05822, -130.802, 0)),
+		CSpawnPoint(Vector(-3911.23, 3095.24, 12.824), QAngle(1.05235, -22.9184, 0)),
+		CSpawnPoint(Vector(-4022.57, 1794.29, 0.03125), QAngle(4.8275, -11.8832, 0)),
+		CSpawnPoint(Vector(-3270.12, 1495.34, 0.03125), QAngle(5.6624, 126.965, 0)),
+		CSpawnPoint(Vector(-2891.38, 2063.95, 0.0287704), QAngle(5.2631, -135.122, 0)),
+		CSpawnPoint(Vector(-2795.89, 2414.67, 128.031), QAngle(19.4564, 169.231, 0)),
+		CSpawnPoint(Vector(-2655.52, 4210.78, 128.031), QAngle(10.9985, -33.5052, 0)),
+		CSpawnPoint(Vector(-2894.23, 4135.15, 128.031), QAngle(15.2092, 112.325, 0)),
+		CSpawnPoint(Vector(-2844.82, 3479.56, 0.03125), QAngle(7.40474, 157.01, 0)),
+		CSpawnPoint(Vector(-3120.16, 5018.58, 0.03125), QAngle(5.66232, -67.7238, 0)),
+		CSpawnPoint(Vector(-4104.62, 4275.35, 0.03125), QAngle(8.05812, 66.1634, 0)),
+		CSpawnPoint(Vector(-3394.97, 4350, 128.031), QAngle(-5.69952, -145.877, 0)),
+		CSpawnPoint(Vector(-3135.46, 4741.17, 128.031), QAngle(4.64604, -29.1597, 0)),
+		CSpawnPoint(Vector(-3148.91, 4508.16, 128.031), QAngle(3.77483, 29.5737, 0)),
+		CSpawnPoint(Vector(-3567.28, 4831.42, 128.031), QAngle(16.4072, 158.924, 0)),
+		CSpawnPoint(Vector(-3566.09, 5470.76, 0.03125), QAngle(4.46442, -96.6047, 0)),
+		CSpawnPoint(Vector(-4016.9, 5635.26, 0.03125), QAngle(0.652927, -28.7107, 0)),
+		CSpawnPoint(Vector(-2730.35, 4575.71, 0.03125), QAngle(-19.5299, 170.069, 0)),
+		CSpawnPoint(Vector(-3564.32, 4596.04, 0.03125), QAngle(4.90001, -119.655, 0)),
+		CSpawnPoint(Vector(-3680.46, 3603.09, 0.03125), QAngle(-2.94081, -25.6023, 0)),
+		CSpawnPoint(Vector(-3734.87, 1488.95, 0.03125), QAngle(8.85672, 44.6013, 0)),
+		CSpawnPoint(Vector(-2627.82, 3116.25, 128.031), QAngle(9.25599, 116.984, 0)),
+
+		CSpawnPoint(Vector(-3143.61, 4700.43, 0.03125), QAngle(7.72393, -35.4161, 0), "info_player_zombie"),
+		CSpawnPoint(Vector(-3171.13, 4534.35, 0.03125), QAngle(1.51662, 26.9473, 0), "info_player_zombie"),
+		CSpawnPoint(Vector(-3893.45, 5974.71, 0.03125), QAngle(8.59507, -90.8471, 0), "info_player_zombie"),
+		CSpawnPoint(Vector(-3735.01, 1445.78, 0.03125), QAngle(2.02473, 41.0675, 0), "info_player_zombie")
+	},
+	{
+		CSpawnPoint(Vector(-3400, 4732, 128), QAngle(0, 0, 0)),
+		CSpawnPoint(Vector(-3326, 4732, 128), QAngle(0, 0, 0)),
+		CSpawnPoint(Vector(-3242, 4732, 128), QAngle(0, 0, 0)),
+		CSpawnPoint(Vector(-3178, 4732, 128), QAngle(0, 0, 0)),
+		CSpawnPoint(Vector(-3114, 4732, 128), QAngle(0, 0, 0)),
+		CSpawnPoint(Vector(-3400, 4668, 128), QAngle(0, 0, 0)),
+		CSpawnPoint(Vector(-3326, 4668, 128), QAngle(0, 0, 0)),
+		CSpawnPoint(Vector(-3242, 4668, 128), QAngle(0, 0, 0)),
+		CSpawnPoint(Vector(-3178, 4668, 128), QAngle(0, 0, 0)),
+		CSpawnPoint(Vector(-3114, 4668, 128), QAngle(0, 0, 0)),
+		CSpawnPoint(Vector(-3400, 4604, 128), QAngle(0, 0, 0)),
+		CSpawnPoint(Vector(-3326, 4604, 128), QAngle(0, 0, 0)),
+		CSpawnPoint(Vector(-3242, 4604, 128), QAngle(0, 0, 0)),
+		CSpawnPoint(Vector(-3178, 4604, 128), QAngle(0, 0, 0)),
+		CSpawnPoint(Vector(-3114, 4604, 128), QAngle(0, 0, 0)),
+		CSpawnPoint(Vector(-3400, 4540, 128), QAngle(0, 0, 0)),
+		CSpawnPoint(Vector(-3326, 4540, 128), QAngle(0, 0, 0)),
+		CSpawnPoint(Vector(-3242, 4540, 128), QAngle(0, 0, 0)),
+		CSpawnPoint(Vector(-3178, 4540, 128), QAngle(0, 0, 0)),
+		CSpawnPoint(Vector(-3114, 4540, 128), QAngle(0, 0, 0)),
+		CSpawnPoint(Vector(-3400, 4476, 128), QAngle(0, 0, 0)),
+		CSpawnPoint(Vector(-3326, 4476, 128), QAngle(0, 0, 0)),
+		CSpawnPoint(Vector(-3242, 4476, 128), QAngle(0, 0, 0)),
+		CSpawnPoint(Vector(-3178, 4476, 128), QAngle(0, 0, 0)),
+		
+		CSpawnPoint(Vector(-3143.61, 4700.43, 0.03125), QAngle(7.72393, -35.4161, 0), "info_player_zombie"),
+		CSpawnPoint(Vector(-3171.13, 4534.35, 0.03125), QAngle(1.51662, 26.9473, 0), "info_player_zombie"),
+		CSpawnPoint(Vector(-3893.45, 5974.71, 0.03125), QAngle(8.59507, -90.8471, 0), "info_player_zombie"),
+		CSpawnPoint(Vector(-3735.01, 1445.78, 0.03125), QAngle(2.02473, 41.0675, 0), "info_player_zombie")
+	}
+};
 
 const int TEAM_LOBBYGUYS = 0;
 int iMaxPlayers;
@@ -14,24 +117,9 @@ void OnMapInit()
 
 	iMinCrates = 2;
 	iMaxCrates = 4;
-
 	flDistBetweenCrates = 407.0f;
 
-	flMaxZSDist = 1975.0f;
-	flMinZSDist = 1250.0f;
-	flRoarDist = 650.0f;
-
 	Engine.PrecacheFile(sound, "buttons/lever8.wav");
-
-	TerroristsSpawn.insertLast("270|-3952 6064 1|-3904 6064 1|-3856 6064 1|-3952 6000 1|-3904 6000 1|-3856 6000 1");
-	TerroristsSpawn.insertLast("270|-4112 4592 1|-4064 4592 1|-4016 4592 1|-4112 4528 1|-4064 4528 1|-4016 4528 1");
-	TerroristsSpawn.insertLast("0|-3648 3424 2|-3648 3472 2|-3648 3520 2|-3584 3520 2|-3584 3568 2|-3584 3616 2");
-	TerroristsSpawn.insertLast("0|180 -2842 3072 0|180 -2842 2752 0|180 -2842 2432 0|90 -3360 2008 4|90 -3616 2008 4|-4128 2432 7|-4128 2752 1|-4128 3072 0");
-	TerroristsSpawn.insertLast("r|-3825.03 1449.22 1|-3255 1391 1|-2851.11 1762.55 -1.28|-2767.58 2747.6 129|-2759.15 2036.09 129|-3155 2293.81 -0.45|-3686.39 1890.97 1|-3616.05 2100.65 -2|-4122.04 2186.41 1|-3278.85 3080.87 0.36|-3654.46 3442.46 1|-3700.74 4000.57 1|-3968.32 4671.84 1|-4143.68 4447.89 1|-4121.14 4281.66 129|-3539.07 4020.49 129|-3236.52 4086.24 129|-3344.08 4352.08 1|-3344.48 4192.16 1|-3235.91 3715.37 1|-3107.16 4011.35 129|-3195.32 4493.41 129|-3186.46 3741.46 1|-3046.5 4627.55 1|-2794.83 3941.54 129|-2690.69 4106.57 129|-2798.44 3700.8 129|-2668.78 3884.21 129|-2488.17 4098.98 129|-2479.56 3978.27 129|-2649.13 3091.34 129|-2720.85 4908 129|-2727 5011.11 1|-3296 5631.89 1|-3744 5647.99 1|-3936.01 6143.95 1|-3552.2 5136.21 1|-3398.71 5059.02 129|-3648.15 4816.09 1|-3568.03 4943.61 129|-3664.05 4815.87 129|-4064.19 5343.88 1");
-
-	CounterTerroristsSpawn.insertLast("0|-3616 1536 1|-3616 1600 1|-3616 1664 1|-3616 1728 1|-3616 1792 1|-3552 1536 1|-3552 1600 1|-3552 1664 1|-3552 1728 1|-3552 1792 1|-3488 1536 1|-3488 1600 1|-3488 1664 1|-3488 1728 1|-3488 1792 1|-3424 1536 1|-3424 1600 1|-3424 1664 1|-3424 1728 1|-3424 1792 1|-3360 1568 1|-3360 1632 1|-3360 1696 1|-3360 1760 1");
-	CounterTerroristsSpawn.insertLast("0|-3376 4480 129|-3376 4544 129|-3376 4608 129|-3376 4672 129|-3376 4736 129|-3312 4480 129|-3312 4544 129|-3312 4608 129|-3312 4672 129|-3312 4736 129|-3312 4480 129|-3312 4544 129|-3312 4608 129|-3312 4672 129|-3312 4736 129|-3248 4480 129|-3248 4544 129|-3248 4608 129|-3248 4608 129|-3248 4736 129|-3184 4480 129|-3184 4544 129|-3184 4608 129|-3184 4672 129|-3184 4736 129|-3120 4512 129|-3120 4576 129|-3120 4640 129|-3120 4704 129");
-	CounterTerroristsSpawn.insertLast("0|-4056.01 5376.01 1|-4056.01 5440.01 1|-4056.01 5504.01 1|-4056.01 5568.01 1|-4056.01 5632.01 1|-3992.01 5376.01 1|-3992.01 5440.01 1|-3992.01 5504.01 1|-3992.01 5568.01 1|-3992.01 5632.01 1|-3928.01 5376.01 1|-3928.01 5440.01 1|-3928.01 5504.01 1|-3928.01 5568.01 1|-3928.01 5632.01 1|-3864.01 5376.01 1|-3864.01 5440.01 1|-3864.01 5504.01 1|-3864.01 5568.01 1|-3864.01 5568.01 1|-3800.01 5408.01 1|-3800.01 5408.01 1|-3800.01 5536.01 1|-3800.01 5600.01 1");
 
 	Entities::RegisterOutput("OnPressed", "fan_button");
 
@@ -46,10 +134,7 @@ void OnNewRound()
 
 void OnProcessRound()
 {
-	if (ZSpawnManager !is null)
-	{
-		ZSpawnManager.Think();
-	}
+
 }
 
 void OnMatchBegin() 
@@ -57,22 +142,13 @@ void OnMatchBegin()
 	Schedule::Task(0.5f, "SpawnCrates");
 }
 
-void OnMatchEnded()
-{
-	@ZSpawnManager = null;
-}
-
 void Stuff()
 {
-	int iTSpawnIndex = CreateTerroristsSpawn();
-	CreateCounterTerroristsSpawn();
+	RemoveNativeSpawns("info_player_human");
+	RemoveNativeSpawns("info_player_zombie");
+	CreateSpawnsFromArray(LockDown_Spawns);
 	PlayLobbyAmbient();
 	Shadows();
-
-	if (iTSpawnIndex == 4)
-	{
-		@ZSpawnManager = CZSpawnManager();
-	}
 
 	Engine.Ent_Fire("what_a_light", "TurnOn");
 	Engine.Ent_Fire("crates", "AddOutput", "physdamagescale 0.05");

@@ -42,7 +42,7 @@ class CAmmoRegen
 		iOwnerIndex = 0;
 		iArrPos = 0;
 		flDelay = 0;
-		flAmmoRegenPoints = 25.0f;	//100.0f
+		flAmmoRegenPoints = 100.0f;	//100.0f
 	}
 
 	int entindex()
@@ -101,15 +101,15 @@ class CAmmoRegen
 
 			if (bDamageType(DamageType, 29))
 			{
-				SubtractAmmo = 18.05f;
+				SubtractAmmo = 21.21f;
 			}
 			else if (WeaponName == "weapon_revolver")
 			{
-				SubtractAmmo = 16.25f;
+				SubtractAmmo = 19.85f;
 			}
 			else if (WeaponName == "weapon_m4" || WeaponName == "weapon_ak47" || WeaponName == "weapon_mp5")
 			{
-				SubtractAmmo = 2.85f;
+				SubtractAmmo = 3.02f;
 			}
 			else if (WeaponName == "weapon_ppk")
 			{
@@ -189,7 +189,7 @@ class CAmmoRegen
 		HudTextParams Params;
 		Params.x = -1;
 		Params.y = 0.895f;
-		Params.channel = 5;
+		Params.channel = 4;
 		Params.fadeinTime = 0.0f;
 		Params.fadeoutTime = 0.25f;
 		Params.holdTime = 1.0f;

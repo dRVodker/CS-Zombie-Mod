@@ -3,12 +3,12 @@
 
 bool bIsCSZM;
 
-const string TEXT_ALLOWED_IN_LOBBY = "{cornflowerblue}*The command available only in the {green}lobby team{cornflowerblue}!";
-const string TEXT_ALLOWED_IN_SPEC = "{cornflowerblue}*The command available only for {white}spectators{cornflowerblue}!";
-const string TEXT_YOUR_SCALE = "Your scale has been changed to ";
-const string TEXT_INVALID_VALUE = "{red}*Invalid value!";
-const string TEXT_FIREFLY = "{cornflowerblue}*You became a {orange}firefly{cornflowerblue}.";
-const string TEXT_FIREFLY_COLOR = "{cornflowerblue}*The {orange}firefly {cornflowerblue}color has been changed!";
+const string TEXT_ALLOWED_IN_LOBBY = "{cornflowerblue}*Эта команда доступна только в {green}лобби{cornflowerblue}!";
+const string TEXT_ALLOWED_IN_SPEC = "{cornflowerblue}*Эта команда доступна только для {white}наблюдателей{cornflowerblue}!";
+const string TEXT_YOUR_SCALE = "Ваш масштаб измёнон до ";
+const string TEXT_INVALID_VALUE = "{red}*Неверное значение!";
+const string TEXT_FIREFLY = "{cornflowerblue}*Вы стали {orange}светлячком{cornflowerblue}.";
+const string TEXT_FIREFLY_COLOR = "{cornflowerblue}*Цвет {orange}светлячка {cornflowerblue}изменён!";
 const string TARGETNAME_DLIGHT = "DLight_Origin";
 const string FILENAME_DENY = "buttons/combine_button_locked.wav";
 const string FILENAME_BUTTONCLICK = "weapons/slam/buttonclick.wav";
@@ -20,11 +20,11 @@ const string CLIST_COLOR_HEAD = "{gold}";
 
 array<string> g_ChatComs =
 {
-	"!setscale;!scale;Set a player scale",
-	"!dlight;Turn on a dynamic light",
-	"!snowball;!sball;Get a snowball",
-	"!tennisball;!tball;Get a tennisball",
-	"!firefly;Become a {orange}Firefly{gold}. Supporting Custom {red}R{green}G{blue}B{gold}!"
+	"!setscale;!scale;Изменить свой масштаб",
+	"!dlight;Источник динамического света",
+	"!snowball;!sball;Получить снежок",
+	"!tennisball;!tball;Получить теннисный мячик",
+	"!firefly;Стать {orange}Светлячок{gold}. Поддерживает цвета {red}R{green}G{blue}B{gold}!"
 };
 
 void OnPluginInit()
@@ -468,7 +468,7 @@ void DLight(CZP_Player@ pPlayer, CBaseEntity@ pPlayerEntity, const int &in iInde
 
 void ShowCom(CBasePlayer@ pPlayer)
 {
-	Chat.PrintToChatPlayer(pPlayer, CLIST_COLOR_HEAD + "-=List of chat commands=-");
+	Chat.PrintToChatPlayer(pPlayer, CLIST_COLOR_HEAD + "-=Список команд=-");
 
 	uint iChatComsLength = g_ChatComs.length();
 
@@ -483,7 +483,7 @@ void ShowCom(CBasePlayer@ pPlayer)
 
 		if (pSplited.Args() == 3)
 		{
-			strCommand += CLIST_COLOR_DESCRIP + " or";
+			strCommand += CLIST_COLOR_DESCRIP + " или";
 			strShort = pSplited.Arg(1);
 			strDescription = pSplited.Arg(2);
 		}

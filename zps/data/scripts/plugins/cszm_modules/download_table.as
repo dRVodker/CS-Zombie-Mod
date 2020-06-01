@@ -3,15 +3,6 @@ array<string> g_CSZMFile =
 	"materials/effects/cszm_shading.vmt",
 	"materials/effects/cszm_shading.vtf",
 
-	"materials/models/cszm/hands/human_arms_diff.vmt",
-	"materials/models/cszm/hands/human_arms_diff.vtf",
-	"materials/models/cszm/hands/human_arms_exp.vtf",
-	"materials/models/cszm/hands/human_arms_norm.vtf",
-	"materials/models/cszm/hands/zombie_arms_diff.vmt",
-	"materials/models/cszm/hands/zombie_arms_diff.vtf",
-	"materials/models/cszm/hands/zombie_arms_exp.vtf",
-	"materials/models/cszm/hands/zombie_arms_norm.vtf",
-
 	"materials/models/cszm/lobby_guy/sandro_facemap.vmt",
 	"materials/models/cszm/lobby_guy/sheet.vmt",
 	"materials/models/cszm/lobby_guy/sheet.vtf",
@@ -75,18 +66,6 @@ array<string> g_CSZMFile =
 
 	"materials/vgui/images/fragmine.vmt",
 	"materials/vgui/images/fragmine.vtf",
-
-	"models/cszm/weapons/c_cszm_human_arms.dx80.vtx",
-	"models/cszm/weapons/c_cszm_human_arms.dx90.vtx",
-	"models/cszm/weapons/c_cszm_human_arms.mdl",
-	"models/cszm/weapons/c_cszm_human_arms.sw.vtx",
-	"models/cszm/weapons/c_cszm_human_arms.vvd",
-	
-	"models/cszm/weapons/c_cszm_zombie_arms.dx80.vtx",
-	"models/cszm/weapons/c_cszm_zombie_arms.dx90.vtx",
-	"models/cszm/weapons/c_cszm_zombie_arms.mdl",
-	"models/cszm/weapons/c_cszm_zombie_arms.sw.vtx",
-	"models/cszm/weapons/c_cszm_zombie_arms.vvd",
 
 	"models/cszm/weapons/v_adrenaline.dx80.vtx",
 	"models/cszm/weapons/v_adrenaline.dx90.vtx",
@@ -212,17 +191,6 @@ array<string> g_CSZMFile =
 	"models/cszm/zombie_bald.vvd",
 	"models/cszm/zombie_bald.phy",
 
-	"sound/cszm_fx/fvox/fv1.wav",
-	"sound/cszm_fx/fvox/fv2.wav",
-	"sound/cszm_fx/fvox/fv3.wav",
-	"sound/cszm_fx/fvox/fv4.wav",
-	"sound/cszm_fx/fvox/fv5.wav",
-	"sound/cszm_fx/fvox/fv6.wav",
-	"sound/cszm_fx/fvox/fv7.wav",
-	"sound/cszm_fx/fvox/fv8.wav",
-	"sound/cszm_fx/fvox/fv9.wav",
-	"sound/cszm_fx/fvox/fv10.wav",
-
 	"sound/cszm_fx/items/ammopickup1.wav",
 	"sound/cszm_fx/items/armorpickup1.wav",
 	"sound/cszm_fx/items/gunpickup1.wav",
@@ -235,11 +203,13 @@ array<string> g_CSZMFile =
 	"sound/cszm_fx/player/claw_strike1.wav",
 	"sound/cszm_fx/player/claw_strike2.wav",
 	"sound/cszm_fx/player/claw_strike3.wav",
+	
 	"sound/cszm_fx/player/plr_pain1.wav",
 	"sound/cszm_fx/player/plr_pain2.wav",
 	"sound/cszm_fx/player/plr_pain3.wav",
-	"sound/cszm_fx/player/plr_scream1.wav",
-	"sound/cszm_fx/player/plr_scream2.wav",
+	"sound/cszm_fx/player/plr_infect1.wav",
+	"sound/cszm_fx/player/plr_infect2.wav",
+	"sound/cszm_fx/player/plr_infect3.wav",
 
 	"sound/cszm_fx/radio/gogogo.wav",
 	"sound/cszm_fx/radio/letsgo.wav",

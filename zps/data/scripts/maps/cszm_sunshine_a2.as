@@ -57,6 +57,62 @@ array<Vector> g_vecCheeseOrigin =
 
 array<Vector> g_vLobbySpawn;
 
+array<CGrenade@> Array_Grenade;
+
+class CGrenade
+{
+	private int arraypos;
+	int entindex;
+	private float respawntime;
+	private Vector Origin;
+	private QAngle Angles;
+
+	CGrenade(int nEntIndex, Vector nOrigin, QAngle nAngles)
+	{
+		arraypos = -1;
+		respawntime = 0;
+		entindex = nEntIndex;
+		Origin = nOrigin;
+		Angles = nAngles;
+	}
+
+	private void DoRespawn()
+	{
+		CEntityData@ GrenadeIPD = EntityCreator::EntityData();
+		GrenadeIPD.Add("origin", "" + Origin.x + " " + Origin.y + " " + Origin.z);
+		GrenadeIPD.Add("DisableDamageForces", "1", true);
+
+		CBaseEntity@ pGrenade = EntityCreator::Create("weapon_frag", Origin, Angles, GrenadeIPD);
+
+		RespawnEffects(Origin);
+		entindex = pGrenade.entindex();
+	}
+
+	void Respawn()
+	{
+		if (entindex != -1)
+		{
+			entindex = -1;
+			respawntime = Globals.GetCurrentTime() + Math::RandomFloat(8.12f, 12.21f);						
+		}
+	}
+
+	void Think()
+	{
+		if (respawntime != 0 && respawntime <= Globals.GetCurrentTime())
+		{
+			respawntime = 0;
+			DoRespawn();
+		}
+
+		if (entindex != -1 && FindEntityByEntIndex(entindex).Distance(Origin) > 32.0f)
+		{
+			FindEntityByEntIndex(entindex).Teleport(Origin, Angles, Vector(0, 0, 0));
+			RespawnEffects(Origin);
+		}
+	}
+}
+
 void OnMapInit()
 {
 	iMaxPlayers = Globals.GetMaxClients();
@@ -141,7 +197,12 @@ void OnNewRound()
 
 void OnMatchBegin()
 {
-	FindItems();
+	FindGrenades();
+}
+
+void OnMatchEnded()
+{
+	Array_Grenade.removeRange(0, Array_Grenade.length());
 }
 
 void SetUpStuff()
@@ -204,22 +265,21 @@ HookReturnCode SH_OnPlayerSpawn(CZP_Player@ pPlayer)
 
 void OnEntityPickedUp(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 {
-	if (Utils.StrEql(pEntity.GetClassname(), "weapon_frag"))
+	int iIndex = pEntity.entindex();
+	uint AG_Length = Array_Grenade.length();
+
+	for (uint i = 0; i < AG_Length; i++)
 	{
-		int iIndex = pEntity.entindex();
-		int ilength = int(g_iIndex.length());
-
-		for (int i = 0; i < ilength; i++)
+		CGrenade@ pGrenade = Array_Grenade[i];
+		
+		if (pGrenade is null)
 		{
-			if (i == 0)
-			{
-				continue;
-			}
+			continue;
+		}
 
-			if (g_iIndex[i] == iIndex)
-			{
-				SetRespawnTime(pEntity.entindex());
-			}
+		if (pGrenade.entindex == iIndex)
+		{
+			pGrenade.Respawn();
 		}
 	}
 }
@@ -380,124 +440,24 @@ void SpawnCheese()
 
 void OnProcessRound()
 {
-	if (g_iIndex.length() > 1 && flWaitTime <= Globals.GetCurrentTime())
+	for (uint g = 0; g < Array_Grenade.length(); g++)
 	{
-		flWaitTime = Globals.GetCurrentTime() + 0.01f;
-		CBaseEntity@ pEntity;
+		CGrenade@ pNade = Array_Grenade[g];
 
-		int ilength = int(g_iIndex.length());
-
-		for (int i = 0; i < ilength; i++)
+		if (pNade !is null)
 		{
-			if (i == 0)
-			{
-				continue;
-			}
-
-			if (g_flRSTime[i] == -1)
-			{
-				continue;
-			}
-
-			if (g_flRSTime[i] <= Globals.GetCurrentTime())
-			{
-				SpawnItem(i);
-			}
-		}
-
-		while ((@pEntity = FindEntityByClassname(pEntity, "weapon_frag")) !is null)
-		{
-			for (int n = 0; n < ilength; n++)
-			{
-				if (n == 0)
-				{
-					continue;
-				}
-
-				if (pEntity.entindex() == g_iIndex[n] && Globals.Distance(g_vOrigin[n], pEntity.GetAbsOrigin()) >= 32.0f)
-				{
-					pEntity.SUB_Remove();
-					SpawnItem(n);
-				}
-			}
+			pNade.Think();
 		}
 	}
 }
 
-void FindItems()
+void FindGrenades()
 {
-	g_iIndex.removeRange(0, g_iIndex.length());
-	g_vOrigin.removeRange(0, g_vOrigin.length());
-	g_qAngles.removeRange(0, g_qAngles.length());
-	g_flRSTime.removeRange(0, g_flRSTime.length());
-
-	g_iIndex.insertLast(0);
-	g_vOrigin.insertLast(Vector(0, 0, 0));
-	g_qAngles.insertLast(QAngle(0, 0, 0));
-	g_flRSTime.insertLast(-1);
-
-	CBaseEntity@ pEntity;
-
-	while ((@pEntity = FindEntityByName(pEntity, "re_frag")) !is null)
+	CBaseEntity@ pNade = null;
+	while ((@pNade = FindEntityByName(pNade, "re_frag")) !is null)
 	{
-		if (Utils.StrEql(pEntity.GetClassname(), "weapon_frag"))
-		{
-			InsertValues(pEntity);
-		}
+		Array_Grenade.insertLast(CGrenade(pNade.entindex(), pNade.GetAbsOrigin(), pNade.GetAbsAngles()));
 	}
-}
-
-void InsertValues(CBaseEntity@ pEntity)
-{
-	g_iIndex.insertLast(pEntity.entindex());
-	g_vOrigin.insertLast(pEntity.GetAbsOrigin());
-	g_qAngles.insertLast(pEntity.GetAbsAngles());
-	g_flRSTime.insertLast(-1);	
-}
-
-void SetRespawnTime(const int &in iIndex)
-{
-	int ilength = int(g_iIndex.length());
-
-	for (int i = 0; i < ilength; i++)
-	{
-		if (i == 0)
-		{
-			continue;
-		}
-
-		if (g_iIndex[i] == iIndex)
-		{
-			g_flRSTime[i] = Globals.GetCurrentTime() + Math::RandomFloat(4.12f, 6.21f);
-			g_iIndex[i] = -1;
-		}
-	}
-}
-
-void SpawnItem(const int &in iID)
-{
-	g_flRSTime[iID] = -1;
-
-	CEntityData@ ItemIPD = EntityCreator::EntityData();
-
-	ItemIPD.Add("DisableDamageForces", "1", true);
-
-	CBaseEntity@ pWepFrag = EntityCreator::Create("weapon_frag", g_vOrigin[iID], g_qAngles[iID], ItemIPD);
-
-	CEntityData@ SparkIPD = EntityCreator::EntityData();
-	SparkIPD.Add("spawnflags", "896");
-	SparkIPD.Add("magnitude", "1");
-	SparkIPD.Add("trailLength", "1");
-	SparkIPD.Add("maxdelay", "0");
-
-	SparkIPD.Add("SparkOnce", "0", true);
-	SparkIPD.Add("kill", "0", true);
-
-	EntityCreator::Create("env_spark", g_vOrigin[iID], QAngle(-90, 0, 0), SparkIPD);
-
-	g_iIndex[iID] = pWepFrag.entindex();
-
-	Engine.EmitSoundPosition(0, "items/suitchargeok1.wav", g_vOrigin[iID], 0.695f, 75, Math::RandomInt(135, 165));
 }
 
 void CollectEntIndexs()
@@ -538,4 +498,20 @@ void CollectEntIndexs()
 			}
 		}
 	}
+}
+
+void RespawnEffects(Vector &in Origin)
+{
+	CEntityData@ SparkIPD = EntityCreator::EntityData();
+	SparkIPD.Add("spawnflags", "896");
+	SparkIPD.Add("magnitude", "1");
+	SparkIPD.Add("trailLength", "1");
+	SparkIPD.Add("maxdelay", "0");
+
+	SparkIPD.Add("SparkOnce", "0", true);
+	SparkIPD.Add("kill", "0", true);
+
+	EntityCreator::Create("env_spark", Origin, QAngle(-90, 0, 0), SparkIPD);	
+
+	Engine.EmitSoundPosition(0, "items/suitchargeok1.wav", Origin, 0.695f, 75, Math::RandomInt(135, 165));
 }

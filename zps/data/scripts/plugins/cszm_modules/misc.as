@@ -47,34 +47,11 @@ void SetDoorFilter(const int &in iFilter)
 	}
 }
 
-void ClearIntArray(array<int> &iTarget)
-{
-	while (iTarget.length() > 0)
-	{
-		iTarget.removeAt(0);
-	}
-}
-
 void lobby_hint(CZP_Player@ pPlayer)
 {
 	string sNextLine = "\n";
 	SendGameTextPlayer(pPlayer, strHintF1, 3, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color(64, 128, 255), Color(255, 95, 5));
-
-	if (!RoundManager.IsRoundOngoing(false))
-	{
-		SendGameTextPlayer(pPlayer, "\n" + strHintF2Inf, 4, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color(255, 32, 64), Color(255, 95, 5));
-	}
-	else if (bAllowZombieSpawn)
-	{
-		SendGameTextPlayer(pPlayer, "\n" + strHintF2, 4, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color(255, 32, 64), Color(255, 95, 5));
-	}
-	else 
-	{
-		SendGameTextPlayer(pPlayer, "", 4, 0.0f, 0.00f, 0.0f, 0.0f, 0.0f, 0.0f, Color(0, 0, 0), Color(0, 0, 0));
-		sNextLine = "";
-	}
-
-	SendGameTextPlayer(pPlayer, "\n" + sNextLine + strHintF3, 5, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color(255, 255, 255), Color(255, 95, 5));
+	SendGameTextPlayer(pPlayer, "\n" + strHintF3, 4, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color(255, 255, 255), Color(255, 95, 5));
 }
 
 void lobby_hint_wu(CZP_Player@ pPlayer)
@@ -210,258 +187,11 @@ void AttachTrail(CBaseEntity@ pEntity, const string strColor)
 		pDLight.SetParent(pEntity);
 }
 
-void AttachEyesLights(CBaseEntity@ pPlayerEntity)
-{
-	CEntityData@ L_EyeLight = EntityCreator::EntityData();
-	L_EyeLight.Add("HDRColorScale", "0.5");
-	L_EyeLight.Add("model", "sprites/light_glow01.vmt");
-	L_EyeLight.Add("renderamt", "255");
-	L_EyeLight.Add("rendercolor", "255 153 6");
-	L_EyeLight.Add("spawnflags", "1");
-	L_EyeLight.Add("rendermode", "9");
-	L_EyeLight.Add("scale", "0.195");
-	L_EyeLight.Add("GlowProxySize", "1.1");
-	L_EyeLight.Add("targetname", "LeftEye");
-
-	CEntityData@ R_EyeLight = EntityCreator::EntityData();
-	R_EyeLight.Add("HDRColorScale", "0.5");
-	R_EyeLight.Add("model", "sprites/light_glow01.vmt");
-	R_EyeLight.Add("renderamt", "255");
-	R_EyeLight.Add("rendercolor", "255 153 6");
-	R_EyeLight.Add("spawnflags", "1");
-	R_EyeLight.Add("rendermode", "9");
-	R_EyeLight.Add("scale", "0.195");
-	R_EyeLight.Add("GlowProxySize", "1.1");
-	R_EyeLight.Add("targetname", "RighrEye");
-
-	@pL_Eye = EntityCreator::Create("env_sprite", pPlayerEntity.GetAbsOrigin(), QAngle(0, 0, 0), L_EyeLight);
-	@pR_Eye = EntityCreator::Create("env_sprite", pPlayerEntity.GetAbsOrigin(), QAngle(0, 0, 0), R_EyeLight);
-	
-	pL_Eye.SetParent(pPlayerEntity);
-	pR_Eye.SetParent(pPlayerEntity);
-	
-	pL_Eye.SetParentAttachment("LeftEye", false);
-	pR_Eye.SetParentAttachment("RightEye", false);
-}
-
 void SetUsed(const int &in index, CBaseEntity@ pItemDeliver)
 {
 	pItemDeliver.SetEntityName("used" + index);
 	Engine.Ent_Fire("used" + index, "addoutput", "itemstate 0");
 	Engine.Ent_Fire("used" + index, "kill", "0", "0.5");	
-}
-
-int ChooseVolunteer()
-{
-	int iCount = 0;
-	int iVIndex = 0;
-	
-	array<int> p_VolunteerIndex = {0};
-	
-	for (int i = 1; i <= iMaxPlayers; i++)
-	{
-		CBaseEntity@ pPlrEntity = FindEntityByEntIndex(i);
-		CSZMPlayer@ pCSZMPlayer = CSZMPlayerArray[i];
-		
-		if (pPlrEntity is null)
-		{
-			continue;
-		}
-		
-		if (pCSZMPlayer.IsVolunteer() && pPlrEntity.GetTeamNumber() == TEAM_SURVIVORS && pPlrEntity.IsAlive())
-		{
-			iCount++;
-			p_VolunteerIndex.insertLast(i);
-		}
-	}
-	
-	if (iCount != 0)
-	{
-		int iLength = p_VolunteerIndex.length() - 1;
-
-		if (iLength == 0)
-		{
-			iVIndex = p_VolunteerIndex[iLength];
-		}
-		else
-		{
-			iVIndex = p_VolunteerIndex[Math::RandomInt(1, iLength)];
-		}
-	}
-	
-	return iVIndex;
-}
-
-int ChooseVictim()
-{
-	int iCount = 0;
-	int iVicIndex = 0;
-	int iRND;
-	
-	array<int> p_VictimIndex = {0};
-	
-	for (int i = 1; i <= iMaxPlayers; i++)
-	{
-		CBaseEntity@ pPlrEntity = FindEntityByEntIndex(i);
-		CSZMPlayer@ pCSZMPlayer = CSZMPlayerArray[i];
-		
-		if (pPlrEntity is null)
-		{
-			continue;
-		}
-		
-		if (!pCSZMPlayer.WasFirstInfected() && pPlrEntity.IsAlive() && pPlrEntity.GetTeamNumber() == TEAM_SURVIVORS && pCSZMPlayer.GetInfectDelay() < 2)
-		{
-			iCount++;
-			p_VictimIndex.insertLast(i);
-		}
-	}
-	
-	if (iCount != 0)
-	{
-		int iLength = int(p_VictimIndex.length() - 1);
-
-		if (iLength > 0)
-		{
-			iVicIndex = p_VictimIndex[Math::RandomInt(1, iLength)];
-		}
-		else
-		{
-			iVicIndex = p_VictimIndex[0];
-		}
-	}
-
-	if (iCount == 0)
-	{
-		CZP_Player@ pVictim = GetRandomPlayer(survivor, true);
-		CBasePlayer@ pVPlrEnt = pVictim.opCast();
-		CBaseEntity@ pVBaseEnt = pVPlrEnt.opCast();
-
-		iVicIndex = pVBaseEnt.entindex();
-	}
-	
-	return iVicIndex;
-}
-
-void DecideFirstInfected()
-{
-	int iPlrWereFZ = 0;
-	int iPlr = 0;
-	
-	for (int i = 1; i <= iMaxPlayers; i++)
-	{
-		CZP_Player@ pPlayer = ToZPPlayer(i);
-		CSZMPlayer@ pCSZMPlayer = CSZMPlayerArray[i];
-		
-		if (pPlayer is null)
-		{
-			continue;
-		}
-		
-		iPlr++;
-
-		if (pCSZMPlayer.WasFirstInfected())
-		{
-			iPlrWereFZ++;
-		}
-	}
-	
-	if (iPlrWereFZ >= iPlr)
-	{
-		for (int i = 1; i <= iMaxPlayers; i++)
-		{
-			CSZMPlayer@ pCSZMPlayer = CSZMPlayerArray[i];
-
-			if (pCSZMPlayer !is null)
-			{
-				pCSZMPlayer.SetFInfectedState(false);
-			}
-		}
-	}
-
-	if (iFZIndex == 0)
-	{
-		iFZIndex = ChooseVolunteer();
-
-		if (iFZIndex == 0)
-		{
-			iFZIndex = ChooseVictim();
-		}
-	}
-}
-
-void SetShowTime()
-{
-	flShowHours = floor(iSeconds / 3600);
-	flShowMinutes = floor((iSeconds - flShowHours * 3600) / 60);
-	flShowSeconds = floor(iSeconds - (flShowHours * 3600) - (flShowMinutes * 60));
-}
-
-void ShowTimer(float &in flHoldTime)
-{
-	SetShowTime();
-
-	string SZero = "0";
-	string MZero = "0";
-	
-	if (flShowMinutes <= 9)
-	{
-		MZero = "0";
-	}
-	else
-	{
-		MZero = "";
-	}
-	
-	if (flShowSeconds <= 9)
-	{
-		SZero = "0";
-	}
-	else
-	{
-		SZero = "";
-	}
-
-	string TimerText = MZero + flShowMinutes + ":" + SZero + flShowSeconds;
-
-	if (flHoldTime <= 0)
-	{
-		flHoldTime = 1.08f;
-	}
-	
-	SendGameText(any, TimerText, 0, 1, -1, 0, 0, 0, flHoldTime, Color(235, 235, 235), Color(0, 0, 0));
-}
-
-void ShowOutbreak(int &in index)
-{
-	CZP_Player@ pFirstInf = ToZPPlayer(index);
-	CSZMPlayer@ pCSZMPlayer = CSZMPlayerArray[index];
-
-	string strColor = "blue";
-
-	if (pCSZMPlayer.IsVolunteer())
-	{
-		strColor = "violet";
-	}
-	
-	for (int i = 1; i <= iMaxPlayers; i++)
-	{
-		CZP_Player@ pPlayer = ToZPPlayer(i);
-		
-		if (pPlayer is null)
-		{
-			continue;
-		}
-		
-		CBasePlayer@ pPlrEnt = pPlayer.opCast();
-		
-		if (i != index)
-		{
-			Chat.PrintToChatPlayer(pPlrEnt, "{" + strColor + "}" + pFirstInf.GetPlayerName() + strBecameFi);
-		}
-	}
-
-	SendGameText(any, strOutbreakMsg, 1, 0, -1, 0.175, 0, 0.35, 6.75, Color(64, 255, 128), Color(0, 255, 0));
 }
 
 void CSZM_EndGame()
@@ -650,36 +380,37 @@ void SetCustomPropHealth(CBaseEntity@ pEntity, const int &in iPlrCount)
 	{
 		if (!bIsPropExplosive(pEntity))
 		{
-			int iCustomHealth = int((pEntity.GetHealth() * 0.225) * iPlrCount);
+			float flBaseHealth = float(pEntity.GetHealth());
+			int iCustomHealth = int((flBaseHealth * 0.0845f) * iPlrCount);
 
 			if (iCustomHealth > PROP_MAX_HEALTH)
 			{
 				iCustomHealth = PROP_MAX_HEALTH;
 			}
 
-			pEntity.SetHealth(iCustomHealth + Math::RandomInt(0, 65));			
+			pEntity.SetHealth(iCustomHealth + Math::RandomInt(0, 35));			
 		}
 	}
 }
 
 void SetCustomDoorHealth(CBaseEntity@ pEntity, const int &in iPlrCount)
 {
-	float flMultiplier = 6.0f;
+	float flMultiplier = 3.0f;
 	if(Utils.StrContains("doormainmetal01", pEntity.GetModelName()))
 	{
-		flMultiplier = 8.9f;
+		flMultiplier = 6.2f;
 	}
 	else if(Utils.StrContains("doormain01", pEntity.GetModelName()))
 	{
-		flMultiplier = 9.8f;
+		flMultiplier = 5.9f;
 	}
 	else if(Utils.StrContains("door_zps_wood", pEntity.GetModelName()))
 	{
-		flMultiplier = 10.5f;
+		flMultiplier = 7.1f;
 	}
 	else if(Utils.StrContains("door_zps_metal", pEntity.GetModelName()))
 	{
-		flMultiplier = 9.1f;
+		flMultiplier = 7.9f;
 	}
 
 	Engine.Ent_Fire_Ent(pEntity, "SetDoorHealth", "" + int((iPlrCount * flMultiplier) + Math::RandomInt(0, 25)), "0.00");	
@@ -691,7 +422,15 @@ void SetCustomFuncHealth(CBaseEntity@ pEntity, const int &in iPlrCount)
 
 	if (!Utils.StrContains("special", strTargetname))
 	{
-		pEntity.SetHealth(pEntity.GetHealth() * iPlrCount + Math::RandomInt(0, 75));		
+		float flBaseHealth = float(pEntity.GetHealth());
+		int iCustomHealth = int((flBaseHealth * 0.185f) * iPlrCount);
+
+		if (iCustomHealth > BRUSH_MAX_HEALTH)
+		{
+			iCustomHealth = BRUSH_MAX_HEALTH;
+		}
+
+		pEntity.SetHealth(iCustomHealth + Math::RandomInt(0, 35));
 	}
 }
 
@@ -749,7 +488,7 @@ void Set_CSZM_ScreenOverlay()
 	}
 }
 
-void GiveStartGear(CZP_Player@ pPlayer, const bool bPPK)
+void GiveStartGear(CZP_Player@ pPlayer, const bool bPPK, const bool bCured)
 {
 	int iWTSLength = int(g_strWeaponToStrip.length());
 	for (int i = 0; i < iWTSLength; i++)
@@ -760,21 +499,23 @@ void GiveStartGear(CZP_Player@ pPlayer, const bool bPPK)
 		}
 	}
 
-	int iSWLength = int(g_strStartWeapons.length());
-	string firearm = g_strStartWeapons[Math::RandomInt(0, (iSWLength - 1))];
-	string melee = "weapon_barricade";
-	int pistol_ammo_count = 30;
-
-	if (bPPK)
+	if (!bCured)
 	{
-		firearm = "weapon_ppk";
-		pistol_ammo_count = 7;
-	}
+		int iSWLength = int(g_strStartWeapons.length());
+		string firearm = g_strStartWeapons[Math::RandomInt(0, (iSWLength - 1))];
+		string melee = "weapon_barricade";
+		int pistol_ammo_count = 15;
 
-	pPlayer.AmmoBank(set, pistol, pistol_ammo_count);
-	pPlayer.AmmoBank(add, barricade, 1);
-	pPlayer.GiveWeapon(melee);
-	pPlayer.GiveWeapon(firearm);
+		if (bPPK)
+		{
+			firearm = "weapon_ppk";
+			pistol_ammo_count = 7;
+		}
+
+		pPlayer.AmmoBank(set, pistol, pistol_ammo_count);
+		pPlayer.GiveWeapon(melee);
+		pPlayer.GiveWeapon(firearm);		
+	}
 }
 
 void StripWeapon(CZP_Player@ pPlayer, const string &in strClassname)
@@ -796,9 +537,169 @@ void StripWeapon(CZP_Player@ pPlayer, const string &in strClassname)
 	}
 }
 
-void HoldOut()
+void CheckForHoldout(const string &in MapName)
 {
-	UnlimitedRandom = true;
-	g_strStartWeapons.resize(iStartWeaponLength);
-	g_strStartWeapons.insertLast("weapon_mp5");
+	if (Utils.StrContains("heavyice", MapName) || Utils.StrContains("sunshine", MapName))
+	{
+		UnlimitedRandom = true;
+		g_strStartWeapons.resize(iStartWeaponLength);
+		g_strStartWeapons.insertLast("weapon_mp5");
+	}
+	else
+	{
+		UnlimitedRandom = false;
+		g_strStartWeapons.resize(iStartWeaponLength);
+	}
+}
+
+void AttachEyesLights(CBaseEntity@ pPlayerEntity)
+{
+	CEntityData@ EyesLight = EntityCreator::EntityData();
+	EyesLight.Add("HDRColorScale", "0.5");
+	EyesLight.Add("model", "sprites/light_glow01.vmt");
+	EyesLight.Add("renderamt", "255");
+	EyesLight.Add("rendercolor", "255 153 6");
+	EyesLight.Add("spawnflags", "1");
+	EyesLight.Add("rendermode", "9");
+	EyesLight.Add("scale", "0.195");
+	EyesLight.Add("GlowProxySize", "1.1");
+
+	CBaseEntity@ pL_Eye = EntityCreator::Create("env_sprite", pPlayerEntity.GetAbsOrigin(), QAngle(0, 0, 0), EyesLight);
+	CBaseEntity@ pR_Eye = EntityCreator::Create("env_sprite", pPlayerEntity.GetAbsOrigin(), QAngle(0, 0, 0), EyesLight);
+	
+	pL_Eye.SetEntityName(pPlayerEntity.entindex() + "_LeftEye");
+	pR_Eye.SetEntityName(pPlayerEntity.entindex() + "_RighrEye");
+	
+	pL_Eye.SetParent(pPlayerEntity);
+	pR_Eye.SetParent(pPlayerEntity);
+	
+	pL_Eye.SetParentAttachment("LeftEye", false);
+	pR_Eye.SetParentAttachment("RightEye", false);
+}
+
+void DetachEyesLights(CBaseEntity@ pPlayerEntity)
+{
+	pPlayerEntity.SetBodyGroup("EyesGlow", 0);
+	pPlayerEntity.SetSkin(0);
+
+	CBaseEntity@ pR_Eye = FindEntityByName(null, pPlayerEntity.entindex() + "_RighrEye");
+	CBaseEntity@ pL_Eye = FindEntityByName(null, pPlayerEntity.entindex() + "_LeftEye");
+
+	if (pR_Eye !is null)
+	{
+		pR_Eye.SUB_Remove();
+	}
+	
+	if (pL_Eye !is null)
+	{
+		pL_Eye.SUB_Remove();
+	}
+}
+
+void HumanVictoryRewards()
+{
+	for (int i = 1; i <= iMaxPlayers; i++)
+	{
+		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(i);
+
+		if (pPlayerEntity is null)
+		{
+			continue;
+		}
+
+		CSZMPlayer@ pCSZMPlayer = Array_CSZMPlayer[i];
+
+		if (pPlayerEntity.IsAlive())
+		{
+			if (pPlayerEntity.GetTeamNumber() == TEAM_SURVIVORS)
+			{
+				pCSZMPlayer.AddInfectPoints(-15);
+			}
+			else if (pPlayerEntity.GetTeamNumber() == TEAM_ZOMBIES)
+			{
+				pCSZMPlayer.AddInfectPoints(5);
+				CTakeDamageInfo SelfDamage = CTakeDamageInfo(pPlayerEntity, pPlayerEntity, float(pPlayerEntity.GetHealth() + 200.0f), (1<<0));
+				pPlayerEntity.TakeDamage(SelfDamage);
+			}
+		}
+	}
+}
+
+void ShakeInfected(CBaseEntity@ pPlayerEntity)
+{
+	CEntityData@ ShakeIPD = EntityCreator::EntityData();
+	ShakeIPD.Add("spawnflags", "4");
+	ShakeIPD.Add("frequency", "42");
+	ShakeIPD.Add("duration", "2.21");
+	ShakeIPD.Add("amplitude", "16");
+	ShakeIPD.Add("radius", "32");
+
+	ShakeIPD.Add("StartShake", "0", true);
+	ShakeIPD.Add("kill", "0", true, "0.25");
+
+	EntityCreator::Create("env_shake", pPlayerEntity.EyePosition(), QAngle(-90, 0, 0), ShakeIPD);	
+}
+
+void SpawnWepFragMine(CBaseEntity@ pEntity)
+{
+	CEntityData@ WepFragMineIPD = EntityCreator::EntityData();
+	WepFragMineIPD.Add("targetname", "weapon_fragmine");
+	WepFragMineIPD.Add("viewmodel", "models/cszm/weapons/v_minefrag.mdl");
+	WepFragMineIPD.Add("model", "models/cszm/weapons/w_minefrag.mdl");
+	WepFragMineIPD.Add("itemstate", "1");
+	WepFragMineIPD.Add("isimportant", "0");
+	WepFragMineIPD.Add("carrystate", "6");
+	WepFragMineIPD.Add("glowcolor", "0 128 245");
+	WepFragMineIPD.Add("delivername", "FragMine");
+	WepFragMineIPD.Add("sound_pickup", "Player.PickupWeapon");
+	WepFragMineIPD.Add("printname", "vgui/images/fragmine");
+	WepFragMineIPD.Add("weight", "5");
+
+	WepFragMineIPD.Add("DisableDamageForces", "0", true);
+
+	EntityCreator::Create("item_deliver", pEntity.GetAbsOrigin(), pEntity.GetAbsAngles(), WepFragMineIPD);
+
+	pEntity.SUB_Remove();
+}
+
+void SpawnAdrenaline(CBaseEntity@ pEntity)
+{
+	CEntityData@ AdrenalineIPD = EntityCreator::EntityData();
+
+	AdrenalineIPD.Add("targetname", "item_adrenaline");
+	AdrenalineIPD.Add("delivername", "Adrenaline");
+	AdrenalineIPD.Add("glowcolor", "5 250 121");
+	AdrenalineIPD.Add("itemstate", "1");
+	AdrenalineIPD.Add("model", "models/cszm/weapons/w_adrenaline.mdl");
+	AdrenalineIPD.Add("viewmodel", "models/cszm/weapons/v_adrenaline.mdl");
+	AdrenalineIPD.Add("printname", "vgui/images/adrenaline");
+	AdrenalineIPD.Add("sound_pickup", "Deliver.PickupGeneric");
+	AdrenalineIPD.Add("weight", "0");
+	
+	AdrenalineIPD.Add("DisableDamageForces", "0", true);
+
+	EntityCreator::Create("item_deliver", pEntity.GetAbsOrigin(), pEntity.GetAbsAngles(), AdrenalineIPD);
+
+	pEntity.SUB_Remove();
+}
+
+void SpawnAntidote(CBaseEntity@ pEntity)
+{
+	CEntityData@ AntidoteIPD = EntityCreator::EntityData();
+
+	AntidoteIPD.Add("targetname", "iantidote");
+	AntidoteIPD.Add("delivername", "Antidote");
+	AntidoteIPD.Add("glowcolor", "5 250 121");
+	AntidoteIPD.Add("itemstate", "1");
+	AntidoteIPD.Add("model", "models/cszm/weapons/w_antidote.mdl");
+	AntidoteIPD.Add("viewmodel", "models/cszm/weapons/v_antidote.mdl");
+	AntidoteIPD.Add("printname", "vgui/images/weapons/inoculator");
+	AntidoteIPD.Add("sound_pickup", "Deliver.PickupGeneric");
+	AntidoteIPD.Add("weight", "0");
+
+	AntidoteIPD.Add("DisableDamageForces", "0", true);
+
+	EntityCreator::Create("item_deliver", pEntity.GetAbsOrigin(), pEntity.GetAbsAngles(), AntidoteIPD);
+
+	pEntity.SUB_Remove();
 }

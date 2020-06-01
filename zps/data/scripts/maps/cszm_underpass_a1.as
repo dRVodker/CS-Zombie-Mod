@@ -1,4 +1,3 @@
-#include "cszm_modules/spawndist"
 #include "cszm_modules/spawncrates"
 
 int iMaxPlayers;
@@ -7,10 +6,6 @@ void OnMapInit()
 {
 	iMaxPlayers = Globals.GetMaxClients();
 	Schedule::Task(0.05f, "SetUpStuff");
-
-	flMaxZSDist = 1850.0f;
-	flMinZSDist = 1256.0f;
-	flRoarDist = 512.0f;
 
 	iMinCrates = 0;
 	iMaxCrates = 4;
@@ -56,14 +51,6 @@ void OnMapInit()
 	g_PICAngles.insertLast(QAngle(-14, 0, 0));
 }
 
-void OnProcessRound()
-{
-	if (ZSpawnManager !is null)
-	{
-		ZSpawnManager.Think();
-	}
-}
-
 void OnNewRound()
 {	
 	Schedule::Task(0.05f, "SetUpStuff");
@@ -72,16 +59,6 @@ void OnNewRound()
 void OnMatchBegin() 
 {
 	Schedule::Task(0.5f, "SpawnCrates");
-}
-
-void OnMatchStarting()
-{
-	@ZSpawnManager = CZSpawnManager();
-}
-
-void OnMatchEnded()
-{
-	@ZSpawnManager = null;
 }
 
 void SetUpStuff()

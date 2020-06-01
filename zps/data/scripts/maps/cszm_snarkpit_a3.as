@@ -95,6 +95,8 @@ void SetUpStuff()
 	
 	Engine.Ent_Fire("tonemap", "SetBloomScale", "0.375");
 
+	Engine.Ent_Fire("info_player_z*", "kill", "0.00");
+
 	TurnOnFan1();
 
 	PlayLobbyAmbient();

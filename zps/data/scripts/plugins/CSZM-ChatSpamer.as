@@ -8,13 +8,12 @@ const string strCSZM = lb + "{coral}cszm"+rb;
 
 array<string> g_strMsg =
 {
-	"{gold}Press {red}F2{gold} to choose play as the {lightseagreen}First infected{gold}.",
-	"{gold}If you stuck in spectator mode, press {seagreen}F4{gold} to get back to the {green}ready room{gold}.",
-	"{gold}Picked up ammo and {green}antidote{gold} will respawn over a period of time.",
-	"{gold}Zombies getting the {lime}HP Bonus{gold} each death!",
-	"{gold}Commiting suicide as zombie won't give you the {lime}Death HP Bonus{gold}.",
-	"{gold}Use an {green}antidote{gold} to increase your resistance to the {green}infection{gold}.",
-	"{gold}Type {green}!chatcom {gold}to see all available chat commands."
+//	"{gold}If you stuck in spectator mode, press {seagreen}F4{gold} to get back to the {green}ready room{gold}.",
+//	"{gold}Use an {green}antidote{gold} to increase your resistance to the {green}infection{gold}.",
+//	"{gold}Type {green}!chatcom {gold}to see all available chat commands."
+	"{gold}Если вы застряли в наблюдателях, нажмите {seagreen}F4{gold} чтоб вернуться {green}лобби{gold}.",
+	"{gold}Используйте {green}антитод{gold} для повышения сопротивления к {green}инфекции{gold}.",
+	"{gold}Чтобы увидеть доступные комманды чата, напишите {green}!chatcom{gold} или {green}!help{gold}."
 };
 
 array<string> g_strMsgToShow;

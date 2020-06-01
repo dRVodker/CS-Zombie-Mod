@@ -1,0 +1,82 @@
+// All lines starting by double forward slashes are comments and are ignored
+// by Zombie Panic! Source.
+//
+// Use this file to specify which users are administrators on your server.
+//
+// There are 2 ways to assign administrators, the first way being assigning
+// them individually and the second being assigning them to a group.
+//
+// For both ways, you need to add the user's Steam ID 64 as the key. You can
+// obtain this information from the user directly if he's familiar with it or
+// you can use websites such as "https://steamid.io/lookup"
+//
+// If you add the user individually, you need to set the "flags" with the
+// permission(s) you want to assign and an "immunity" field for his immunity
+// level. Both the "flags" and "immunity" fields are detailed below:
+//
+// Flags
+//   a - Slot reservation - can join the server even if it's full (the last
+//   connected client is kicked automatically).
+//   b - Basic admin. - recognized as an administrator.
+//   c - Kick - can kick clients.
+//   d - Ban - can ban clients.
+//   e - Ban removal - can remove client bans.
+//   f - Slay - can slay clients.
+//   g - Map change - can change the current map.
+//   h - CVAR - can change console variables (!!Be careful to who you assign
+//   this!!)
+//   i - Custom 1 - custom permission number 1 for Angelscript plugins.
+//   j - Admin. chat - can use the private admin. chat.
+//   k - Vote - can issue generic/custom votes.
+//   l - Custom 2 - custom permission number 2 for Angelscript plugins.
+//   m - RCON - can use the Remote CONtrol feature from Source engine (!!Be
+//   careful to who you assign this!!)
+//   n - Custom 3 - custom permission number 3 for Angelscript plugins.
+//   o - Custom 4 - custom permission number 4 for Angelscript plugins.
+//   p - Custom 5 - custom permission number 5 for Angelscript plugins.
+//   q - Custom 6 - custom permission number 6 for Angelscript plugins.
+//   r - Custom 7 - custom permission number 7 for Angelscript plugins.
+//   s - Custom 8 - custom permission number 8 for Angelscript plugins.
+//   t - Custom 9 - custom permission number 9 for Angelscript plugins.
+//   u - Custom 10 - custom permission number 10 for Angelscript plugins.
+//   v - Custom 11 - custom permission number 11 for Angelscript plugins.
+//   w - Custom 12 - custom permission number 12 for Angelscript plugins.
+//   x - Custom 13 - custom permission number 13 for Angelscript plugins.
+//   y - Custom 14 - custom permission number 14 for Angelscript plugins.
+//   z - Root - super-administrator, all permissions above with immunity (!!Be
+//   careful to who you assign this!!)
+//
+// Immunity
+//   By default, if the immunity is higher than another group and/or person,
+//   that group/player can't be targeted by those with lower immunity.
+//   If the immunity is equal, they will be able to target each other if the
+//   server uses the alternate targeting method.
+//   Groups/persons that have the "root" privilege can't be targeted regardless
+//   of the immunity value.
+//
+// The second way consists of setting up the group in the "groups" section and
+// reference that group's name in the "group" field of the user.
+//
+// If you have more than one user/group, remember to add a colon (,) at the end
+// of every object except the last one.
+//
+// Below are examples of various setups that you can base yourself upon.
+//
+{
+	"admins": [
+		{
+			"steamid": "STEAM_0:0:83782978",
+			"immunity": 100,
+			"group": "ServerOwner",
+			"flags": "z"
+		}
+	],
+	"groups": {
+		"ServerOwner": {
+			"flags": "abcde"
+		},
+		"BasicAdmin": {
+			"flags": "b"
+		}
+	}
+}

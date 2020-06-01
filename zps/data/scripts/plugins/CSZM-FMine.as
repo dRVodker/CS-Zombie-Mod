@@ -300,7 +300,7 @@ HookReturnCode CSZM_FM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out D
 			Engine.EdictCount(iFree, iUsed);
 
 			int iShowerCount = Math::RandomInt(1, 3);
-			int iTracerCount = Math::RandomInt(18, 24);
+			int iTracerCount = Math::RandomInt(18, 27);
 
 			if (iUsed > 1964)
 			{
@@ -338,7 +338,7 @@ HookReturnCode CSZM_FM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out D
 				pTracer.SetAbsVelocity(vUP * Math::RandomInt(2750, 2995));
 			}
 
-			Utils.CreateShrapnelEx(pShrapnel, 60, pEntity.GetAbsOrigin(), 0.0f); 
+			Utils.CreateShrapnelEx(pShrapnel, 27, pEntity.GetAbsOrigin(), 0.0f); 
 		}
 	}
 
@@ -429,11 +429,11 @@ void ThrowMine(const int &in iIndex, CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 	CEntityData@ FragMineIPD = EntityCreator::EntityData();
 	FragMineIPD.Add("targetname", "test_fragmine");
 	FragMineIPD.Add("model", "models/cszm/weapons/w_minefrag.mdl");
-	FragMineIPD.Add("spawnflags", "10118"); //10114
+	FragMineIPD.Add("spawnflags", "10118");		//10114
 	FragMineIPD.Add("skin", "0");
 	FragMineIPD.Add("overridescript", "mass,60,rotdamping,10000,damping,0,inertia,0,");
 	FragMineIPD.Add("nodamageforces", "1");
-	FragMineIPD.Add("ExplodeDamage", "423");
+	FragMineIPD.Add("ExplodeDamage", "200");	//423
 	FragMineIPD.Add("ExplodeRadius", "162");
 
 	CBaseEntity@ pFragMine = EntityCreator::Create("prop_physics_override", Vector(0, 0, 0), QAngle(0, 0, 0), FragMineIPD);

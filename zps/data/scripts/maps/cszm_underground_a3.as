@@ -1,6 +1,5 @@
 #include "cszm_modules/spawncrates"
 #include "cszm_modules/lobbyambient"
-#include "cszm_modules/spawndist"
 
 //MyDebugFunc
 void SD(const string &in strMSG)
@@ -19,10 +18,6 @@ void OnMapInit()
 	Schedule::Task(0.025f, "SetUpStuff");
 
 	Events::Player::OnPlayerSpawn.Hook(@OnPlayerSpawn);
-
-	flMaxZSDist = 2250.0f;
-	flMinZSDist = 1600.0f;
-	flRoarDist = 512.0f;
 
 	iMinCrates = 1;
 	iMaxCrates = 6;
@@ -79,16 +74,6 @@ void OnMatchBegin()
 	Engine.Ent_Fire("SND_Ambient", "PlaySound");
 }
 
-void OnMatchStarting()
-{
-	@ZSpawnManager = CZSpawnManager();
-}
-
-void OnMatchEnded()
-{
-	@ZSpawnManager = null;
-}
-
 void SetUpStuff()
 {
 	Engine.Ent_Fire("Precache", "kill");
@@ -103,10 +88,7 @@ void SetUpStuff()
 
 void OnProcessRound()
 {
-	if (ZSpawnManager !is null)
-	{
-		ZSpawnManager.Think();
-	}
+
 }
 
 HookReturnCode OnPlayerSpawn(CZP_Player@ pPlayer)

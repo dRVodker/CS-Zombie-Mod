@@ -42,11 +42,6 @@ array<string> g_BreakName =
 
 array<int> g_BreakIndex;
 
-array<Vector> g_ExpBarrelOrigin;
-array<QAngle> g_ExpBarrelAngles;
-array<int> g_ExpBarrelIndex;
-array<float> g_ExpBarrelRecover;
-
 array<Vector> g_CeilingOrigin;
 array<QAngle> g_CeilingAngles;
 array<string> g_CeilingModel;
@@ -128,6 +123,62 @@ array<int> g_FuncBreakHP =
 	21//13
 };
 
+array<CExpBarrel@> Array_ExpBarrel;
+
+class CExpBarrel
+{
+	private int arraypos;
+	int entindex;
+	private float respawntime;
+	private Vector Origin;
+	private QAngle Angles;
+
+	CExpBarrel(int nEntIndex, Vector nOrigin, QAngle nAngles)
+	{
+		arraypos = -1;
+		respawntime = 0;
+		entindex = nEntIndex;
+		Origin = nOrigin;
+		Angles = nAngles;
+	}
+
+	private void DoRespawn()
+	{
+		CEntityData@ ExpBarrelIPD = EntityCreator::EntityData();
+		ExpBarrelIPD.Add("targetname", "ExpBarrels");
+		ExpBarrelIPD.Add("model", "models/props_heavyice/oildrum001_explosive.mdl");
+		ExpBarrelIPD.Add("nofiresound", "1");
+		ExpBarrelIPD.Add("physicsmode", "1");
+
+		ExpBarrelIPD.Add("addoutput", "ExplodeDamage 185", true);
+		ExpBarrelIPD.Add("addoutput", "ExplodeRadius 300", true);
+
+		CBaseEntity@ pExpBarrel = EntityCreator::Create("prop_physics_multiplayer", Origin, Angles, ExpBarrelIPD);
+
+		Engine.EmitSoundPosition(pExpBarrel.entindex(), "weapons/crossbow/fire1.wav", Origin + Vector(0, 0, 16), 1.0f, 65, Math::RandomInt(125, 140));
+
+		entindex = pExpBarrel.entindex();
+	}
+
+	void Respawn()
+	{
+		if (entindex != -1)
+		{
+			entindex = -1;			
+			respawntime = Globals.GetCurrentTime() + 25.13f;			
+		}
+	}
+
+	void Think()
+	{
+		if (respawntime != 0 && respawntime <= Globals.GetCurrentTime())
+		{
+			respawntime = 0;
+			DoRespawn();
+		}
+	}
+}
+
 void OnMapInit()
 {
 	iMaxPlayers = Globals.GetMaxClients();
@@ -170,6 +221,14 @@ void OnMapInit()
 	g_TeleportDelay.resize(iMaxPlayers + 1);
 }
 
+void OnMatchEnded()
+{
+	Array_ExpBarrel.removeRange(0, Array_ExpBarrel.length());
+	g_CeilingAngles.removeRange(0, g_CeilingAngles.length());
+	g_CeilingOrigin.removeRange(0, g_CeilingOrigin.length());
+	g_CeilingModel.removeRange(0, g_CeilingModel.length());
+}
+
 void OnNewRound()
 {
 	Schedule::Task(0.01f, "SetUpStuff");
@@ -182,17 +241,13 @@ void OnMatchBegin()
 
 void OnProcessRound()
 {
-	if (flExpBarrelsWaitTime != 0 && flExpBarrelsWaitTime <= Globals.GetCurrentTime())
+	for (uint b = 0; b < Array_ExpBarrel.length(); b++)
 	{
-		int ilength = int(g_ExpBarrelRecover.length());
+		CExpBarrel@ pBarrel = Array_ExpBarrel[b];
 
-		for (int i = 0; i < ilength; i++)
+		if (pBarrel !is null)
 		{
-			if (g_ExpBarrelRecover[i] != 0 && g_ExpBarrelRecover[i] <= Globals.GetCurrentTime())
-			{
-				g_ExpBarrelRecover[i] = 0.0f;
-				RespawnExpBarrel(i);
-			}
+			pBarrel.Think();
 		}
 	}
 
@@ -356,17 +411,16 @@ void OnEntityOutput(const string &in strOutput, CBaseEntity@ pActivator, CBaseEn
 
 		else if (Utils.StrEql(pCaller.GetEntityName(), "ExpBarrels"))
 		{
-			int ilength = int(g_ExpBarrelIndex.length());
-
-			for (int i = 0; i < ilength; i++)
+			uint AEB_Length = Array_ExpBarrel.length();
+			
+			for (uint i = 0; i < AEB_Length; i++)
 			{
-				if (pCaller.entindex() == g_ExpBarrelIndex[i])
+				if (Array_ExpBarrel[i] !is null && Array_ExpBarrel[i].entindex == pCaller.entindex())
 				{
-					g_ExpBarrelIndex[i] = 0;
-					g_ExpBarrelRecover[i] = Globals.GetCurrentTime() + 25.13f;
+					Array_ExpBarrel[i].Respawn();
 					break;
 				}
-			}
+			}	
 		}
 
 		else if (Utils.StrEql(pCaller.GetClassname(), "func_breakable"))
@@ -485,6 +539,14 @@ void SetUpStuff()
 	Engine.Ent_Fire("watermelon_junk", "SetLightingOrigin", "", "10");
 	Engine.Ent_Fire("watermelon_junk", "SetLightingOrigin", "armor_lighting", "0");
 
+	Engine.Ent_Fire("BalconyFloor", "AddOutput", "health 1750", "0");
+	Engine.Ent_Fire("Tram-Beams", "SetDamageFilter", "GodMode", "0");
+	Engine.Ent_Fire("wdoor*", "SetDamageFilter", "GodMode", "0");
+	Engine.Ent_Fire("wdoor*", "AddOutput", "dmg 50", "0");
+
+	Engine.Ent_Fire("bh_tv", "AddOutput", "health 875", "0");
+	Engine.Ent_Fire("gh_tv", "AddOutput", "health 875", "0");
+
 	SpawnCheese();
 
 	switch(Math::RandomInt(1, 3))
@@ -517,19 +579,12 @@ void SetUpStuff()
 
 void FindExpBarrels()
 {
-	g_ExpBarrelAngles.removeRange(0, g_ExpBarrelAngles.length());
-	g_ExpBarrelOrigin.removeRange(0, g_ExpBarrelOrigin.length());
-	g_ExpBarrelIndex.removeRange(0, g_ExpBarrelIndex.length());
-	g_ExpBarrelRecover.removeRange(0, g_ExpBarrelRecover.length());
-
-	CBaseEntity@ pEntity;
-
-	while ((@pEntity = FindEntityByName(pEntity, "ExpBarrels")) !is null)
+	CBaseEntity@ pBarrel = null;
+	while ((@pBarrel = FindEntityByName(pBarrel, "ExpBarrels")) !is null)
 	{
-		g_ExpBarrelAngles.insertLast(pEntity.GetAbsAngles());
-		g_ExpBarrelOrigin.insertLast(pEntity.GetAbsOrigin());
-		g_ExpBarrelIndex.insertLast(pEntity.entindex());
-		g_ExpBarrelRecover.insertLast(0.0f);
+		Array_ExpBarrel.insertLast(CExpBarrel(pBarrel.entindex(), pBarrel.GetAbsOrigin(), pBarrel.GetAbsAngles()));
+		Engine.Ent_Fire_Ent(pBarrel, "addoutput", "ExplodeDamage 185");
+		Engine.Ent_Fire_Ent(pBarrel, "addoutput", "ExplodeRadius 300");
 	}
 }
 
@@ -557,10 +612,6 @@ void FindBreakIndexes()
 
 void FindCeilingEnts()
 {
-	g_CeilingAngles.removeRange(0, g_CeilingAngles.length());
-	g_CeilingOrigin.removeRange(0, g_CeilingOrigin.length());
-	g_CeilingModel.removeRange(0, g_CeilingModel.length());
-
 	CBaseEntity@ pEntity;
 
 	while ((@pEntity = FindEntityByName(pEntity, "CeilingProps")) !is null)
@@ -578,23 +629,6 @@ void FindCeilingEnts()
 		g_CeilingModel.insertLast(pEntity.GetClassname());
 		pEntity.SUB_Remove();
 	}
-}
-
-void RespawnExpBarrel(const int &in iID)
-{
-	CEntityData@ ExpBarrelIPD = EntityCreator::EntityData();
-	ExpBarrelIPD.Add("targetname", "ExpBarrels");
-	ExpBarrelIPD.Add("ExplodeDamage", "400");
-	ExpBarrelIPD.Add("ExplodeRadius", "350");
-	ExpBarrelIPD.Add("model", "models/props_heavyice/oildrum001_explosive.mdl");
-	ExpBarrelIPD.Add("nofiresound", "1");
-	ExpBarrelIPD.Add("physicsmode", "1");
-
-	CBaseEntity@ pExpBarrel = EntityCreator::Create("prop_physics_multiplayer", g_ExpBarrelOrigin[iID], g_ExpBarrelAngles[iID], ExpBarrelIPD);
-
-	Engine.EmitSoundPosition(pExpBarrel.entindex(), "weapons/crossbow/fire1.wav", g_ExpBarrelOrigin[iID], 1.0f, 65, Math::RandomInt(125, 140));
-
-	g_ExpBarrelIndex[iID] = pExpBarrel.entindex();
 }
 
 void PowerBoxExplode(Vector &in Origin)

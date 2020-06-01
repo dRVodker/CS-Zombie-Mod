@@ -1,5 +1,14 @@
 #include "cszm_modules/spawncrates"
 #include "cszm_modules/lobbyambient"
+#include "cszm_modules/newspawn"
+
+array<array<CSpawnPoint@>> ZombieSpawns = 
+{
+	{
+		CSpawnPoint(Vector(1045.21, 1128.46, -255.969), QAngle(-13.2495, -169.969, 0), "info_player_zombie"),
+		CSpawnPoint(Vector(1822.59, 896.683, -255.969), QAngle(-13.6125, -110.22, 0), "info_player_zombie")
+	}
+};
 
 int iSurvInBasement;
 bool bIsBZSEnabled;
@@ -10,8 +19,6 @@ const int TEAM_SURVIVORS = 2;
 void OnMapInit()
 {
 	Events::Player::OnPlayerSpawn.Hook(@OnPlayerSpawn);
-	Events::Trigger::OnStartTouch.Hook(@OnStartTouch);
-	Events::Trigger::OnEndTouch.Hook(@OnEndTouch);
 	Schedule::Task(0.05f, "SetStuff");
 
 	iMinCrates = 0;
@@ -90,12 +97,6 @@ void OnMatchStarting()
 
 void OnMatchBegin()
 {
-	Engine.Ent_Fire("zs_outside_pvs*", "EnableSpawn");
-	Engine.Ent_Fire("zs_outside_base*", "EnableSpawn");
-	Engine.Ent_Fire("zs_inside_pvs*", "EnableSpawn");
-	Engine.Ent_Fire("zs_basement_ns_pvs*", "EnableSpawn");
-	Engine.Ent_Fire("_temp_humanclip", "ForceSpawn");
-
 	Schedule::Task(0.5f, "SpawnCrates");
 }
 
@@ -104,6 +105,9 @@ void SetStuff()
 	Engine.Ent_Fire("Precache", "kill");
 	Engine.Ent_Fire("shading", "StartOverlays");
 	PlayLobbyAmbient();
+
+	RemoveNativeSpawns("info_player_zombie");
+	CreateSpawnsFromArray(ZombieSpawns);
 }
 
 HookReturnCode OnPlayerSpawn(CZP_Player@ pPlayer)
@@ -123,55 +127,4 @@ HookReturnCode OnPlayerSpawn(CZP_Player@ pPlayer)
 	}
 
 	return HOOK_CONTINUE;	
-}
-
-HookReturnCode OnStartTouch(CBaseEntity@ pTrigger, const string &in strEntityName, CBaseEntity@ pEntity)
-{
-	if (pEntity is null)
-	{
-		return HOOK_CONTINUE;
-	}
-	
-	if (pEntity.GetTeamNumber() == TEAM_SURVIVORS && Utils.StrEql(strEntityName, "fog_volume"))
-	{
-		iSurvInBasement++;
-		if(bIsBZSEnabled == false)
-		{
-			bIsBZSEnabled = true;
-			string strInput = "FireUser1";
-			ManipulateZS(strInput);
-		}
-	}
-
-	return HOOK_CONTINUE;
-}
-
-HookReturnCode OnEndTouch(CBaseEntity@ pTrigger, const string &in strEntityName, CBaseEntity@ pEntity)
-{
-	if (pEntity is null)
-	{
-		return HOOK_CONTINUE;
-	}
-	
-	if (pEntity.GetTeamNumber() == TEAM_SURVIVORS && Utils.StrEql(strEntityName, "fog_volume"))
-	{
-		iSurvInBasement--;
-		if(iSurvInBasement <= 0)
-		{
-			bIsBZSEnabled = false;
-			string strInput = "FireUser2";
-			ManipulateZS(strInput);
-		}
-	}
-	
-	return HOOK_CONTINUE;
-}
-
-void ManipulateZS(const string &in strInput)
-{
-	Engine.Ent_Fire("zs_outside_pvs", "" + strInput);
-	Engine.Ent_Fire("zs_outside_base", "" + strInput);
-	Engine.Ent_Fire("zs_inside_pvs", "" + strInput);
-	Engine.Ent_Fire("zs_basement_ns_pvs", "" + strInput);
-	Engine.Ent_Fire("zs_basement_pvs", "" + strInput);
 }

@@ -1,6 +1,3 @@
-array<int> g_iKills;
-array<int> g_iVictims;
-
 void ShowTextPlr(CZP_Player@ pPlayer, const string &in strMessage, int iChannel, float flxTime, float flxPos, float flyPos, float flFadeIn, float flFadeOut, float flHoldTime, Color clrPrimary, Color clrSecondary)
 {
 	HudTextParams pParams;
@@ -47,34 +44,34 @@ void KillFeed(const string &in strAttName, const int &in iAttTeam, const string 
 		break;
 	}
 
-	if(!bIsSuicide)
+	if (!bIsSuicide)
 	{
-		string strKill = "killed";
+		string strKill = "убил";
 		
-		if(bIsInfect)
+		if (bIsInfect)
 		{
-			strKill = "infected";
+			strKill = "заразил";
 			VicColor = "blue";
 		}
 
-		Chat.PrintToChat(all, "{"+VicColor+"}" + strVicName + " {default}" + strKill + " by {"+AttColor+"}" + strAttName +"{default}.");
+		Chat.PrintToChat(all, "{"+AttColor+"}" + strAttName + " {default}" + strKill + " {"+VicColor+"}" + strVicName + "{default}.");
 	}
 	else
 	{
-		Chat.PrintToChat(all, "{"+VicColor+"}" + strVicName + "{default} committed suicide.");
+		Chat.PrintToChat(all, "{"+VicColor+"}" + strVicName + "{default} совершил самоубийство.");
 	}
 }
 
-void ShowKills(CZP_Player@ pPlayer, const int &in iKills, const bool &in bIsVictim)
+void ShowKills(CZP_Player@ pPlayer, const int &in iKills, const bool &in bIsInfection)
 {
 	string strMsgToShow = "";
 	int iR = 235;
 	int iG = 16;
 	int iB = 32;
 	
-	if(!bIsVictim)
+	if (!bIsInfection)
 	{
-		if(iKills == 1)
+		if (iKills == 1)
 		{
 			strMsgToShow = "Kill: ";
 		}
@@ -83,14 +80,13 @@ void ShowKills(CZP_Player@ pPlayer, const int &in iKills, const bool &in bIsVict
 			strMsgToShow = "Kills: ";
 		}
 	}
-	
 	else
 	{
 		iG = 235;
 		iR = 16;
 		iB = 32;
 		
-		if(iKills == 1)
+		if (iKills == 1)
 		{
 			strMsgToShow = "Victim: ";
 		}
@@ -101,13 +97,4 @@ void ShowKills(CZP_Player@ pPlayer, const int &in iKills, const bool &in bIsVict
 	}
 	
 	ShowTextPlr(pPlayer, strMsgToShow + iKills, 5, 0.00f, -1, 0.65f, 0.00f, 0.125f, 2.00f, Color(iR, iG, iB), Color(255, 95, 5));
-}
-
-void ShowStatsEnd(CZP_Player@ pPlayer, const int &in iKills, const int &in iVictims)
-{
-	string strStatsHead = "Your stats of the round:\n";
-	string strStats = "";
-	strStats = strStatsHead + " Kills: " + iKills + "\n Victims: " + iVictims;
-
-	ShowTextPlr(pPlayer, strStats, 2, 0.00f, 0, 0.25f, 0.25f, 0.00f, 10.10f, Color(205, 205, 220), Color(255, 95, 5));
 }
