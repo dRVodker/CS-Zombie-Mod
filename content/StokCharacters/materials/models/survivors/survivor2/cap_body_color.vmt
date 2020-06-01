@@ -1,0 +1,25 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/survivors/survivor2/cap_body_color"
+	"$bumpmap" "models/survivors/survivor2/cap_body_nm"
+	"$surfaceprop" "flesh"
+	"$halflambert" 1
+	//phong parameters
+	"$phong"     "1"
+
+	"$phongexponent"   "30"
+	"$phongboost"   "0.01"
+	"$phongfresnelranges"   "[0.1 2 1]"
+	
+	//rimlight parameters
+	"$rimlight" "1"
+	"$rimlightexponent" "70"
+	"$rimlightboost" "0.25"
+	"Proxies"
+	{
+		"ZombieVision"
+		{
+			"resultVar"	"$selfillumtint"
+		}
+	}
+}

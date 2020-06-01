@@ -1,0 +1,9 @@
+"VertexLitGeneric"
+{
+	"$basetexture"	"models/gibs/meatchunk"
+	"$bumpmap" "models/gibs/meatchunk_normal"
+	"$phong" "1"
+	"$phongexponent"   "50"
+	"$phongboost"   "3"
+	"$phongfresnelranges"   "[1 1 1]"
+}

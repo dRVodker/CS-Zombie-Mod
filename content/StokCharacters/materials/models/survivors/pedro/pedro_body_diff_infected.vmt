@@ -1,0 +1,23 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/survivors/pedro/pedro_body_diff_infected"
+	"$nocull" "1"
+	
+	"$bumpmap" "models/survivors/pedro/pedro_body_bump"
+	
+	"$model" "1"
+	"$surfaceprop" "flesh"
+
+	"$phong"     "1"
+	"$phongexponent"   "20"
+	"$phongboost"   "1.25"
+	"$phongfresnelranges"   "[0.05 0.5 1]"
+	
+	"Proxies"
+	{
+		"ZombieVision"
+		{
+			"resultVar"	"$selfillumtint"
+		}
+	}
+}

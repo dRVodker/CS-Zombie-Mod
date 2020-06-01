@@ -1,0 +1,15 @@
+"VertexLitGeneric"
+{
+	"$basetexture"			"models/zombies/zombie4/punker_pants"
+	"$bumpmap"				"models/survivors/survivor4/punker_pants_bump"
+
+	"$halflambert"			"1"
+
+	"$nocull"				"1"
+	"$model"				"1"
+	
+	"$phong"     			"1"
+	"$phongboost"			"0.15"
+	"$phongexponent"		"5"
+	"$phongfresnelranges"	"[0.15 0.25 0.25]"
+}

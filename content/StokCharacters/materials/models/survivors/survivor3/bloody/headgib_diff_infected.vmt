@@ -1,0 +1,23 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/survivors/survivor3/bloody/headgib_diff_infected"
+	"$bumpmap" "models/survivors/survivor3/bloody/headgib_diff_nm"
+	"$surfaceprop" "flesh"
+	//phong parameters
+	"$phong"     "1"
+
+	"$phongexponent"   "100"
+	"$phongboost"   ".5"
+	"$phongfresnelranges"   "[0.05 .5 1]"
+
+	"$alphatest"   "1"
+	"$nocull"	"1"
+
+	"Proxies"
+	{
+		"ZombieVision"
+		{
+			"resultVar"	"$selfillumtint"
+		}
+	}
+}

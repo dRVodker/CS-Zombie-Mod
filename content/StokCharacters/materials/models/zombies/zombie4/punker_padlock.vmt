@@ -1,0 +1,12 @@
+"VertexLitGeneric"
+{
+	"$basetexture"			"models/zombies/zombie4/punker_pants"
+	"$bumpmap"				"models/survivors/survivor4/punker_pants_bump"
+
+	"$envmap"				"env_cubemap"
+
+	"$envmapfresnel"		"1"
+	"$envmapsaturation"		"1"
+	"$envmaptint"			"[0.25 0.25 0.25]"
+}
+

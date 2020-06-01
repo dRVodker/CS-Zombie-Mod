@@ -1,0 +1,13 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/survivors/larry/eyes_diff"
+	"$envmapmask" "models/survivors/larry/eyes_spec"
+	
+	"$model" "1"
+	"$surfaceprop" "flesh"
+
+	"$phong"     "1"
+	"$phongexponent"   "10"
+	"$phongboost"   "0.75"
+	"$phongfresnelranges"   "[0.1 0.1 0.1]"
+}

@@ -1,0 +1,9 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/gibs/skeleton_eye"
+	"$bumpmap" "models/gibs/skeleton_eye_normal"
+	"$phong" "1"
+	"$phongexponent"   "100"
+	"$phongboost"   "2"
+	"$phongfresnelranges"   "[1 1 1]"
+}

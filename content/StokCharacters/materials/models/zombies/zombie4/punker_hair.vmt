@@ -1,0 +1,12 @@
+"VertexLitGeneric"
+{
+	"$basetexture"	"models/zombies/zombie4/punker_head"
+	"$bumpmap"		"models/survivors/survivor4/punker_head_bump"
+	
+	"$halflambert"	"1"
+	"$nodecal"		"1"
+	"$alphatest"	"1"
+	"$nocull"		"1"
+	"$model"		"1"
+}
+

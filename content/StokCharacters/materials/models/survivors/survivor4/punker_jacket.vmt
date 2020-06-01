@@ -1,0 +1,27 @@
+"VertexLitGeneric"
+{
+	"$basetexture"			"models/survivors/survivor4/punker_body"
+	"$bumpmap"				"models/survivors/survivor4/punker_body_bump"
+
+	"$detail"				"models/survivors/survivor4/jacketdetail"
+	"$detailscale"			"8"
+	"$invertphongmask"		"1"					
+
+	"$halflambert"			"1"
+	"$nocull"				"1"
+	"$model"				"1"
+	
+	"$phong"				"1"
+	"$phongexponent"		"5"
+	"$phongboost"			"0.75"
+	"$phongfresnelranges"	"[0.25 0.25 0.25]"
+	
+	"Proxies"
+	{
+		"ZombieVision"
+		{
+			"resultVar"	"$selfillumtint"
+		}
+	}
+}
+

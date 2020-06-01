@@ -1,0 +1,23 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/survivors/survivor5/bloody/gib_diffuse_infected"
+	"$bumpmap" "models/survivors/survivor5/bloody/gib_normal"
+	"$surfaceprop" "flesh"
+
+	"$nocull" "1"
+	"$model" "1"
+	//phong parameters
+	"$phong"     "1"
+
+	"$phongexponent"   "100"
+	"$phongboost"   "0.2"
+	"$phongfresnelranges"   "[0.05 5 1]"
+
+	"Proxies"
+	{
+		"ZombieVision"
+		{
+			"resultVar"	"$selfillumtint"
+		}
+	}
+}

@@ -1,0 +1,31 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/zombies/pedro/pedro_z_body_diff"
+	"$nocull" "1"
+	
+	"$bumpmap" "models/zombies/pedro/pedro_z_body_bump"
+	"$nodiffusebumplighting" "0"
+	
+	"$model" "1"
+	"$surfaceprop" "flesh"
+	
+	//phong parameters
+	"$phong"     "1"
+
+	"$phongexponent"   "18"
+	"$phongboost"   "1"
+	"$phongfresnelranges"   "[0.05 0.5 1]"
+	
+	//rimlight parameters
+	"$rimlight" "1"
+	"$rimlightexponent" "100"
+	"$rimlightboost" "0.2"
+	
+	"Proxies"
+	{
+		"ZombieVision"
+		{
+			"resultVar"	"$selfillumtint"
+		}
+	}
+}

@@ -1,0 +1,13 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/survivors/larry/lower_diff"
+	"$bumpmap" "models/survivors/larry/lower_norm"
+	
+	"$model" "1"
+	"$surfaceprop" "flesh"
+
+	"$phong"     "1"
+	"$phongexponent"   "10"
+	"$phongboost"   "0.75"
+	"$phongfresnelranges"   "[0.5 0.5 0.5]"
+}

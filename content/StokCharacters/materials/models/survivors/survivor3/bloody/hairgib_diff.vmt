@@ -1,0 +1,7 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/survivors/survivor3/bloody/hairgib_diff"
+	"$nocull"	"1"
+	"$nodecal"	"1"
+	"$translucent" 1
+}
