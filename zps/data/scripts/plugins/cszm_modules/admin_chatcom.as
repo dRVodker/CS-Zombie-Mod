@@ -394,10 +394,6 @@ void ACC_SwitchCom(CBasePlayer@ pCaller, CASCommand@ pARGSplited, const int &in 
 			ACC_RespawnPlayer(pCaller, pARGSplited.Arg(1), Utils.StringToInt(pARGSplited.Arg(2)));
 		break;
 
-		case 7:
-			ACC_Give(pCaller, pARGSplited.Arg(1));
-		break;
-
 		case -1:
 			Chat.PrintToChatPlayer(pCaller, "{red}*{gold}Команда не найдена!");
 		break;
