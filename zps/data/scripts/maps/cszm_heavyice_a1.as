@@ -150,8 +150,8 @@ class CExpBarrel
 		ExpBarrelIPD.Add("nofiresound", "1");
 		ExpBarrelIPD.Add("physicsmode", "1");
 
-		ExpBarrelIPD.Add("addoutput", "ExplodeDamage 185", true);
-		ExpBarrelIPD.Add("addoutput", "ExplodeRadius 300", true);
+		ExpBarrelIPD.Add("AddOutput", "ExplodeDamage 185", true);
+		ExpBarrelIPD.Add("AddOutput", "ExplodeRadius 300", true);
 
 		CBaseEntity@ pExpBarrel = EntityCreator::Create("prop_physics_multiplayer", Origin, Angles, ExpBarrelIPD);
 
@@ -547,6 +547,8 @@ void SetUpStuff()
 	Engine.Ent_Fire("bh_tv", "AddOutput", "health 875", "0");
 	Engine.Ent_Fire("gh_tv", "AddOutput", "health 875", "0");
 
+	Engine.Ent_Fire("iantidote*", "AddOutput", "targetname item_antidote", "1.75");
+
 	SpawnCheese();
 
 	switch(Math::RandomInt(1, 3))
@@ -583,8 +585,8 @@ void FindExpBarrels()
 	while ((@pBarrel = FindEntityByName(pBarrel, "ExpBarrels")) !is null)
 	{
 		Array_ExpBarrel.insertLast(CExpBarrel(pBarrel.entindex(), pBarrel.GetAbsOrigin(), pBarrel.GetAbsAngles()));
-		Engine.Ent_Fire_Ent(pBarrel, "addoutput", "ExplodeDamage 185");
-		Engine.Ent_Fire_Ent(pBarrel, "addoutput", "ExplodeRadius 300");
+		Engine.Ent_Fire_Ent(pBarrel, "AddOutput", "ExplodeDamage 185");
+		Engine.Ent_Fire_Ent(pBarrel, "AddOutput", "ExplodeRadius 300");
 	}
 }
 

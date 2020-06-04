@@ -241,8 +241,8 @@ class CSZMPlayer
 	private int Victims;					//Заражения или убийства выживших в раунде
 
 	private float SwipeDelay;				//Задержка между заражениями, эта задержка не даст заразить двух и более выживших одним ударом
-	private float RegenTime;				//
-	private float SpeedRecoverTime;			//
+	private float RegenTime;				//Промежутки времени между добавлением HP
+	private float RecoverTime;				//Промежутки времени между добавлением Скорости
 
 	private float VoiceTime;				//Время между IDLE звуками зомби
 	private float AdrenalineTime;			//Время действия адреналина
@@ -253,7 +253,7 @@ class CSZMPlayer
 	private bool Abuser;					//Игроки, злоупотребляющие механиками, получают этот флаг (Записывается в SteamIDArray)
 	private bool FirstInfected;				//Один из первых зараженных?
 
-	int T_Pos;
+	int T_Pos;								//Для какой-то свистопляски с поинтами для зомби
 
 	bool Cured;								//Исцелен?
 
@@ -262,7 +262,7 @@ class CSZMPlayer
 		SteamID = pPlayer.GetSteamID64();
 		PlayerIndex = index;
 		DefSpeed = SPEED_DEFAULT;
-		SpeedRecoverTime = 0;
+		RecoverTime = 0;
 		Voice = 0;
 		PreviousVoice = 0;
 		VoiceTime = 0;
@@ -323,7 +323,7 @@ class CSZMPlayer
 		PreviousHealth = 0;
 		Abuser = false;
 
-		SpeedRecoverTime = 0;
+		RecoverTime = 0;
 		AdrenalineTime = 0;
 		VoiceTime = 0;
 	}
@@ -337,7 +337,7 @@ class CSZMPlayer
 		FirstInfected = false;
 		LobbyRespawnDelay = 0;
 		InfectResist = 0;
-		SpeedRecoverTime = Globals.GetCurrentTime();
+		RecoverTime = Globals.GetCurrentTime();
 		VoiceTime = Globals.GetCurrentTime();
 		AdrenalineTime = Globals.GetCurrentTime();
 	}
@@ -463,7 +463,7 @@ class CSZMPlayer
 			RegenTime = Globals.GetCurrentTime() + flZMRDamageDelay;			
 		}
 
-		SpeedRecoverTime = Globals.GetCurrentTime() + flRecover;
+		RecoverTime = Globals.GetCurrentTime() + flRecover;
 		pPlayer.SetMaxSpeed(NewSpeed);
 	}
 
@@ -635,9 +635,9 @@ class CSZMPlayer
 			T_Pos = 0;
 		}
 
-		if (SpeedRecoverTime <= Globals.GetCurrentTime() && SpeedRecoverTime != 0 && pPlayerEntity.IsAlive())
+		if (RecoverTime <= Globals.GetCurrentTime() && RecoverTime != 0 && pPlayerEntity.IsAlive())
 		{
-			SpeedRecoverTime = Globals.GetCurrentTime() + flRecover;
+			RecoverTime = Globals.GetCurrentTime() + flRecover;
 
 			float CurrSpeed = float(pPlayer.GetMaxSpeed());
 			int NewSpeed = int(CurrSpeed * flCurrs);
@@ -645,7 +645,7 @@ class CSZMPlayer
 			if (NewSpeed > DefSpeed)
 			{
 				NewSpeed = DefSpeed;
-				SpeedRecoverTime = -1;
+				RecoverTime = -1;
 
 				if (AdrenalineTime > Globals.GetCurrentTime() && pPlayerEntity.GetTeamNumber() == TEAM_SURVIVORS)
 				{
@@ -757,7 +757,7 @@ class CSZMPlayer
 
 			CBaseEntity@ pWeapon = pPlayer.GetCurrentWeapon();
 
-			if (IRITime <= Globals.GetCurrentTime() && Utils.StrContains("iantidote", pWeapon.GetEntityName()))
+			if (IRITime <= Globals.GetCurrentTime() && Utils.StrContains("item_antidote", pWeapon.GetEntityName()))
 			{
 				IRITime = Globals.GetCurrentTime() + 1.12f;
 
@@ -922,24 +922,24 @@ void OnEntityPickedUp(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 	CSZMPlayer@ pCSZMPlayer = Array_CSZMPlayer[index];
 	CBaseEntity@ pWeapon = pPlayer.GetCurrentWeapon();
 
-	int InfRes = pCSZMPlayer.GetInfectResist();
-
-	if (Utils.StrEql("iantidote", pEntity.GetEntityName()))
+	if (Utils.StrEql("item_antidote", pEntity.GetEntityName(), true))
 	{
-		pEntity.SetEntityName(index + "iantidote");
+		pEntity.SetEntityName("antidote" + formatInt(index));
+		pEntity.SetEntityDescription(formatInt(index));
 		
-		if (InfRes >= CONST_MAX_INFECTRESIST)
+		if (pCSZMPlayer.GetInfectResist() >= CONST_MAX_INFECTRESIST)
 		{
-			if (!Utils.StrContains("iantidote", pWeapon.GetEntityName()))
+			if (!Utils.StrContains("antidote", pWeapon.GetEntityName()))
 			{
 				Chat.CenterMessagePlayer(pPlrEnt, strMaxInfResPickUp);
 			}
-
-			Engine.Ent_Fire(index + "iantidote", "addoutput", "itemstate 0");
+			Engine.Ent_Fire("antidote" + formatInt(index), "addoutput", "itemstate 0", "0.00");
+			Engine.Ent_Fire("antidote" + formatInt(index), "addoutput", "targetname item_antidote", "0.01");
 		}
 		else
 		{
-			Engine.Ent_Fire(index + "iantidote", "addoutput", "itemstate 1");
+			Engine.Ent_Fire("antidote" + formatInt(index), "addoutput", "itemstate 1", "0.00");
+			Engine.Ent_Fire("antidote" + formatInt(index), "addoutput", "targetname item_antidote", "0.01");
 		}
 	}	
 }
@@ -956,9 +956,13 @@ void OnEntityDropped(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 	
 	int index = pBaseEnt.entindex();
 
-	if (Utils.StrContains("iantidote", pEntity.GetEntityName()) && Utils.StringToInt(pEntity.GetEntityName()) == index)
+	if (Utils.StrContains("item_antidote", pEntity.GetEntityName()) && Utils.StringToInt(pEntity.GetEntityDescription()) == index)
 	{
-		pEntity.SetEntityName("iantidote");
+		pEntity.SetEntityName("antidote" + formatInt(index));
+		pEntity.SetEntityDescription("None");
+
+		Engine.Ent_Fire("antidote" + formatInt(index), "addoutput", "itemstate 1", "0.00");
+		Engine.Ent_Fire("antidote" + formatInt(index), "addoutput", "targetname item_antidote", "0.01");
 	}
 
 	if (Utils.StrContains("used", pEntity.GetEntityName()))
@@ -983,7 +987,7 @@ void OnItemDeliverUsed(CZP_Player@ pPlayer, CBaseEntity@ pEntity, int &in iEntit
 
 	string Targetname = pEntity.GetEntityName();
 
-	if (Utils.StrContains("iantidote", Targetname))
+	if (Utils.StrContains("item_antidote", Targetname))
 	{
 		pCSZMPlayer.InjectAntidote(pEntity);
 	}
@@ -1554,8 +1558,7 @@ HookReturnCode CSZM_OnEntityCreation(const string &in strClassname, CBaseEntity@
 
 			if (pOwner !is null && pOwner.IsPlayer() && pOwner.GetTeamNumber() == TEAM_LOBBYGUYS)
 			{
-				CZP_Player@ pPlayerOwner = ToZPPlayer(pOwner);
-				pPlayerOwner.AmmoWeapon(set, 15);
+				(ToZPPlayer(pOwner)).AmmoWeapon(set, 15);
 			}
 		}
 	}

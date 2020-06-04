@@ -1,6 +1,6 @@
 void AutoMap()
 {
-	Schedule::Task(0.05f, "Set_CSZM_ScreenOverlay");
+	Schedule::Task(0.05f, "CSZM_SetScreenOverlay");
 }
 
 bool bDamageType(int &in iSubjectDT, int &in iDMGNum)
@@ -286,12 +286,13 @@ void ShowHP(CBasePlayer@ pBasePlayer, const int &in iHP, const bool &in bLeft, c
 void SetAntidoteState(const int &in iIndex, const int &in iAStage)
 {
 	CBaseEntity@ pEntity;
-	while ((@pEntity = FindEntityByClassname(pEntity, "item_deliver")) !is null)
+	while ((@pEntity = FindEntityByName(pEntity, "item_antidote")) !is null)
 	{
-		if (Utils.StringToInt(pEntity.GetEntityName()) == iIndex && Utils.StrContains("iantidote", pEntity.GetEntityName()))
+		if (Utils.StringToInt(pEntity.GetEntityDescription()) == iIndex && Utils.StrEql("item_antidote", pEntity.GetEntityName(), true))
 		{
-			Engine.Ent_Fire(iIndex + "iantidote", "addoutput", "itemstate " + iAStage);
-			break;
+			pEntity.SetEntityName("antidote" + iIndex);
+			Engine.Ent_Fire(pEntity.GetEntityName(), "addoutput", "itemstate " + formatInt(iAStage));
+			Engine.Ent_Fire(pEntity.GetEntityName(), "addoutput", "targetname item_antidote", "0.01");
 		}
 	}
 }
@@ -472,19 +473,18 @@ void CheckProp(CBaseEntity@ pProp, const string &in strClassname)
 	}
 }
 
-void Set_CSZM_ScreenOverlay()
+void CSZM_SetScreenOverlay()
 {
 	CBaseEntity@ pOverlay = FindEntityByClassname(pOverlay, "env_screenoverlay");
 	if (pOverlay is null)
 	{
 		CEntityData@ ScreenOverlayIPD = EntityCreator::EntityData();
 		ScreenOverlayIPD.Add("targetname", "cszm_screenoverlay");
-		ScreenOverlayIPD.Add("OverlayName1", "effects/sp_shading.vmf");
+		ScreenOverlayIPD.Add("OverlayName1", "effects/cszm_shading.vmf");
 		ScreenOverlayIPD.Add("OverlayTime1", "9999");
+		ScreenOverlayIPD.Add("StartOverlays", "0", true);
 
-		CBaseEntity@ pOverlayEntity = EntityCreator::Create("env_screenoverlay", Vector(0, 0, 0), QAngle(0, 0, 0), ScreenOverlayIPD);
-
-		Engine.Ent_Fire_Ent(pOverlayEntity, "StartOverlays");
+		EntityCreator::Create("env_screenoverlay", Vector(0, 0, 0), QAngle(0, 0, 0), ScreenOverlayIPD);
 	}
 }
 
@@ -687,7 +687,7 @@ void SpawnAntidote(CBaseEntity@ pEntity)
 {
 	CEntityData@ AntidoteIPD = EntityCreator::EntityData();
 
-	AntidoteIPD.Add("targetname", "iantidote");
+	AntidoteIPD.Add("targetname", "item_antidote");
 	AntidoteIPD.Add("delivername", "Antidote");
 	AntidoteIPD.Add("glowcolor", "5 250 121");
 	AntidoteIPD.Add("itemstate", "1");

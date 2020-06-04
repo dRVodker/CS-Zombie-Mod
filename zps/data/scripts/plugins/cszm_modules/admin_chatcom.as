@@ -8,7 +8,7 @@ array<array<string>> g_ACC_ChatComms =
 	{ "/showpoints", "Показать очки заражения игрока" },
 	{ "/showvar", "Показать переменные" },
 	{ "/showcom", "Показать команды" },
-	{ "/respawn", "Возродить игрока" },
+	{ "/respawn", "Возродить игрока" }
 }; 
 
 array<array<string>> g_ACC_VariablesList =
