@@ -1,9 +1,0 @@
-"VertexLitGeneric"
-{
-	"$basetexture" "models/zombies/zombie1/zombie2_teeth"
-	"$envmap" "env_cubemap"
-	"$basealphaenvmapmask" 1
-	"$envmapcontrast" 1
-	"$surfaceprop" "flesh"
-
-}

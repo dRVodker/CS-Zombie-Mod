@@ -1,6 +1,0 @@
-"VertexLitGeneric"
-{
-	"$basetexture" "models/survivors/shared/eye_brown_infected"
-	"$halflambert" 1
-	"$nodecal" "1"
-}
