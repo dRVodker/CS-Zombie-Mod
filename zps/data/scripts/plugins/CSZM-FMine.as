@@ -1,4 +1,5 @@
 #include "./cszm_modules/teamnums.as"
+#include "./cszm_modules/customitems.as"
 
 const float CONST_FMINE_TIK = 0.05f;
 
@@ -103,10 +104,12 @@ class CFragMine
 		{
 			this.LoseOwnerIndex();
 		}
+
 		if (!pMineEntity.Intersects(pOwnerEntity) && pMineEntity.GetOwner() !is null)
 		{
 			pMineEntity.SetOwner(null);
 		}
+
 		if (flMineTimer <= Globals.GetCurrentTime() && flMineTimer != 0)
 		{
 			flMineTimer = 0;
@@ -119,6 +122,7 @@ class CFragMine
 				pMineEntity.SetOutline(true, filter_entity, iOwnerIndex, Color(245, 32, 64), 384.0f, false, true);
 			}
 		}
+
 		if (flTimer <= Globals.GetCurrentTime() && flTimer != 0)
 		{
 			flTimer = Globals.GetCurrentTime() + CONST_FMINE_TIK;
@@ -134,20 +138,17 @@ class CFragMine
 
 				CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(i);
 
-				if (pPlayerEntity.GetTeamNumber() == TEAM_ZOMBIES || i == iOwnerIndex)
+				if ((pPlayerEntity.GetTeamNumber() == TEAM_ZOMBIES || i == iOwnerIndex) && pPlayerEntity.Intersects(pMineEntity) && pPlayerEntity.IsAlive())
 				{
-					if (pPlayerEntity.Intersects(pMineEntity) && pPlayerEntity.IsAlive())
-					{
-						flTimer = 0;
+					flTimer = 0;
 
-						CTakeDamageInfo DamageInfo;
-						DamageInfo.SetInflictor(pOwnerEntity);
-						DamageInfo.SetAttacker(pOwnerEntity);
-						DamageInfo.SetDamage(pMineEntity.GetHealth());
-						DamageInfo.SetDamageType(DMG_GENERIC);
+					CTakeDamageInfo DamageInfo;
+					DamageInfo.SetInflictor(pOwnerEntity);
+					DamageInfo.SetAttacker(pOwnerEntity);
+					DamageInfo.SetDamage(pMineEntity.GetHealth());
+					DamageInfo.SetDamageType(DMG_GENERIC);
 
-						pMineEntity.TakeDamage(DamageInfo);
-					}
+					pMineEntity.TakeDamage(DamageInfo);
 				}
 			}
 		}
@@ -179,11 +180,13 @@ void OnProcessRound()
 
 		for (uint q = 0; q < iFMArrLength; q++)
 		{
-			CFragMine@ pFragMine = FMArray[q];
-
-			if (pFragMine !is null)
+			if (FMArray[q] !is null)
 			{
-				pFragMine.Think();
+				FMArray[q].Think();
+			}
+			else
+			{
+				FMArray.removeAt(q);
 			}
 		}
 	}
@@ -195,7 +198,7 @@ HookReturnCode CSZM_FM_OnEntityCreation(const string &in strClassname, CBaseEnti
 	{
 		if (Utils.StrContains("weapon_machete", strClassname))
 		{
-			CreateWeaponFragMine(pEntity);
+			SpawnWepFragMine(pEntity);
 		}
 	}
 
@@ -397,7 +400,7 @@ void OnEntityUsed(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 				}
 				else
 				{
-					Chat.PrintToChatPlayer(pPlrEnt, "This frag mine is not yours, you can't disarm and pick it up!");
+					Chat.PrintToChatPlayer(pPlrEnt, "Это мина одного из выживших, вы не можете обезвредить и забрать её!");
 				}
 			}
 		}
@@ -476,7 +479,7 @@ void ThrowMine(const int &in iIndex, CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 void DefuseFragMine(CBaseEntity@ pFMine, CZP_Player@ pPlayer)
 {
 	Vector Origin = pFMine.GetAbsOrigin();
-	CBaseEntity@ pMineEntity = CreateWeaponFragMine(pFMine);
+	CBaseEntity@ pMineEntity = SpawnWepFragMine(pFMine);
 
 	Engine.EmitSoundPosition(pMineEntity.entindex(), "weapons/slam/buttonclick.wav", Origin, 0.85f, 60, 105);
 	Engine.EmitSoundPosition(pMineEntity.entindex(), "weapons/357/357_reload3.wav", Origin, 0.9f, 70, 105);
@@ -485,29 +488,6 @@ void DefuseFragMine(CBaseEntity@ pFMine, CZP_Player@ pPlayer)
 	{
 		pPlayer.PutToInventory(pMineEntity);
 	}
-}
-
-CBaseEntity@ CreateWeaponFragMine(CBaseEntity@ pEntity)
-{
-	CEntityData@ WeaponFragMine = EntityCreator::EntityData();
-	WeaponFragMine.Add("targetname", "weapon_fragmine");
-	WeaponFragMine.Add("viewmodel", "models/cszm/weapons/v_minefrag.mdl");
-	WeaponFragMine.Add("model", "models/cszm/weapons/w_minefrag.mdl");
-	WeaponFragMine.Add("itemstate", "1");
-	WeaponFragMine.Add("isimportant", "0");
-	WeaponFragMine.Add("carrystate", "6");
-	WeaponFragMine.Add("glowcolor", "0 128 245");
-	WeaponFragMine.Add("delivername", "FragMine");
-	WeaponFragMine.Add("sound_pickup", "Player.PickupWeapon");
-	WeaponFragMine.Add("printname", "vgui/images/fragmine");
-	WeaponFragMine.Add("weight", "5");
-	WeaponFragMine.Add("DisableDamageForces", "0", true);
-
-	CBaseEntity@ pMineEntity = EntityCreator::Create("item_deliver", pEntity.GetAbsOrigin(), pEntity.GetAbsAngles(), WeaponFragMine);
-
-	pEntity.SUB_Remove();
-
-	return pMineEntity;
 }
 
 CFragMine@ FindFragMineByEntIndex(const int &in EntIndex)

@@ -241,26 +241,8 @@ void EmitBloodEffect(CZP_Player@ pPlayer, const bool &in bSilent)
 	
 	if (!bSilent)
 	{
-		Engine.EmitSoundEntity(pBaseEnt, "Flesh.HeadshotExplode");
-	}
-}
-
-void ZombiePoints(CZP_Player@ pIgnorePlayer)
-{
-	pIgnorePlayer.AddScore(100, null);
-
-	for (int i = 1; i <= iMaxPlayers; i++) 
-	{
-		CZP_Player@ pPlayer = ToZPPlayer(i);
-		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(i);
-
-		if (pPlayer !is null)
-		{
-			if (pPlayerEntity.GetTeamNumber() == TEAM_ZOMBIES)
-			{
-				pPlayer.AddScore(-100, pIgnorePlayer);
-			}
-		}
+		Engine.EmitSoundPosition(pBaseEnt.entindex(), ")impacts/flesh_impact_headshot-01.wav", pBaseEnt.EyePosition(), 0.985f, 70, Math::RandomInt(85, 100));
+		Engine.EmitSoundPosition(pBaseEnt.entindex(), g_strBloodSND[Math::RandomInt(0, g_strBloodSND.length() - 1)], pBaseEnt.EyePosition(), 1.0f, 65, Math::RandomInt(95, 115));
 	}
 }
 
@@ -382,7 +364,7 @@ void SetCustomPropHealth(CBaseEntity@ pEntity, const int &in iPlrCount)
 		if (!bIsPropExplosive(pEntity))
 		{
 			float flBaseHealth = float(pEntity.GetHealth());
-			int iCustomHealth = int((flBaseHealth * 0.0845f) * iPlrCount);
+			int iCustomHealth = int((flBaseHealth * 0.0815f) * iPlrCount);
 
 			if (iCustomHealth > PROP_MAX_HEALTH)
 			{
@@ -424,7 +406,7 @@ void SetCustomFuncHealth(CBaseEntity@ pEntity, const int &in iPlrCount)
 	if (!Utils.StrContains("special", strTargetname))
 	{
 		float flBaseHealth = float(pEntity.GetHealth());
-		int iCustomHealth = int((flBaseHealth * 0.185f) * iPlrCount);
+		int iCustomHealth = int((flBaseHealth * 0.195f) * iPlrCount);
 
 		if (iCustomHealth > BRUSH_MAX_HEALTH)
 		{
@@ -640,66 +622,18 @@ void ShakeInfected(CBaseEntity@ pPlayerEntity)
 	EntityCreator::Create("env_shake", pPlayerEntity.EyePosition(), QAngle(-90, 0, 0), ShakeIPD);	
 }
 
-void SpawnWepFragMine(CBaseEntity@ pEntity)
+int CheckSteamID(const string &in STR_STEAM)
 {
-	CEntityData@ WepFragMineIPD = EntityCreator::EntityData();
-	WepFragMineIPD.Add("targetname", "weapon_fragmine");
-	WepFragMineIPD.Add("viewmodel", "models/cszm/weapons/v_minefrag.mdl");
-	WepFragMineIPD.Add("model", "models/cszm/weapons/w_minefrag.mdl");
-	WepFragMineIPD.Add("itemstate", "1");
-	WepFragMineIPD.Add("isimportant", "0");
-	WepFragMineIPD.Add("carrystate", "6");
-	WepFragMineIPD.Add("glowcolor", "0 128 245");
-	WepFragMineIPD.Add("delivername", "FragMine");
-	WepFragMineIPD.Add("sound_pickup", "Player.PickupWeapon");
-	WepFragMineIPD.Add("printname", "vgui/images/fragmine");
-	WepFragMineIPD.Add("weight", "5");
+	int iArrayElement = -1;
 
-	WepFragMineIPD.Add("DisableDamageForces", "0", true);
+	for (uint i = 0; i < Array_SteamID.length(); i++)
+	{
+		if (Utils.StrEql(STR_STEAM, Array_SteamID[i][0], true))
+		{
+			iArrayElement = i;
+			return iArrayElement;
+		}
+	}
 
-	EntityCreator::Create("item_deliver", pEntity.GetAbsOrigin(), pEntity.GetAbsAngles(), WepFragMineIPD);
-
-	pEntity.SUB_Remove();
-}
-
-void SpawnAdrenaline(CBaseEntity@ pEntity)
-{
-	CEntityData@ AdrenalineIPD = EntityCreator::EntityData();
-
-	AdrenalineIPD.Add("targetname", "item_adrenaline");
-	AdrenalineIPD.Add("delivername", "Adrenaline");
-	AdrenalineIPD.Add("glowcolor", "5 250 121");
-	AdrenalineIPD.Add("itemstate", "1");
-	AdrenalineIPD.Add("model", "models/cszm/weapons/w_adrenaline.mdl");
-	AdrenalineIPD.Add("viewmodel", "models/cszm/weapons/v_adrenaline.mdl");
-	AdrenalineIPD.Add("printname", "vgui/images/adrenaline");
-	AdrenalineIPD.Add("sound_pickup", "Deliver.PickupGeneric");
-	AdrenalineIPD.Add("weight", "0");
-	
-	AdrenalineIPD.Add("DisableDamageForces", "0", true);
-
-	EntityCreator::Create("item_deliver", pEntity.GetAbsOrigin(), pEntity.GetAbsAngles(), AdrenalineIPD);
-
-	pEntity.SUB_Remove();
-}
-
-void SpawnAntidote(CBaseEntity@ pEntity)
-{
-	CEntityData@ AntidoteIPD = EntityCreator::EntityData();
-
-	AntidoteIPD.Add("targetname", "item_antidote");
-	AntidoteIPD.Add("delivername", "Antidote");
-	AntidoteIPD.Add("glowcolor", "5 250 121");
-	AntidoteIPD.Add("itemstate", "1");
-	AntidoteIPD.Add("model", "models/cszm/weapons/w_antidote.mdl");
-	AntidoteIPD.Add("viewmodel", "models/cszm/weapons/v_antidote.mdl");
-	AntidoteIPD.Add("printname", "vgui/images/weapons/inoculator");
-	AntidoteIPD.Add("sound_pickup", "Deliver.PickupGeneric");
-	AntidoteIPD.Add("weight", "0");
-
-	AntidoteIPD.Add("DisableDamageForces", "0", true);
-
-	EntityCreator::Create("item_deliver", pEntity.GetAbsOrigin(), pEntity.GetAbsAngles(), AntidoteIPD);
-
-	pEntity.SUB_Remove();
+	return iArrayElement;
 }

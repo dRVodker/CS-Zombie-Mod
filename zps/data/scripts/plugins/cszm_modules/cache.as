@@ -114,4 +114,14 @@ void CacheSounds()
 	Engine.PrecacheFile(sound, "physics/metal/weapon_impact_soft2.wav");
 	Engine.PrecacheFile(sound, "physics/metal/weapon_impact_soft3.wav");
 	Engine.PrecacheFile(sound, "npc/combine_soldier/vo/_comma.wav");
+	Engine.PrecacheFile(sound, ")npc/zombie/zombie_alert1.wav");
+	Engine.PrecacheFile(sound, ")npc/zombie/zombie_alert2.wav");
+	Engine.PrecacheFile(sound, ")npc/zombie/zombie_alert3.wav");
+	Engine.PrecacheFile(sound, ")gibs/flesh_head-01.wav");
+	Engine.PrecacheFile(sound, ")gibs/flesh_head-02.wav");
+	Engine.PrecacheFile(sound, ")gibs/flesh_head-03.wav");
+	Engine.PrecacheFile(sound, ")gibs/flesh_arm-01.wav");
+	Engine.PrecacheFile(sound, ")gibs/flesh_arm-02.wav");
+	Engine.PrecacheFile(sound, ")gibs/flesh_arm-03.wav");
+	Engine.PrecacheFile(sound, ")gibs/flesh_arm-04.wav");
 }

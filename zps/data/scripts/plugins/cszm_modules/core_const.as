@@ -7,7 +7,7 @@ const int SPEED_CARRIER = 225;		//220
 const int SPEED_ADRENALINE = 65;	//50
 
 //Другие постоянные
-const float CONST_SPAWN_DELAY = 2.5f;				//Время в секундах, которое должны будут ждать все убитые игроки, чтобы снова возродиться
+const float CONST_SPAWN_DELAY = 5.0f;				//Время в секундах, которое должны будут ждать все убитые игроки, чтобы снова возродиться
 const int CONST_REWARD_HEALTH = 125;				//Кол-во HP, которое зомби получит при удачном заражении человека.
 const int CONST_INFECT_ADDTIME = 15;				//Кол-во времени в секундах, которое будет добавлятся к таймеру раунда при удачном заражении чеорвека (если время на таймере меньше чем "CONST_MIN_ROUNDTIMER")
 const int CONST_ZOMBIE_LIVES = 0;					//Удерживать Жизни Зомби на этом уровне (Жизни Зомби не используются в CSZM) 
@@ -88,6 +88,17 @@ array<string> g_strModels =
 };
 
 array<string> g_strMDLToChoose;
+
+array<string> g_strBloodSND =
+{
+	")gibs/flesh_arm-01.wav",
+	")gibs/flesh_arm-02.wav",
+	")gibs/flesh_arm-03.wav",
+	")gibs/flesh_arm-04.wav",
+	")gibs/flesh_head-01.wav",
+	")gibs/flesh_head-02.wav",
+	")gibs/flesh_head-03.wav"
+};
 
 array<string> g_strInfectSND =
 {

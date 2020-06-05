@@ -8,7 +8,8 @@ array<array<string>> g_ACC_ChatComms =
 	{ "/showpoints", "Показать очки заражения игрока" },
 	{ "/showvar", "Показать переменные" },
 	{ "/showcom", "Показать команды" },
-	{ "/respawn", "Возродить игрока" }
+	{ "/respawn", "Возродить игрока" },
+	{ "/toggle_respawn", "Включить/выклюсить респавн зомби" }
 }; 
 
 array<array<string>> g_ACC_VariablesList =
@@ -136,6 +137,7 @@ void ACC_Infect(CBasePlayer@ pCaller, const string &in strInput)
 		if (TeamNum == TEAM_SURVIVORS)
 		{
 			TurnToZombie(pPlayerEntity.entindex());
+			Chat.PrintToChatPlayer(pPlayerBase, "{violet}*{gold}Вы были заражены администратором.");
 		}
 		else
 		{
@@ -177,6 +179,8 @@ void ACC_Cure(CBasePlayer@ pCaller, const string &in strInput)
 
 			pPlayerEntity.Teleport(PlrOrigin, EyeAngles, Vector(0, 0, 0));
 			pPlayer.ConsoleCommand("phone");
+			Chat.PrintToChatPlayer(pPlayerBase, "{violet}*{gold}Aдминистратор излечил вас от инфекции.");
+			Utils.ScreenFade(pPlayer, Color(30, 125, 35, 75), 0.25, 0, fade_in);
 		}
 		else
 		{
@@ -292,7 +296,7 @@ void ACC_ShowInfChance(CBasePlayer@ pCaller, const string &in strInput)
 		CSZMPlayer@ pCSZMPlayer = Array_CSZMPlayer[pPlayerEntity.entindex()];
 
 		int iPlrInfectChance = pCSZMPlayer.GetInfectPoints();
-		Chat.PrintToChatPlayer(pCaller, "{green}*{gold}Очки заражения выбранного игрока: {violet}" + iPlrInfectChance);
+		Chat.PrintToChatPlayer(pCaller, "{green}*{gold}Игрок {green}[{cyan}"+pPlayer.GetPlayerName()+"{green}]{gold} Склонность к заражению{green}: {violet}" + iPlrInfectChance);
 	}
 }
 
@@ -362,6 +366,24 @@ void ACC_RespawnPlayer(CBasePlayer@ pCaller, const string &in strInput, const in
 	}
 }
 
+void ACC_ToggleZombieRespawn(CBasePlayer@ pCaller)
+{
+	string strTurn = "";
+
+	if (bAllowZombieRespawn)
+	{
+		bAllowZombieRespawn = false;
+		strTurn = "выключен";
+	}
+	else
+	{
+		bAllowZombieRespawn = true;
+		strTurn = "включен";
+	}
+
+	Chat.PrintToChatPlayer(pCaller, "{green}*{gold}Респавн зомби {cyan}"+strTurn+"{gold}!");
+}
+
 void ACC_SwitchCom(CBasePlayer@ pCaller, CASCommand@ pARGSplited, const int &in iCommIndex)
 {
 	switch(iCommIndex)
@@ -394,6 +416,10 @@ void ACC_SwitchCom(CBasePlayer@ pCaller, CASCommand@ pARGSplited, const int &in 
 			ACC_RespawnPlayer(pCaller, pARGSplited.Arg(1), Utils.StringToInt(pARGSplited.Arg(2)));
 		break;
 
+		case 7:
+			ACC_ToggleZombieRespawn(pCaller);
+		break;
+
 		case -1:
 			Chat.PrintToChatPlayer(pCaller, "{red}*{gold}Команда не найдена!");
 		break;
@@ -413,7 +439,7 @@ HookReturnCode CSZM_CORE_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 
 	string ARG = pArgs.Arg(1);
 
-	if (ARG.findFirst("/", 0) == 0)
+	if (ARG.findFirst("/", 0) == 0 && ARG.length() > 1)
 	{
 		if (AdminSystem.PlayerHasFlag(pPlayer, GetAdminFlag(gAdminFlagRoot)))
 		{

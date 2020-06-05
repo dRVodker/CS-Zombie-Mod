@@ -8,9 +8,6 @@ const string strCSZM = lb + "{coral}cszm"+rb;
 
 array<string> g_strMsg =
 {
-//	"{gold}If you stuck in spectator mode, press {seagreen}F4{gold} to get back to the {green}ready room{gold}.",
-//	"{gold}Use an {green}antidote{gold} to increase your resistance to the {green}infection{gold}.",
-//	"{gold}Type {green}!chatcom {gold}to see all available chat commands."
 	"{gold}Если вы застряли в наблюдателях, нажмите {seagreen}F4{gold} чтоб вернуться {green}лобби{gold}.",
 	"{gold}Используйте {green}антитод{gold} для повышения сопротивления к {green}инфекции{gold}.",
 	"{gold}Чтобы увидеть доступные комманды чата, напишите {green}!chatcom{gold} или {green}!help{gold}."

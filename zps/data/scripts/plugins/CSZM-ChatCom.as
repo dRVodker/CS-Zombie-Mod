@@ -170,12 +170,10 @@ HookReturnCode CSZM_SetS_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 					{
 						fltest = 0.1f;
 					}
-
 					else if (fltest > 2.0f)
 					{
 						fltest = 2.0f;
 					}
-
 					else if (fltest == 1)
 					{
 						sAddition = ".0";
