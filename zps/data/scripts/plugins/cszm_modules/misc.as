@@ -8,6 +8,16 @@ bool bDamageType(int &in iSubjectDT, int &in iDMGNum)
 	return iSubjectDT & (1<<iDMGNum) == (1<<iDMGNum);;
 }
 
+string BoolToString(bool boolean)
+{
+	if (boolean)
+	{
+		return "true";
+	}
+
+	return "false";
+}
+
 void MovePlrToSpec(CBaseEntity@ pEntPlr)
 {
 	pEntPlr.ChangeTeam(TEAM_LOBBYGUYS);
@@ -43,7 +53,7 @@ void SetDoorFilter(const int &in iFilter)
 	CBaseEntity@ pEntity;
 	while ((@pEntity = FindEntityByClassname(pEntity, "prop_door_rotating")) !is null)
 	{
-		Engine.Ent_Fire_Ent(pEntity, "AddOutput", "doorfilter " + iFilter);
+		Engine.Ent_Fire_Ent(pEntity, "AddOutput", "doorfilter " + formatInt(iFilter));
 	}
 }
 
@@ -120,7 +130,7 @@ void PutPlrToPlayZone(CBaseEntity@ pEntPlayer)
 		g_pOtherSpawn.insertLast(pEntity);
 	}
 
-	int iLength = g_pOtherSpawn.length() - 1;
+	int iLength = int(g_pOtherSpawn.length()) - 1;
 	
 	if (pEntPlayer is null)
 	{
@@ -190,8 +200,8 @@ void AttachTrail(CBaseEntity@ pEntity, const string strColor)
 void SetUsed(const int &in index, CBaseEntity@ pItemDeliver)
 {
 	pItemDeliver.SetEntityName("used" + index);
-	Engine.Ent_Fire("used" + index, "addoutput", "itemstate 0");
-	Engine.Ent_Fire("used" + index, "kill", "0", "0.5");	
+	Engine.Ent_Fire("used" + formatInt(index), "addoutput", "itemstate 0");
+	Engine.Ent_Fire("used" + formatInt(index), "kill", "0", "0.5");	
 }
 
 void CSZM_EndGame()
@@ -261,7 +271,7 @@ void ShowHP(CBasePlayer@ pBasePlayer, const int &in iHP, const bool &in bLeft, c
 			strLeft = " Left";
 		}
 
-		Chat.CenterMessagePlayer(pBasePlayer, iHP + " HP" + strLeft);
+		Chat.CenterMessagePlayer(pBasePlayer, formatInt(iHP) + " HP" + strLeft);
 	}
 }
 
@@ -272,7 +282,7 @@ void SetAntidoteState(const int &in iIndex, const int &in iAStage)
 	{
 		if (Utils.StringToInt(pEntity.GetEntityDescription()) == iIndex && Utils.StrEql("item_antidote", pEntity.GetEntityName(), true))
 		{
-			pEntity.SetEntityName("antidote" + iIndex);
+			pEntity.SetEntityName("antidote" + formatInt(iIndex));
 			Engine.Ent_Fire(pEntity.GetEntityName(), "addoutput", "itemstate " + formatInt(iAStage));
 			Engine.Ent_Fire(pEntity.GetEntityName(), "addoutput", "targetname item_antidote", "0.01");
 		}
@@ -470,55 +480,6 @@ void CSZM_SetScreenOverlay()
 	}
 }
 
-void GiveStartGear(CZP_Player@ pPlayer, const bool bPPK, const bool bCured)
-{
-	int iWTSLength = int(g_strWeaponToStrip.length());
-	for (int i = 0; i < iWTSLength; i++)
-	{
-		if (pPlayer !is null)
-		{
-			StripWeapon(pPlayer, g_strWeaponToStrip[i]);
-		}
-	}
-
-	if (!bCured)
-	{
-		int iSWLength = int(g_strStartWeapons.length());
-		string firearm = g_strStartWeapons[Math::RandomInt(0, (iSWLength - 1))];
-		string melee = "weapon_barricade";
-		int pistol_ammo_count = 15;
-
-		if (bPPK)
-		{
-			firearm = "weapon_ppk";
-			pistol_ammo_count = 7;
-		}
-
-		pPlayer.AmmoBank(set, pistol, pistol_ammo_count);
-		pPlayer.GiveWeapon(melee);
-		pPlayer.GiveWeapon(firearm);		
-	}
-}
-
-void StripWeapon(CZP_Player@ pPlayer, const string &in strClassname)
-{
-	CBasePlayer@ pBasePlayer = pPlayer.opCast();
-	CBaseEntity@ pPlayerEntity = pBasePlayer.opCast();
-	CBaseEntity@ pWeapon;
-
-	pPlayer.StripWeapon(strClassname);
-
-	while ((@pWeapon = FindEntityByClassname(pWeapon, strClassname)) !is null)
-	{
-		CBaseEntity@ pOwner = pWeapon.GetOwner();
-
-		if (pPlayerEntity is pOwner)
-		{
-			pWeapon.SUB_Remove();
-		}
-	}
-}
-
 void CheckForHoldout(const string &in MapName)
 {
 	if (Utils.StrContains("heavyice", MapName) || Utils.StrContains("sunshine", MapName))
@@ -564,8 +525,8 @@ void DetachEyesLights(CBaseEntity@ pPlayerEntity)
 	pPlayerEntity.SetBodyGroup("EyesGlow", 0);
 	pPlayerEntity.SetSkin(0);
 
-	CBaseEntity@ pR_Eye = FindEntityByName(null, pPlayerEntity.entindex() + "_RighrEye");
-	CBaseEntity@ pL_Eye = FindEntityByName(null, pPlayerEntity.entindex() + "_LeftEye");
+	CBaseEntity@ pR_Eye = FindEntityByName(null, formatInt(pPlayerEntity.entindex()) + "_RighrEye");
+	CBaseEntity@ pL_Eye = FindEntityByName(null, formatInt(pPlayerEntity.entindex()) + "_LeftEye");
 
 	if (pR_Eye !is null)
 	{
@@ -607,6 +568,26 @@ void HumanVictoryRewards()
 	}
 }
 
+void ZombieVictoryRewards()
+{
+	for (int i = 1; i <= iMaxPlayers; i++)
+	{
+		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(i);
+
+		if (pPlayerEntity is null)
+		{
+			continue;
+		}
+
+		CSZMPlayer@ pCSZMPlayer = Array_CSZMPlayer[i];
+
+		if (pPlayerEntity.IsAlive() && pPlayerEntity.GetTeamNumber() == TEAM_ZOMBIES && pCSZMPlayer.IsFirstInfected())
+		{
+			pCSZMPlayer.AddInfectPoints(-20);
+		}
+	}
+}
+
 void ShakeInfected(CBaseEntity@ pPlayerEntity)
 {
 	CEntityData@ ShakeIPD = EntityCreator::EntityData();
@@ -636,4 +617,22 @@ int CheckSteamID(const string &in STR_STEAM)
 	}
 
 	return iArrayElement;
+}
+
+void LogicPlayerManager()
+{
+	CBaseEntity@ pPlrManager = null;
+	@pPlrManager = FindEntityByClassname(pPlrManager, "logic_player_manager");
+
+	if (pPlrManager !is null)
+	{
+		pPlrManager.SUB_Remove();
+	}
+
+	CEntityData@ InputData = EntityCreator::EntityData();
+	InputData.Add("targetname", "p-manager");
+	InputData.Add("spawnflags", "1");
+	InputData.Add("stripstarterweapons", "1");
+
+	EntityCreator::Create("logic_player_manager", Vector(0, 0, 0), QAngle(0, 0, 0) , InputData);
 }

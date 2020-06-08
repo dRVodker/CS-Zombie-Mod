@@ -58,9 +58,11 @@ void CreateSpawnsFromArray(array<array<CSpawnPoint@>> SpawnsArray)
 			CEntityData@ ID = EntityCreator::EntityData();
 			ID.Add("targetname", "new_spawn");
 			ID.Add("minspawns", "1");
-			ID.Add("pvsmode", "0");
-			ID.Add("mintime", "5");
+			ID.Add("mintime", "10");
 			ID.Add("startdisabled", "0");
+
+			ID.Add("addoutput", "onplayerspawn !self:disablespawn::0:-1", true, "0.00");
+			ID.Add("addoutput", "onplayerspawn !self:enablespawn::10.0:-1", true, "0.00");
 
 			EntityCreator::Create(pSpawn.ClassName, pSpawn.Origin, pSpawn.Angles, ID);			
 		}

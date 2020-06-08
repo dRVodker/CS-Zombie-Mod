@@ -86,16 +86,6 @@ array<array<CSpawnPoint@>> Office_HumanSpawns =
 	}
 };
 
-array<array<CSpawnPoint@>> Office_ZombieSpawns = 
-{
-	{
-		CSpawnPoint(Vector(-726.268, 351.313, -367.969), "info_player_zombie"),
-		CSpawnPoint(Vector(-688.262, 102.702, -367.969), "info_player_zombie"),
-		CSpawnPoint(Vector(-681.038, -48.3476, -367.969), "info_player_zombie"),
-		CSpawnPoint(Vector(-712.254, 495.26, -367.969), "info_player_zombie")
-	}
-};
-
 void OnMapInit() 
 {
 	Events::Player::OnPlayerSpawn.Hook(@OnPlrSpawn);
@@ -122,7 +112,6 @@ void SetUpStuff()
 	RemoveNativeSpawns("info_player_human");
 	RemoveNativeSpawns("info_player_zombie");
 	CreateSpawnsFromArray(Office_HumanSpawns);
-	CreateSpawnsFromArray(Office_ZombieSpawns);
 }
 
 HookReturnCode OnPlrSpawn(CZP_Player@ pPlayer)

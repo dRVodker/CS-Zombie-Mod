@@ -1,0 +1,23 @@
+VertexLitGeneric
+{
+	"$basetexture"				"models/cszm/sawyer/sawyer_d"
+	"$bumpmap"					"models/cszm/sawyer/sawyer_local"
+	"$ambientocclusion"			"models/cszm/sawyer/sawyer_h"
+	
+	"$detail"					"nature/snowfloor003a"
+	"$detailscale"				"0.5"
+	"$detailblendfactor"		"0.35"
+	"$detailblendmode"			"1"
+	"$detailtint"				"[0.1 0.35 2]"
+	
+	"$phong"					"1"
+
+	"$phongexponent"			"5"
+	"$phongexponenttexture"		"models/cszm/sawyer/sawyer_h"
+	"$phongboost"				"10"
+	"$phongfresnelranges"		"[0.05 0.05 0.05]"
+	
+	"$rimlight"					"0"
+	"$rimlightexponent"			"50"
+	"$rimlightboost"			"0.25"
+}
