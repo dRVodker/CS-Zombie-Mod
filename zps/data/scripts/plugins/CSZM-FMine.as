@@ -65,14 +65,7 @@ class CFragMine
 
 	int GetOwnerIndex()
 	{
-		int OIndex = iOwnerIndex;
-
-		if (iOwnerIndex == iMineIndex)
-		{
-			OIndex = 0;
-		}
-
-		return OIndex;
+		return iOwnerIndex;
 	}
 
 	int GetTeamNumber()
@@ -84,7 +77,7 @@ class CFragMine
 	{
 		CBaseEntity@ pFragMine = FindEntityByEntIndex(iMineIndex);
 		iOwnerIndex = iMineIndex;
-		pFragMine.SetEntityDescription(formatInt(iOwnerIndex));
+		pFragMine.SetEntityDescription(formatInt(iMineIndex));
 		pFragMine.SetOutline(true, filter_team, TEAM_SURVIVORS, Color(245, 245, 245), 512.0f, false, true);
 	}
 
@@ -96,6 +89,7 @@ class CFragMine
 		if ((pOwnerEntity is null && iOwnerIndex != iMineIndex) || pOwnerEntity.GetTeamNumber() != iMineTeam || !pOwnerEntity.IsAlive())
 		{
 			LoseOwnerIndex();
+			@pOwnerEntity = pMineEntity;
 		}
 
 		if (!pMineEntity.Intersects(pOwnerEntity) && pMineEntity.GetOwner() !is null)
@@ -132,11 +126,6 @@ class CFragMine
 				if ((pPlayerEntity.GetTeamNumber() == TEAM_ZOMBIES || i == iOwnerIndex) && pPlayerEntity.Intersects(pMineEntity) && pPlayerEntity.IsAlive())
 				{
 					flTimer = 0;
-
-					if (pOwnerEntity is null)
-					{
-						@pOwnerEntity = pMineEntity;
-					}
 
 					CTakeDamageInfo DamageInfo;
 					DamageInfo.SetInflictor(pOwnerEntity);
@@ -226,6 +215,11 @@ HookReturnCode CSZM_FM_OnEntityDestruction(const string &in strClassname, CBaseE
 	return HOOK_CONTINUE;
 }
 
+void SD(const string &in strMSG)
+{
+	Chat.PrintToChat(all, strMSG);
+}
+
 HookReturnCode CSZM_FM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out DamageInfo)
 {
 	CBaseEntity@ pAttacker = DamageInfo.GetAttacker();
@@ -235,114 +229,101 @@ HookReturnCode CSZM_FM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out D
 	if (Utils.StrEql(pEntity.GetClassname(), "npc_fragmine"))
 	{
 		pEntity.Teleport(pEntity.GetAbsOrigin(), pEntity.GetAbsAngles(), Vector(0, 0, 0));
+
 		DamageInfo.SetDamage(pEntity.GetHealth());
 		DamageInfo.SetDamageType(1<<28);
+
 		CFragMine@ pFragMine = FindFragMineByEntIndex(pEntity.entindex());
 		CBaseEntity@ pOwnerEntity = FindEntityByEntIndex(pFragMine.GetOwnerIndex());
 
-		bool Explode = true;
-		bool NoOwner = false;
-
-		if (pOwnerEntity is pEntity || pOwnerEntity is null)
-		{
-			NoOwner = true;
-		}
-
-		if (pAttacker.IsPlayer())
-		{
-			if (NoOwner || iAttackerTeam != pFragMine.GetTeamNumber())
-			{
-				@pOwnerEntity = pAttacker;
-				NoOwner = false;
-			}
-			else if (iAttackerTeam == pFragMine.GetTeamNumber() && pOwnerEntity !is pAttacker)
-			{
-				Explode = false;
-			}
-		}
-
-		if (!Explode)
+		if ((iAttackerTeam == TEAM_SURVIVORS && pAttacker.IsPlayer()) && iAttackerIndex != pFragMine.GetOwnerIndex() && pAttacker !is pEntity && pOwnerEntity !is pEntity)
 		{
 			DamageInfo.SetDamage(0);
 			DamageInfo.SetDamageType(0);
 		}
 		else
 		{
-			CEntityData@ ImputData = EntityCreator::EntityData();
-
-			ImputData.Add("targetname", "frendly_shrapnel");
-			ImputData.Add("model", "models/weapons/w_ppk.mdl");
-			ImputData.Add("spawnflags", "256");
-			ImputData.Add("disablebonefollowers", "1");
-			ImputData.Add("disableshadows", "1");
-			ImputData.Add("rendermode", "10");
-			ImputData.Add("solid", "0");
-			
-			ImputData.Add("kill", "0", true, "0.05");
-
-			CBaseEntity@ pShrapnel = EntityCreator::Create("prop_dynamic_override", Vector(0, 0, 0), QAngle(0, 0, 0), ImputData);
-
-			pShrapnel.SetClassname("npc_shrapnel");
-			pShrapnel.ChangeTeam(TEAM_SPECTATORS);
-
-			if (NoOwner)
+			if (pOwnerEntity is null || pOwnerEntity is pEntity)
 			{
-				pShrapnel.SetHealth(-1);
+				pEntity.SetEntityDescription(formatInt(iAttackerIndex));
+				@pOwnerEntity = pAttacker;
 			}
-			else
-			{
-				pShrapnel.SetHealth(pOwnerEntity.entindex());
-			}
-
-			int iFree;
-			int iUsed;
-
-			Engine.EdictCount(iFree, iUsed);
-
-			int iShowerCount = Math::RandomInt(1, 3);
-			int iTracerCount = Math::RandomInt(18, 27);
-
-			if (iUsed > 1964)
-			{
-				iShowerCount = 1;
-				iTracerCount = -1;
-			}
-
-			while (iShowerCount > 0)
-			{
-				iShowerCount--;
-				CBaseEntity@ pShower = EntityCreator::Create("spark_shower", pEntity.GetAbsOrigin(), QAngle(0, 0, 0));
-				Vector vUP;
-				Globals.AngleVectors(QAngle(Math::RandomFloat(-55, -78), Math::RandomFloat(0, 270), Math::RandomFloat(0, 270)), vUP);
-				pShower.SetAbsVelocity(vUP * Math::RandomInt(247, 389));
-			}
-
-			while (iTracerCount > 0)
-			{
-				iTracerCount--;
-				CEntityData@ TracerIPD = EntityCreator::EntityData();
-				TracerIPD.Add("endwidth", "" + Math::RandomFloat(0.21, 0.37));
-				TracerIPD.Add("lifetime", "" + Math::RandomFloat(0.032, 0.196));
-				TracerIPD.Add("renderamt", "" + Math::RandomInt(195, 235));
-				TracerIPD.Add("rendercolor", "255 155 5");
-				TracerIPD.Add("rendermode", "5");
-				TracerIPD.Add("spritename", "sprites/xbeam2.vmt");
-				TracerIPD.Add("startwidth", "" + Math::RandomFloat(1.85, 2.85));
-				TracerIPD.Add("kill", "0", true, "" + Math::RandomFloat(0.194, 0.842));
-
-				CBaseEntity@ pTracer = EntityCreator::Create("env_spritetrail", pEntity.GetAbsOrigin(), QAngle(0, 0, 0), TracerIPD);
-
-				Vector vUP;
-				pTracer.SetMoveType(MOVETYPE_FLY);
-				Globals.AngleVectors(QAngle(Math::RandomFloat(-2, -72), Math::RandomFloat(0, 360), Math::RandomFloat(0, 360)), vUP);
-				pTracer.SetAbsVelocity(vUP * Math::RandomInt(2750, 2995));
-			}
-
-			Utils.CreateShrapnelEx(pShrapnel, 27, pEntity.GetAbsOrigin(), 0.0f); 
+			SpawnShrapnel(pOwnerEntity.entindex(), pEntity.GetAbsOrigin());	
+			EmitFMineEffects(pEntity.GetAbsOrigin());			
 		}
 	}
 
 	return HOOK_CONTINUE;
+}
+
+void SpawnShrapnel(const int &in iOwnerIndex, Vector Orinig)
+{
+	CEntityData@ ImputData = EntityCreator::EntityData();
+
+	ImputData.Add("targetname", "frendly_shrapnel");
+	ImputData.Add("model", "models/weapons/w_ppk.mdl");
+	ImputData.Add("spawnflags", "256");
+	ImputData.Add("disablebonefollowers", "1");
+	ImputData.Add("disableshadows", "1");
+	ImputData.Add("rendermode", "10");
+	ImputData.Add("solid", "0");
+	
+	ImputData.Add("kill", "0", true, "0.01");
+
+	CBaseEntity@ pShrapnel = EntityCreator::Create("prop_dynamic_override", Vector(0, 0, 0), QAngle(0, 0, 0), ImputData);
+
+	pShrapnel.SetClassname("npc_shrapnel");
+	pShrapnel.ChangeTeam(TEAM_SPECTATORS);
+	pShrapnel.SetHealth(iOwnerIndex);
+
+	Utils.CreateShrapnelEx(pShrapnel, 27, Orinig + Vector(0, 0, 1), 0.0f); 
+}
+
+void EmitFMineEffects(Vector Orinig)
+{
+	int iFree;
+	int iUsed;
+
+	Engine.EdictCount(iFree, iUsed);
+
+	int iShowerCount = Math::RandomInt(1, 3);
+	int iTracerCount = Math::RandomInt(18, 27);
+
+	if (iUsed > 1964)
+	{
+		iShowerCount = 1;
+		iTracerCount = -1;
+	}
+
+	while (iShowerCount > 0)
+	{
+		iShowerCount--;
+		CBaseEntity@ pShower = EntityCreator::Create("spark_shower", Orinig, QAngle(0, 0, 0));
+		Vector vUP;
+		Globals.AngleVectors(QAngle(Math::RandomFloat(-55, -78), Math::RandomFloat(0, 270), Math::RandomFloat(0, 270)), vUP);
+		pShower.SetAbsVelocity(vUP * Math::RandomInt(247, 389));
+	}
+
+	while (iTracerCount > 0)
+	{
+		iTracerCount--;
+		CEntityData@ TracerIPD = EntityCreator::EntityData();
+		TracerIPD.Add("rendercolor", "255 155 5");
+		TracerIPD.Add("rendermode", "5");
+		TracerIPD.Add("spritename", "sprites/xbeam2.vmt");
+		TracerIPD.Add("endwidth", formatFloat(Math::RandomFloat(0.21, 0.37), 'l', 3, 3));
+		TracerIPD.Add("lifetime", formatFloat(Math::RandomFloat(0.032, 0.196), 'l', 3, 3));
+		TracerIPD.Add("renderamt", formatInt(Math::RandomInt(195, 235)));
+		TracerIPD.Add("startwidth", formatFloat(Math::RandomFloat(1.85, 2.85), 'l', 2, 2));
+		TracerIPD.Add("kill", "0", true, formatFloat(Math::RandomFloat(0.194, 0.842), 'l', 2, 2));
+
+		CBaseEntity@ pTracer = EntityCreator::Create("env_spritetrail", Orinig, QAngle(0, 0, 0), TracerIPD);
+
+		Vector vUP;
+		pTracer.SetMoveType(MOVETYPE_FLY);
+		Globals.AngleVectors(QAngle(Math::RandomFloat(-2, -72), Math::RandomFloat(0, 360), Math::RandomFloat(0, 360)), vUP);
+		pTracer.SetAbsVelocity(vUP * Math::RandomInt(2750, 2995));
+	}
 }
 
 void OnItemDeliverUsed(CZP_Player@ pPlayer, CBaseEntity@ pEntity, int &in iEntityOutput)
