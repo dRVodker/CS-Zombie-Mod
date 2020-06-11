@@ -25,36 +25,36 @@
 	"plugins": [
 		{
 			"name": "CS Zombie Mod",
-			"author": "JonnyBoy0719",
-			"version": "1.0.0.0",
+			"author": "dR.Vodker",
+			"version": "1.0.0",
 			"script": "CSZM-Core.as",
 			"lifetime": "HOTRELOADABLE"
 		},
 		{
 			"name": "CSZM-FMine",
-			"author": "JonnyBoy0719",
-			"version": "1.0.0.0",
+			"author": "dR.Vodker",
+			"version": "1.0.0",
 			"script": "CSZM-FMine.as",
 			"lifetime": "HOTRELOADABLE"
 		},
 		{
 			"name": "CSZM-ItemRespawn",
-			"author": "JonnyBoy0719",
-			"version": "1.0.0.0",
+			"author": "dR.Vodker",
+			"version": "1.0.0",
 			"script": "CSZM-ItemRespawn.as",
 			"lifetime": "HOTRELOADABLE"
 		},
 		{
 			"name": "CSZM-ChatSpamer",
-			"author": "JonnyBoy0719",
-			"version": "1.0.0.0",
+			"author": "dR.Vodker",
+			"version": "1.0.0",
 			"script": "CSZM-ChatSpamer.as",
 			"lifetime": "HOTRELOADABLE"
 		},
 		{
 			"name": "CSZM-ChatCom",
-			"author": "JonnyBoy0719",
-			"version": "1.0.0.0",
+			"author": "dR.Vodker",
+			"version": "1.0.0",
 			"script": "CSZM-ChatCom.as",
 			"lifetime": "HOTRELOADABLE"
 		}

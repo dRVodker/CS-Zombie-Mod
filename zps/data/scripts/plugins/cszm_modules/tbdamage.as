@@ -3,40 +3,33 @@
 /*----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 enum TBD_Types {TBD_BLEEDING}
-
-array<int> g_TBD_DamageType = {(1<<28)};
-array<float> g_TBD_TikTime = {0.91f};
-array<float> g_TBD_Damage = {10.0f};
-
-int GetTiksCount(float nDamage)
-{
-	return int(ceil(nDamage / 150 * 100 * 0.1f));
-}
+const float TBD_TikTime = 0.78f;
 
 class TimeBasedDamage
 {
 	private float WaitTime;
-	private int Tiks;
+	int Tiks;
 	private int AttakerIndex;
 	private int Type;
 
 	TimeBasedDamage(int nAttakerIndex, float nDamage, int nType)
 	{
 		Type = nType;
-		WaitTime = Globals.GetCurrentTime() + g_TBD_TikTime[Type];
+		WaitTime = Globals.GetCurrentTime() + TBD_TikTime;
 		UpdateInfo(nAttakerIndex, nDamage);
 	}
 
 	void UpdateInfo(int nAttakerIndex, float nDamage)
 	{
-		Tiks += GetTiksCount(nDamage);
+		Tiks += int(ceil(nDamage / 95.0f * 10.0f));
 		AttakerIndex = nAttakerIndex;
 	}
 
-	bool Think(CBaseEntity@ pTarget)
+	void Think(CBaseEntity@ pTarget)
 	{
 		if (WaitTime <= Globals.GetCurrentTime() && WaitTime != 0 && Tiks > 0 && pTarget !is null && pTarget.IsAlive())
 		{
+			WaitTime = Globals.GetCurrentTime() + TBD_TikTime;
 			CBaseEntity@ pAttaker = FindEntityByEntIndex(AttakerIndex);
 
 			if (pAttaker is null)
@@ -46,14 +39,9 @@ class TimeBasedDamage
 			}
 
 			EmitEffects(pTarget.entindex());
-
-			WaitTime = Globals.GetCurrentTime() + g_TBD_TikTime[Type];
-			Tiks--;
-			
 			DoDamage(pTarget, pAttaker);
+			Tiks--;
 		}
-
-		return (Tiks == 0 || !pTarget.IsAlive());
 	}
 
 	private void DoDamage(CBaseEntity@ pVic, CBaseEntity@ pAtt)
@@ -62,8 +50,8 @@ class TimeBasedDamage
 
 		DamageInfo.SetAttacker(pAtt);
 		DamageInfo.SetInflictor(pVic);
-		DamageInfo.SetDamage(g_TBD_Damage[Type]);
-		DamageInfo.SetDamageType(g_TBD_DamageType[Type]);
+		DamageInfo.SetDamage(10);
+		DamageInfo.SetDamageType((1<<28));
 		DamageInfo.SetDamageForce(Vector (0, 0, -128));
 		DamageInfo.SetDamagePosition(pVic.EyePosition());
 
@@ -74,9 +62,7 @@ class TimeBasedDamage
 	{
 		switch(Type)
 		{
-			case TBD_BLEEDING:
-				EmitBlood(index);
-			break;
+			case TBD_BLEEDING: EmitBlood(index); break;
 		}
 	}
 }

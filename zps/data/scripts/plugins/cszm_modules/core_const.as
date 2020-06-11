@@ -60,20 +60,6 @@ array<string> g_strBreakableEntities =
 	"func_door"
 };
 
-//Ентити, которые будут показывать своё HP зомби
-array<string> g_strEntities = 
-{
-	"prop_door_rotating",		//0
-	"prop_physics_multiplayer",	//1
-	"prop_physics_override",	//2
-	"prop_physics",				//3
-	"func_door_rotating",		//4
-	"func_door",				//5
-	"func_breakable",			//6
-	"func_physbox",				//7
-	"prop_barricade"			//8
-};
-
 //Список моделей, которые используются для зомби
 array<string> g_strModels = 
 {

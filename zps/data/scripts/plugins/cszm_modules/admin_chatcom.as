@@ -5,7 +5,7 @@ array<array<string>> g_ACC_ChatComms =
 	{ "/set", "Установить значение для доступных переменных" },
 	{ "/infect", "Заразить игрока" },
 	{ "/cure", "Излечить игрока" },
-	{ "/showpoints", "Показать очки заражения игрока" },
+	{ "/showinf", "Показать очки заражения игрока" },
 	{ "/showvar", "Показать переменные" },
 	{ "/showcom", "Показать команды" },
 	{ "/respawn", "Возродить игрока" },
@@ -163,7 +163,7 @@ void ACC_Cure(CBasePlayer@ pCaller, const string &in strInput)
 
 		if (TeamNum == TEAM_ZOMBIES)
 		{
-			if (pCSZMPlayer.IsFirstInfected())
+			if (pCSZMPlayer.FirstInfected)
 			{
 				DetachEyesLights(pPlayerEntity);
 			}
@@ -174,7 +174,7 @@ void ACC_Cure(CBasePlayer@ pCaller, const string &in strInput)
 			Utils.CosmeticRemove(pPlayer, MODEL_KNIFE);
 			pPlayerEntity.ChangeTeam(TEAM_SURVIVORS);
 			pCSZMPlayer.Cured = true;
-			pCSZMPlayer.SetFirstInfected(false);
+			pCSZMPlayer.FirstInfected = false;
 			pPlayer.ForceRespawn();
 
 			pPlayerEntity.Teleport(PlrOrigin, EyeAngles, Vector(0, 0, 0));
@@ -295,7 +295,7 @@ void ACC_ShowInfChance(CBasePlayer@ pCaller, const string &in strInput)
 		CBaseEntity@ pPlayerEntity = (pPlayer.opCast()).opCast();
 		CSZMPlayer@ pCSZMPlayer = Array_CSZMPlayer[pPlayerEntity.entindex()];
 
-		int iPlrInfectChance = pCSZMPlayer.GetInfectPoints();
+		int iPlrInfectChance = pCSZMPlayer.InfectPoints;
 		Chat.PrintToChatPlayer(pCaller, "{green}*{gold}Игрок {green}[{cyan}"+pPlayer.GetPlayerName()+"{green}]{gold} Склонность к заражению{green}: {violet}" + iPlrInfectChance);
 	}
 }
@@ -388,41 +388,16 @@ void ACC_SwitchCom(CBasePlayer@ pCaller, CASCommand@ pARGSplited, const int &in 
 {
 	switch(iCommIndex)
 	{
-		case 0:
-			ACC_ChangeVariable(pCaller, pARGSplited.Arg(1), pARGSplited.Arg(2));
-		break;
+		case 0: ACC_ChangeVariable(pCaller, pARGSplited.Arg(1), pARGSplited.Arg(2)); break;
+		case 1: ACC_Infect(pCaller, pARGSplited.Arg(1)); break;
+		case 2: ACC_Cure(pCaller, pARGSplited.Arg(1)); break;
+		case 3: ACC_ShowInfChance(pCaller, pARGSplited.Arg(1)); break;
+		case 4: ACC_ShowVariables(pCaller); break;
+		case 5: ACC_ShowCommands(pCaller); break;
+		case 6: ACC_RespawnPlayer(pCaller, pARGSplited.Arg(1), Utils.StringToInt(pARGSplited.Arg(2))); break;
+		case 7: ACC_ToggleZombieRespawn(pCaller); break;
 
-		case 1:
-			ACC_Infect(pCaller, pARGSplited.Arg(1));
-		break;
-
-		case 2:
-			ACC_Cure(pCaller, pARGSplited.Arg(1));
-		break;
-
-		case 3:
-			ACC_ShowInfChance(pCaller, pARGSplited.Arg(1));
-		break;
-
-		case 4:
-			ACC_ShowVariables(pCaller);
-		break;
-
-		case 5:
-			ACC_ShowCommands(pCaller);
-		break;
-
-		case 6:
-			ACC_RespawnPlayer(pCaller, pARGSplited.Arg(1), Utils.StringToInt(pARGSplited.Arg(2)));
-		break;
-
-		case 7:
-			ACC_ToggleZombieRespawn(pCaller);
-		break;
-
-		case -1:
-			Chat.PrintToChatPlayer(pCaller, "{red}*{gold}Команда не найдена!");
-		break;
+		case -1: Chat.PrintToChatPlayer(pCaller, "{red}*{gold}Команда не найдена!"); break;
 	}
 }
 

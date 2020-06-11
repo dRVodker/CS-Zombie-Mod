@@ -1,167 +1,76 @@
 bool bIsCSZM = false;
 
-bool IsInvalidDeliver(CBaseEntity@ pEntity)
+int iDroppedAmmoCount = 0;
+float flRespawnMultiple = 1.0f;
+const int CONST_MAX_DROPPED_AMMO = 64;
+
+float GetRespawnTime(const string &in sClass, const string &in sValue)
 {
-	return !(Utils.StrEql("iantidote", pEntity.GetEntityName()) || Utils.StrEql("item_adrenaline", pEntity.GetEntityName()));
+	return Utils.StringToFloat(sValue) * flRespawnMultiple;
 }
 
-int iDroppedAmmoCount = 0;
-const int CONST_MAX_DROPPED_AMMO = 32;
+array<string> Array_ItemClass =
+{
+	"item_ammo_pistol:35.0",
+	"item_ammo_rifle:45.0",
+	"item_ammo_shotgun:60.0",
+	"item_ammo_barricade:50.0",
+	"item_ammo_revolver:70.0",
+	"item_armor:45.0"
+};
 
-const float CONST_ANTIDOTE_RT = 70.0f;
-const float CONST_ADRENALINE_RT = 50.0f;
-const float CONST_DEF_DELIVER_RT = 30.0f;
-
-const int CONST_DT_OTHER = -1;
-const int CONST_DT_NULL = 0;
-const int CONST_DT_ANTIDOTE = 1;
-const int CONST_DT_ADRENALINE = 2;
-
-array<string> g_strAmmoClass =
+array<string> Array_ClipClass =
 {
 	"item_ammo_pistol_clip",
 	"item_ammo_rifle_clip",
-	"item_ammo_revolver_clip",
 	"item_ammo_shotgun_clip",
-	"item_ammo_barricade_clip"
+	"item_ammo_barricade_clip",
+	"item_ammo_revolver_clip"
 };
 
-array<string> g_ItemClass =
+array<ItemRespawn@> Array_ItemRespawn;
+
+class ItemRespawn
 {
-	"item_ammo_pistol",
-	"item_ammo_rifle",
-	"item_ammo_shotgun",
-	"item_ammo_barricade",
-	"item_ammo_revolver",
-	"item_armor",
-	"item_deliver"
-};
+	int EIndex;
+	private string Classname;
+	private float RespawnTime;
+	private float Timer;
 
-array<float> g_ItemRespawnTime =
-{
-	10.0f,
-	22.0f,
-	32.0f,
-	17.6f,
-	37.8f,
-	21.0f,
-	10.0f
-};
+	private Vector Origin;
+	private QAngle Angles;
 
-array<CItemRespawn@> ItemRespawnArray;
-
-class CItemRespawn
-{
-	int EntIndex;
-	int ArrayPosition;
-	float RespawnTime;
-	string Classname;
-	string Targetname;
-	Vector Origin;
-	QAngle Angles;
-	int DeliverType;
-
-	CItemRespawn(int EIndex, string Class, string Name, Vector ABSOrinig, QAngle ABSAngles)
+	ItemRespawn(CBaseEntity@ pItem, const float nRTime)
 	{
-		EntIndex = EIndex;
-		ArrayPosition = 0;
-		RespawnTime = 0.0f;
-		Classname = Class;
-		Targetname = Name;
-		Origin = ABSOrinig;
-		Angles = ABSAngles;
-		DeliverType = CONST_DT_NULL;
+		RespawnTime = nRTime;
+		EIndex = pItem.entindex();
+		Classname = pItem.GetClassname();
+
+		Origin = pItem.GetAbsOrigin();
+		Angles = pItem.GetAbsAngles();
 	}
 
-	int GetIndex()
+	void Respawn()
 	{
-		return EntIndex;
-	}
-
-	string GetClassname()
-	{
-		return Classname;
-	}
-
-	string GetEntityName()
-	{
-		return Targetname;
-	}
-
-	Vector GetAbsOrigin()
-	{
-		return Origin;
-	}
-
-	QAngle GetAbsAngles()
-	{
-		return Angles;
-	}
-
-	void SetEntIndex(int EIndex)
-	{
-		EntIndex = EIndex;
-	}
-
-	void Respawn(int AP, CBaseEntity@ pItem)
-	{
-		float NewTime;
-
-		if (Utils.StrEql("item_deliver", Classname))
+		if (Timer == 0)
 		{
-			if (Utils.StrEql("iantidote", Targetname))
-			{
-				NewTime = CONST_ANTIDOTE_RT;
-				DeliverType = CONST_DT_ANTIDOTE;
-			}
-			else if (Utils.StrEql("item_adrenaline", Targetname))
-			{
-				NewTime = CONST_ADRENALINE_RT;
-				DeliverType = CONST_DT_ADRENALINE;
-			}
-		}
-		else
-		{
-			uint iItemClassLength = g_ItemClass.length();
-			
-			for (uint i = 0; i < iItemClassLength; i++)
-			{
-				if (Utils.StrEql(g_ItemClass[i], Classname))
-				{
-					NewTime = g_ItemRespawnTime[i];
-				}
-			}
-		}
-
-		EntIndex = 0;
-		ArrayPosition = AP;
-		RespawnTime = Globals.GetCurrentTime() + NewTime;
-
-		if (DeliverType == CONST_DT_NULL)
-		{
-			pItem.SUB_Remove();
+			CBaseEntity@ pItem = FindEntityByEntIndex(EIndex);
+			pItem.SetHealth(-2);
+			Timer = Globals.GetCurrentTime() + RespawnTime;
 		}
 	}
 
 	void Think()
 	{
-		if (RespawnTime <= Globals.GetCurrentTime() && RespawnTime != 0)
+		if (Timer <= Globals.GetCurrentTime() && Timer != 0)
 		{
-			RespawnTime = 0.0f;
-			switch(DeliverType)
+			Timer = 0;
+			CBaseEntity@ pEntity = FindEntityByEntIndex(EIndex);
+			if (pEntity !is null && Utils.StrEql(Classname, pEntity.GetClassname(), true) && pEntity.GetHealth() == -2)
 			{
-				case CONST_DT_ANTIDOTE:
-					ReSpawnAntidote(ArrayPosition);
-				break;
-
-				case CONST_DT_ADRENALINE:
-					ReSpawnAdrenaline(ArrayPosition);
-				break;
-				
-				default:
-					ReSpawnItem(ArrayPosition);
-				break;
+				pEntity.SUB_Remove();
 			}
+			EIndex = ReSpawnItem(Classname, Origin, Angles);
 		}
 	}
 }
@@ -172,24 +81,23 @@ void OnPluginInit()
 	PluginData::SetAuthor("dR.Vodker");
 	PluginData::SetName("CSZM - Items Respawn");
 
-	Events::Entities::OnEntityCreation.Hook(@OnEntityCreation);
-	Events::Entities::OnEntityDestruction.Hook(@OnEntityDestruction);
+	Events::Entities::OnEntityCreation.Hook(@CSZM_RI_OnEntityCreation);
+	Events::Entities::OnEntityDestruction.Hook(@CSZM_RI_OnEntityDestruction);
 }
 
 void OnProcessRound()
 {
 	if (bIsCSZM)
 	{
-		uint iIRALength = ItemRespawnArray.length();
-
-		for (uint i = 0; i < iIRALength; i++)
+		for (uint i = 0; i < Array_ItemRespawn.length(); i++)
 		{
-			CItemRespawn@ pItemRespawn = ItemRespawnArray[i];
-			
-			if (pItemRespawn !is null)
+			if (Array_ItemRespawn[i] is null)
 			{
-				pItemRespawn.Think();
+				Array_ItemRespawn.removeAt(i);
+				continue;
 			}
+
+			Array_ItemRespawn[i].Think();
 		}
 	}
 }
@@ -200,18 +108,9 @@ void OnMapInit()
 	{
 		bIsCSZM = true;
 		iDroppedAmmoCount = 0;
-
-		RegisterPickup();
 		
+		RegisterPickup();
 		Engine.PrecacheFile(sound, "items/suitchargeok1.wav");
-	}
-}
-
-void OnNewRound()
-{
-	if (bIsCSZM)
-	{
-		ClearIRArray();
 	}
 }
 
@@ -221,7 +120,7 @@ void OnMapShutdown()
 	{
 		iDroppedAmmoCount = 0;
 		bIsCSZM = false;
-		ClearIRArray();
+		Array_ItemRespawn.removeRange(0, Array_ItemRespawn.length());
 	}
 }
 
@@ -233,105 +132,44 @@ void OnMatchBegin()
 	}
 }
 
-void RegisterPickup()
+HookReturnCode CSZM_RI_OnEntityCreation(const string &in strClassname, CBaseEntity@ pEntity)
 {
-	if (bIsCSZM)
+	if (bIsCSZM && Utils.StrContains("clip", strClassname))
 	{
-		uint iItemClassLength = g_ItemClass.length();
+		pEntity.SetEntityName("dropped_item");
 
-		for (uint i = 0; i < iItemClassLength; i++)
-		{
-			Entities::RegisterPickup(g_ItemClass[i]);
-		}
-	}
-}
+		uint iAmmoClassLength = Array_ClipClass.length();
 
-HookReturnCode OnEntityCreation(const string &in strClassname, CBaseEntity@ pEntity)
-{
-	if (bIsCSZM)
-	{
-		if (Utils.StrContains("weapon", strClassname) || Utils.StrContains("item", strClassname))
+		for (uint i = 0; i < iAmmoClassLength; i++)
 		{
-			Engine.Ent_Fire_Ent(pEntity, "DisableDamageForces");
+			if (Utils.StrEql(strClassname, Array_ClipClass[i], true))
+			{
+				iDroppedAmmoCount++;
+				break;
+			}
 		}
 
-		if (Utils.StrContains("clip", strClassname) /*&& strClassname != "item_ammo_barricade_clip"*/)
+		if (iDroppedAmmoCount > CONST_MAX_DROPPED_AMMO)
 		{
-			pEntity.SetEntityName("dropped_ammo");
-
-			uint iType = 0;
-			uint iAmmoClassLength = g_strAmmoClass.length();
-
-			for (uint ui = 0; ui < iAmmoClassLength; ui++)
-			{
-				if (strClassname == g_strAmmoClass[ui])
-				{
-					iDroppedAmmoCount++;
-					iType = ui;
-				}
-			}
-
-			if (iDroppedAmmoCount > CONST_MAX_DROPPED_AMMO)
-			{
-				uint iResult = 1;
-				if ((iDroppedAmmoCount - CONST_MAX_DROPPED_AMMO) > 0)
-				{
-					iResult = iDroppedAmmoCount - CONST_MAX_DROPPED_AMMO;
-				}
-				RemoveExtraClip(iResult);
-			}
+			RemoveExtraClip(iDroppedAmmoCount - CONST_MAX_DROPPED_AMMO);
 		}
 	}
 	
 	return HOOK_CONTINUE;
 }
 
-void OnEntityPickedUp(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
+HookReturnCode CSZM_RI_OnEntityDestruction(const string &in strClassname, CBaseEntity@ pEntity)
 {
-	if (bIsCSZM)
+	if (bIsCSZM && Utils.StrContains("clip", strClassname))
 	{
-		int iIndex = pEntity.entindex();
-		uint iIRALength = ItemRespawnArray.length();
+		uint iAmmoClassLength = Array_ClipClass.length();
 
-		for (uint i = 0; i < iIRALength; i++)
+		for (uint i = 0; i < iAmmoClassLength; i++)
 		{
-			CItemRespawn@ pItemRespawn = ItemRespawnArray[i];
-			
-			if (pItemRespawn is null)
+			if (Utils.StrEql(strClassname, Array_ClipClass[i], true) && iDroppedAmmoCount > 0)
 			{
-				continue;
-			}
-
-			if (pItemRespawn.GetIndex() == iIndex)
-			{
-				pEntity.SetHealth(-1);
-				pItemRespawn.Respawn(i ,pEntity);
-			}
-		}
-	}
-}
-
-HookReturnCode OnEntityDestruction(const string &in strClassname, CBaseEntity@ pEntity)
-{
-	if (bIsCSZM)
-	{
-		RemoveObject(pEntity);
-
-		if (Utils.StrContains("clip", strClassname) /*&& strClassname != "item_ammo_barricade_clip"*/)
-		{
-			uint iType = 0;
-			uint iAmmoClassLength = g_strAmmoClass.length();
-
-			for (uint ui = 0; ui < iAmmoClassLength; ui++)
-			{
-				if (Utils.StrEql(strClassname, g_strAmmoClass[ui]))
-				{
-					iDroppedAmmoCount--;
-					if (iDroppedAmmoCount < 0)
-					{
-						iDroppedAmmoCount = 0;
-					}
-				}
+				iDroppedAmmoCount--;
+				break;						
 			}
 		}
 	}
@@ -341,138 +179,93 @@ HookReturnCode OnEntityDestruction(const string &in strClassname, CBaseEntity@ p
 
 void CSZM_RI_FindItems()
 {
-	ClearIRArray();
-	CBaseEntity@ pEntity;
-	uint iItemClassLength = g_ItemClass.length();
+	if (!bIsCSZM)
+	{
+		return;
+	}
+
+	Array_ItemRespawn.removeRange(0, Array_ItemRespawn.length());
+
+	uint iItemClassLength = Array_ItemClass.length();
+	CASCommand@ pSplited;
+	CBaseEntity@ pItem;
 
 	for (uint i = 0; i < iItemClassLength; i++)
 	{
-		while ((@pEntity = FindEntityByClassname(pEntity, g_ItemClass[i])) !is null)
+		@pSplited = StringToArgSplit(Array_ItemClass[i], ":");
+		while ((@pItem = FindEntityByClassname(pItem, pSplited.Arg(0))) !is null)
 		{
-			if (i == 6 && IsInvalidDeliver(pEntity)) // 6 = "item_deliver"
-			{
-				continue;
-			}
-			
-			ItemRespawnArray.insertLast(CItemRespawn(pEntity.entindex(), pEntity.GetClassname(), pEntity.GetEntityName(), pEntity.GetAbsOrigin(), pEntity.GetAbsAngles()));
+			Array_ItemRespawn.insertLast(ItemRespawn(pItem, GetRespawnTime(pSplited.Arg(0), pSplited.Arg(1))));
 		}
 	}
 }
 
-void ClearIRArray()
+void CSZM_RI_SetRespawnMultiple(NetObject@ pData)
 {
-	ItemRespawnArray.removeRange(0, ItemRespawnArray.length());
-	ItemRespawnArray.resize(0);
+	if (pData is null)
+	{
+		return;
+	}
+	
+	flRespawnMultiple = Utils.StringToFloat(pData.GetString(0));
 }
 
-void RemoveObject(CBaseEntity@ pEntity)
+void OnEntityPickedUp(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 {
-	if (pEntity.GetHealth() != -1)
+	int iIndex = pEntity.entindex();
+
+	for (uint i = 0; i < Array_ItemRespawn.length(); i++)
 	{
-		int iIndex = pEntity.entindex();
-		uint iIRALength = ItemRespawnArray.length();
-
-		for (uint i = 0; i < iIRALength; i++)
+		if (Array_ItemRespawn[i] is null)
 		{
-			CItemRespawn@ pItemRespawn = ItemRespawnArray[i];
+			Array_ItemRespawn.removeAt(i);
+			continue;
+		}
 
-			if (pItemRespawn is null)
-			{
-				continue;
-			}
-
-			if (pItemRespawn.GetIndex() == iIndex)
-			{
-				ItemRespawnArray.removeAt(i);
-				break;
-			}
+		if (Array_ItemRespawn[i].EIndex == iIndex)
+		{
+			pEntity.SetHealth(-1);
+			Array_ItemRespawn[i].Respawn();
 		}
 	}
 }
 
-void ReSpawnItem(const int &in iArrayPos)
+void RemoveExtraClip(const int &in iUnit)
 {
-	CItemRespawn@ pItemRespawn = ItemRespawnArray[iArrayPos];
+	array<CBaseEntity@> g_pAmmoEntity;
+	CBaseEntity@ pAmmoEntity;
 
-	if (pItemRespawn !is null)
+	while ((@pAmmoEntity = FindEntityByName(pAmmoEntity, "dropped_item")) !is null)
 	{
-		string SI_Class = pItemRespawn.GetClassname();
-		string SI_Name = pItemRespawn.GetEntityName();
-		Vector SI_Origin = pItemRespawn.GetAbsOrigin();
-		QAngle SI_Angles = pItemRespawn.GetAbsAngles();
+		g_pAmmoEntity.insertLast(pAmmoEntity);
+	}
 
-		CEntityData@ ItemIPD = EntityCreator::EntityData();
-
-		ItemIPD.Add("DisableDamageForces", "1", true);
-
-		CBaseEntity@ pItem = EntityCreator::Create(SI_Class, SI_Origin, SI_Angles, ItemIPD);
-
-		pItemRespawn.SetEntIndex(pItem.entindex());
-
-		ReSpawnEffect(SI_Origin);
+	for (int i = 0; i < iUnit; i++)
+	{
+		g_pAmmoEntity[i].SUB_Remove();
 	}
 }
 
-void ReSpawnAntidote(const int &in iArrayPos)
+void RegisterPickup()
 {
-	CItemRespawn@ pItemRespawn = ItemRespawnArray[iArrayPos];
+	int iLength = int(Array_ItemClass.length());
+	CASCommand@ pSplited;
 
-	if (pItemRespawn !is null)
+	for (int i = 0; i < iLength; i++)
 	{
-		Vector SI_Origin = pItemRespawn.GetAbsOrigin();
-		QAngle SI_Angles = pItemRespawn.GetAbsAngles();
+		@pSplited = StringToArgSplit(Array_ItemClass[i], ":");
+		Entities::RegisterPickup(pSplited.Arg(0));
 
-		CEntityData@ AntidoteIPD = EntityCreator::EntityData();
-
-		AntidoteIPD.Add("targetname", "iantidote");
-		AntidoteIPD.Add("delivername", "Antidote");
-		AntidoteIPD.Add("glowcolor", "5 250 121");
-		AntidoteIPD.Add("itemstate", "1");
-		AntidoteIPD.Add("model", "models/cszm/weapons/w_antidote.mdl");
-		AntidoteIPD.Add("viewmodel", "models/cszm/weapons/v_antidote.mdl");
-		AntidoteIPD.Add("printname", "vgui/images/weapons/inoculator");
-		AntidoteIPD.Add("sound_pickup", "Deliver.PickupGeneric");
-		AntidoteIPD.Add("weight", "0");
-
-		AntidoteIPD.Add("DisableDamageForces", "1", true);
-
-		CBaseEntity@ pItem = EntityCreator::Create("item_deliver", SI_Origin, SI_Angles, AntidoteIPD);
-
-		pItemRespawn.SetEntIndex(pItem.entindex());
-
-		ReSpawnEffect(SI_Origin);
 	}
 }
 
-void ReSpawnAdrenaline(const int &in iArrayPos)
+int ReSpawnItem(const string &in Classname, Vector &in Origin, QAngle &in Angles)
 {
-	CItemRespawn@ pItemRespawn = ItemRespawnArray[iArrayPos];
-
-	if (pItemRespawn !is null)
-	{
-		Vector SI_Origin = pItemRespawn.GetAbsOrigin();
-		QAngle SI_Angles = pItemRespawn.GetAbsAngles();
-
-		CEntityData@ AdrenalineIPD = EntityCreator::EntityData();
-
-		AdrenalineIPD.Add("targetname", "item_adrenaline");
-		AdrenalineIPD.Add("delivername", "Adrenaline");
-		AdrenalineIPD.Add("glowcolor", "5 250 121");
-		AdrenalineIPD.Add("itemstate", "1");
-		AdrenalineIPD.Add("model", "models/cszm/weapons/w_adrenaline.mdl");
-		AdrenalineIPD.Add("viewmodel", "models/cszm/weapons/v_adrenaline.mdl");
-		AdrenalineIPD.Add("printname", "vgui/images/adrenaline");
-		AdrenalineIPD.Add("sound_pickup", "Deliver.PickupGeneric");
-		AdrenalineIPD.Add("weight", "0");
-
-		AdrenalineIPD.Add("DisableDamageForces", "1", true);
-
-		CBaseEntity@ pItem = EntityCreator::Create("item_deliver", SI_Origin, SI_Angles, AdrenalineIPD);
-
-		pItemRespawn.SetEntIndex(pItem.entindex());
-
-		ReSpawnEffect(SI_Origin);
-	}
+	CEntityData@ ItemIPD = EntityCreator::EntityData();
+	ItemIPD.Add("DisableDamageForces", "1", true);
+	CBaseEntity@ pItem = EntityCreator::Create(Classname, Origin, Angles, ItemIPD);
+	ReSpawnEffect(Origin + Vector(0, 0, 4));
+	return pItem.entindex();
 }
 
 void ReSpawnEffect(Vector &in Origin)
@@ -488,27 +281,5 @@ void ReSpawnEffect(Vector &in Origin)
 
 	EntityCreator::Create("env_spark", Origin, QAngle(-90, 0, 0), SparkIPD);	
 
-	Engine.EmitSoundPosition(0, "items/suitchargeok1.wav", Origin, 0.695f, 75, Math::RandomInt(135, 165));
-}
-
-void RemoveExtraClip(const uint &in iUnit)
-{
-	array<CBaseEntity@> g_pAmmoEntity;
-	CBaseEntity@ pAmmoEntity;
-
-	while ((@pAmmoEntity = FindEntityByName(pAmmoEntity, "dropped_ammo")) !is null)
-	{
-		g_pAmmoEntity.insertLast(pAmmoEntity);
-	}
-	if (iUnit == 1)
-	{
-		g_pAmmoEntity[0].SUB_Remove();
-	}
-	else
-	{
-		for (uint uii = 0; uii <= iUnit; uii++)
-		{
-			g_pAmmoEntity[uii].SUB_Remove();
-		}
-	}
+	Engine.EmitSoundPosition(0, "items/suitchargeok1.wav", Origin, 0.85f, 80, Math::RandomInt(135, 165));
 }

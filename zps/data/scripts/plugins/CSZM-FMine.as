@@ -215,11 +215,6 @@ HookReturnCode CSZM_FM_OnEntityDestruction(const string &in strClassname, CBaseE
 	return HOOK_CONTINUE;
 }
 
-void SD(const string &in strMSG)
-{
-	Chat.PrintToChat(all, strMSG);
-}
-
 HookReturnCode CSZM_FM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out DamageInfo)
 {
 	CBaseEntity@ pAttacker = DamageInfo.GetAttacker();
@@ -320,7 +315,7 @@ void EmitFMineEffects(Vector Orinig)
 		CBaseEntity@ pTracer = EntityCreator::Create("env_spritetrail", Orinig, QAngle(0, 0, 0), TracerIPD);
 
 		Vector vUP;
-		pTracer.SetMoveType(MOVETYPE_FLY);
+		pTracer.SetMoveType(MOVETYPE_FLYGRAVITY);
 		Globals.AngleVectors(QAngle(Math::RandomFloat(-2, -72), Math::RandomFloat(0, 360), Math::RandomFloat(0, 360)), vUP);
 		pTracer.SetAbsVelocity(vUP * Math::RandomInt(2750, 2995));
 	}
@@ -425,7 +420,7 @@ void ThrowMine(const int &in iIndex, CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 	pFragMine.SetOwner(pPlayerEntity);
 	pFragMine.ChangeTeam(iPlayerTeam);
 	pFragMine.SetEntityDescription(formatInt(iIndex));
-	pFragMine.SetHealth(100);
+	pFragMine.SetHealth(20);
 
 	float angX = pPlayerEntity.EyeAngles().x;
 	float angY = pPlayerEntity.EyeAngles().y;
@@ -471,7 +466,6 @@ void DefuseFragMine(CBaseEntity@ pFMine, CZP_Player@ pPlayer)
 
 CFragMine@ FindFragMineByEntIndex(const int &in EntIndex)
 {
-	CFragMine@ pFM;
 	uint iFMArrLength = FMArray.length();
 
 	for (uint q = 0; q < iFMArrLength; q++)
@@ -480,10 +474,9 @@ CFragMine@ FindFragMineByEntIndex(const int &in EntIndex)
 
 		if (pFragMine !is null && pFragMine.GetMineIndex() == EntIndex)
 		{
-			@pFM = pFragMine;
-			break;
+			return pFragMine;
 		}
 	}
 
-	return pFM;
+	return null;
 }

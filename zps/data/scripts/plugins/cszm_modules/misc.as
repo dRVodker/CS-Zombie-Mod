@@ -256,25 +256,6 @@ void EmitBloodEffect(CZP_Player@ pPlayer, const bool &in bSilent)
 	}
 }
 
-void ShowHP(CBasePlayer@ pBasePlayer, const int &in iHP, const bool &in bLeft, const bool &in bHide)
-{
-	if (bHide)
-	{
-		Chat.CenterMessagePlayer(pBasePlayer, "");
-	}
-	else
-	{
-		string strLeft = "";
-
-		if (bLeft)
-		{
-			strLeft = " Left";
-		}
-
-		Chat.CenterMessagePlayer(pBasePlayer, formatInt(iHP) + " HP" + strLeft);
-	}
-}
-
 void SetAntidoteState(const int &in iIndex, const int &in iAStage)
 {
 	CBaseEntity@ pEntity;
@@ -369,20 +350,17 @@ void HealthSettings()
 
 void SetCustomPropHealth(CBaseEntity@ pEntity, const int &in iPlrCount)
 {
-	if (!bIsPropJunk(pEntity))
+	if (!(bIsPropJunk(pEntity) || bIsPropExplosive(pEntity)))
 	{
-		if (!bIsPropExplosive(pEntity))
-		{
-			float flBaseHealth = float(pEntity.GetHealth());
-			int iCustomHealth = int((flBaseHealth * 0.0815f) * iPlrCount);
+		SetCustomHealth(pEntity, iPlrCount, 0.1f, PROP_MAX_HEALTH);
+	}
+}
 
-			if (iCustomHealth > PROP_MAX_HEALTH)
-			{
-				iCustomHealth = PROP_MAX_HEALTH;
-			}
-
-			pEntity.SetHealth(iCustomHealth + Math::RandomInt(0, 35));			
-		}
+void SetCustomFuncHealth(CBaseEntity@ pEntity, const int &in iPlrCount)
+{
+	if (!Utils.StrContains("special", pEntity.GetEntityName()))
+	{
+		SetCustomHealth(pEntity, iPlrCount, 0.215f, BRUSH_MAX_HEALTH);
 	}
 }
 
@@ -406,25 +384,20 @@ void SetCustomDoorHealth(CBaseEntity@ pEntity, const int &in iPlrCount)
 		flMultiplier = 7.9f;
 	}
 
-	Engine.Ent_Fire_Ent(pEntity, "SetDoorHealth", "" + int((iPlrCount * flMultiplier) + Math::RandomInt(0, 25)), "0.00");	
+	Engine.Ent_Fire_Ent(pEntity, "SetDoorHealth", formatInt(int((iPlrCount * flMultiplier) + Math::RandomInt(0, 25))), "0.00");
 }
 
-void SetCustomFuncHealth(CBaseEntity@ pEntity, const int &in iPlrCount)
+void SetCustomHealth(CBaseEntity@ pEntity, const int &in iPlrCount, const float &in flBaseHealthMult, const int &in MAX_HEALTH)
 {
-	string strTargetname = pEntity.GetEntityName();
+	int iCustomHealth = int((pEntity.GetHealth() * flBaseHealthMult) * iPlrCount);
 
-	if (!Utils.StrContains("special", strTargetname))
+	if (iCustomHealth > MAX_HEALTH)
 	{
-		float flBaseHealth = float(pEntity.GetHealth());
-		int iCustomHealth = int((flBaseHealth * 0.195f) * iPlrCount);
-
-		if (iCustomHealth > BRUSH_MAX_HEALTH)
-		{
-			iCustomHealth = BRUSH_MAX_HEALTH;
-		}
-
-		pEntity.SetHealth(iCustomHealth + Math::RandomInt(0, 35));
+		iCustomHealth = BRUSH_MAX_HEALTH;
 	}
+
+	pEntity.SetHealth(iCustomHealth + Math::RandomInt(0, 35));
+	pEntity.SetMaxHealth(pEntity.GetHealth());	
 }
 
 string GetJustModel(const string &in strFullModelName)
@@ -581,7 +554,7 @@ void ZombieVictoryRewards()
 
 		CSZMPlayer@ pCSZMPlayer = Array_CSZMPlayer[i];
 
-		if (pPlayerEntity.IsAlive() && pPlayerEntity.GetTeamNumber() == TEAM_ZOMBIES && pCSZMPlayer.IsFirstInfected())
+		if (pPlayerEntity.IsAlive() && pPlayerEntity.GetTeamNumber() == TEAM_ZOMBIES && pCSZMPlayer.FirstInfected)
 		{
 			pCSZMPlayer.AddInfectPoints(-20);
 		}
@@ -635,4 +608,51 @@ void LogicPlayerManager()
 	InputData.Add("stripstarterweapons", "1");
 
 	EntityCreator::Create("logic_player_manager", Vector(0, 0, 0), QAngle(0, 0, 0) , InputData);
+}
+
+void ShootTracers(Vector Orinig)
+{
+	int iFree;
+	int iUsed;
+
+	Engine.EdictCount(iFree, iUsed);
+
+	int iShowerCount = Math::RandomInt(1, 3);
+	int iTracerCount = Math::RandomInt(18, 27);
+
+	if (iUsed > 1964)
+	{
+		iShowerCount = 1;
+		iTracerCount = -1;
+	}
+
+	while (iShowerCount > 0)
+	{
+		iShowerCount--;
+		CBaseEntity@ pShower = EntityCreator::Create("spark_shower", Orinig, QAngle(0, 0, 0));
+		Vector vUP;
+		Globals.AngleVectors(QAngle(Math::RandomFloat(-55, -78), Math::RandomFloat(0, 270), Math::RandomFloat(0, 270)), vUP);
+		pShower.SetAbsVelocity(vUP * Math::RandomInt(247, 389));
+	}
+
+	while (iTracerCount > 0)
+	{
+		iTracerCount--;
+		CEntityData@ TracerIPD = EntityCreator::EntityData();
+		TracerIPD.Add("rendercolor", "255 155 5");
+		TracerIPD.Add("rendermode", "5");
+		TracerIPD.Add("spritename", "sprites/xbeam2.vmt");
+		TracerIPD.Add("endwidth", formatFloat(Math::RandomFloat(0.21, 0.37), 'l', 3, 3));
+		TracerIPD.Add("lifetime", formatFloat(Math::RandomFloat(0.032, 0.135), 'l', 3, 3));
+		TracerIPD.Add("renderamt", formatInt(Math::RandomInt(195, 235)));
+		TracerIPD.Add("startwidth", formatFloat(Math::RandomFloat(1.85, 2.85), 'l', 2, 2));
+		TracerIPD.Add("kill", "0", true, formatFloat(Math::RandomFloat(0.194, 0.842), 'l', 2, 2));
+
+		CBaseEntity@ pTracer = EntityCreator::Create("env_spritetrail", Orinig, QAngle(0, 0, 0), TracerIPD);
+
+		Vector vUP;
+		pTracer.SetMoveType(MOVETYPE_FLYGRAVITY);
+		Globals.AngleVectors(QAngle(Math::RandomFloat(0, 360), Math::RandomFloat(0, 360), Math::RandomFloat(0, 360)), vUP);
+		pTracer.SetAbsVelocity(vUP * Math::RandomInt(2900, 2999));
+	}
 }
