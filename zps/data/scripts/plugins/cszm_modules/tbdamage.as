@@ -16,12 +16,7 @@ class TimeBasedDamage
 	{
 		Type = nType;
 		WaitTime = Globals.GetCurrentTime() + TBD_TikTime;
-		UpdateInfo(nAttakerIndex, nDamage);
-	}
-
-	void UpdateInfo(int nAttakerIndex, float nDamage)
-	{
-		Tiks += int(ceil(nDamage / 95.0f * 10.0f));
+		Tiks += int(ceil(nDamage / 126.0f * 20.0f));
 		AttakerIndex = nAttakerIndex;
 	}
 
@@ -32,7 +27,7 @@ class TimeBasedDamage
 			WaitTime = Globals.GetCurrentTime() + TBD_TikTime;
 			CBaseEntity@ pAttaker = FindEntityByEntIndex(AttakerIndex);
 
-			if (pAttaker is null)
+			if (pAttaker is null || (pAttaker.GetTeamNumber() == pTarget.GetTeamNumber() && pTarget.entindex() != AttakerIndex))
 			{
 				@pAttaker = pTarget;
 				AttakerIndex = pTarget.entindex();
@@ -75,7 +70,7 @@ void EmitBlood(const int &in index)
 	Chat.CenterMessagePlayer(ToBasePlayer(index), "!! Bleeding !!");
 
 	CEntityData@ InputData = EntityCreator::EntityData();
-	InputData.Add("amount", "64");
+	InputData.Add("amount", "128");
 	InputData.Add("spawnflags", "8");
 	InputData.Add("spraydir", "90 0 0");
 	InputData.Add("color", "0");
@@ -83,5 +78,6 @@ void EmitBlood(const int &in index)
 	InputData.Add("EmitBlood", "0", true, "0.00");
 	InputData.Add("kill", "0", true, "0.00");
 
-	EntityCreator::Create("env_blood", pPlayerEntity.GetAbsOrigin() + Vector(0, 0, 2), QAngle(90, 0, 0) , InputData);
+	CBaseEntity@ pBlood = EntityCreator::Create("env_blood", pPlayerEntity.GetAbsOrigin() + Vector(0, 0, 14) + ((pPlayerEntity.EyePosition() - pPlayerEntity.GetAbsOrigin()) / 2), QAngle(90, 0, 0) , InputData);
+	Engine.EmitSoundEntity(pBlood, "flesh_gibs_Head.OnHit");	
 }

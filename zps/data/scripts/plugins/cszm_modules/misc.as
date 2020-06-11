@@ -18,26 +18,18 @@ string BoolToString(bool boolean)
 	return "false";
 }
 
-void MovePlrToSpec(CBaseEntity@ pEntPlr)
-{
-	pEntPlr.ChangeTeam(TEAM_LOBBYGUYS);
-	CZP_Player@ pPlayer = ToZPPlayer(pEntPlr);
-	pPlayer.ConsoleCommand("choose3");
-}
-
 int CountPlrs(const int &in iTeamNum)
 {
 	int iCount = 0;
 	
 	for (int i = 1; i <= iMaxPlayers; i++)
 	{
-		CZP_Player@ pPlayer = ToZPPlayer(i);
-		if (pPlayer is null)
+		CBaseEntity@ pBaseEnt = FindEntityByEntIndex(i);
+
+		if (pBaseEnt is null)
 		{
 			continue;
 		}
-			
-		CBaseEntity@ pBaseEnt = FindEntityByEntIndex(i);
 
 		if (pBaseEnt.GetTeamNumber() == iTeamNum)
 		{
@@ -85,6 +77,7 @@ void PutPlrToLobby(CBaseEntity@ pEntPlayer)
 	}
 
 	int iLength = g_pLobbySpawn.length() - 1;
+
 	if (pEntPlayer is null)
 	{
 		for (int i = 1; i <= iMaxPlayers; i++)
@@ -116,11 +109,6 @@ void PutPlrToPlayZone(CBaseEntity@ pEntPlayer)
 	CBaseEntity@ pEntity;
 	
 	while ((@pEntity = FindEntityByClassname(pEntity, "info_player_human")) !is null)
-	{
-		g_pOtherSpawn.insertLast(pEntity);
-	}
-	
-	while ((@pEntity = FindEntityByClassname(pEntity, "info_player_zombie")) !is null)
 	{
 		g_pOtherSpawn.insertLast(pEntity);
 	}

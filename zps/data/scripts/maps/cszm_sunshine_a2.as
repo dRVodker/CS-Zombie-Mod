@@ -1,14 +1,70 @@
 #include "../SendGameText"
+#include "cszm_modules/newspawn"
 
-void SD(const string &in strMSG)
+array<array<CSpawnPoint@>> PrimaryHumanSpawns =
 {
-	Chat.PrintToChat(all, strMSG);
-}
+	{
+		CSpawnPoint(Vector(-28.3999, -1394.01, -5.80957), QAngle(0, 88.9783, 0)),
+		CSpawnPoint(Vector(-83.5069, -1319.7, -7.21992), QAngle(0, 88.9783, 0)),
+		CSpawnPoint(Vector(6.86754, -1271.79, -2.37119), QAngle(0, 88.9783, 0)),
+		CSpawnPoint(Vector(-131.51, -1405.13, -10.4845), QAngle(0, 88.9783, 0)),
+		CSpawnPoint(Vector(-232.347, -1372.14, -9.99016), QAngle(0, 88.9783, 0)),
+		CSpawnPoint(Vector(-160.233, -1270.11, -8.88592), QAngle(0, 88.9783, 0)),
+		CSpawnPoint(Vector(-258.904, -1231.25, -18.4523), QAngle(0, 88.9783, 0)),
+		CSpawnPoint(Vector(-342.764, -1313.12, -4.04865), QAngle(0, 88.9783, 0)),
+		CSpawnPoint(Vector(-312.47, -1392.53, -4.17452), QAngle(0, 88.9783, 0)),
+		CSpawnPoint(Vector(-410.273, -1288.55, 0.034111), QAngle(0, 88.9783, 0)),
+		CSpawnPoint(Vector(-334.579, -1166.61, -13.9181), QAngle(0, 88.9783, 0)),
+		CSpawnPoint(Vector(-231.341, -1102.62, -25.8202), QAngle(0, 88.9783, 0)),
+		CSpawnPoint(Vector(-130.803, -1180.33, -8.34069), QAngle(0, 88.9783, 0)),
+		CSpawnPoint(Vector(-34.8482, -1171.79, 1.03125), QAngle(0, 88.9783, 0)),
+		CSpawnPoint(Vector(9.54036, -1062.11, 1.03125), QAngle(0, 88.9783, 0)),
+		CSpawnPoint(Vector(-120.129, -1062.14, -3.5229), QAngle(0, 88.9783, 0)),
+		CSpawnPoint(Vector(-198.067, -991.78, -16.6928), QAngle(0, 88.9783, 0)),
+		CSpawnPoint(Vector(-302.161, -1014.03, -12.3864), QAngle(0, 88.9783, 0)),
+		CSpawnPoint(Vector(-393.672, -1044.72, 0.0412865), QAngle(0, 88.9783, 0)),
+		CSpawnPoint(Vector(-363.98, -951.512, -4.48498), QAngle(0, 88.9783, 0)),
+		CSpawnPoint(Vector(-254.86, -892.718, -23.7359), QAngle(0, 88.9783, 0)),
+		CSpawnPoint(Vector(-154.004, -922.561, -14.3217), QAngle(0, 88.9783, 0)),
+		CSpawnPoint(Vector(-48.2831, -956.078, 1.02246), QAngle(0, 88.9783, 0)),
+		CSpawnPoint(Vector(-408.678, -1141.53, -1.32711), QAngle(0, 88.9783, 0)),
+		CSpawnPoint(Vector(-69.5831, -1115.26, 0.692287), QAngle(0, 88.9783, 0)),
 
-void CD(const string &in strMsg)
+		CSpawnPoint(Vector(-391.266, 452.504, 8.03125), QAngle(-6.4614, -122.241, 0), "info_player_start"),
+		CSpawnPoint(Vector(-469.172, -1282.55, 8.03125), QAngle(-2.90398, 56.718, 0), "info_player_start"),
+		CSpawnPoint(Vector(359.085, -399.297, 8.03125), QAngle(-0.580772, 62.163, 0), "info_player_start"),
+		CSpawnPoint(Vector(962.664, 842.978, -7.71015), QAngle(-0.435567, -126.053, 0), "info_player_start"),
+		CSpawnPoint(Vector(2300.01, -417.953, -164.669), QAngle(-12.8865, 146.742, 0), "info_player_start")
+	}
+};
+
+array<array<CSpawnPoint@>> SecondaryHumanSpawns =
 {
-	Chat.CenterMessage(all, strMsg);
-}
+	{
+		CSpawnPoint(Vector(-412.915, -979.043, 0.643227), QAngle(-3.92047, 53.8141, 0)),
+		CSpawnPoint(Vector(-11.5664, -1072.1, 1.03125), QAngle(-1.23427, 118.065, 0)),
+		CSpawnPoint(Vector(-73.6829, 206.688, 8.03125), QAngle(2.75872, -161.785, 0)),
+		CSpawnPoint(Vector(138.752, 205.674, 8.03125), QAngle(2.32313, -26.8937, 0)),
+		CSpawnPoint(Vector(239.629, 1237.35, 8.03125), QAngle(3.70253, -40.4335, 0)),
+		CSpawnPoint(Vector(1609.6, 851.007, 8.03125), QAngle(-0.907581, -97.5697, 0)),
+		CSpawnPoint(Vector(1676.88, 716.939, 8.03125), QAngle(-5.51768, -107.516, 0)),
+		CSpawnPoint(Vector(443.753, -332.761, 8.03125), QAngle(10.4906, 144.891, 0)),
+		CSpawnPoint(Vector(-786.7, -509.555, 18.713), QAngle(2.79503, 22.4509, 0)),
+		CSpawnPoint(Vector(-943.192, 438.392, 3.60064), QAngle(4.68264, -35.7143, 0))
+	},
+	{
+		CSpawnPoint(Vector(-445.802, -767.163, 43.4684), QAngle(9.98243, 47.0625, 0)),
+		CSpawnPoint(Vector(99.0391, -708.678, 8.03125), QAngle(-0.108957, 145.944, 0)),
+		CSpawnPoint(Vector(-240.607, -156.874, -13.7622), QAngle(-3.19446, 175.359, 0)),
+		CSpawnPoint(Vector(-542.567, 477.808, 8.03125), QAngle(3.04914, -124.89, 0)),
+		CSpawnPoint(Vector(-793.889, -420.183, 8.44565), QAngle(12.4145, -15.5183, 0)),
+		CSpawnPoint(Vector(290.092, 1246.97, 8.03125), QAngle(-43.2697, -56.2832, 0)),
+		CSpawnPoint(Vector(587.335, 1249.37, 8.03125), QAngle(0.980031, -78.4262, -0)),
+		CSpawnPoint(Vector(1538.27, -89.6895, -36.9218), QAngle(2.64984, 131.764, 0)),
+		CSpawnPoint(Vector(1235.58, 181.386, -41.2426), QAngle(-10.5997, 77.35, 0)),
+		CSpawnPoint(Vector(1072.75, 299.737, -45.3396), QAngle(-4.93688, -152.696, 0))
+	}
+};
 
 const int TEAM_LOBBYGUYS = 0;
 const int TEAM_SURVIVORS = 2;
@@ -198,6 +254,9 @@ void OnNewRound()
 void OnMatchBegin()
 {
 	FindGrenades();
+
+	RemoveNativeSpawns("info_player_human");
+	CreateSpawnsFromArray(SecondaryHumanSpawns);
 }
 
 void OnMatchEnded()
@@ -225,6 +284,10 @@ void SetUpStuff()
 	SpawnCheese();
 	FindIPC();
 	CollectEntIndexs();
+
+	RemoveNativeSpawns("info_player_human");
+	RemoveNativeSpawns("info_player_zombie");
+	CreateSpawnsFromArray(PrimaryHumanSpawns);
 }
 
 HookReturnCode SH_OnEndTouch(CBaseEntity@ pTrigger, const string &in strEntityName, CBaseEntity@ pEntity)

@@ -265,6 +265,46 @@ class ShowHealthPoints
 	}
 }
 
+class ShowHitMarker
+{
+	ShowHitMarker(const int PlayerIndex, const bool CriticalDamage)
+	{
+		HitMarker(PlayerIndex, CriticalDamage);
+	}
+
+	private void HitMarker(const int PlayerIndex, bool CriticalDamage)
+	{
+		CZP_Player@ pPlayer = ToZPPlayer(PlayerIndex);
+		int R = 0;
+		int G = 155;
+		int B = 255;
+		float Alpha = 0.78f;
+
+		if (CriticalDamage)
+		{
+			R = 255;
+			G = 75;
+			B = 75;
+		}
+
+		R = int(R * Alpha);
+		G = int(G * Alpha);
+		B = int(B * Alpha);
+
+		HudTextParams pParams;
+		pParams.x = -1;
+		pParams.y = -1;
+		pParams.channel = 3;
+		pParams.fadeinTime = 0.0f;
+		pParams.fadeoutTime = 0.2f;
+		pParams.holdTime = 0.075f;
+		pParams.fxTime = 0.0f;
+		pParams.SetColor(Color(R, G, B));
+		pParams.SetColor2(Color(0, 0, 0));
+		Utils.GameTextPlayer(pPlayer, "+", pParams);
+	}
+}
+
 class CSZMPlayer
 {
 	private string SteamID;					//SteamID, Что тут ещё добавить?
@@ -285,7 +325,7 @@ class CSZMPlayer
 
 	private float VoiceTime;				//Время между IDLE звуками зомби
 	private float AdrenalineTime;			//Время действия адреналина
-	private float IRITime;					//Время, по истечению которого показывается сообщение об кол-ве сопротивления инфекции
+	private float InfResShowTime;			//Время, по истечению которого показывается сообщение об кол-ве сопротивления инфекции
 	private float LobbyRespawnDelay;		//Время, которое должен ждать игрок в лобби, чтобы сново использовать "F4 Respawn"
 
 	bool Abuser;							//Игроки, злоупотребляющие механиками, получают этот флаг (Записывается в SteamIDArray)
@@ -297,7 +337,7 @@ class CSZMPlayer
 	bool Cured;								//true - Если был вылечен администратором
 	bool Spawn;								//true - Если возрадился играя за зомби
 
-	private TimeBasedDamage@ pBleeding;
+	private array<TimeBasedDamage@> pTimeDamage;
 	private ShowHealthPoints@ pShowHP;
 
 	CSZMPlayer(int index, CZP_Player@ pPlayer)
@@ -305,30 +345,8 @@ class CSZMPlayer
 		SteamID = pPlayer.GetSteamID64();
 		PlayerIndex = index;
 		DefSpeed = SPEED_DEFAULT;
-		RecoverTime = 0;
-		Voice = 0;
-		PreviousVoice = 0;
-		VoiceTime = 0;
-		RegenTime = 0;
-		AdrenalineTime = 0;
-		InfectResist = 0;
-		IRITime = 0;
-		LobbyRespawnDelay = 0;
-		SwipeDelay = 0;
-		PropHealth = 0;
 
 		DieTeam = -1;
-		ZombieRespawnTime = 0;
-
-		Kills = 0;
-		Victims = 0;
-
-		FirstInfected = false;
-		Cured = false;
-		Spawn = false;
-
-		@pBleeding = null;
-		@pShowHP = null;
 
 		int iArrayElement = CheckSteamID(SteamID);
 
@@ -368,7 +386,7 @@ class CSZMPlayer
 
 		PropHealth = 0;
 
-		IRITime = 0;
+		InfResShowTime = 0;
 		Abuser = false;
 
 		RecoverTime = 0;
@@ -392,7 +410,7 @@ class CSZMPlayer
 		VoiceTime = Globals.GetCurrentTime();
 		DieTeam = pPlayerEntity.GetTeamNumber();
 
-		@pBleeding = null;
+		pTimeDamage.removeRange(0, pTimeDamage.length());
 		@pShowHP = null;
 
 		if (DieTeam == TEAM_ZOMBIES && bAllowZombieRespawn && pPlayerEntity.GetTeamNumber() != TEAM_SURVIVORS)
@@ -521,7 +539,7 @@ class CSZMPlayer
 		CBasePlayer@ pBasePlayer = ToBasePlayer(PlayerIndex);
 		CZP_Player@ pPlayer = ToZPPlayer(PlayerIndex);
 
-		IRITime = Globals.GetCurrentTime() + 1.12f;
+		InfResShowTime = Globals.GetCurrentTime() + 1.12f;
 		InfectResist++;
 	
 		AddInfectPoints(-1);
@@ -584,38 +602,6 @@ class CSZMPlayer
 		pPlayerEntity.TakeDamage(AdrenaDMG);
 
 		SetUsed(PlayerIndex, pItemAdrenaline);
-	}
-
-	void ShowHitMarker(bool CriticalDamage)
-	{
-		CZP_Player@ pPlayer = ToZPPlayer(PlayerIndex);
-		int R = 0;
-		int G = 155;
-		int B = 255;
-		float Alpha = 0.75f;
-
-		if (CriticalDamage)
-		{
-			R = 255;
-			G = 75;
-			B = 75;
-		}
-
-		R = int(R * Alpha);
-		G = int(G * Alpha);
-		B = int(B * Alpha);
-
-		HudTextParams pParams;
-		pParams.x = -1;
-		pParams.y = -1;
-		pParams.channel = 3;
-		pParams.fadeinTime = 0.0f;
-		pParams.fadeoutTime = 0.2f;
-		pParams.holdTime = 0.075f;
-		pParams.fxTime = 0.0f;
-		pParams.SetColor(Color(R, G, B));
-		pParams.SetColor2(Color(0, 0, 0));
-		Utils.GameTextPlayer(pPlayer, "+", pParams);
 	}
 
 	void ShowHealthLeft(int damage, int health)
@@ -684,14 +670,7 @@ class CSZMPlayer
 
 	void AddBleeding(const int nAttackerIndex, const float nDamage)
 	{
-		if (pBleeding is null)
-		{
-			@pBleeding = TimeBasedDamage(nAttackerIndex, nDamage, TBD_BLEEDING);
-		}
-		else
-		{
-			pBleeding.UpdateInfo(nAttackerIndex, nDamage);
-		}
+		pTimeDamage.insertLast(TimeBasedDamage(nAttackerIndex, nDamage, TBD_BLEEDING));
 	}
 
 	void Think()
@@ -702,13 +681,18 @@ class CSZMPlayer
 
 		int TeamNum = pPlayerEntity.GetTeamNumber();
 
-		if (pBleeding !is null)
+		if (pTimeDamage.length() > 0)
 		{
-			pBleeding.Think(FindEntityByEntIndex(PlayerIndex));
-
-			if (pBleeding.Tiks == 0 || pPlayerEntity.GetTeamNumber() != TEAM_ZOMBIES)
+			for (uint i = 0; i < pTimeDamage.length(); i++)
 			{
-				@pBleeding = null;
+				if (pTimeDamage[i].Tiks == 0 || pPlayerEntity.GetTeamNumber() != TEAM_ZOMBIES)
+				{
+					@pTimeDamage[i] is null;
+					pTimeDamage.removeAt(i);
+					continue;
+				}
+
+				pTimeDamage[i].Think(pPlayerEntity);
 			}
 		}
 
@@ -790,9 +774,9 @@ class CSZMPlayer
 					pPlayer.DoPlayerDSP(0);
 				}
 
-				if (IRITime <= Globals.GetCurrentTime() && Utils.StrContains("item_antidote", pPlayer.GetCurrentWeapon().GetEntityName()))
+				if (InfResShowTime <= Globals.GetCurrentTime() && Utils.StrContains("item_antidote", pPlayer.GetCurrentWeapon().GetEntityName()))
 				{
-					IRITime = Globals.GetCurrentTime() + 1.12f;
+					InfResShowTime = Globals.GetCurrentTime() + 1.12f;
 					string sMax = "";
 
 					if (InfectResist == CONST_MAX_INFECTRESIST)
@@ -1318,7 +1302,7 @@ HookReturnCode CSZM_OnConCommand(CZP_Player@ pPlayer, CASCommand@ pArgs)
 		{
 			if ((Utils.StrEql("choose1", pArgs.Arg(0)) || Utils.StrEql("choose2", pArgs.Arg(0))) && pBaseEnt.GetTeamNumber() == TEAM_LOBBYGUYS)
 			{
-				if (pCSZMPlayer.Abuser)
+				if (pCSZMPlayer.Abuser || bIsPlayersSelected)
 				{
 					pPlayer.ConsoleCommand("choose3");
 					HOOK_RESULT = HOOK_HANDLED;
@@ -1392,9 +1376,12 @@ HookReturnCode CSZM_OnPlayerSpawn(CZP_Player@ pPlayer)
 
 		if (bWarmUp)
 		{
-			PutPlrToPlayZone(pBaseEnt);
+			if (TeamNum != TEAM_SPECTATORS)
+			{
+				PutPlrToPlayZone(pBaseEnt);
+			}
 
-			if (pPlrEnt.IsBot())									
+			if (pPlrEnt.IsBot())
 			{
 				pBaseEnt.ChangeTeam(TEAM_LOBBYGUYS);
 				pPlayer.ForceRespawn();
@@ -1432,32 +1419,32 @@ HookReturnCode CSZM_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out Da
 		int iVicTeam = pBaseEnt.GetTeamNumber();
 		string strVicName = pPlayer.GetPlayerName();
 
-		CBaseEntity@ pEntityAttacker = DamageInfo.GetAttacker();
+		CBaseEntity@ pAttackerEntity = DamageInfo.GetAttacker();
 
-		int iAttIndex = pEntityAttacker.entindex();
-		int iAttTeam = pEntityAttacker.GetTeamNumber();
+		int iAttIndex = pAttackerEntity.entindex();
+		int iAttTeam = pAttackerEntity.GetTeamNumber();
 
 		CSZMPlayer@ pVicCSZMPlayer = Array_CSZMPlayer[iVicIndex];
 
-		if (Utils.StrContains("physics", pEntityAttacker.GetClassname()) || Utils.StrContains("physbox", pEntityAttacker.GetClassname()))
+		if (Utils.StrContains("physics", pAttackerEntity.GetClassname()) || Utils.StrContains("physbox", pAttackerEntity.GetClassname()))
 		{
-			string AttInfo = GetAttackerInfo(pEntityAttacker.GetEntityDescription());
+			string AttInfo = GetAttackerInfo(pAttackerEntity.GetEntityDescription());
 			CASCommand@ pSplitArgs = StringToArgSplit(AttInfo, ":");
 			int iPhysAttacker = Utils.StringToInt(pSplitArgs.Arg(0));
 
 			if (iPhysAttacker > 0)
 			{
-				@pEntityAttacker = FindEntityByEntIndex(iPhysAttacker);
+				@pAttackerEntity = FindEntityByEntIndex(iPhysAttacker);
 				@pAttCSZMPlayer = Array_CSZMPlayer[iPhysAttacker];
 				iAttIndex = iPhysAttacker;
-				iAttTeam = pEntityAttacker.GetTeamNumber();
-				DamageInfo.SetAttacker(pEntityAttacker);
+				iAttTeam = pAttackerEntity.GetTeamNumber();
+				DamageInfo.SetAttacker(pAttackerEntity);
 			}
 		}
 
-		if (!pEntityAttacker.IsPlayer())
+		if (!pAttackerEntity.IsPlayer())
 		{
-			if ((Utils.StrEql(pEntityAttacker.GetClassname(), "worldspawn") && bDamageType(iDamageType, 0)) || (Utils.StrEql(pEntityAttacker.GetEntityName(), "frendly_shrapnel") && iVicTeam == TEAM_SURVIVORS) || (iAttTeam == iVicTeam && iAttIndex != iVicIndex))
+			if ((Utils.StrEql(pAttackerEntity.GetClassname(), "worldspawn") && bDamageType(iDamageType, 0)) || (Utils.StrEql(pAttackerEntity.GetEntityName(), "frendly_shrapnel") && iVicTeam == TEAM_SURVIVORS) || (iAttTeam == iVicTeam && iAttIndex != iVicIndex))
 			{
 				DamageInfo.SetDamageType(1<<9);
 				DamageInfo.SetDamage(0);
@@ -1489,7 +1476,7 @@ HookReturnCode CSZM_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out Da
 				DamageInfo.SetDamage(0);
 				pAttCSZMPlayer.AddVictim();
 				KillFeed(strAttName, iAttTeam, strVicName, iVicTeam, true, false);
-				GotVictim(pPlrAttacker, pEntityAttacker);
+				GotVictim(pPlrAttacker, pAttackerEntity);
 				TurnToZombie(iVicIndex);
 
 				if (!pVicCSZMPlayer.Cured)
@@ -1527,12 +1514,12 @@ HookReturnCode CSZM_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out Da
 				DamageInfo.SetDamageType(1<<0);
 			}
 
-			if (iAttTeam == TEAM_SURVIVORS && pAttCSZMPlayer !is null)
+			if (iAttTeam == TEAM_SURVIVORS)
 			{
-				pAttCSZMPlayer.ShowHitMarker(pBaseEnt.GetHealth() < DamageInfo.GetDamage());
+				ShowHitMarker(iAttIndex, (pBaseEnt.GetHealth() <= DamageInfo.GetDamage()));
 			}
 
-			if (flDamage < pBaseEnt.GetHealth() && flDamage >= 1.0f && !bDamageType(iDamageType, 14) && (iAttTeam != iVicTeam && iAttIndex != iVicIndex))
+			if (flDamage < pBaseEnt.GetHealth() && !bDamageType(iDamageType, 14) && ((iAttTeam == iVicTeam && iAttIndex == iVicIndex) || iAttTeam != iVicTeam))
 			{
 				//ZM ViewPunch
 				bool bLeft = false;
@@ -1602,29 +1589,29 @@ HookReturnCode CSZM_OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in Dama
 		int iVicTeam = pBaseEnt.GetTeamNumber();
 		string strVicName = pPlayer.GetPlayerName();
 		
-		CBaseEntity@ pEntityAttacker = DamageInfo.GetAttacker();
+		CBaseEntity@ pAttackerEntity = DamageInfo.GetAttacker();
 		
-		int iAttIndex = pEntityAttacker.entindex();
-		int iAttTeam = pEntityAttacker.GetTeamNumber();
+		int iAttIndex = pAttackerEntity.entindex();
+		int iAttTeam = pAttackerEntity.GetTeamNumber();
 
 		CSZMPlayer@ pVicCSZMPlayer = Array_CSZMPlayer[iVicIndex];
 
 		int iDamageType = DamageInfo.GetDamageType();
 		
-		if (pEntityAttacker.IsPlayer()) 
+		if (pAttackerEntity.IsPlayer()) 
 		{
 			@pAttCSZMPlayer = Array_CSZMPlayer[iAttIndex];
 			@pPlrAttacker = ToZPPlayer(iAttIndex);
 			strAttName = pPlrAttacker.GetPlayerName();
 		}
 
-		if (iAttIndex == iVicIndex || !pEntityAttacker.IsPlayer())
+		if (iAttIndex == iVicIndex || !pAttackerEntity.IsPlayer())
 		{
 			KillFeed("", 0, strVicName, iVicTeam, false, true);
 			bSuicide = true;
 			pVicCSZMPlayer.AddInfectPoints(25);
 		}
-		else if (iAttIndex != iVicIndex && pEntityAttacker.IsPlayer())
+		else if (iAttIndex != iVicIndex && pAttackerEntity.IsPlayer())
 		{
 			KillFeed(strAttName, iAttTeam, strVicName, iVicTeam, false, false);
 		}
@@ -1660,9 +1647,9 @@ HookReturnCode CSZM_OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in Dama
 				RoundManager.SetWinState(ws_ZombieWin);
 			}
 
-			if (iAttTeam == TEAM_ZOMBIES && pEntityAttacker.IsPlayer())
+			if (iAttTeam == TEAM_ZOMBIES && pAttackerEntity.IsPlayer())
 			{
-				GotVictim(pPlrAttacker, pEntityAttacker);
+				GotVictim(pPlrAttacker, pAttackerEntity);
 				pAttCSZMPlayer.AddVictim();
 				if (!pVicCSZMPlayer.Cured)
 				{
