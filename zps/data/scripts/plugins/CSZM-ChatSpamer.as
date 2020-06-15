@@ -8,8 +8,7 @@ array<string> g_strMsg =
 {
 	"{gold}Если вы застряли в наблюдателях, нажмите {seagreen}F4{gold} чтоб вернуться {green}лобби{gold}.",
 	"{gold}Используйте {green}антитод{gold} для повышения сопротивления к {green}инфекции{gold}.",
-	"{gold}Чтобы увидеть доступные комманды чата, напишите {green}!chatcom{gold} или {green}!help{gold}.",
-	"{gold}Поднятые патроны {cornflowerblue}появятся снова {gold}через некоторое время."
+	"{gold}Чтобы увидеть доступные комманды чата, напишите {green}!chatcom{gold} или {green}!help{gold}."
 };
 
 array<string> g_strMsgToShow;
@@ -31,7 +30,7 @@ void OnMapShutdown()
 	if (bIsCSZM)
 	{
 		bIsCSZM = false;
-		flMsgWaitTime = 0.0f;		
+		flMsgWaitTime = 0.0f;
 	}
 }
 

@@ -493,7 +493,7 @@ void ShowCom(CBasePlayer@ pPlayer)
 		Chat.PrintToChatPlayer(pPlayer, CLIST_COLOR_COMMAND + strCommand + " " + CLIST_COLOR_COMMAND + strShort + CLIST_COLOR_DESCRIP + " - " + strDescription);
 	}
 
-//	Engine.EmitSoundPlayer(pPlayer, "HudChat.Message");
+	//Engine.EmitSoundPlayer(pPlayer, "HudChat.Message");
 	Engine.EmitSoundPlayer(pPlayer, "cszm_fx/misc/talk.wav");
 }
 

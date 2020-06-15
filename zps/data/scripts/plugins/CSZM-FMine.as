@@ -38,6 +38,8 @@ void OnMapInit()
 
 		Engine.PrecacheFile(model, "models/cszm/weapons/w_minefrag.mdl");
 		Engine.PrecacheFile(model, "models/cszm/weapons/v_minefrag.mdl");
+
+		SetUpIPD(1<<1);
 	}
 }
 
@@ -146,6 +148,7 @@ void OnMapShutdown()
 	{
 		bIsCSZM = false;
 		FMArray.removeRange(0, FMArray.length());
+		ClearIPD();
 	}
 }
 

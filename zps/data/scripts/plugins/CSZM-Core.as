@@ -19,22 +19,19 @@
 //Includes and DATA
 /*----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-#include "./cszm_modules/balance_arrays.as"
-#include "./cszm_modules/balance_funcs.as"
+#include "./cszm_modules/noitems.as"
 
 #include "../SendGameText"
 #include "./cszm_modules/chat.as"
 #include "./cszm_modules/cache.as"
 #include "./cszm_modules/killfeed.as"
 #include "./cszm_modules/rprop.as"
-#include "./cszm_modules/item_flare.as"
 #include "./cszm_modules/tbdamage.as"
 #include "./cszm_modules/customitems.as"
 #include "./cszm_modules/teamnums.as"
 #include "./cszm_modules/core_text.as"
 #include "./cszm_modules/core_const.as"
 #include "./cszm_modules/admin_chatcom.as"
-
 
 #include "./cszm_modules/download_table.as"
 
@@ -68,7 +65,7 @@ int iWarmUpTime = 3;					//Время разминки в секундах.	(з�
 int iGearUpTime = 30;					//Время в секундах, через которое превратится Первый зараженный.
 int iRoundTime = 150;					//Время в секундах отведённое на раунд.
 int iZombieHealth = 500;				//HP зомби
-int iZMRHealth = 5;						//Кол-во HP, восстанавливаемое регенерацие зомби
+int iZMRHealth = 5;						//Максимальное HP, восстанавливаемое регенерацие зомби за один так
 float flZMRRate = 0.1f;					//Интервал времени регенерации зомби
 float flZMRDamageDelay = 0.65f;			//Задержка регенерации после получения урона
 float flInfectedExtraHP = 0.25f;		//Процент дополнительного HP для первых зараженных, от HP обычных зомби (от iZombieHealth)
@@ -351,8 +348,10 @@ class CSZMPlayer
 	bool Cured;								//true - Если был вылечен администратором
 	bool Spawn;								//true - Если возрадился играя за зомби
 
-	array<TimeBasedDamage@> pTimeDamage;
-	private ShowHealthPoints@ pShowHP;
+	int CashBank;							//Деньги Деньги Деньги
+
+	array<TimeBasedDamage@> pTimeDamage;	//???
+	private ShowHealthPoints@ pShowHP;		//???
 
 	CSZMPlayer(int index, CZP_Player@ pPlayer)
 	{
@@ -497,6 +496,15 @@ class CSZMPlayer
 		}
 	}
 
+	void AddMoney(int nCash)
+	{
+		CashBank += nCash;
+		if (CashBank < 0)
+		{
+			CashBank = 0;
+		}
+	}
+
 	void AddPropHealth(int HP)
 	{
 		PropHealth += HP;
@@ -512,7 +520,7 @@ class CSZMPlayer
 		if (RoundManager.IsRoundOngoing(false))
 		{
 			InfectPoints += AIC;
-			WriteToSteamID();			
+			WriteToSteamID();
 		}
 	}
 
@@ -660,26 +668,6 @@ class CSZMPlayer
 		strStats = strStatsHead + " Убийства зомби: " + formatInt(Kills) + "\n Заражение людей: " + formatInt(Victims);
 
 		ShowTextPlr(ToZPPlayer(PlayerIndex), strStats, 2, 0.00f, 0, 0.25f, 0.25f, 0.00f, 10.10f, Color(205, 205, 220), Color(255, 95, 5));
-	}
-
-	void GiveStartGear()
-	{
-		if (!(Cured || Spawn) && RoundManager.IsRoundOngoing(false))
-		{
-			CZP_Player@ pPlayer = ToBasePlayer(PlayerIndex);
-			string firearm = g_strStartWeapons[Math::RandomInt(0, (g_strStartWeapons.length() - 1))];
-			int pistol_ammo_count = 15;
-
-			if (iSeconds < iRoundTimeFull)
-			{
-				firearm = "weapon_ppk";
-				pistol_ammo_count = 7;
-			}
-
-			pPlayer.AmmoBank(set, pistol, pistol_ammo_count);
-			pPlayer.GiveWeapon("weapon_barricade");
-			pPlayer.GiveWeapon(firearm);		
-		}
 	}
 
 	void Think()
@@ -837,6 +825,12 @@ class CSZMPlayer
 #include "./cszm_modules/core_warmup.as"
 
 /*----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+//Menu
+/*----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+
+/*----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 //Forwards
 /*----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -881,11 +875,9 @@ void OnPluginInit()
 
 void OnMapInit()
 {
-	const string MapName = Globals.GetCurrentMapName();
-	if (Utils.StrContains("cszm", MapName))
+	if (Utils.StrContains("cszm", Globals.GetCurrentMapName()))
 	{
 		Log.PrintToServerConsole(LOGTYPE_INFO, "CSZM", "[CSZM] Current map is valid for 'Counter-Strike Zombie Mode'");
-		CheckForHoldout(MapName);
 
 		bIsCSZM = true;
 		bIsPlayersSelected = false;
@@ -924,8 +916,7 @@ void OnMapInit()
 		Array_CSZMPlayer.resize(iMaxPlayers + 1);
 
 		AutoMap();
-
-		@pCSZMRandomItems = RandomItem();
+		SetUpIPD((1<<1) + (1<<2) + (1<<3));
 		
 		//Set Doors Filter to 0 (any team)
 		if (bWarmUp)
@@ -951,6 +942,8 @@ void OnMapShutdown()
 		Utils.ForceCollision(TEAM_SURVIVORS, false);
 		Utils.ForceCollision(TEAM_ZOMBIES, false);
 
+		ClearIPD();
+
 		iSeconds = 0;
 		iWUSeconds = iWarmUpTime;
 		flRTWait = 0;
@@ -965,7 +958,6 @@ void OnMapShutdown()
 		Array_SteamID.removeRange(0, Array_SteamID.length());
 
 		@pCSZMTimer = null;
-		@pCSZMRandomItems = null;
 	}
 }
 
@@ -1057,7 +1049,6 @@ void OnMatchBegin()
 	{
 		LogicPlayerManager();
 		Schedule::Task(0.5f, "CSZM_LocknLoad");
-		Schedule::Task(0.35f, "CSZM_StartGear");
 
 		if (iWUSeconds == 0)
 		{
@@ -1087,24 +1078,6 @@ void OnMatchEnded()
 /*----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 //
 /*----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
-void CSZM_StartGear()
-{
-	for (int i = 1; i <= iMaxPlayers; i++)
-	{
-		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(i);
-							
-		if (pPlayerEntity is null)
-		{
-			continue;
-		}
-
-		if (pPlayerEntity.GetTeamNumber() == TEAM_SURVIVORS)
-		{
-			Array_CSZMPlayer[i].GiveStartGear();
-		}
-	}
-}
 
 void CSZM_LocknLoad()
 {
@@ -1366,7 +1339,6 @@ HookReturnCode CSZM_OnPlayerSpawn(CZP_Player@ pPlayer)
 
 			case TEAM_SURVIVORS:
 				Array_CSZMPlayer[index].SetDefSpeed(SPEED_HUMAN);
-				Array_CSZMPlayer[index].GiveStartGear();
 				pPlayer.SetArmModel(MODEL_HUMAN_ARMS);
 			break;
 			
@@ -1722,18 +1694,6 @@ HookReturnCode CSZM_OnEntityCreation(const string &in strClassname, CBaseEntity@
 		else if (Utils.StrEql("projectile_nonhurtable", strClassname) && Utils.StrEql("models/weapons/w_tennisball.mdl", pEntity.GetModelName()))
 		{
 			AttachTrail(pEntity, "255 230 0");
-		}
-		else if (Utils.StrEql("item_healthkit", strClassname))
-		{
-			SpawnAntidote(pEntity);
-		}
-		else if (Utils.StrEql("item_pills", strClassname))
-		{
-			SpawnAdrenaline(pEntity);
-		}
-		else if (Utils.StrEql("item_ammo_flare", strClassname))
-		{
-			pCSZMRandomItems.Spawn(pEntity);
 		}
 		else if (Utils.StrContains("prop_barricade", strClassname))
 		{

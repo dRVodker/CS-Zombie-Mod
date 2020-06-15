@@ -48,7 +48,7 @@ const string MODEL_PLAYER_LOBBYGUY = "models/cszm/lobby_guy.mdl";
 const string MODEL_PLAYER_CORPSE2 = "models/cszm/zombie_corpse2.mdl";
 
 //Ентити, которым нужно установить HP
-array<string> g_strBreakableEntities =
+const array<string> g_strBreakableEntities =
 {
 	"prop_physics",
 	"prop_physics_multiplayer",
@@ -61,7 +61,7 @@ array<string> g_strBreakableEntities =
 };
 
 //Список моделей, которые используются для зомби
-array<string> g_strModels = 
+const array<string> g_strModels = 
 {
 	"models/cszm/zombie_classic.mdl",
 	"models/cszm/zombie_sci.mdl",
@@ -75,7 +75,7 @@ array<string> g_strModels =
 
 array<string> g_strMDLToChoose;
 
-array<string> g_strBloodSND =
+const array<string> g_strBloodSND =
 {
 	")gibs/flesh_arm-01.wav",
 	")gibs/flesh_arm-02.wav",
@@ -86,14 +86,14 @@ array<string> g_strBloodSND =
 	")gibs/flesh_head-03.wav"
 };
 
-array<string> g_strInfectSND =
+const array<string> g_strInfectSND =
 {
 	")cszm_fx/player/plr_infect1.wav",
 	")cszm_fx/player/plr_infect2.wav",
 	")cszm_fx/player/plr_infect3.wav"
 };
 
-array<string> g_strWeaponToStrip = 
+const array<string> g_strWeaponToStrip = 
 {
 	"weapon_baguette",
 	"weapon_crowbar",
@@ -108,7 +108,6 @@ array<string> g_strWeaponToStrip =
 	"weapon_ppk",
 	"weapon_usp",
 	"weapon_glock",
-	"weapon_snowball",
 	"weapon_snowball",
 	"weapon_tennisball"
 };

@@ -38,10 +38,10 @@
 			"lifetime": "HOTRELOADABLE"
 		},
 		{
-			"name": "CSZM-ItemRespawn",
+			"name": "CSZM-DropLimit",
 			"author": "dR.Vodker",
 			"version": "1.0.0",
-			"script": "CSZM-ItemRespawn.as",
+			"script": "CSZM-DropLimit.as",
 			"lifetime": "HOTRELOADABLE"
 		},
 		{
