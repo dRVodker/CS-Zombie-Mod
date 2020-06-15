@@ -5,7 +5,7 @@ void AutoMap()
 
 bool bDamageType(int &in iSubjectDT, int &in iDMGNum)
 {
-	return iSubjectDT & (1<<iDMGNum) == (1<<iDMGNum);;
+	return iSubjectDT & (1<<iDMGNum) == (1<<iDMGNum);
 }
 
 string BoolToString(bool boolean)

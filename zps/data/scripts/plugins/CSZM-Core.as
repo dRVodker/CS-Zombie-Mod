@@ -2,6 +2,20 @@
 //Core Script File
 
 /*----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+//Info
+/*----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*
+	текстовые каналы 
+	0 - таймер
+	1 - добавачное время
+	2 -	статистика в конце раунда
+	3 - хитмаркер
+	4 - счётчик побед
+	5 - убийста/жертвы
+	6 - Меню
+	7 -
+*/
+/*----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 //Includes and DATA
 /*----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -337,7 +351,7 @@ class CSZMPlayer
 	bool Cured;								//true - Если был вылечен администратором
 	bool Spawn;								//true - Если возрадился играя за зомби
 
-	private array<TimeBasedDamage@> pTimeDamage;
+	array<TimeBasedDamage@> pTimeDamage;
 	private ShowHealthPoints@ pShowHP;
 
 	CSZMPlayer(int index, CZP_Player@ pPlayer)
@@ -666,11 +680,6 @@ class CSZMPlayer
 			pPlayer.GiveWeapon("weapon_barricade");
 			pPlayer.GiveWeapon(firearm);		
 		}
-	}
-
-	void AddBleeding(const int nAttackerIndex, const float nDamage)
-	{
-		pTimeDamage.insertLast(TimeBasedDamage(nAttackerIndex, nDamage, TBD_BLEEDING));
 	}
 
 	void Think()
@@ -1498,7 +1507,7 @@ HookReturnCode CSZM_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out Da
 
 			if (bDamageType(DamageInfo.GetDamageType(), 7) && DamageInfo.GetDamage() < pBaseEnt.GetHealth())
 			{
-				pVicCSZMPlayer.AddBleeding(iAttIndex, flDamage);
+				pVicCSZMPlayer.pTimeDamage.insertLast(TimeBasedDamage(iAttIndex, flDamage, TBD_BLEEDING));
 			}
 
 			if (bDamageType(iDamageType, 29) && flDamage >= 150 && pBaseEnt.GetHealth() <= flDamage && Math::RandomInt(0, 100) <= 70)
