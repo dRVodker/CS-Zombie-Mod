@@ -867,7 +867,7 @@ void OnPluginInit()
 	Events::Custom::OnEntityDamaged.Hook(@CSZM_OnEntDamaged);
 	Events::Custom::OnPlayerDamagedCustom_PRE.Hook(@CSZM_OnPlayerDamaged);
 	Events::Player::OnPlayerKilled.Hook(@CSZM_OnPlayerKilled);
-	Events::Player::OnPlayerDisonnected.Hook(@CSZM_OnPlayerDisonnected);
+	Events::Player::OnPlayerDisconnected.Hook(@CSZM_OnPlayerDisconnected);
 	Events::Rounds::RoundWin.Hook(@CSZM_RoundWin);
 	Events::Player::OnConCommand.Hook(@CSZM_OnConCommand);
 	Events::Player::PlayerSay.Hook(@CSZM_CORE_PlrSay);
@@ -1651,7 +1651,7 @@ HookReturnCode CSZM_OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in Dama
 	return HOOK_CONTINUE;
 }
 
-HookReturnCode CSZM_OnPlayerDisonnected(CZP_Player@ pPlayer)
+HookReturnCode CSZM_OnPlayerDisconnected(CZP_Player@ pPlayer)
 {
 	if (bIsCSZM)
 	{
