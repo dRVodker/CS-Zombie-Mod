@@ -60,20 +60,9 @@ class CFragMine
 		flTimer = 0;
 	}
 
-	int GetMineIndex()
-	{
-		return iMineIndex;
-	}
-
-	int GetOwnerIndex()
-	{
-		return iOwnerIndex;
-	}
-
-	int GetTeamNumber()
-	{
-		return iMineTeam;
-	}
+	int GetMineIndex() {return iMineIndex;}
+	int GetOwnerIndex() {return iOwnerIndex;}
+	int GetTeamNumber() {return iMineTeam;}
 
 	private void LoseOwnerIndex()
 	{
@@ -120,10 +109,7 @@ class CFragMine
 			{
 				CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(i);
 
-				if (pPlayerEntity is null)
-				{
-					continue;
-				}
+				if (pPlayerEntity is null) {continue;}
 
 				if ((pPlayerEntity.GetTeamNumber() == TEAM_ZOMBIES || i == iOwnerIndex) && pPlayerEntity.Intersects(pMineEntity) && pPlayerEntity.IsAlive())
 				{
@@ -168,14 +154,7 @@ void OnProcessRound()
 
 		for (uint q = 0; q < iFMArrLength; q++)
 		{
-			if (FMArray[q] !is null)
-			{
-				FMArray[q].Think();
-			}
-			else
-			{
-				FMArray.removeAt(q);
-			}
+			(FMArray[q] !is null) ? FMArray[q].Think() : FMArray.removeAt(q);
 		}
 	}
 }
@@ -200,18 +179,8 @@ HookReturnCode CSZM_FM_OnEntityDestruction(const string &in strClassname, CBaseE
 		for (uint q = 0; q < FMArray.length(); q++)
 		{
 			CFragMine@ pFragMine = FMArray[q];
-
-			if (pFragMine is null)
-			{
-				FMArray.removeAt(q);
-				continue;
-			}
-
-			if (pFragMine.GetMineIndex() == pEntity.entindex())
-			{
-				FMArray.removeAt(q);
-				break;
-			}
+			if (pFragMine is null) { FMArray.removeAt(q); continue;}
+			if (pFragMine.GetMineIndex() == pEntity.entindex()) { FMArray.removeAt(q); break; }
 		}
 	}
 
@@ -413,7 +382,7 @@ void ThrowMine(const int &in iIndex, CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 	FragMineIPD.Add("overridescript", "mass,60,rotdamping,10000,damping,0,inertia,0,");
 	FragMineIPD.Add("nodamageforces", "1");
 	FragMineIPD.Add("nofiresound", "1");
-	FragMineIPD.Add("ExplodeDamage", "200");	//423
+	FragMineIPD.Add("ExplodeDamage", "275");	//423
 	FragMineIPD.Add("ExplodeRadius", "162");
 
 	CBaseEntity@ pFragMine = EntityCreator::Create("prop_physics_override", Vector(0, 0, 0), QAngle(0, 0, 0), FragMineIPD);

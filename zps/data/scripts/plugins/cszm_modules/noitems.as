@@ -54,7 +54,7 @@ void OverrideLimits()
 			"item_ammo_pistol",
 			"item_ammo_revolver",
 			"item_ammo_shotgun",
-			"item_ammo_revolver",
+			"item_ammo_rifle",
 			"item_ammo_barricade",
 			"item_armor"
 		};

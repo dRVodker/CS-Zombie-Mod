@@ -8,6 +8,27 @@ bool bDamageType(int &in iSubjectDT, int &in iDMGNum)
 	return iSubjectDT & (1<<iDMGNum) == (1<<iDMGNum);
 }
 
+bool LessThanGTZ(float flTime)
+{
+	return (flTime <= Globals.GetCurrentTime() && flTime != 0);
+}
+
+bool LessThanGT(float flTime)
+{
+	return (flTime <= Globals.GetCurrentTime());
+}
+
+float PlusGT(float flTime)
+{
+	return Globals.GetCurrentTime() + flTime;
+}
+
+int DamageToMoney(const int &in nVicHealth, int &in nDamage)
+{
+	if (nVicHealth < nDamage) {nDamage = nVicHealth;}
+	return int(ceil(nDamage / 1000.0f * 100));
+}
+
 string BoolToString(bool boolean)
 {
 	if (boolean)
@@ -52,18 +73,18 @@ void SetDoorFilter(const int &in iFilter)
 void lobby_hint(CZP_Player@ pPlayer)
 {
 	string sNextLine = "\n";
-	SendGameTextPlayer(pPlayer, strHintF1, 3, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color(64, 128, 255), Color(255, 95, 5));
+	SendGameTextPlayer(pPlayer, strHintF1, 1, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color(64, 128, 255), Color(255, 95, 5));
 	SendGameTextPlayer(pPlayer, "\n" + strHintF3, 4, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color(255, 255, 255), Color(255, 95, 5));
 }
 
 void lobby_hint_wu(CZP_Player@ pPlayer)
 {
-	SendGameTextPlayer(pPlayer, strHintF4WU, 3, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color(64, 255, 128), Color(255, 95, 5));
+	SendGameTextPlayer(pPlayer, strHintF4WU, 1, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color(64, 255, 128), Color(255, 95, 5));
 }
 
 void spec_hint(CZP_Player@ pPlayer)
 {
-	SendGameTextPlayer(pPlayer, strHintF4, 3, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 15.0f, Color(64, 255, 128), Color(255, 95, 5));
+	SendGameTextPlayer(pPlayer, strHintF4, 1, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 15.0f, Color(64, 255, 128), Color(255, 95, 5));
 }
 
 void PutPlrToLobby(CBaseEntity@ pEntPlayer)
@@ -241,20 +262,6 @@ void EmitBloodEffect(CZP_Player@ pPlayer, const bool &in bSilent)
 	{
 		Engine.EmitSoundPosition(pBaseEnt.entindex(), ")impacts/flesh_impact_headshot-01.wav", pBaseEnt.EyePosition(), 0.985f, 70, Math::RandomInt(85, 100));
 		Engine.EmitSoundPosition(pBaseEnt.entindex(), g_strBloodSND[Math::RandomInt(0, g_strBloodSND.length() - 1)], pBaseEnt.EyePosition(), 1.0f, 65, Math::RandomInt(95, 115));
-	}
-}
-
-void SetAntidoteState(const int &in iIndex, const int &in iAStage)
-{
-	CBaseEntity@ pEntity;
-	while ((@pEntity = FindEntityByName(pEntity, "item_antidote")) !is null)
-	{
-		if (Utils.StringToInt(pEntity.GetEntityDescription()) == iIndex && Utils.StrEql("item_antidote", pEntity.GetEntityName(), true))
-		{
-			pEntity.SetEntityName("antidote" + formatInt(iIndex));
-			Engine.Ent_Fire(pEntity.GetEntityName(), "addoutput", "itemstate " + formatInt(iAStage));
-			Engine.Ent_Fire(pEntity.GetEntityName(), "addoutput", "targetname item_antidote", "0.01");
-		}
 	}
 }
 
@@ -485,7 +492,7 @@ void DetachEyesLights(CBaseEntity@ pPlayerEntity)
 	}
 }
 
-void HumanVictoryRewards()
+void ApplyVictoryRewards(RoundWinState iWinState)
 {
 	for (int i = 1; i <= iMaxPlayers; i++)
 	{
@@ -497,39 +504,34 @@ void HumanVictoryRewards()
 		}
 
 		CSZMPlayer@ pCSZMPlayer = Array_CSZMPlayer[i];
+		int Team = pPlayerEntity.GetTeamNumber();
 
 		if (pPlayerEntity.IsAlive())
 		{
-			if (pPlayerEntity.GetTeamNumber() == TEAM_SURVIVORS)
+			if (iWinState == STATE_HUMAN)
 			{
-				pCSZMPlayer.AddInfectPoints(-15);
+				if (Team == TEAM_SURVIVORS)
+				{
+					pCSZMPlayer.AddInfectPoints(-15);
+					pCSZMPlayer.AddMoney(ECO_Human_Win);
+				}
+				else if (Team == TEAM_ZOMBIES)
+				{
+					pCSZMPlayer.AddInfectPoints(5);
+					pCSZMPlayer.AddMoney(ECO_Zombie_Lose);
+					pPlayerEntity.TakeDamage(CTakeDamageInfo(pPlayerEntity, pPlayerEntity, float(pPlayerEntity.GetHealth() + 200.0f), (1<<0)));
+				}
 			}
-			else if (pPlayerEntity.GetTeamNumber() == TEAM_ZOMBIES)
+			else if (iWinState == STATE_ZOMBIE)
 			{
-				pCSZMPlayer.AddInfectPoints(5);
-				CTakeDamageInfo SelfDamage = CTakeDamageInfo(pPlayerEntity, pPlayerEntity, float(pPlayerEntity.GetHealth() + 200.0f), (1<<0));
-				pPlayerEntity.TakeDamage(SelfDamage);
+				pCSZMPlayer.AddInfectPoints(-20);
+				pCSZMPlayer.AddMoney(ECO_Zombie_Win);
+
+				if (pCSZMPlayer.FirstInfected)
+				{
+					pCSZMPlayer.AddMoney(ECO_Zombie_Win);
+				}
 			}
-		}
-	}
-}
-
-void ZombieVictoryRewards()
-{
-	for (int i = 1; i <= iMaxPlayers; i++)
-	{
-		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(i);
-
-		if (pPlayerEntity is null)
-		{
-			continue;
-		}
-
-		CSZMPlayer@ pCSZMPlayer = Array_CSZMPlayer[i];
-
-		if (pPlayerEntity.IsAlive() && pPlayerEntity.GetTeamNumber() == TEAM_ZOMBIES && pCSZMPlayer.FirstInfected)
-		{
-			pCSZMPlayer.AddInfectPoints(-20);
 		}
 	}
 }

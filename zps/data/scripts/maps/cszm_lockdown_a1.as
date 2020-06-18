@@ -1,4 +1,3 @@
-#include "cszm_modules/spawncrates"
 #include "cszm_modules/lobbyambient"
 #include "cszm_modules/newspawn"
 
@@ -117,15 +116,10 @@ array<array<CSpawnPoint@>> LockDown_Spawns =
 
 const int TEAM_LOBBYGUYS = 0;
 int iMaxPlayers;
-bool bIsCratesFound = false;
 
 void OnMapInit()
 {
 	iMaxPlayers = Globals.GetMaxClients();
-
-	iMinCrates = 2;
-	iMaxCrates = 4;
-	flDistBetweenCrates = 407.0f;
 
 	Engine.PrecacheFile(sound, "buttons/lever8.wav");
 
@@ -138,16 +132,6 @@ void OnNewRound()
 {
 	Schedule::Task(0.05f, "Stuff");
 	Schedule::Task(0.05f, "LockDown_FindCrates");
-}
-
-void OnProcessRound()
-{
-
-}
-
-void OnMatchBegin() 
-{
-	Schedule::Task(0.5f, "SpawnCrates");
 }
 
 void Stuff()
@@ -169,25 +153,13 @@ void LockDown_FindCrates()
 
 	while ((@pEntity = FindEntityByClassname(pEntity, "prop_itemcrate")) !is null)
 	{
-		if (!bIsCratesFound)
-		{
-			g_PICOrigin.insertLast(pEntity.GetAbsOrigin());
-			g_PICAngles.insertLast(pEntity.GetAbsAngles());		
-		}
 		pEntity.SUB_Remove();
-	}
-
-	if (!bIsCratesFound)
-	{
-		bIsCratesFound = true;
 	}
 }
 
 void OnEntityOutput(const string &in strOutput, CBaseEntity@ pActivator, CBaseEntity@ pCaller)
 {
 	string strTargetname = pCaller.GetEntityName();
-
-//	Chat.CenterMessage(all, "-=Output=-\nClass: " + pCaller.GetClassname() + "\nName: " + strTargetname);
 
 	if (Utils.StrEql("OnPressed", strOutput) && Utils.StrEql("fan_button", strTargetname))
 	{

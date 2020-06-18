@@ -4,7 +4,7 @@ const int SPEED_DEFAULT = 245;		//225
 const int SPEED_HUMAN = 230;		//225
 const int SPEED_ZOMBIE = 215;		//213
 const int SPEED_CARRIER = 225;		//220
-const int SPEED_ADRENALINE = 65;	//50
+const int SPEED_ADRENALINE = 75;	//50
 
 //Другие постоянные
 const float CONST_SPAWN_DELAY = 5.0f;				//Время в секундах, которое должны будут ждать все убитые игроки, чтобы снова возродиться

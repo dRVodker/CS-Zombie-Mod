@@ -124,4 +124,6 @@ void CacheSounds()
 	Engine.PrecacheFile(sound, ")gibs/flesh_arm-02.wav");
 	Engine.PrecacheFile(sound, ")gibs/flesh_arm-03.wav");
 	Engine.PrecacheFile(sound, ")gibs/flesh_arm-04.wav");
+	Engine.PrecacheFile(sound, "buttons/lightswitch2.wav");
+	Engine.PrecacheFile(sound, "weapons/slam/buttonclick.wav");
 }

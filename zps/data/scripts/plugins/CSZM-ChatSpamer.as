@@ -4,11 +4,18 @@ const string lb = "{blue}[";
 const string rb = "{blue}] ";
 const string strCSZM = lb + "{coral}cszm"+rb;
 
-array<string> g_strMsg =
+const array<string> g_strMsg =
 {
-	"{gold}Если вы застряли в наблюдателях, нажмите {seagreen}F4{gold} чтоб вернуться {green}лобби{gold}.",
-	"{gold}Используйте {green}антитод{gold} для повышения сопротивления к {green}инфекции{gold}.",
-	"{gold}Чтобы увидеть доступные комманды чата, напишите {green}!chatcom{gold} или {green}!help{gold}."
+	"Находясь в {white}наблюдателях{gold}, нажмите {cornflowerblue}F4{gold} чтоб вернуться в {green}лобби{gold}.",
+	"Используйте {cornflowerblue}антитод{gold} для повышения сопротивления к {green}инфекции{gold}.",
+	"Нажмите {cornflowerblue}Z {gold}[по умолчанию] или напишите в чат {cornflowerblue}!menu{gold}, чтоб открыть меню.",
+	"Играя за зомби, вы можете получить немного {seagreen}денег{gold}, ломая мебель или баррикады",
+	"В {cornflowerblue}Zombie Menu{gold} вы можете приобрести разные {cornflowerblue}улучшения{gold}.",
+	"Получить {cornflowerblue}оружие{gold} или иные {cornflowerblue}полезные предметы{gold} можно только из {cornflowerblue}магазина{gold}.",
+	"Зомби может купить доп. здоровье {cornflowerblue}только 2 раза за раунд{gold}.",
+	"Доп. здоровье зомби сохраняется {cornflowerblue}после возрождения{gold}.",
+	"Зомби {red}не сможет{gold} купить новую броню, {cornflowerblue}полностью{gold} не потратив старую.",
+	"Зомби получают небольшие {seagreen}деньги{gold}, ломая баррикады или другие вещи."
 };
 
 array<string> g_strMsgToShow;
@@ -59,6 +66,6 @@ void ShowMsg()
 	}
 
 	int iRNG = Math::RandomInt(0, iMSGToShowLength - 1);
-	Chat.PrintToChat(all, strCSZM + g_strMsgToShow[iRNG]);
+	Chat.PrintToChat(all, strCSZM + "{gold}" + g_strMsgToShow[iRNG]);
 	g_strMsgToShow.removeAt(iRNG);
 }

@@ -7,7 +7,6 @@ const string strLastZLeave = "{red}ВНИМАНИЕ{default}: Последний
 const string strAMP = "Awaiting More Players";
 const string strWarmUp = "-= Разминка! =-";
 
-const string strMax = " макс.";
 const string strMaxInfRes = "Вы получили максимальное сопротивление к инфекции: ";
 const string strMaxInfResPickUp = "Вы уже имеете максимальное сопротивление к инфекции";
 const string strInfRes = "Сопротивление к инфекции: ";

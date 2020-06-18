@@ -5,10 +5,12 @@ void OnPluginInit()
 	PluginData::SetName("CSZM - Dropped Items Limit");
 
 	Events::Entities::OnEntityDestruction.Hook(@CSZM_DI_OnEntityDestruction);
+	Events::Entities::OnEntityCreation.Hook(@CSZM_DI_OnEntityCreation);
 }
 
 const int MAX_DROPPED_ITEMS = 32;
 bool bIsCSZM;
+float flTimeToDelete;
 
 array<int> gItemIndex;
 array<DroppedItem@> gItem;
@@ -18,13 +20,20 @@ void OnMapInit()
 	if (Utils.StrContains("cszm", Globals.GetCurrentMapName()))
 	{
 		bIsCSZM = true;
+		flTimeToDelete = Globals.GetCurrentTime() + 0.25f;
 		RegisterEntity();
+		Engine.Ent_Fire("_items_to_kill", "kill", "0", "0.1");
 	}
 }
 
 void OnNewRound()
 {
-	RemoveRange();
+	if (bIsCSZM)
+	{
+		RemoveRange();
+		flTimeToDelete = Globals.GetCurrentTime() + 0.25f;
+		Engine.Ent_Fire("_items_to_kill", "kill", "0", "0.1");
+	}
 }
 
 void OnMapShutdown()
@@ -77,6 +86,16 @@ void OnEntityDropped(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 	{
 		InsertItem(pEntity.entindex());
 	}
+}
+
+HookReturnCode CSZM_DI_OnEntityCreation(const string &in strClassname, CBaseEntity@ pEntity)
+{
+	if (((Utils.StrContains("weapon", strClassname) || Utils.StrContains("item", strClassname)) && !(Utils.StrEql("weapon_phone", strClassname, true) || Utils.StrEql("item_deliver", strClassname, true) || Utils.StrEql("weapon_emptyhand", strClassname, true))) && flTimeToDelete > Globals.GetCurrentTime())
+	{
+		pEntity.SetEntityName("_items_to_kill");
+	}
+
+	return HOOK_CONTINUE;
 }
 
 HookReturnCode CSZM_DI_OnEntityDestruction(const string &in strClassname, CBaseEntity@ pEntity)

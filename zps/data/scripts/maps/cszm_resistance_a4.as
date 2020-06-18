@@ -1,4 +1,3 @@
-#include "cszm_modules/spawncrates"
 #include "cszm_modules/lobbyambient"
 #include "cszm_modules/newspawn"
 
@@ -128,9 +127,6 @@ array<array<CSpawnPoint@>> New_Spawns =
 		CSpawnPoint(Vector(-646.762, 1045.14, -1215.97), QAngle(29.2578, -25.6426, 0)),
 		CSpawnPoint(Vector(-595.077, 345.929, -1215.97), QAngle(2.17795, 58.537, 0)),
 		CSpawnPoint(Vector(-541.955, -104.309, -1215.97), QAngle(15.5001, -32.7212, 0)),
-		CSpawnPoint(Vector(-606.746, -304.125, -1025.05), QAngle(58.951, 30.9492, 0)),
-		CSpawnPoint(Vector(-604.49, 200.635, -1025.66), QAngle(39.9662, -75.2647, 0)),
-		CSpawnPoint(Vector(-636.905, 1694.49, -1052.62), QAngle(35.4286, -7.67425, 0)),
 		CSpawnPoint(Vector(-626.675, -723.243, -1209.79), QAngle(-20.5822, 15.2311, 0)),
 		CSpawnPoint(Vector(-109.983, -1092.4, -1207.08), QAngle(-19.4933, 83.947, 0)),
 		CSpawnPoint(Vector(393.011, -1017.64, -1214.82), QAngle(-18.9125, 120.646, 0)),
@@ -140,15 +136,13 @@ array<array<CSpawnPoint@>> New_Spawns =
 		CSpawnPoint(Vector(-305.073, -468.224, -1205.91), QAngle(3.41205, -108.081, 0)),
 		CSpawnPoint(Vector(649.771, 46.1191, -1215.97), QAngle(0.290261, 101.094, 0)),
 		CSpawnPoint(Vector(-193.188, 31.6418, -954.969), QAngle(29.9474, -7.74666, 0)),
+		CSpawnPoint(Vector(-621.659, -318.153, -1215.97), QAngle(0.54099, 44.4192, 0)),
+		CSpawnPoint(Vector(-620.457, 130.406, -1215.97), QAngle(0.0363, -58.6364, 0)),
+		CSpawnPoint(Vector(-638.98, 1564.19, -1215.97), QAngle(0.907505, 33.2051, 0)),
+		CSpawnPoint(Vector(-186.096, 1702.22, -1215.97), QAngle(2.86771, -166.844, 0)),
 		CSpawnPoint(Vector(253.674, 433.838, -1215.97), QAngle(-0.472013, -135.862, 0))
 	}
 };
-
-//MyDebugFunc
-void SD(const string &in strMSG)
-{
-	Chat.PrintToChat(all, strMSG);
-}
 
 int iMaxPlayers;
 
@@ -179,31 +173,6 @@ void OnMapInit()
 
 	g_TeleportDelay.resize(iMaxPlayers + 1);
 
-	iMinCrates = 1;
-	iMaxCrates = 4;
-
-	g_PICOrigin.insertLast(Vector(-661.715, 487.519, -1215.51));
-	g_PICOrigin.insertLast(Vector(719.118, 1402.53, -1135.04));
-	g_PICOrigin.insertLast(Vector(714.735, 1335.2, -1135.58));
-	g_PICOrigin.insertLast(Vector(216.396, 1550.16, -1135.5));
-	g_PICOrigin.insertLast(Vector(-101.957, 1563.59, -1128.42));
-	g_PICOrigin.insertLast(Vector(29.9501, 585.308, -919.582));
-	g_PICOrigin.insertLast(Vector(25.0248, 226.476, -1215.5));
-	g_PICOrigin.insertLast(Vector(41.3811, -281.985, -951.505));
-	g_PICOrigin.insertLast(Vector(690.564, 642.899, -1215.55));
-	g_PICOrigin.insertLast(Vector(483.639, -921.102, -1214.39));
-
-	g_PICAngles.insertLast(QAngle(-0.0457825, -55.4922, -0.00650024));
-	g_PICAngles.insertLast(QAngle(-0.0533273, -30.7486, 1.74876));
-	g_PICAngles.insertLast(QAngle(-0.283024, 40.0352, -0.000915527));
-	g_PICAngles.insertLast(QAngle(0.000625706, 45.1696, -0.000640869));
-	g_PICAngles.insertLast(QAngle(-0.143524, 16.1076, -0.0185547));
-	g_PICAngles.insertLast(QAngle(-0.0357275, 153.391, 179.869));
-	g_PICAngles.insertLast(QAngle(0.00177929, 135.067, 0.00177985));
-	g_PICAngles.insertLast(QAngle(-0.128871, -36.6698, -0.128876));
-	g_PICAngles.insertLast(QAngle(-0.0151184, -38.4389, 0.188698));
-	g_PICAngles.insertLast(QAngle(-0.781201, 41.2206, 0.181596));
-
 	Events::Player::OnPlayerSpawn.Hook(@OnPlrSpawn);
 }
 
@@ -218,7 +187,6 @@ void OnNewRound()
 void OnMatchBegin() 
 {
 	Engine.Ent_Fire("SND_Ambient", "PlaySound");
-	Schedule::Task(0.5f, "SpawnCrates");
 }
 
 void SetUpStuff()

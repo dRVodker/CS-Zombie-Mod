@@ -113,62 +113,6 @@ array<Vector> g_vecCheeseOrigin =
 
 array<Vector> g_vLobbySpawn;
 
-array<CGrenade@> Array_Grenade;
-
-class CGrenade
-{
-	private int arraypos;
-	int entindex;
-	private float respawntime;
-	private Vector Origin;
-	private QAngle Angles;
-
-	CGrenade(int nEntIndex, Vector nOrigin, QAngle nAngles)
-	{
-		arraypos = -1;
-		respawntime = 0;
-		entindex = nEntIndex;
-		Origin = nOrigin;
-		Angles = nAngles;
-	}
-
-	private void DoRespawn()
-	{
-		CEntityData@ GrenadeIPD = EntityCreator::EntityData();
-		GrenadeIPD.Add("origin", "" + Origin.x + " " + Origin.y + " " + Origin.z);
-		GrenadeIPD.Add("DisableDamageForces", "1", true);
-
-		CBaseEntity@ pGrenade = EntityCreator::Create("weapon_frag", Origin, Angles, GrenadeIPD);
-
-		RespawnEffects(Origin);
-		entindex = pGrenade.entindex();
-	}
-
-	void Respawn()
-	{
-		if (entindex != -1)
-		{
-			entindex = -1;
-			respawntime = Globals.GetCurrentTime() + Math::RandomFloat(8.12f, 12.21f);						
-		}
-	}
-
-	void Think()
-	{
-		if (respawntime != 0 && respawntime <= Globals.GetCurrentTime())
-		{
-			respawntime = 0;
-			DoRespawn();
-		}
-
-		if (entindex != -1 && FindEntityByEntIndex(entindex).Distance(Origin) > 32.0f)
-		{
-			FindEntityByEntIndex(entindex).Teleport(Origin, Angles, Vector(0, 0, 0));
-			RespawnEffects(Origin);
-		}
-	}
-}
-
 void OnMapInit()
 {
 	iMaxPlayers = Globals.GetMaxClients();
@@ -199,13 +143,8 @@ void OnMapInit()
 
 	Entities::RegisterOutput("OnBreak", "cheese");
 	Entities::RegisterOutput("OnBreak", "func_breakable");
-
 	Entities::RegisterOutput("OnPhysPunted", "bust");
-	
 	Entities::RegisterOutput("OnTakeDamage", "bust");
-
-	Entities::RegisterPickup("weapon_frag");
-
 	Entities::RegisterUse("cheese");
 
 	Events::Trigger::OnEndTouch.Hook(@SH_OnEndTouch);
@@ -253,15 +192,13 @@ void OnNewRound()
 
 void OnMatchBegin()
 {
-	FindGrenades();
-
 	RemoveNativeSpawns("info_player_human");
 	CreateSpawnsFromArray(SecondaryHumanSpawns);
 }
 
 void OnMatchEnded()
 {
-	Array_Grenade.removeRange(0, Array_Grenade.length());
+
 }
 
 void SetUpStuff()
@@ -292,7 +229,7 @@ void SetUpStuff()
 
 HookReturnCode SH_OnEndTouch(CBaseEntity@ pTrigger, const string &in strEntityName, CBaseEntity@ pEntity)
 {
-	if (strEntityName == "bob_trigger" && pEntity.GetClassname() == "npc_grenade_frag")
+	if (Utils.StrEql("bob_trigger", strEntityName, true) && Utils.StrEql("npc_grenade_frag", pEntity.GetClassname(), true))
 	{	
 		pEntity.SetHealth(25);
 		pEntity.Ignite(15);
@@ -324,27 +261,6 @@ HookReturnCode SH_OnPlayerSpawn(CZP_Player@ pPlayer)
 	}
 
 	return HOOK_CONTINUE;
-}
-
-void OnEntityPickedUp(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
-{
-	int iIndex = pEntity.entindex();
-	uint AG_Length = Array_Grenade.length();
-
-	for (uint i = 0; i < AG_Length; i++)
-	{
-		CGrenade@ pGrenade = Array_Grenade[i];
-		
-		if (pGrenade is null)
-		{
-			continue;
-		}
-
-		if (pGrenade.entindex == iIndex)
-		{
-			pGrenade.Respawn();
-		}
-	}
 }
 
 void OnEntityUsed(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
@@ -437,9 +353,9 @@ void BlackCross(CBaseEntity@ pEntityPlayer)
 	{
 		int iRND = Math::RandomInt(1, 3);
 		Utils.ScreenFade(pPlayer, Color(0, 0, 0, 255), 3.0f, 0.0f, fade_in);
-		Engine.EmitSoundPlayer(pPlayer, "@physics/glass/glass_impact_bullet" + iRND + ".wav");
-		Engine.EmitSoundPlayer(pPlayer, "@physics/glass/glass_impact_bullet" + iRND + ".wav");
-		Engine.EmitSoundPlayer(pPlayer, "@physics/glass/glass_impact_bullet" + iRND + ".wav");
+		Engine.EmitSoundPlayer(pPlayer, "@physics/glass/glass_impact_bullet" + formatInt(iRND) + ".wav");
+		Engine.EmitSoundPlayer(pPlayer, "@physics/glass/glass_impact_bullet" + formatInt(iRND) + ".wav");
+		Engine.EmitSoundPlayer(pPlayer, "@physics/glass/glass_impact_bullet" + formatInt(iRND) + ".wav");
 	}
 
 	iBlackCross++;
@@ -466,7 +382,7 @@ void CheeseNoNo()
 void CheeseNooo()
 {
 	Engine.EmitSoundPosition(0, "@sunshine_ambient/vo/no02.wav", Vector(0, 0, 0), 1.0f, 0, 95);
-	SendGameText(any, "The Cheese . . . .\nAre broken!!!", 2, 0.0f, 0.3f, 0.75f, 0.0f, 0.45f, 2.24f, Color(255, 0, 0), Color(0, 0, 0));
+	SendGameText(any, "The Cheese . . . .\nare broken!!!", 2, 0.0f, 0.3f, 0.75f, 0.0f, 0.45f, 2.24f, Color(255, 0, 0), Color(0, 0, 0));
 }
 
 void SpawnCheese()
@@ -498,28 +414,6 @@ void SpawnCheese()
 
 		pCheese.SetMaxHealth(256);
 		pCheese.SetHealth(256);
-	}
-}
-
-void OnProcessRound()
-{
-	for (uint g = 0; g < Array_Grenade.length(); g++)
-	{
-		CGrenade@ pNade = Array_Grenade[g];
-
-		if (pNade !is null)
-		{
-			pNade.Think();
-		}
-	}
-}
-
-void FindGrenades()
-{
-	CBaseEntity@ pNade = null;
-	while ((@pNade = FindEntityByName(pNade, "re_frag")) !is null)
-	{
-		Array_Grenade.insertLast(CGrenade(pNade.entindex(), pNade.GetAbsOrigin(), pNade.GetAbsAngles()));
 	}
 }
 

@@ -18,7 +18,6 @@ void SetUpIPD(const int &in iFlags)
 		gFragMineIPD.Add("printname", "vgui/images/fragmine");
 		gFragMineIPD.Add("weight", "5");
 		gFragMineIPD.Add("DisableDamageForces", "0", true);
-
 		Log.PrintToServerConsole(LOGTYPE_INFO, "Custom Items", "{green}-={blueviolet}FragMine IPD {cyan}Added{green}=-");
 	}
 
@@ -34,7 +33,6 @@ void SetUpIPD(const int &in iFlags)
 		gAdrenalineIPD.Add("sound_pickup", "Deliver.PickupGeneric");
 		gAdrenalineIPD.Add("weight", "0");
 		gAdrenalineIPD.Add("DisableDamageForces", "0", true);
-
 		Log.PrintToServerConsole(LOGTYPE_INFO, "Custom Items", "{green}-={blueviolet}Adrenaline IPD {cyan}Added{green}=-");
 	}
 
@@ -50,10 +48,8 @@ void SetUpIPD(const int &in iFlags)
 		gAntidoteIPD.Add("sound_pickup", "Deliver.PickupGeneric");
 		gAntidoteIPD.Add("weight", "0");
 		gAntidoteIPD.Add("DisableDamageForces", "0", true);
-
 		Log.PrintToServerConsole(LOGTYPE_INFO, "Custom Items", "{green}-={blueviolet}Antidote IPD {cyan}Added{green}=-");
 	}
-
 }
 
 void ClearIPD()

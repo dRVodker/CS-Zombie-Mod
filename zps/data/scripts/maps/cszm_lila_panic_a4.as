@@ -1,12 +1,6 @@
 #include "cszm_modules/lobbyambient"
 #include "cszm_modules/newspawn"
 
-//MyDebugFunc
-void SD(const string &in strMSG)
-{
-	Chat.PrintToChat(all, strMSG);
-}
-
 array<array<CSpawnPoint@>> LilaPanic_Spawns =
 {
 	{ 
@@ -168,7 +162,6 @@ HookReturnCode OnPlayerSpawn(CZP_Player@ pPlayer)
 	{
 		Engine.Ent_Fire_Ent(pBaseEnt, "SetFogController", "main_insta_fog");
 	}
-
 	else
 	{
 		PlayLobbyAmbient();
@@ -217,7 +210,6 @@ void OnEntityUsed(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 		{
 			pCDoor1.Toggle();
 		}
-
 		else if (Utils.StrEql(pEntity.GetEntityName(), "CBD_Button2"))
 		{
 			pCDoor2.Toggle();
@@ -236,7 +228,6 @@ void OnEntityOutput(const string &in strOutput, CBaseEntity@ pActivator, CBaseEn
 	{
 		pCDoor1.UpdateButton();
 	}
-
 	else if (Utils.StrEql(pCaller.GetEntityName(), "ContainerBDoor2"))
 	{
 		pCDoor2.UpdateButton();
@@ -264,7 +255,6 @@ void SetUpStuff()
 	CreateSpawnsFromArray(LilaPanic_Spawns);
 }
 
-// Random Skins for the vending machines
 void VMSkins()
 {
 	for (int i = 1; i <= 10; i++)
@@ -273,25 +263,19 @@ void VMSkins()
 	}
 }
 
-//Setting a random count of items to 'prop_itemcrate'
 void RandomizePropCrate()
 {
 	CBaseEntity@ pEntity;
 	while ((@pEntity = FindEntityByClassname(pEntity, "prop_itemcrate")) !is null)
 	{
-		if (Math::RandomInt(1, 100) < 15 && !Utils.StrEql("breencrate", pEntity.GetEntityName()))
+		if (!Utils.StrEql("breencrate", pEntity.GetEntityName()))
 		{
 			pEntity.SUB_Remove();
 			continue;
 		}
 
-		else
-		{
-			int RNG = Math::RandomInt(1, 6);
-
-			Engine.Ent_Fire_Ent(pEntity, "AddOutput", "ItemCount " + RNG);
-			Engine.Ent_Fire_Ent(pEntity, "AddOutput", "ItemClass item_ammo_flare");
-		}
+		Engine.Ent_Fire_Ent(pEntity, "AddOutput", "ItemCount 0");
+		Engine.Ent_Fire_Ent(pEntity, "AddOutput", "ItemClass item_ammo_pistol");
 	}
 }
 

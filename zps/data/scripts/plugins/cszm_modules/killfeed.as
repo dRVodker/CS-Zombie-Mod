@@ -20,28 +20,16 @@ void KillFeed(const string &in strAttName, const int &in iAttTeam, const string 
 	
 	switch(iAttTeam)
 	{
-		case 1:
-			AttColor = "green";
-		break;
-		case 2:
-			AttColor = "blue";
-		break;
-		case 3:
-			AttColor = "red";
-		break;
+		case 1: AttColor = "green"; break;
+		case 2: AttColor = "blue"; break;
+		case 3: AttColor = "red"; break;
 	}
 
 	switch(iVicTeam)
 	{
-		case 1:
-			VicColor = "green";
-		break;
-		case 2:
-			VicColor = "blue";
-		break;
-		case 3:
-			VicColor = "red";
-		break;
+		case 1: VicColor = "green"; break;
+		case 2: VicColor = "blue"; break;
+		case 3: VicColor = "red"; break;
 	}
 
 	if (!bIsSuicide)
@@ -64,37 +52,10 @@ void KillFeed(const string &in strAttName, const int &in iAttTeam, const string 
 
 void ShowKills(CZP_Player@ pPlayer, const int &in iKills, const bool &in bIsInfection)
 {
-	string strMsgToShow = "";
-	int iR = 235;
-	int iG = 16;
-	int iB = 32;
-	
-	if (!bIsInfection)
-	{
-		if (iKills == 1)
-		{
-			strMsgToShow = "Kill: ";
-		}
-		else
-		{
-			strMsgToShow = "Kills: ";
-		}
-	}
-	else
-	{
-		iG = 235;
-		iR = 16;
-		iB = 32;
-		
-		if (iKills == 1)
-		{
-			strMsgToShow = "Victim: ";
-		}
-		else 
-		{
-			strMsgToShow = "Victims: ";
-		}
-	}
-	
-	ShowTextPlr(pPlayer, strMsgToShow + iKills, 5, 0.00f, -1, 0.65f, 0.00f, 0.125f, 2.00f, Color(iR, iG, iB), Color(255, 95, 5));
+	string strMsgToShow = (bIsInfection) ? "Victim" : "Kill";
+	int iR = (bIsInfection) ? 16 : 235 ;
+	int iG = (bIsInfection) ? 235 : 16 ;
+	strMsgToShow += (iKills == 1) ? ": " : "s: ";
+	 
+	ShowTextPlr(pPlayer, strMsgToShow + formatInt(iKills), 5, 0.00f, -1, 0.65f, 0.00f, 0.125f, 2.00f, Color(iR, iG, 32), Color(255, 95, 5));
 }

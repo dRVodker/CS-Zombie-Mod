@@ -1,4 +1,3 @@
-#include "cszm_modules/spawncrates"
 #include "cszm_modules/lobbyambient"
 #include "cszm_modules/newspawn"
 
@@ -71,36 +70,6 @@ void OnMapInit()
 {
 	Schedule::Task(0.05f, "SetUpStuff");
 
-	iMinCrates = 0;
-	iMaxCrates = 4;
-
-	g_PICOrigin.insertLast(Vector(687.176, 518.164, 144.499));
-	g_PICAngles.insertLast(QAngle(0, -39.3396, 0));
-
-	g_PICOrigin.insertLast(Vector(215.928, 12.7174, 0.4998));
-	g_PICAngles.insertLast(QAngle(0, 37.7857, 0));
-
-	g_PICOrigin.insertLast(Vector(196.874, 2199.98, 0.487563));
-	g_PICAngles.insertLast(QAngle(0, 160.113, 0));
-
-	g_PICOrigin.insertLast(Vector(-869.544, 2198.39, -175.023));
-	g_PICAngles.insertLast(QAngle(0, -29.4917, 0));
-
-	g_PICOrigin.insertLast(Vector(320.141, 2748.25, 175.867));
-	g_PICAngles.insertLast(QAngle(0, 6.47761, 0));
-
-	g_PICOrigin.insertLast(Vector(198.54, 866.949, 292.692));
-	g_PICAngles.insertLast(QAngle(0, 156.909, 0));
-
-	g_PICOrigin.insertLast(Vector(-1188.67, 825.958, 16.4363));
-	g_PICAngles.insertLast(QAngle(0, 126.38, 0));
-
-	g_PICOrigin.insertLast(Vector(1034.61, 1747.99, -215.5));
-	g_PICAngles.insertLast(QAngle(0, -41.8031, 0));
-
-	g_PICOrigin.insertLast(Vector(-401.409, 1566.96, 152.901));
-	g_PICAngles.insertLast(QAngle(0, -53.3466, 0));
-
 	Events::Player::OnPlayerSpawn.Hook(@OnPlrSpawn);
 }
 
@@ -111,7 +80,6 @@ void OnNewRound()
 
 void OnMatchBegin() 
 {
-	Schedule::Task(0.5f, "SpawnCrates");
 	RemoveNativeSpawns("info_player_human");
 	CreateSpawnsFromArray(SecondaryHumanSpawns);
 }
@@ -121,7 +89,6 @@ void SetUpStuff()
 	Engine.Ent_Fire("screenoverlay", "StartOverlays");
 	Engine.Ent_Fire("Precache", "Kill");
 	
-//	Engine.Ent_Fire("tonemap", "SetBloomScale", "0.475");
 	PropSkins();
 	OpenDoors();
 	PlayLobbyAmbient();
@@ -162,12 +129,12 @@ void PropSkins()
 	{
 		if(Utils.StrContains("vending_machine", pEntity.GetModelName()))
 		{
-			Engine.Ent_Fire_Ent(pEntity, "Skin", "" + Math::RandomInt(0, 2));
+			Engine.Ent_Fire_Ent(pEntity, "Skin", formatInt(Math::RandomInt(0, 2)));
 		}
 
 		else if(Utils.StrContains("oildrum001", pEntity.GetModelName()))
 		{
-			Engine.Ent_Fire_Ent(pEntity, "Skin", "" + Math::RandomInt(0, 5));
+			Engine.Ent_Fire_Ent(pEntity, "Skin", formatInt(Math::RandomInt(0, 5)));
 		}
 	}
 }

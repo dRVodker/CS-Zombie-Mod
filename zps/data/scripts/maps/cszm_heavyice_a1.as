@@ -80,9 +80,7 @@ int CHP(int &in iMulti)
 	return iHP;
 }
 
-const int TEAM_LOBBYGUYS = 0;
-const int TEAM_SURVIVORS = 2;
-const int TEAM_ZOMBIES = 3;
+enum ZPS_Teams {TEAM_LOBBYGUYS, TEAM_SURVIVORS = 2, TEAM_ZOMBIES}
 
 int iMaxPlayers;
 int iMysticismAttackerIndex = 0;

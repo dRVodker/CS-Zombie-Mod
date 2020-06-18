@@ -363,7 +363,7 @@ void SetFirefly(CBaseEntity@ pPlayerEntity, const int &in iIndex, int &in iR, in
 
 		FFSpriteIPD.Add("targetname", iIndex + "firefly_sprite");
 		FFSpriteIPD.Add("model", "sprites/light_glow01.vmt");
-		FFSpriteIPD.Add("rendercolor", iR + " " + iG + " " + iB);
+		FFSpriteIPD.Add("rendercolor", formatInt(iR) + " " + formatInt(iG) + " " + formatInt(iB));
 		FFSpriteIPD.Add("rendermode", "5");
 		FFSpriteIPD.Add("renderamt", "240");
 		FFSpriteIPD.Add("scale", "0.25");
@@ -375,7 +375,7 @@ void SetFirefly(CBaseEntity@ pPlayerEntity, const int &in iIndex, int &in iR, in
 		FFTrailIPD.Add("targetname", iIndex + "firefly_trail");
 		FFTrailIPD.Add("endwidth", "12");
 		FFTrailIPD.Add("lifetime", "0.145");
-		FFTrailIPD.Add("rendercolor", iR + " " + iG + " " + iB);
+		FFTrailIPD.Add("rendercolor", formatInt(iR) + " " + formatInt(iG) + " " + formatInt(iB));
 		FFTrailIPD.Add("rendermode", "5");
 		FFTrailIPD.Add("renderamt", "84");
 		FFTrailIPD.Add("spritename", "sprites/xbeam2.vmt");
@@ -384,8 +384,8 @@ void SetFirefly(CBaseEntity@ pPlayerEntity, const int &in iIndex, int &in iR, in
 		EntityCreator::Create("env_spritetrail", pPlayerEntity.GetAbsOrigin(), pPlayerEntity.GetAbsAngles(), FFTrailIPD);
 		EntityCreator::Create("env_sprite", pPlayerEntity.GetAbsOrigin(), pPlayerEntity.GetAbsAngles(), FFSpriteIPD);
 
-		CBaseEntity@ pSpriteEnt = FindEntityByName(pSpriteEnt, iIndex + "firefly_sprite");
-		CBaseEntity@ pTrailEnt = FindEntityByName(pTrailEnt, iIndex + "firefly_trail");
+		CBaseEntity@ pSpriteEnt = FindEntityByName(pSpriteEnt, formatInt(iIndex) + "firefly_sprite");
+		CBaseEntity@ pTrailEnt = FindEntityByName(pTrailEnt, formatInt(iIndex) + "firefly_trail");
 
 		pTrailEnt.SetParent(pSpriteEnt);
 		pSpriteEnt.SetParent(pPlayerEntity);

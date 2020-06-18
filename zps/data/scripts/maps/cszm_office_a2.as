@@ -149,31 +149,3 @@ void VMSkins()
 		}
 	}
 }
-/*
-void RndSpawn() 
-{
-	int iTSpawnIndex = CreateTerroristsSpawn();
-	int iRND_First = Math::RandomInt(0, 100);
-	int iRND_Second = Math::RandomInt(0, 100);
-
-	if (iTSpawnIndex == 0)
-	{
-		iRND_First = -1;
-		iRND_Second = 1;	
-	}
-	else if (iTSpawnIndex == 1)
-	{
-		iRND_First = 1;
-		iRND_Second = -1;		
-	}
-
-	if(iRND_First >= iRND_Second) 
-	{
-		Engine.Ent_Fire("Human-CTerrorisSpawns", "Kill");
-	}
-	else
-	{
-		Engine.Ent_Fire("Human-TerrorisSpawns", "Kill");
-	}
-}
-*/

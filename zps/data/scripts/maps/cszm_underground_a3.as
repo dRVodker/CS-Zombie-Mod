@@ -1,4 +1,3 @@
-#include "cszm_modules/spawncrates"
 #include "cszm_modules/lobbyambient"
 #include "cszm_modules/newspawn"
 
@@ -101,45 +100,6 @@ void OnMapInit()
 	Schedule::Task(0.025f, "SetUpStuff");
 
 	Events::Player::OnPlayerSpawn.Hook(@OnPlayerSpawn);
-
-	iMinCrates = 1;
-	iMaxCrates = 6;
-
-	g_PICOrigin.insertLast(Vector(-202.258, 3106.7, 36.4784));
-	g_PICAngles.insertLast(QAngle(0, -23.3962, 0));
-
-	g_PICOrigin.insertLast(Vector(-709.278, 2568.18, -95.5102));
-	g_PICAngles.insertLast(QAngle(0, -21.5856, 0));
-
-	g_PICOrigin.insertLast(Vector(-1824.23, 3296.78, -87.5186));
-	g_PICAngles.insertLast(QAngle(0, -49.2699, 0));
-
-	g_PICOrigin.insertLast(Vector(-2168.22, 590.721, -63.5755));
-	g_PICAngles.insertLast(QAngle(0, 105.523, 0));
-
-	g_PICOrigin.insertLast(Vector(-1079.64, 728.415, -95.5002));
-	g_PICAngles.insertLast(QAngle(0, 31.9734, 0));
-
-	g_PICOrigin.insertLast(Vector(757.196, 88.6725, -95.5002));
-	g_PICAngles.insertLast(QAngle(0, 30.251, 0));
-
-	g_PICOrigin.insertLast(Vector(1793.23, 1377.68, -31.5357));
-	g_PICAngles.insertLast(QAngle(0, 33.0636, 0));
-
-	g_PICOrigin.insertLast(Vector(1544.52, 1982.43, -415.531));
-	g_PICAngles.insertLast(QAngle(0, -49.9025, 0));
-
-	g_PICOrigin.insertLast(Vector(1538.92, 1938.98, -415.504));
-	g_PICAngles.insertLast(QAngle(0, -90.4959, 0));
-
-	g_PICOrigin.insertLast(Vector(-1118.18, 1793.79, -95.5098));
-	g_PICAngles.insertLast(QAngle(0, -62.8027, 0));
-
-	g_PICOrigin.insertLast(Vector(1059.76, 1279.23, -222.523));
-	g_PICAngles.insertLast(QAngle(0, -151.2, 0));
-
-	g_PICOrigin.insertLast(Vector(-1068.36, 977.885, 16.3951));
-	g_PICAngles.insertLast(QAngle(0, 3.08162, 0));
 }
 
 void OnNewRound()
@@ -152,8 +112,6 @@ void OnNewRound()
 
 void OnMatchBegin() 
 {
-	Schedule::Task(0.5f, "SpawnCrates");
-
 	Engine.Ent_Fire("SND_Ambient", "PlaySound");
 }
 

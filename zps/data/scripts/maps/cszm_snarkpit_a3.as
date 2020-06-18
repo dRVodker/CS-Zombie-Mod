@@ -1,4 +1,3 @@
-#include "cszm_modules/spawncrates"
 #include "cszm_modules/lobbyambient"
 #include "cszm_modules/newspawn"
 
@@ -114,36 +113,6 @@ void OnMapInit()
 	Entities::RegisterUse("func_button");
 	Events::Trigger::OnStartTouch.Hook(@OnStartTouch);
 	Events::Player::OnPlayerSpawn.Hook(@OnPlayerSpawn);
-
-	iMinCrates = 0;
-	iMaxCrates = 3;
-
-	g_PICOrigin.insertLast(Vector(-852.261, -163.311, -191.5));
-	g_PICAngles.insertLast(QAngle(0, 40.4629, 0));
-
-	g_PICOrigin.insertLast(Vector(-562.468, -1020.97, 48.4892));
-	g_PICAngles.insertLast(QAngle(0, 23.0501, 0));
-
-	g_PICOrigin.insertLast(Vector(489.671, -1037.58, 48.487));
-	g_PICAngles.insertLast(QAngle(0, 27.1824, 0));
-
-	g_PICOrigin.insertLast(Vector(152.969, -681.461, -64.7168));
-	g_PICAngles.insertLast(QAngle(0, 35.3623, 0));
-
-	g_PICOrigin.insertLast(Vector(-85.5905, -282.227, -303.548));
-	g_PICAngles.insertLast(QAngle(0, -53.877, 0));
-
-	g_PICOrigin.insertLast(Vector(1381.25, -601.578, -447.509));
-	g_PICAngles.insertLast(QAngle(0, 40.262, 0));
-
-	g_PICOrigin.insertLast(Vector(442.822, -456.774, -543.508));
-	g_PICAngles.insertLast(QAngle(0, -18.2347, 0));
-
-	g_PICOrigin.insertLast(Vector(372.145, -1089.51, -303.5));
-	g_PICAngles.insertLast(QAngle(0, -43.6699, 0));
-
-	g_PICOrigin.insertLast(Vector(-465.154, -160.674, 0.4998));
-	g_PICAngles.insertLast(QAngle(0, 36.16, 0));
 }
 
 void OnNewRound()
@@ -168,11 +137,6 @@ void OnProcessRound()
 		flFan2FLTime = Globals.GetCurrentTime() + 1.1f;
 		Engine.Ent_Fire("snd_fan2", "Volume", "10");
 	}
-}
-
-void OnMatchBegin() 
-{
-	Schedule::Task(0.5f, "SpawnCrates");
 }
 
 void SetUpStuff()
@@ -297,7 +261,7 @@ void Fan1SNDPlay()
 
 	iF1SPitch++;
 
-	Engine.Ent_Fire("snd_fan1", "Pitch", "" + iF1SPitch);
+	Engine.Ent_Fire("snd_fan1", "Pitch", formatInt(iF1SPitch));
 
 	if (iF1SPitch != 100 && iF1SPitch > 0 && iF1SPitch < 100)
 	{
@@ -309,7 +273,7 @@ void Fan1SNDStop()
 {
 	iF1SPitch--;
 
-	Engine.Ent_Fire("snd_fan1", "Pitch", "" + iF1SPitch);
+	Engine.Ent_Fire("snd_fan1", "Pitch", formatInt(iF1SPitch));
 
 	if (iF1SPitch != 0 && iF1SPitch > 0 && iF1SPitch < 100)
 	{
@@ -331,7 +295,7 @@ void Fan2SNDPlay()
 
 	iF2SPitch++;
 
-	Engine.Ent_Fire("snd_fan2", "Pitch", "" + iF2SPitch);
+	Engine.Ent_Fire("snd_fan2", "Pitch", formatInt(iF2SPitch));
 
 	if (iF2SPitch != 100 && iF2SPitch > 0 && iF2SPitch < 100)
 	{
@@ -343,7 +307,7 @@ void Fan2SNDStop()
 {
 	iF2SPitch--;
 
-	Engine.Ent_Fire("snd_fan2", "Pitch", "" + iF2SPitch);
+	Engine.Ent_Fire("snd_fan2", "Pitch", formatInt(iF2SPitch));
 
 	if (iF2SPitch > 0)
 	{
