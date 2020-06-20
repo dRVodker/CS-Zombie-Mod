@@ -1,35 +1,85 @@
 namespace Admin
 {
+	enum ComIndexes {CI_SET, CI_INF, CI_CURE, CI_SHOWI, CI_SHOWV, CI_SHOWC, CI_RESP, CI_TOG_R, CI_GIVECASH}
+	enum VarIndexes {VI_CURRS, VI_RECOVER, VI_SPEED, VI_SECONDS, VI_ZMRRATE, VI_ZMRHP, VI_AAT, VI_RTIME, VI_GUTIME, VI_WUTIME, VI_WUSECONDS, VI_ZMHEALTH, VI_INFPER, VI_INFEHP, VI_ZMRDD, VI_E_DEFCASH, VI_E_STARTCASH, VI_E_HWIN, VI_E_HKILL, VI_E_ZWIN, VI_E_ZKILL, VI_E_LOSE, VI_E_SUIC}
 	const string STR_NULLPLAYER = "{red}*{gold}Игрок не найден!";
 	const array<array<string>> g_ChatComms =
 	{
-		{ "set",				"Установить значение для доступных переменных" },
-		{ "infect",				"Заразить игрока" },
-		{ "cure",				"Излечить игрока" },
-		{ "showinf",			"Показать очки заражения игрока" },
-		{ "showvar",			"Показать переменные" },
-		{ "showcom",			"Показать команды" },
-		{ "respawn",			"Возродить игрока" },
-		{ "toggle_respawn",		"Включить/выключить респавн зомби" },
-		{ "givecash",			"Дать денег" }
+		{
+			"set",
+			"infect",
+			"cure",
+			"showinf",
+			"showvar",
+			"showcom",
+			"respawn",
+			"toggle_respawn",
+			"givecash"
+		},
+		{
+			"Установить значение для доступных переменных",
+			"Заразить игрока",
+			"Излечить игрока",
+			"Показать очки заражения игрока",
+			"Показать переменные",
+			"Показать команды",
+			"Возродить игрока",
+			"Включить/выключить респавн зомби",
+			"Дать денег"
+		}
 	}; 
 	const array<array<string>> g_VariablesList =
 	{
-		{ "sd_speed_fraction",	"flCurrs"},
-		{ "sd_recover",			"flRecover"},
-		{ "sd_slowspeed",		"flPSpeed" },
-		{ "seconds",			"iSeconds" },
-		{ "zmr_rate",			"flZMRRate" },
-		{ "zmr_health",			"iZMRHealth" },
-		{ "allow_addtime",		"bAllowAddTime" },
-		{ "round_time",			"iRoundTime" },
-		{ "gearup_time",		"iGearUpTime" },
-		{ "warmup_time",		"iWarmUpTime" },
-		{ "wseconds",			"iWUSeconds" },
-		{ "zombie_health",		"iZombieHealth" },
-		{ "infect_percent",		"flInfectionPercent" },
-		{ "extrahp_percent",	"flInfectedExtraHP" },
-		{ "zmr_dmgdelay",		"flZMRDamageDelay" }
+		{
+			"sd_speed_percent",
+			"sd_recover",
+			"sd_slowspeed",
+			"seconds",
+			"zmr_rate",
+			"zmr_health",
+			"allow_addtime",
+			"round_time",
+			"gearup_time",
+			"warmup_time",
+			"wseconds",
+			"zombie_health",
+			"infect_percent",
+			"extrahp_percent",
+			"zmr_dmgdelay",
+			"money_def",
+			"money_start",
+			"money_hwin",
+			"money_hkill",
+			"money_zwin",
+			"money_zkill",
+			"money_lose",
+			"money_suicide"
+		},
+		{
+			"flCurrs",
+			"flRecover",
+			"flPSpeed",
+			"iSeconds",
+			"flZMRRate",
+			"iZMRHealth",
+			"bAllowAddTime",
+			"iRoundTime",
+			"iGearUpTime",
+			"iWarmUpTime",
+			"iWUSeconds",
+			"iZombieHealth",
+			"flInfectionPercent",
+			"flInfectedExtraHP",
+			"flZMRDamageDelay",
+			"ECO_DefaultCash",
+			"ECO_StartingCash",
+			"ECO_Human_Win",
+			"ECO_Human_Kill",
+			"ECO_Zombie_Win",
+			"ECO_Zombie_Kill",
+			"ECO_Lose",
+			"ECO_Suiside"
+		}
 	};
 	const array<string> g_TeamList =
 	{
@@ -45,7 +95,7 @@ namespace Admin
 		
 		if (AdminSystem.PlayerHasFlag(pCaller, GetAdminFlag(gAdminFlagRoot)))
 		{
-			IsCommandExist = SwitchCom(pCaller, GetCommIndex(pCC.Arg(0)), pCC, FromChat);
+			IsCommandExist = SwitchCom(pCaller, g_ChatComms[0].find(pCC.Arg(0)), pCC, FromChat);
 		}
 
 		return IsCommandExist;
@@ -93,40 +143,6 @@ namespace Admin
 		}
 
 		return pPlayer;
-	}
-
-	int GetCommIndex(const string &in Command)
-	{
-		int iIndex = -1;
-		int iLength = g_ChatComms.length();
-
-		for(int i = 0; i < iLength; i++)
-		{
-			if (Utils.StrEql(Command, g_ChatComms[i][0], true))
-			{
-				iIndex = i;
-				break;
-			}
-		}
-
-		return iIndex;
-	}
-
-	int GetVarIndex(const string &in Variable)
-	{
-		int iIndex = -1;
-		int iLength = g_VariablesList.length();
-
-		for(int i = 0; i < iLength; i++)
-		{
-			if (Utils.StrEql(Variable, g_VariablesList[i][0], true) || Utils.StrEql(Variable, g_VariablesList[i][1], true))
-			{
-				iIndex = i;
-				break;
-			}
-		}
-
-		return iIndex;
 	}
 
 	void Infect(CBasePlayer@ pCaller, const string &in strInput)
@@ -222,99 +238,6 @@ namespace Admin
 		}
 	}
 
-	void ChangeVariable(CBasePlayer@ pCaller, const string &in strVariable, string &in strValue)
-	{
-		string OldValue = "";
-		int iVarIndex = GetVarIndex(strVariable);
-
-		switch(iVarIndex)
-		{
-			case 0:
-				OldValue = "" + flCurrs;
-				flCurrs = Utils.StringToFloat(strValue);
-			break;
-
-			case 1:
-				OldValue = "" + flRecover;
-				flRecover = Utils.StringToFloat(strValue);
-			break;
-
-			case 2:
-				OldValue = "" + flPSpeed;
-				flPSpeed = Utils.StringToFloat(strValue);
-			break;
-
-			case 3:
-				OldValue = "" + iSeconds;
-				iSeconds = Utils.StringToInt(strValue);
-			break;
-
-			case 4:
-				OldValue = "" + flZMRRate;
-				flZMRRate = Utils.StringToFloat(strValue);
-			break;
-
-			case 5:
-				OldValue = "" + iZMRHealth;
-				iZMRHealth = Utils.StringToInt(strValue);
-			break;
-
-			case 6:
-				OldValue = "" + bAllowAddTime;
-				bAllowAddTime = (strValue == "true" || strValue == "1");
-			break;
-
-			case 7:
-				OldValue = "" + iRoundTime;
-				iRoundTime = Utils.StringToInt(strValue);
-			break;
-
-			case 8:
-				OldValue = "" + iGearUpTime;
-				iGearUpTime = Utils.StringToInt(strValue);
-			break;
-
-			case 9:
-				OldValue = "" + iWarmUpTime;
-				iWarmUpTime = Utils.StringToInt(strValue);
-			break;
-
-			case 10:
-				OldValue = "" + iWUSeconds;
-				iWUSeconds = Utils.StringToInt(strValue);
-			break;
-
-			case 11:
-				OldValue = "" + iZombieHealth;
-				iZombieHealth = Utils.StringToInt(strValue);
-			break;
-
-			case 12:
-				OldValue = "" + flInfectionPercent;
-				flInfectionPercent = Utils.StringToFloat(strValue);
-			break;
-
-			case 13:
-				OldValue = "" + flInfectedExtraHP;
-				flInfectedExtraHP = Utils.StringToFloat(strValue);
-			break;
-
-			case 14:
-				OldValue = "" + flZMRDamageDelay;
-				flZMRDamageDelay = Utils.StringToFloat(strValue);
-			break;
-
-			case -1:
-				Chat.PrintToChatPlayer(pCaller, "{red}*{gold}Переменная не найдена!");
-			break;
-		}
-
-		if (iVarIndex != -1)
-		{
-			Chat.PrintToChatPlayer(pCaller, "{green}*{gold}Значение переменной {cornflowerblue}" + g_VariablesList[iVarIndex][1] + " {gold}было изменено на {green}" + strValue + "\n{gold}Предыдущее значение: {green}" + OldValue);
-		}
-	}
-
 	void ShowInfChance(CBasePlayer@ pCaller, const string &in strInput)
 	{
 		CZP_Player@ pPlayer = GetPlayer(pCaller, strInput);
@@ -335,23 +258,23 @@ namespace Admin
 
 	void ShowVariables(CBasePlayer@ pCaller)
 	{
-		int iLength = int(g_VariablesList.length());
+		int iLength = int(g_VariablesList[0].length());
 		Chat.PrintToChatPlayer(pCaller, "{green}*{gold}Список переменных:");
 
 		for (int i = 0; i < iLength; i++)
 		{
-			Chat.PrintToChatPlayer(pCaller, " {blueviolet}- {gold}" + g_VariablesList[i][0]);
+			Chat.PrintToChatPlayer(pCaller, " {blueviolet}- {gold}" + g_VariablesList[0][i]);
 		}
 	}
 
 	void ShowCommands(CBasePlayer@ pCaller)
 	{
-		int iLength = int(g_ChatComms.length());
+		int iLength = int(g_ChatComms[0].length());
 		Chat.PrintToChatPlayer(pCaller, "{green}*{gold}Список команд");
 
 		for (int i = 0; i < iLength; i++)
 		{
-			Chat.PrintToChatPlayer(pCaller, " {blueviolet}- {gold}" + g_ChatComms[i][0] + " {green}: {blue}" + g_ChatComms[i][1]);
+			Chat.PrintToChatPlayer(pCaller, " {blueviolet}- {gold}" + g_ChatComms[0][i] + " {green}: {blue}" + g_ChatComms[1][i]);
 		}
 	}
 
@@ -407,19 +330,132 @@ namespace Admin
 		Chat.PrintToChatPlayer(pCaller, "{green}*{gold}Респавн зомби {"+strColor+"}"+strTurn+"{gold}!");
 	}
 
+	void ChangeVariable(CBasePlayer@ pCaller, const string &in strVariable, string &in strValue)
+	{
+		string OldValue = "";
+		int iVarIndex = (g_VariablesList[0].find(strVariable) == -1) ? g_VariablesList[1].find(strVariable) : g_VariablesList[0].find(strVariable);
+
+		SD("iVarIndex = " + iVarIndex);
+
+		switch(iVarIndex)
+		{
+			case VI_CURRS:
+				OldValue = "" + flCurrs;
+				flCurrs = Utils.StringToFloat(strValue);
+			break;
+			case VI_RECOVER:
+				OldValue = "" + flRecover;
+				flRecover = Utils.StringToFloat(strValue);
+			break;
+			case VI_SPEED:
+				OldValue = "" + flPSpeed;
+				flPSpeed = Utils.StringToFloat(strValue);
+			break;
+			case VI_SECONDS:
+				OldValue = formatInt(iSeconds);
+				iSeconds = Utils.StringToInt(strValue);
+			break;
+			case VI_ZMRRATE:
+				OldValue = "" + flZMRRate;
+				flZMRRate = Utils.StringToFloat(strValue);
+			break;
+			case VI_ZMRHP:
+				OldValue = formatInt(iZMRHealth);
+				iZMRHealth = Utils.StringToInt(strValue);
+			break;
+			case VI_AAT:
+				OldValue =  BoolToString(bAllowAddTime);
+				bAllowAddTime = (Utils.StrEql("true", strValue, true) || Utils.StrEql("1", strValue, true));
+			break;
+			case VI_RTIME:
+				OldValue = formatInt(iRoundTime);
+				iRoundTime = Utils.StringToInt(strValue);
+			break;
+			case VI_GUTIME:
+				OldValue = formatInt(iGearUpTime);
+				iGearUpTime = Utils.StringToInt(strValue);
+			break;
+			case VI_WUTIME:
+				OldValue = formatInt(iWarmUpTime);
+				iWarmUpTime = Utils.StringToInt(strValue);
+			break;
+			case VI_WUSECONDS:
+				OldValue = formatInt(iWUSeconds);
+				iWUSeconds = Utils.StringToInt(strValue);
+			break;
+			case VI_ZMHEALTH:
+				OldValue = formatInt(iZombieHealth);
+				iZombieHealth = Utils.StringToInt(strValue);
+			break;
+			case VI_INFPER:
+				OldValue = "" + flInfectionPercent;
+				flInfectionPercent = Utils.StringToFloat(strValue);
+			break;
+			case VI_INFEHP:
+				OldValue = "" + flInfectedExtraHP;
+				flInfectedExtraHP = Utils.StringToFloat(strValue);
+			break;
+			case VI_ZMRDD:
+				OldValue = "" + flZMRDamageDelay;
+				flZMRDamageDelay = Utils.StringToFloat(strValue);
+			break;
+			case VI_E_DEFCASH:
+				OldValue = formatInt(ECO_DefaultCash);
+				ECO_DefaultCash = Utils.StringToInt(strValue);
+			break;
+			case VI_E_STARTCASH:
+				OldValue = formatInt(ECO_StartingCash);
+				ECO_StartingCash = Utils.StringToInt(strValue);
+			break;
+			case VI_E_HKILL:
+				OldValue = formatInt(ECO_Human_Kill);
+				ECO_Human_Kill = Utils.StringToInt(strValue);
+			break;
+			case VI_E_HWIN:
+				OldValue = formatInt(ECO_Human_Win);
+				ECO_Human_Win = Utils.StringToInt(strValue);
+			break;
+			case VI_E_ZWIN:
+				OldValue = formatInt(ECO_Zombie_Win);
+				ECO_Zombie_Win = Utils.StringToInt(strValue);
+			break;
+			case VI_E_ZKILL:
+				OldValue = formatInt(ECO_Zombie_Kill);
+				ECO_Zombie_Kill = Utils.StringToInt(strValue);
+			break;
+			case VI_E_LOSE:
+				OldValue = formatInt(ECO_Lose);
+				ECO_Lose = Utils.StringToInt(strValue);
+			break;
+			case VI_E_SUIC:
+				OldValue = formatInt(ECO_Suiside);
+				ECO_Suiside = Utils.StringToInt(strValue);
+			break;
+
+			case -1:
+				Chat.PrintToChatPlayer(pCaller, "{red}*{gold}Переменная не найдена!");
+			break;
+		}
+
+		if (iVarIndex != -1)
+		{
+			Chat.PrintToChatPlayer(pCaller, "{green}*{gold}Значение переменной {cornflowerblue}" + g_VariablesList[1][iVarIndex] + " {gold}было изменено на {green}" + strValue + "\n{gold}Предыдущее значение: {green}" + OldValue);
+		}
+	}
+
 	bool SwitchCom(CBasePlayer@ pCaller, const int &in iCommIndex, CASCommand@ pCC, const bool &in FromChat)
 	{
 		switch(iCommIndex)
 		{
-			case 0: ChangeVariable(pCaller, pCC.Arg(1), pCC.Arg(2)); break;
-			case 1: Infect(pCaller, pCC.Arg(1)); break;
-			case 2: Cure(pCaller, pCC.Arg(1)); break;
-			case 3: ShowInfChance(pCaller, pCC.Arg(1)); break;
-			case 4: ShowVariables(pCaller); break;
-			case 5: ShowCommands(pCaller); break;
-			case 6: RespawnPlayer(pCaller, Utils.StringToInt(pCC.Arg(1)), pCC.Arg(2)); break;
-			case 7: ToggleZombieRespawn(pCaller); break;
-			case 8: GiveCash(pCaller, Utils.StringToInt(pCC.Arg(1)), pCC.Arg(2)); break;
+			case CI_SET: ChangeVariable(pCaller, pCC.Arg(1), pCC.Arg(2)); break;
+			case CI_INF: Infect(pCaller, pCC.Arg(1)); break;
+			case CI_CURE: Cure(pCaller, pCC.Arg(1)); break;
+			case CI_SHOWI: ShowInfChance(pCaller, pCC.Arg(1)); break;
+			case CI_SHOWV: ShowVariables(pCaller); break;
+			case CI_SHOWC: ShowCommands(pCaller); break;
+			case CI_RESP: RespawnPlayer(pCaller, Utils.StringToInt(pCC.Arg(1)), pCC.Arg(2)); break;
+			case CI_TOG_R: ToggleZombieRespawn(pCaller); break;
+			case CI_GIVECASH: GiveCash(pCaller, Utils.StringToInt(pCC.Arg(1)), pCC.Arg(2)); break;
 
 			case -1: if (FromChat) {Chat.PrintToChatPlayer(pCaller, "{red}*{gold}Команда не найдена!");} break;
 		}

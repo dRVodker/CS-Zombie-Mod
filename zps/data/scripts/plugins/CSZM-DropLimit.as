@@ -100,12 +100,25 @@ HookReturnCode CSZM_DI_OnEntityCreation(const string &in strClassname, CBaseEnti
 
 HookReturnCode CSZM_DI_OnEntityDestruction(const string &in strClassname, CBaseEntity@ pEntity)
 {
-	if ((Utils.StrContains("clip", strClassname) || Utils.StrContains("armor", strClassname)) || (Utils.StrContains("weapon", strClassname) && !Utils.StrContains("_frag", strClassname)))
+	if ((Utils.StrEql("dropped_money", pEntity.GetEntityName(), true) || Utils.StrContains("clip", strClassname) || Utils.StrContains("armor", strClassname)) || (Utils.StrContains("weapon", strClassname) && !Utils.StrContains("_frag", strClassname)))
 	{
 		RemoveItem(gItemIndex.find(pEntity.entindex()));
 	}
 
 	return HOOK_CONTINUE;
+}
+
+void OnItemCashCreation(NetObject@ pData)
+{
+	if (pData is null)
+	{
+		return;
+	}
+
+	if (pData.HasIndexValue(0))
+	{
+		InsertItem(pData.GetInt(0));
+	}
 }
 
 void InsertItem(const int &in EntIndex)

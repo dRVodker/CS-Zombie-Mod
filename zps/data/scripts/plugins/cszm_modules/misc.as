@@ -29,6 +29,11 @@ int DamageToMoney(const int &in nVicHealth, int &in nDamage)
 	return int(ceil(nDamage / 1000.0f * 100));
 }
 
+int PropHealthToMoney(const int &in nHealth)
+{
+	return int(ceil(nHealth / 1150.0f * 100));
+}
+
 string BoolToString(bool boolean)
 {
 	if (boolean)
@@ -270,6 +275,7 @@ void RegisterEntities()
 	Entities::RegisterPickup("item_deliver");
 	Entities::RegisterUse("item_deliver");
 	Entities::RegisterDrop("item_deliver");
+	Entities::RegisterUse("dropped_money");
 }
 
 string GetAttackerInfo(const string &in FullInfo)
@@ -518,7 +524,8 @@ void ApplyVictoryRewards(RoundWinState iWinState)
 				else if (Team == TEAM_ZOMBIES)
 				{
 					pCSZMPlayer.AddInfectPoints(5);
-					pCSZMPlayer.AddMoney(ECO_Zombie_Lose);
+					pCSZMPlayer.AddMoney(ECO_Lose);
+					Chat.PrintToChatPlayer(ToBasePlayer(i), "{red}" + formatInt(ECO_Lose) + "$ {gold}За поражение в раунде!");
 					pPlayerEntity.TakeDamage(CTakeDamageInfo(pPlayerEntity, pPlayerEntity, float(pPlayerEntity.GetHealth() + 200.0f), (1<<0)));
 				}
 			}
@@ -629,5 +636,184 @@ void ShootTracers(Vector Orinig)
 		pTracer.SetMoveType(MOVETYPE_FLYGRAVITY);
 		Globals.AngleVectors(QAngle(Math::RandomFloat(0, 360), Math::RandomFloat(0, 360), Math::RandomFloat(0, 360)), vUP);
 		pTracer.SetAbsVelocity(vUP * Math::RandomInt(2900, 2999));
+	}
+}
+
+void ShowHitMarker(const int &in PlayerIndex, const bool &in CriticalDamage)
+{
+	CZP_Player@ pPlayer = ToZPPlayer(PlayerIndex);
+	int R = 0;
+	int G = 155;
+	int B = 255;
+	float Alpha = 0.78f;
+
+	if (CriticalDamage)
+	{
+		R = 255;
+		G = 75;
+		B = 75;
+	}
+
+	R = int(R * Alpha);
+	G = int(G * Alpha);
+	B = int(B * Alpha);
+
+	HudTextParams pParams;
+	pParams.x = -1;
+	pParams.y = -1;
+	pParams.channel = 1;
+	pParams.fadeinTime = 0.0f;
+	pParams.fadeoutTime = 0.2f;
+	pParams.holdTime = 0.075f;
+	pParams.fxTime = 0.0f;
+	pParams.SetColor(Color(R, G, B));
+	pParams.SetColor2(Color(0, 0, 0));
+	Utils.GameTextPlayer(pPlayer, "+", pParams);
+}
+
+namespace NPZ
+{
+	void DLight(CBaseEntity@ pPlayerEntity, const int &in index)
+	{
+		CBaseEntity@ pPlrDlight = FindEntityByName(null, (formatInt(index) + "dlight_origin"));
+
+		Engine.EmitSoundEntity(pPlayerEntity, "Buttons.snd14");
+
+		if (pPlrDlight !is null)
+		{
+			pPlrDlight.SUB_Remove();
+		}
+		else
+		{
+			CEntityData@ PropDynamicIPD = EntityCreator::EntityData();
+
+			PropDynamicIPD.Add("targetname", formatInt(index) + "dlight_origin");
+			PropDynamicIPD.Add("disableshadows", "1");
+			PropDynamicIPD.Add("solid", "0");
+			PropDynamicIPD.Add("DisableBoneFollowers", "1");
+			PropDynamicIPD.Add("spawnflags", "256");
+			PropDynamicIPD.Add("model", "models/props_junk/popcan01a.mdl");
+			PropDynamicIPD.Add("modelscale", "0.25");
+			PropDynamicIPD.Add("DefaultAnim", "idle");
+			PropDynamicIPD.Add("Effects", "18");	//2
+			PropDynamicIPD.Add("rendermode", "10");
+			PropDynamicIPD.Add("health", "0");
+			PropDynamicIPD.Add("fademindist", "1");
+			PropDynamicIPD.Add("fademaxdist", "2");
+
+			CBaseEntity@ pDlight = EntityCreator::Create("prop_dynamic_override", pPlayerEntity.GetAbsOrigin(), pPlayerEntity.GetAbsAngles(), PropDynamicIPD);
+
+			pDlight.SetParent(pPlayerEntity);
+			pDlight.SetParentAttachment("anim_attachment_LH", false);
+		}
+	}
+
+	void GiveThrowable(CZP_Player@ pPlayer, const string &in strClassname)
+	{
+		CBaseEntity@ pWeapon = pPlayer.GetCurrentWeapon();
+		string strCurWepClassname = pWeapon.GetClassname();
+
+		if (Utils.StrEql("weapon_emptyhand", strCurWepClassname))
+		{
+			pPlayer.GiveWeapon(strClassname);
+		}
+		else if (Utils.StrEql(strClassname, strCurWepClassname))
+		{
+			StripWeapon(pPlayer, strCurWepClassname);
+		}
+		else
+		{
+			StripWeapon(pPlayer, pWeapon.GetClassname());
+			pPlayer.GiveWeapon(strClassname);
+		}
+	}
+
+	bool SetFirefly(CBaseEntity@ pPlayerEntity, const int &in iIndex, int &in iR, int &in iG, int &in iB)
+	{
+		if (!RoundManager.IsRoundOngoing(false) || pPlayerEntity.GetTeamNumber() > TEAM_SPECTATORS)
+		{
+			Chat.PrintToChatPlayer(ToBasePlayer(iIndex), "{red}*{gold}Сейчас нельзя это сделать!");
+			return false;
+		}
+
+		if ((iR + iG + iB) < 48)
+		{
+			iR = Math::RandomInt(16, 255);
+			iG = Math::RandomInt(16, 255);
+			iB = Math::RandomInt(16, 255);
+		}
+
+		string SNDFile = "ZPlayer.AmmoPickup";
+		CBaseEntity@ pSpriteEnt = FindEntityByName(pSpriteEnt, iIndex + "firefly_sprite");
+		CBaseEntity@ pTrailEnt = FindEntityByName(pTrailEnt, iIndex + "firefly_trail");
+
+		if (pSpriteEnt !is null && pTrailEnt !is null)
+		{
+			Engine.Ent_Fire_Ent(pSpriteEnt, "color", "" + formatInt(iR) + " " + formatInt(iG) + " " + formatInt(iB));
+			Engine.Ent_Fire_Ent(pTrailEnt, "color", "" + formatInt(iR) + " " + formatInt(iG) + " " + formatInt(iB));
+			Chat.PrintToChatPlayer(ToBasePlayer(iIndex), "{green}*{gold}Цвет светлячка изменён на {white}[ {red}"+formatInt(iR)+" {green}"+formatInt(iG)+" {blue}"+formatInt(iB)+" {white}]");
+		}
+		else
+		{
+			if (pPlayerEntity.GetTeamNumber() != TEAM_SPECTATORS)
+			{
+				pPlayerEntity.ChangeTeam(TEAM_LOBBYGUYS);
+				ToZPPlayer(iIndex).ConsoleCommand("choose3");
+			}
+
+			CEntityData@ FFSpriteIPD = EntityCreator::EntityData();
+			CEntityData@ FFTrailIPD = EntityCreator::EntityData();
+
+			FFSpriteIPD.Add("targetname", formatInt(iIndex) + "firefly_sprite");
+			FFSpriteIPD.Add("model", "sprites/light_glow01.vmt");
+			FFSpriteIPD.Add("rendercolor", formatInt(iR) + " " + formatInt(iG) + " " + formatInt(iB));
+			FFSpriteIPD.Add("rendermode", "5");
+			FFSpriteIPD.Add("renderamt", "240");
+			FFSpriteIPD.Add("scale", "0.25");
+			FFSpriteIPD.Add("spawnflags", "1");
+			FFSpriteIPD.Add("framerate", "0");
+
+			FFTrailIPD.Add("targetname", formatInt(iIndex) + "firefly_trail");
+			FFTrailIPD.Add("endwidth", "12");
+			FFTrailIPD.Add("lifetime", "0.145");
+			FFTrailIPD.Add("rendercolor", formatInt(iR) + " " + formatInt(iG) + " " + formatInt(iB));
+			FFTrailIPD.Add("rendermode", "5");
+			FFTrailIPD.Add("renderamt", "84");
+			FFTrailIPD.Add("spritename", "sprites/xbeam2.vmt");
+			FFTrailIPD.Add("startwidth", "3");
+
+			EntityCreator::Create("env_spritetrail", pPlayerEntity.GetAbsOrigin(), pPlayerEntity.GetAbsAngles(), FFTrailIPD);
+			EntityCreator::Create("env_sprite", pPlayerEntity.GetAbsOrigin(), pPlayerEntity.GetAbsAngles(), FFSpriteIPD);
+
+			@pSpriteEnt = FindEntityByName(pSpriteEnt, formatInt(iIndex) + "firefly_sprite");
+			@pTrailEnt = FindEntityByName(pTrailEnt, formatInt(iIndex) + "firefly_trail");
+
+			pTrailEnt.SetParent(pSpriteEnt);
+			pSpriteEnt.SetParent(pPlayerEntity);
+			SNDFile = "Player.PickupWeapon";
+			Chat.PrintToChatPlayer(ToBasePlayer(iIndex), "{green}*{gold}Вы стали светлячком. Цвет в RGB {white}[ {red}"+formatInt(iR)+" {green}"+formatInt(iG)+" {blue}"+formatInt(iB)+" {white}]");
+		}
+
+		Engine.EmitSoundPosition(iIndex, SNDFile, pPlayerEntity.GetAbsOrigin(), 0.75F, 80, 105);
+		return true;
+	}
+
+	void StripWeapon(CZP_Player@ pPlayer, const string &in strClassname)
+	{
+		CBasePlayer@ pBasePlayer = pPlayer.opCast();
+		CBaseEntity@ pPlayerEntity = pBasePlayer.opCast();
+		CBaseEntity@ pWeapon;
+
+		pPlayer.StripWeapon(strClassname);
+
+		while ((@pWeapon = FindEntityByClassname(pWeapon, strClassname)) !is null)
+		{
+			CBaseEntity@ pOwner = pWeapon.GetOwner();
+
+			if (pPlayerEntity is pOwner)
+			{
+				pWeapon.SUB_Remove();
+			}
+		}
 	}
 }

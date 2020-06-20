@@ -87,7 +87,7 @@ int ECO_Human_Win = 600;
 int ECO_Human_Kill = 300;
 int ECO_Zombie_Win = 500;
 int ECO_Zombie_Kill = 750;
-int ECO_Zombie_Lose = -475;
+int ECO_Lose = -475;
 int ECO_Suiside = -525;
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -100,25 +100,13 @@ void OnPluginInit()
 	PluginData::SetAuthor("dR.Vodker");
 	PluginData::SetName("Counter-Strike Zombie Mode");
 
-	//Find 'sv_zps_solo' ConVar
 	@pSoloMode = ConVar::Find("sv_zps_solo");
-
-	//Find 'sv_testmode' ConVar
 	@pTestMode = ConVar::Find("sv_testmode");
-
-	//Find 'sv_zps_warmup' ConVar
 	@pINGWarmUp = ConVar::Find("sv_zps_warmup");
-
-	//Find 'mp_friendlyfire' ConVar
 	@pFriendlyFire = ConVar::Find("mp_friendlyfire");
-
-	//Find 'sv_zps_infectionrate' ConVar
 	@pInfectionRate = ConVar::Find("sv_zps_infectionrate");
-
-	//Find 'sv_zps_hardcore' ConVar
 	@pZPSHardcore = ConVar::Find("sv_zps_hardcore");
 
-	//Events
 	Events::Player::OnPlayerInfected.Hook(@CSZM_OnPlayerInfected);
 	Events::Player::OnPlayerConnected.Hook(@CSZM_OnPlayerConnected);
 	Events::Player::OnPlayerSpawn.Hook(@CSZM_OnPlayerSpawn);
@@ -135,213 +123,219 @@ void OnPluginInit()
 
 void OnMapInit()
 {
-	if (Utils.StrContains("cszm", Globals.GetCurrentMapName()))
+	if (!Utils.StrContains("cszm", Globals.GetCurrentMapName()))
 	{
-		Log.PrintToServerConsole(LOGTYPE_INFO, "CSZM", "[CSZM] Current map is valid for 'Counter-Strike Zombie Mode'");
-
-		bIsCSZM = true;
-		bWarmUp =  true;
-		bIsPlayersSelected = false;
-		iWUSeconds = iWarmUpTime;
-		flRTWait = 0;
-		flWUWait = 0;
-		flSoloTime = 0;
-
-		Engine.EnableCustomSettings(true);
-		Utils.ForceCollision(TEAM_SURVIVORS, false);
-		Utils.ForceCollision(TEAM_ZOMBIES, false);
-		
-		//Set some ConVar to 0
-		pSoloMode.SetValue("0");
-		pTestMode.SetValue("0");
-		pINGWarmUp.SetValue("0");
-		pFriendlyFire.SetValue("0");
-		pInfectionRate.SetValue("0");
-		pZPSHardcore.SetValue("0");
-		
-		//Cache
-		CacheModels();
-		CacheSounds();
-
-		Engine.PrecacheFile(sound, "npc/zombie_poison/pz_alert2.wav");
-
-		//Add all custom files of CSZM to Download Table
-		//Sounds, materials, models
-		AddToDownloadTable();
-
-		//Get MaxPlayers
-		iMaxPlayers = Globals.GetMaxClients();
-		
-		//Entities
-		RegisterEntities();
-
-		//CSZM Player array resize
-		Array_CSZMPlayer.resize(iMaxPlayers + 1);
-
-		AutoMap();
-		SetUpIPD((1<<1) + (1<<2) + (1<<3));
-		
-		//Set Doors Filter to 0 (any team)
-		if (bWarmUp)
-		{
-			SetDoorFilter(TEAM_LOBBYGUYS);
-		}
+		return;
 	}
-	else
+
+	bIsCSZM = true;
+	bWarmUp =  true;
+	bIsPlayersSelected = false;
+	iWUSeconds = iWarmUpTime;
+	flRTWait = 0;
+	flWUWait = 0;
+	flSoloTime = 0;
+
+	Engine.EnableCustomSettings(true);
+	Utils.ForceCollision(TEAM_SURVIVORS, false);
+	Utils.ForceCollision(TEAM_ZOMBIES, false);
+	
+	//Set some ConVar to 0
+	pSoloMode.SetValue("0");
+	pTestMode.SetValue("0");
+	pINGWarmUp.SetValue("0");
+	pFriendlyFire.SetValue("0");
+	pInfectionRate.SetValue("0");
+	pZPSHardcore.SetValue("0");
+	
+	//Cache
+	CacheModels();
+	CacheSounds();
+
+	//Add all custom files of CSZM to Download Table
+	//Sounds, materials, models
+	AddToDownloadTable();
+
+	//Get MaxPlayers
+	iMaxPlayers = Globals.GetMaxClients();
+	
+	//Entities
+	RegisterEntities();
+
+	//CSZM Player array resize
+	Array_CSZMPlayer.resize(iMaxPlayers + 1);
+
+	AutoMap();
+	SetUpIPD((1<<1) + (1<<2) + (1<<3));
+	
+	//Set Doors Filter to 0 (any team)
+	if (bWarmUp)
 	{
-		Log.PrintToServerConsole(LOGTYPE_INFO, "CSZM", "[CSZM] Current map is not valid for \"Counter-Strike Zombie Mode\"");
+		SetDoorFilter(TEAM_LOBBYGUYS);
 	}
 }
 
 void OnMapShutdown()
 {
-	if (bIsCSZM)
+	if (!bIsCSZM)
 	{
-		pSoloMode.SetValue("0");
-
-		bIsCSZM = false;
-
-		Engine.EnableCustomSettings(false);
-		Utils.ForceCollision(TEAM_SURVIVORS, false);
-		Utils.ForceCollision(TEAM_ZOMBIES, false);
-
-		ClearIPD();
-
-		iSeconds = 0;
-		iWUSeconds = iWarmUpTime;
-		flRTWait = 0;
-		flWUWait = 0;
-		flSoloTime = 0;
-		iHumanWin = 0;
-		iZombieWin = 0;
-		
-		bWarmUp = true;
-
-		Array_CSZMPlayer.removeRange(0, Array_CSZMPlayer.length());
-		Array_SteamID.removeRange(0, Array_SteamID.length());
-
-		@pCSZMTimer = null;
+		return;
 	}
+
+	pSoloMode.SetValue("0");
+
+	bIsCSZM = false;
+
+	Engine.EnableCustomSettings(false);
+	Utils.ForceCollision(TEAM_SURVIVORS, false);
+	Utils.ForceCollision(TEAM_ZOMBIES, false);
+
+	ClearIPD();
+
+	iWUSeconds = iWarmUpTime;
+	iSeconds = 0;
+	flRTWait = 0;
+	flWUWait = 0;
+	flSoloTime = 0;
+	iHumanWin = 0;
+	iZombieWin = 0;
+	
+	bWarmUp = true;
+
+	Array_CSZMPlayer.removeRange(0, Array_CSZMPlayer.length());
+	Array_SteamID.removeRange(0, Array_SteamID.length());
+
+	@pCSZMTimer = null;
 }
 
 void OnProcessRound()
 {
-	if (bIsCSZM)
+	if (!bIsCSZM)
 	{
-		RoundManager.SetCurrentRoundTime(PlusGT(CONST_GAME_ROUND_TIME));
-		RoundManager.SetZombieLives(CONST_ZOMBIE_LIVES);
+		return;
+	}
 
-		if (LessThanGTZ(flRTWait))
-		{
-			flRTWait = PlusGT(1.0f);
-			RoundTimer();
-		}
+	RoundManager.SetCurrentRoundTime(PlusGT(CONST_GAME_ROUND_TIME));
+	RoundManager.SetZombieLives(CONST_ZOMBIE_LIVES);
 
-		if (LessThanGTZ(flWUWait))
-		{
-			WarmUpTimer();
-		}
+	if (LessThanGTZ(flRTWait))
+	{
+		flRTWait = PlusGT(1.0f);
+		RoundTimer();
+	}
 
-		if (flSoloTime != -1 && LessThanGTZ(flSoloTime))
-		{
-			flSoloTime = -1;
-			pSoloMode.SetValue("0");
-		}
+	if (LessThanGTZ(flWUWait))
+	{
+		WarmUpTimer();
+	}
 
-		if (pCSZMTimer !is null)
-		{
-			pCSZMTimer.Think();
-		}
+	if (flSoloTime != -1 && LessThanGTZ(flSoloTime))
+	{
+		flSoloTime = -1;
+		pSoloMode.SetValue("0");
+	}
 
-		for (int i = 1; i <= iMaxPlayers; i++) 
+	if (pCSZMTimer !is null)
+	{
+		pCSZMTimer.Think();
+	}
+
+	for (int i = 1; i <= iMaxPlayers; i++) 
+	{
+		if (Array_CSZMPlayer[i] !is null)
 		{
-			if (Array_CSZMPlayer[i] !is null)
-			{
-				Array_CSZMPlayer[i].Think();
-			}
+			Array_CSZMPlayer[i].Think();
 		}
 	}
 }
 
 void OnNewRound()
 {
-	if (bIsCSZM)
+	if (!bIsCSZM)
 	{
-		AutoMap();
+		return;
+	}
 
-		flRTWait = 0;
-		flWUWait = 0;
+	AutoMap();
 
-		bIsPlayersSelected = false;
+	flRTWait = 0;
+	flWUWait = 0;
 
-		@pCSZMTimer = null;
-		
-		for (int i = 1; i <= iMaxPlayers; i++) 
+	bIsPlayersSelected = false;
+
+	@pCSZMTimer = null;
+	
+	for (int i = 1; i <= iMaxPlayers; i++) 
+	{
+		if (Array_CSZMPlayer[i] !is null)
 		{
-			if (Array_CSZMPlayer[i] !is null)
-			{
-				Array_CSZMPlayer[i].Reset();
-			}
+			Array_CSZMPlayer[i].Reset();
 		}
 	}
 }
 
 void OnMatchStarting()
 {
-	if (bIsCSZM)
+	if (!bIsCSZM)
 	{
-		pSoloMode.SetValue("1");
+		return;
+	}
 
-		int flGUT_iPercent = int(ceil(iGearUpTime * 0.214f));
-		int iPercent = Math::RandomInt(-1 * flGUT_iPercent, flGUT_iPercent);
+	pSoloMode.SetValue("1");
 
-		int p_iRoundTime = iRoundTime - iPercent;
-		int p_iGearUpTime = iGearUpTime + iPercent;
+	int flGUT_iPercent = int(ceil(iGearUpTime * 0.214f));
+	int iPercent = Math::RandomInt(-1 * flGUT_iPercent, flGUT_iPercent);
 
-		iRoundTimeFull = p_iRoundTime + p_iGearUpTime;
-		iTurnTime = p_iRoundTime;
+	int p_iRoundTime = iRoundTime - iPercent;
+	int p_iGearUpTime = iGearUpTime + iPercent;
 
-		iSeconds = iRoundTimeFull;
-		@pCSZMTimer = HUDTimer();
+	iRoundTimeFull = p_iRoundTime + p_iGearUpTime;
+	iTurnTime = p_iRoundTime;
 
-		for (int i = 1; i <= iMaxPlayers; i++) 
+	iSeconds = iRoundTimeFull;
+	@pCSZMTimer = HUDTimer();
+
+	for (int i = 1; i <= iMaxPlayers; i++) 
+	{
+		if (Array_CSZMPlayer[i] !is null)
 		{
-			if (Array_CSZMPlayer[i] !is null)
-			{
-				Array_CSZMPlayer[i].AddMoney(ECO_StartingCash);
-			}
+			Array_CSZMPlayer[i].AddMoney(ECO_StartingCash);
 		}
 	}
 }
 
 void OnMatchBegin() 
 {
-	if (bIsCSZM)
+	if (!bIsCSZM)
 	{
-		LogicPlayerManager();
-		Schedule::Task(0.5f, "CSZM_LocknLoad");
+		return;
+	}
 
-		if (iWUSeconds == 0)
-		{
-			PutPlrToLobby(null);
-			SetDoorFilter(TEAM_SPECTATORS);
-			iWUSeconds = iWarmUpTime;
-		}
+	LogicPlayerManager();
+	Schedule::Task(0.5f, "CSZM_LocknLoad");
+
+	if (iWUSeconds == 0)
+	{
+		PutPlrToLobby(null);
+		SetDoorFilter(TEAM_SPECTATORS);
+		iWUSeconds = iWarmUpTime;
 	}
 }
 
 void OnMatchEnded() 
 {
-	if (bIsCSZM)
+	if (!bIsCSZM)
 	{
-		pSoloMode.SetValue("0");
+		return;
+	}
 
-		for (int i = 1; i <= iMaxPlayers; i++) 
+	pSoloMode.SetValue("0");
+
+	for (int i = 1; i <= iMaxPlayers; i++) 
+	{
+		if (Array_CSZMPlayer[i] !is null)
 		{
-			if (Array_CSZMPlayer[i] !is null)
-			{
-				Array_CSZMPlayer[i].ShowStatsEnd();
-			}
+			Array_CSZMPlayer[i].ShowStatsEnd();
 		}
 	}
 }
@@ -357,10 +351,7 @@ class HUDTimer
 	private float WaitTime;
 	private float HoldTime;
 	private string Timer;
-	private int Red;
-	private int Green;
-	private int Blue;
-	private bool IsRed;
+	private float Alpha;
 
 	HUDTimer()
 	{
@@ -368,12 +359,7 @@ class HUDTimer
 		RPBaseTime = 0;
 		RPTime = 0;
 		HoldTime = 10.0f;
-
-		Red = 255;
-		Green = 255;
-		Blue = 255;
-
-		IsRed = false;
+		Alpha = 1.0f;
 
 		UpdateTimer(iSeconds);
 	}
@@ -383,34 +369,9 @@ class HUDTimer
 		WaitTime = 0;
 		RPBaseTime = 0;
 		HoldTime = 10.25f;
-
-		if (iSeconds > 0)
-		{
-			Red = 255;
-			Green = 255;
-			Blue = 255;
-			IsRed = false;			
-		}
+		Alpha = (iSeconds > 0) ? 1.0f : 0.1765f;
 
 		ShowHUDTime();
-	}
-
-	private void RedPulse()
-	{
-		if (IsRed)
-		{
-			IsRed = false;
-			Red = 255;
-			Green = 255;
-			Blue = 255;
-		}
-		else
-		{
-			IsRed = true;
-			Red = 255;
-			Green = 45;
-			Blue = 45;
-		}
 	}
 
 	private void UpdateTimer(int Seconds)
@@ -419,25 +380,15 @@ class HUDTimer
 		float ShowMinutes = floor((iSeconds - ShowHours * 3600) / 60);
 		float ShowSeconds = floor(iSeconds - (ShowHours * 3600) - (ShowMinutes * 60));
 
-		string SZero = "";
-		string MZero = "";
+		string SZero = (ShowSeconds <= 9) ? "0" : "";
+		string MZero = (ShowMinutes <= 9) ? "0" : "";
 
-		if (ShowMinutes <= 9)
-		{
-			MZero = "0";
-		}
-		if (ShowSeconds <= 9)
-		{
-			SZero = "0";
-		}
-
-		Timer = MZero + ShowMinutes + ":" + SZero + ShowSeconds;
-
-		PeekColor(Seconds);
+		Timer = MZero + formatFloat(ShowMinutes, 'l', 0, 0) + ":" + SZero + formatFloat(ShowSeconds, 'l', 0, 0);
+		RedPulseTime(Seconds);
 		ShowHUDTime();
 	}
 
-	private void PeekColor(int Seconds)
+	private void RedPulseTime(int Seconds)
 	{
 		if (Seconds <= 5)
 		{
@@ -451,22 +402,9 @@ class HUDTimer
 		{
 			RPBaseTime = 0.4f;
 		}
-
-		if (Seconds > 15)
+		else
 		{
 			RPBaseTime = 0;
-			IsRed = false;
-			Red = 255;
-			Green = 255;
-			Blue = 255;
-		}
-		else if (Seconds <= 0)
-		{
-			RPBaseTime = 0;
-			IsRed = true;
-			Red = 255;
-			Green = 45;
-			Blue = 45;
 		}
 	}
 
@@ -481,7 +419,7 @@ class HUDTimer
 		pTimerParameters.fadeoutTime = 0.0f;
 		pTimerParameters.holdTime = HoldTime + 0.15f;
 		pTimerParameters.fxTime = 0;
-		pTimerParameters.SetColor(Color(Red, Green, Blue));
+		pTimerParameters.SetColor(Color(255, int(ceil(255 * Alpha)), int(ceil(255 * Alpha))));
 		pTimerParameters.SetColor2(Color(0, 0, 0));
 
 		Utils.GameText(any, Timer, pTimerParameters);
@@ -499,7 +437,7 @@ class HUDTimer
 		if (LessThanGT(RPTime) && RPBaseTime != 0)
 		{
 			RPTime = PlusGT(RPBaseTime);
-			RedPulse();
+			Alpha = (Alpha != 1.0f) ? 1.0f : 0.1765f;
 			ShowHUDTime();
 		}
 	}
@@ -538,46 +476,6 @@ class ShowHealthPoints
 		}
 
 		Chat.CenterMessagePlayer(pPlayer, MSG);
-	}
-}
-
-class ShowHitMarker
-{
-	ShowHitMarker(const int PlayerIndex, const bool CriticalDamage)
-	{
-		HitMarker(PlayerIndex, CriticalDamage);
-	}
-
-	private void HitMarker(const int PlayerIndex, bool CriticalDamage)
-	{
-		CZP_Player@ pPlayer = ToZPPlayer(PlayerIndex);
-		int R = 0;
-		int G = 155;
-		int B = 255;
-		float Alpha = 0.78f;
-
-		if (CriticalDamage)
-		{
-			R = 255;
-			G = 75;
-			B = 75;
-		}
-
-		R = int(R * Alpha);
-		G = int(G * Alpha);
-		B = int(B * Alpha);
-
-		HudTextParams pParams;
-		pParams.x = -1;
-		pParams.y = -1;
-		pParams.channel = 1;
-		pParams.fadeinTime = 0.0f;
-		pParams.fadeoutTime = 0.2f;
-		pParams.holdTime = 0.075f;
-		pParams.fxTime = 0.0f;
-		pParams.SetColor(Color(R, G, B));
-		pParams.SetColor2(Color(0, 0, 0));
-		Utils.GameTextPlayer(pPlayer, "+", pParams);
 	}
 }
 
@@ -758,16 +656,9 @@ class CSZMPlayer
 		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(PlayerIndex);
 		CZP_Player@ pPlayer = ToZPPlayer(PlayerIndex);
 
-		bool bAllowPainSound = (pPlayer.IsCarrier() && FirstInfected);
-
-		if (!pPlayer.IsCarrier())
+		if (pPlayerEntity.GetWaterLevel() != WL_Eyes)
 		{
-			bAllowPainSound = true;
-		}
-
-		if (bAllowPainSound && pPlayerEntity.GetWaterLevel() != WL_Eyes)
-		{
-			Engine.EmitSoundEntity(pPlayerEntity, ZM_Sound + Voice);
+			Engine.EmitSoundEntity(pPlayerEntity, ZM_Sound + formatInt(Voice));
 		}
 	}
 
@@ -858,13 +749,8 @@ class CSZMPlayer
 			PropHealth -= 300;
 			AddInfectPoints(-1);
 		}
-
-		PropHealthToMoney(nHP);
-	}
-
-	private void PropHealthToMoney(const int nHP)
-	{
-		CashBank += int(ceil(nHP / 1150.0f * 100));
+		
+		CashBank += PropHealthToMoney(nHP);
 	}
 
 	void AddInfectPoints(int AIC)
@@ -1015,9 +901,7 @@ class CSZMPlayer
 	void ShowStatsEnd()
 	{
 		string strStatsHead = "Ваша статистика раунда:\n";
-		string strStats = "";
-		strStats = strStatsHead + " Убийства зомби: " + formatInt(Kills) + "\n Заражение людей: " + formatInt(Victims);
-
+		string strStats = strStatsHead + " Убийства зомби: " + formatInt(Kills) + "\n Заражение людей: " + formatInt(Victims);
 		ShowTextPlr(ToZPPlayer(PlayerIndex), strStats, 1, 0.00f, 0, 0.25f, 0.25f, 0.00f, 10.10f, Color(205, 205, 220), Color(255, 95, 5));
 	}
 
@@ -1407,15 +1291,25 @@ namespace GameText
 
 namespace Radio
 {
-	enum WepName_Indexes {WN_NAME, WN_CLASS}
-	enum RadioShop_Types {RS_CAT, RS_MELEE, RS_FIREARMS, RS_AMMO, RS_ITEMS, RS_ZOMBIE, RS_LOBBY, RS_SPEC}
 	enum Menu_Inputs {IP_CLOSE, IP_PREV = 8, IP_NEXT, IP_MENU, IP_DROP}
-	enum MenuData_Indexes {SD_COST, SD_AMOUNT, SD_DTYPE = SD_AMOUNT,}
 	enum MenuSound_Indexes {SF_ACCEPT, SF_DENIED, SF_CLOSE}
 	enum MenuGoTo {PAGE_PREV = -1, PAGE_NEXT = 1}
 	enum Denied_Reasons {DR_EMPTY = -1, DR_NOCASH, DR_NOSPACE, DR_MAXEHP, DR_MAXLIFE, DR_MAXARMOR}
+	enum RadioMenu_Types {RS_CAT, RS_MELEE, RS_FIREARMS, RS_AMMO, RS_ITEMS, RS_DROP, RS_ZOMBIE, RS_LOBBY, RS_SPEC}
 	const int MAX_ITEMS_ON_PAGE = 7;
-	const array<string> pDeniedReason = 
+	const array<string> gMenuTitle =
+	{
+		"Menu",
+		"Melee",
+		"Firearms",
+		"Ammo",
+		"Items",
+		"Drop Money",
+		"Zombie Menu",
+		"Lobby Menu",
+		"Spectator Menu"
+	};
+	const array<string> gDeniedReason = 
 	{
 		"Недостаточно средств!",
 		"Нет свободного места!",
@@ -1423,128 +1317,74 @@ namespace Radio
 		"Вы не можете купить больше доп. жизней!",
 		"У вас уже есть броня!"
 	};
-	const array<string> pMenuSound = 
+	const array<string> gMenuSound = 
 	{
 		"buttons/button14.wav",
 		"buttons/combine_button_locked.wav",
 		"buttons/combine_button7.wav"
 	};
-	const array<array<array<string>>> pMenuName = 
+	const array<array<array<string>>> gMenuData = 
 	{
 		{
-			{"Menu",			""},
-			{"Melee",			""},
-			{"Firearms",		""},
-			{"Ammo",			""},
-			{"Items",			""},
-			{"Zombie Menu",		""},
-			{"Lobby Menu",		""},
-			{"Spectator Menu",	""}
+			{"Melee",		"1"},
+			{"Firearms",	"2"},
+			{"Ammo",		"3"},
+			{"Items",		"4"},
+			{"Drop Money",	"5"}
 		},
 		{
-			{"Hammer",			"weapon_barricade"},
-			{"Shovel",			"weapon_shovel"},
-			{"Sledgehammer",	"weapon_sledgehammer"}
+			{"Hammer",			"150",		"weapon_barricade"},
+			{"Shovel",			"450",		"weapon_shovel"},
+			{"Sledgehammer",	"2000",		"weapon_sledgehammer"}
+		},	
+		{	
+			{"Glock18c",		"165",		"weapon_glock18c"},
+			{"Glock",			"105",		"weapon_glock"},
+			{"USP",				"110",		"weapon_usp"},
+			{"PPK",				"75",		"weapon_ppk"},
+			{"AK47",			"625",		"weapon_ak47"},
+			{"M4",				"575",		"weapon_m4"},
+			{"MP5",				"415",		"weapon_mp5"},
+			{"Remington 870",	"705",		"weapon_870"},
+			{"SuperShorty",		"400",		"weapon_supershorty"},
+			{"Winchester",		"350",		"weapon_winchester"},
+			{"Revolver",		"900",		"weapon_revolver"}
 		},
 		{
-			{"Glock18c",		"weapon_glock18c"},
-			{"Glock",			"weapon_glock"},
-			{"USP",				"weapon_usp"},
-			{"PPK",				"weapon_ppk"},
-			{"AK47",			"weapon_ak47"},
-			{"M4",				"weapon_m4"},
-			{"MP5",				"weapon_mp5"},
-			{"Remington 870",	"weapon_870"},
-			{"SuperShorty",		"weapon_supershorty"},
-			{"Winchester",		"weapon_winchester"},
-			{"Revolver",		"weapon_revolver"}
+			{"Pistol",		"75",	"15"},
+			{"Revovler",	"295",	"6"},
+			{"Shotgun",		"105",	"6"},
+			{"Rifle",		"175",	"30"},
+			{"Barricade",	"250",	"1"}
 		},
 		{
-			{"Pistol",			""},
-			{"Revovler",		""},
-			{"Shotgun",			""},
-			{"Rifle",			""},
-			{"Barricade",		""}
+			{"Grenade",		"925",		"weapon_frag",	"0"},
+			{"IED",			"1150",		"weapon_ied", 	"0"},
+			{"FragMine",	"775",		"item_deliver",	"1"},
+			{"Adrenaline",	"850",		"item_deliver",	"2"},
+			{"Antidote",	"1500",		"item_deliver", "3"}
+		},	
+		{
+			{"",	"100"},
+			{"",	"150"},
+			{"",	"200"},
+			{"",	"250"},
+			{"",	"300"}
 		},
 		{
-			{"Grenade",			"weapon_frag"},
-			{"IED",				"weapon_ied"},
-			{"FragMine",		"item_deliver"},
-			{"Adrenaline",		"item_deliver"},
-			{"Antidote",		"item_deliver"}
-		},
-		{
-			{"Extra HP",		""},
-			{"Exrta Life",		""},
-			{"Armor",			""},
-			{"Toxic",			""},
-			{"somthing else",	""}
+			{"Extra HP",	"1400"},
+			{"Exrta Life",	"1800"},
+			{"Armor",		"750"}
 		},
 		{
 			{"Get a Snowball",		"weapon_snowball"},
 			{"Get a Tennis ball",	"weapon_tennisball"},
 			{"Become a Firefly",	""},
 			{"Reduce Scale",		""},
-			{"Increase Scale",		""},
+			{"Increase Scale",		""}
 		},
 		{
 			{"Become a Firefly",	""}
-		}
-	};
-	const array<array<array<int>>> pMenuData = 
-	{
-		{
-			{0,0},
-			{0,0},
-			{0,0},
-			{0,0}
-		},
-		{
-			{150,0},
-			{450,0},
-			{2000,0}
-		},
-		{
-			{165,0},
-			{105,0},
-			{110,0},
-			{75,0},
-			{625,0},
-			{575,0},
-			{415,0},
-			{705,0},
-			{400,0},
-			{350,0},
-			{900,0}
-		},
-		{
-			{75,15},
-			{295,6},
-			{105,6},
-			{175,30},
-			{250,1}
-		},
-		{
-			{925,0},
-			{1150,0},
-			{775,1},
-			{850,2},
-			{1500,3}
-		},
-		{
-			{1450,0},
-			{1800,0},
-			{650,0}
-		},
-		{
-			{0,0},
-			{0,0},
-			{0,0},
-			{0,0},
-			{0,0}
-		},
-		{
-			{0,0}
 		}
 	};
 
@@ -1553,15 +1393,16 @@ namespace Radio
 		bool IsCommandExist = true;
 
 		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(nPlrInd);
+		int index = pPlayerEntity.entindex();
 		int team = pPlayerEntity.GetTeamNumber();
 
 		if (Utils.StrEql("firefly", pCC.Arg(0)) && team < TEAM_SURVIVORS)
 		{
-			NPZ::SetFirefly(pPlayerEntity, pPlayerEntity.entindex(), Utils.StringToInt(pCC.Arg(1)), Utils.StringToInt(pCC.Arg(2)), Utils.StringToInt(pCC.Arg(3)));
+			NPZ::SetFirefly(pPlayerEntity, index, Utils.StringToInt(pCC.Arg(1)), Utils.StringToInt(pCC.Arg(2)), Utils.StringToInt(pCC.Arg(3)));
 		}
 		else if (Utils.StrEql("enhancevision", pCC.Arg(0)) && team == TEAM_LOBBYGUYS)
 		{
-			NPZ::DLight(pPlayerEntity, pPlayerEntity.entindex());
+			NPZ::DLight(pPlayerEntity, index);
 		}
 		else if (Utils.StrEql("dropweapon", pCC.Arg(0)))
 		{
@@ -1599,6 +1440,14 @@ namespace Radio
 				NPZ::StripWeapon(ToZPPlayer(nPlrInd), CWClassname);
 			}
 		}
+		else if (Utils.StrEql("dropcash", pCC.Arg(0)) && team == TEAM_SURVIVORS && Array_CSZMPlayer[index].CashBank > 100)
+		{
+			int CashToDrop = Utils.StringToInt(pCC.Arg(1));
+			if (CashToDrop > 100)
+			{
+				DropCash(index, CashToDrop);
+			}
+		}
 		else
 		{
 			IsCommandExist = false;
@@ -1620,18 +1469,79 @@ namespace Radio
 		return pResult;
 	}
 
+	void DropCash(const int &in PlrInd, const int &in nCashToDrop)
+	{
+		if (nCashToDrop == 0 || FindEntityByEntIndex(PlrInd) is null)
+		{
+			return;
+		}
+
+		Array_CSZMPlayer[PlrInd].CashBank -= nCashToDrop;
+
+		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(PlrInd);
+
+		Vector Velocity;
+		Vector Eyes = pPlayerEntity.EyePosition() - Vector(0, 0, Math::RandomFloat(4, 16));
+		QAngle Angles = pPlayerEntity.EyeAngles() + QAngle(0, Math::RandomFloat(-5, 5), 0);
+		Globals.AngleVectors(Angles, Velocity);
+		Velocity = Velocity * Math::RandomInt(200, 300) + pPlayerEntity.GetAbsVelocity();
+		Angles *= QAngle(0, 1, 0);
+
+		CEntityData@ MoneyIPD = EntityCreator::EntityData();
+
+		MoneyIPD.Add("targetname", "dropped_money");
+		MoneyIPD.Add("canfirehurt", "0");
+		MoneyIPD.Add("minhealthdmg", "1000");
+		MoneyIPD.Add("model", "models/zp_props/100dollar/100dollar.mdl");
+		MoneyIPD.Add("nodamageforces", "1");
+		MoneyIPD.Add("nofiresound", "1");
+		MoneyIPD.Add("physdamagescale", "0");
+		MoneyIPD.Add("spawnflags", "8582");
+		MoneyIPD.Add("unbreakable", "1");
+		MoneyIPD.Add("overridescript", "mass,1,");
+
+		CBaseEntity@ pMoney = EntityCreator::Create("prop_physics_override", Eyes, Angles, MoneyIPD);
+
+		pMoney.SetHealth(nCashToDrop);
+		pMoney.Teleport(Eyes, (Angles +  QAngle(0, 90, 0)), Velocity);
+		pMoney.SetOutline(true, filter_team, TEAM_SURVIVORS, Color(235, 65, 175), 185.0f, false, true);
+
+		Engine.EmitSoundEntity(pPlayerEntity, ")foley/carrier_footsteps/sand2.wav");
+
+		NetData nData;
+		nData.Write(pMoney.entindex());
+		Network::CallFunction("OnItemCashCreation", nData);
+	}
+
+	int GiveAmmo(CZP_Player@ pPlayer, const int &in nAmmoType, const int &in nAmount)
+	{
+		int iResult = 0;
+
+		for (int i = 0; i < nAmount; i++)
+		{
+			if (!pPlayer.AmmoBank(add, AmmoBankSetValue(nAmmoType), 1))
+			{
+				break;
+			}
+
+			iResult++;
+		}
+
+		return iResult;
+	}
+
 	class Menu
 	{
-		private float InputDelay;
-		private int TeamNum;
 		private int MenuType;
 		private int PlrInd;
+		private int TeamNum;
 		private int TotalItems;
 		private int TotalPages;
 		private int CurrentPage;
 		private int Start;
 		private int Steps;
 		private int SoundIndex;
+		private float InputDelay;
 		private float LifeTime;
 		private float RefreshTime;
 		private GameText::MenuKeyValyes@ pMParams;
@@ -1658,7 +1568,7 @@ namespace Radio
 			Start = 0;
 			CurrentPage = 1;
 			RefreshTime = Globals.GetCurrentTime() + 0.089f;
-			TotalItems = int(pMenuData[MenuType].length());
+			TotalItems = int(gMenuData[MenuType].length());
 			TotalPages = int(ceil(float(TotalItems) / float(MAX_ITEMS_ON_PAGE)));
 			Steps = (TotalItems > MAX_ITEMS_ON_PAGE) ? MAX_ITEMS_ON_PAGE : TotalItems;
 
@@ -1687,23 +1597,19 @@ namespace Radio
 
 			int length = Start + Steps;
 			int Num = 0;
-			pMParams.Add("title", "-= " + pMenuName[0][MenuType][0] + " =-");
+			pMParams.Add("title", "-= " + gMenuTitle[MenuType] + " =-");
 			pMParams.Add("holdtime", "0.12");
 
 			for (int i = Start; i < length; i++)
 			{
+				string dItem = gMenuData[MenuType][i][0];
+
+				if (Utils.StringToInt(gMenuData[MenuType][i][1]) > 0 && MenuType != RS_CAT)
+				{
+					dItem += " - " + gMenuData[MenuType][i][1] + "$";
+				}
+
 				Num++;
-				string dItem = pMenuName[MenuType][i][WN_NAME];
-
-				if (MenuType == RS_CAT)
-				{
-					dItem = pMenuName[MenuType][Num][WN_NAME];
-				}
-				else if (pMenuData[MenuType][i][SD_COST] > 0)
-				{
-					dItem += " - " + formatInt(pMenuData[MenuType][i][SD_COST]) + "$";
-				}
-
 				pMParams.Add("item" + formatInt(Num), dItem);
 			}
 
@@ -1737,14 +1643,14 @@ namespace Radio
 			SendMenu(nLifeTime);
 		}
 
-		void Input(int &in iSlot)
+		void Input(int iSlot)
 		{
 			if (!LessThanGT(InputDelay))
 			{
 				return;
 			}
 
-			InputDelay = PlusGT(0.03f);
+			InputDelay = PlusGT(0.04f);
 			CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(PlrInd);
 			SoundIndex = -1;
 
@@ -1785,108 +1691,70 @@ namespace Radio
 		void Select(const int iItemIndex)
 		{
 			CZP_Player@ pPlayer = ToZPPlayer(PlrInd);
-			int CashToPay = 0;
+			int CashToPay = Utils.StringToInt(gMenuData[MenuType][iItemIndex][1]);
 
-			if (MenuType != RS_CAT && Array_CSZMPlayer[PlrInd].CashBank < pMenuData[MenuType][iItemIndex][SD_COST] && pMenuData[MenuType][iItemIndex][SD_COST] != 0)
+			if (MenuType != RS_CAT && Array_CSZMPlayer[PlrInd].CashBank < CashToPay)
 			{
 				Denied(DR_NOCASH);
+				CashToPay = 0;
 			}
 			else if (MenuType == RS_CAT)
 			{
-				Array_CSZMPlayer[PlrInd].AddMenu(Radio::Menu(PlrInd, iItemIndex + 1));
+				Array_CSZMPlayer[PlrInd].AddMenu(Radio::Menu(PlrInd, CashToPay));
+				CashToPay = 0;
 			}
 			else if (MenuType == RS_FIREARMS || MenuType == RS_MELEE || MenuType == RS_ITEMS)
 			{
-				CBaseEntity@ pGun;
-				if (MenuType == RS_ITEMS)
-				{
-					@pGun = EntityCreator::Create(pMenuName[MenuType][iItemIndex][WN_CLASS], Vector(0, 0, 0), QAngle(0, 0, 0), GetInputData(pMenuData[MenuType][iItemIndex][SD_DTYPE]));
-				}
-				else
-				{
-					@pGun = EntityCreator::Create(pMenuName[MenuType][iItemIndex][WN_CLASS], Vector(0, 0, 0), QAngle(0, 0, 0));
-				}
-
+				CBaseEntity@ pGun = (MenuType == RS_ITEMS) ? EntityCreator::Create(gMenuData[MenuType][iItemIndex][2], Vector(0, 0, 0), QAngle(0, 0, 0), GetInputData(Utils.StringToInt(gMenuData[MenuType][iItemIndex][3]))) : EntityCreator::Create(gMenuData[MenuType][iItemIndex][2], Vector(0, 0, 0), QAngle(0, 0, 0));
 				if (pPlayer.PutToInventory(pGun))
 				{
 					Engine.EmitSoundEntity(FindEntityByEntIndex(PlrInd), "HL2Player.PickupWeapon");
-					CashToPay = pMenuData[MenuType][iItemIndex][SD_COST];
 				}
 				else
 				{
 					pGun.SUB_Remove();
 					Denied(DR_NOSPACE);
+					CashToPay = 0;
 				}
 			}
 			else if (MenuType == RS_AMMO)
 			{
-				if (pPlayer.AmmoBank(add, AmmoBankSetValue(iItemIndex), pMenuData[MenuType][iItemIndex][SD_AMOUNT]))
-				{
-					if (iItemIndex == 4)
-					{
-						Engine.EmitSoundEntity(FindEntityByEntIndex(PlrInd), "HL2Player.PickupWeapon");
-					}
-					else
-					{
-						Engine.EmitSoundEntity(FindEntityByEntIndex(PlrInd), "ZPlayer.AmmoPickup");
-					}
+				int Amount = Utils.StringToInt(gMenuData[MenuType][iItemIndex][2]);
+				int SoldOutAmount = GiveAmmo(pPlayer, iItemIndex, Amount);
+				int NewCost = int(ceil((float(CashToPay) / float(Amount)) * (float(SoldOutAmount) / float(CashToPay)) * float(CashToPay)));
 
-					CashToPay = pMenuData[MenuType][iItemIndex][SD_COST];
+				if (SoldOutAmount > 0)
+				{
+					(iItemIndex == 4) ? Engine.EmitSoundEntity(FindEntityByEntIndex(PlrInd), "HL2Player.PickupWeapon") : Engine.EmitSoundEntity(FindEntityByEntIndex(PlrInd), "ZPlayer.AmmoPickup");
+					CashToPay = NewCost;
 				}
 				else
 				{
 					Denied(DR_NOSPACE);
+					CashToPay = 0;
 				}
+			}
+			else if (MenuType == RS_DROP)
+			{
+				DropCash(PlrInd, CashToPay);
+				CashToPay = 0;
 			}
 			else if (MenuType == RS_ZOMBIE)
 			{
-				/*if (iItemIndex == 0)
-				{
-					if (Array_CSZMPlayer[PlrInd].AddExtraHealth())
-					{
-						CashToPay = pMenuData[MenuType][iItemIndex][SD_COST];
-					}
-					else
-					{
-						Denied(DR_MAXEHP);
-					}
-				}
-				else if (iItemIndex == 1)
-				{
-					if (Array_CSZMPlayer[PlrInd].AddExtraLife())
-					{
-						CashToPay = pMenuData[MenuType][iItemIndex][SD_COST];
-					}
-					else
-					{
-						Denied(DR_MAXLIFE);
-					}
-				}
-				else if (iItemIndex == 2)
-				{
-					if (Array_CSZMPlayer[PlrInd].AddZMArmor())
-					{
-						CashToPay = pMenuData[MenuType][iItemIndex][SD_COST];
-					}
-					else
-					{
-						Denied(DR_MAXARMOR);
-					}
-				}*/
-
 				switch(iItemIndex)
 				{
-					case 0: (Array_CSZMPlayer[PlrInd].AddExtraHealth()) ? (TakeCost(pMenuData[MenuType][iItemIndex][SD_COST])) : Denied(DR_MAXEHP); break;
-					case 1: (Array_CSZMPlayer[PlrInd].AddExtraLife()) ? (TakeCost(pMenuData[MenuType][iItemIndex][SD_COST])) : Denied(DR_MAXLIFE); break;
-					case 2: (Array_CSZMPlayer[PlrInd].AddZMArmor()) ? (TakeCost(pMenuData[MenuType][iItemIndex][SD_COST])) : Denied(DR_MAXARMOR); break;
+					case 0: (Array_CSZMPlayer[PlrInd].AddExtraHealth()) ? (TakeCost(CashToPay)) : Denied(DR_MAXEHP); break;
+					case 1: (Array_CSZMPlayer[PlrInd].AddExtraLife()) ? (TakeCost(CashToPay)) : Denied(DR_MAXLIFE); break;
+					case 2: (Array_CSZMPlayer[PlrInd].AddZMArmor()) ? (TakeCost(CashToPay)) : Denied(DR_MAXARMOR); break;
 				}
+				CashToPay = 0;
 			}
 			else if (MenuType == RS_LOBBY)
 			{
 				switch(iItemIndex)
 				{
-					case 0: NPZ::GiveThrowable(pPlayer, pMenuName[MenuType][iItemIndex][WN_CLASS]); break;
-					case 1: NPZ::GiveThrowable(pPlayer, pMenuName[MenuType][iItemIndex][WN_CLASS]); break;
+					case 0: NPZ::GiveThrowable(pPlayer, gMenuData[MenuType][iItemIndex][1]); break;
+					case 1: NPZ::GiveThrowable(pPlayer, gMenuData[MenuType][iItemIndex][1]); break;
 					case 2: if (!NPZ::SetFirefly(FindEntityByEntIndex(PlrInd), PlrInd, 0, 0, 0)) {Denied(DR_EMPTY);} break;
 					case 3: if (!Array_CSZMPlayer[PlrInd].ChangeScale(-0.05f)) {Denied(DR_EMPTY);} break;
 					case 4: if (!Array_CSZMPlayer[PlrInd].ChangeScale(0.05f)) {Denied(DR_EMPTY);} break;
@@ -1918,7 +1786,7 @@ namespace Radio
 			SoundIndex = SF_DENIED;
 			if (iReason > DR_EMPTY)
 			{
-				Chat.PrintToChatPlayer(ToBasePlayer(PlrInd), "{red}*{gold}" + pDeniedReason[iReason]);
+				Chat.PrintToChatPlayer(ToBasePlayer(PlrInd), "{red}*{gold}" + gDeniedReason[iReason]);
 			}
 		}
 
@@ -1931,12 +1799,7 @@ namespace Radio
 
 		private void SendMenu(float nLifeTime)
 		{
-			if (nLifeTime < 0)
-			{
-				nLifeTime = 10.0f;
-			}
-
-			LifeTime = PlusGT(nLifeTime);
+			LifeTime = (nLifeTime < 0) ? PlusGT(10.0f) : PlusGT(nLifeTime);
 			GameText::Menu(PlrInd, pMParams);
 		}
 
@@ -1961,7 +1824,7 @@ namespace Radio
 				return;
 			}
 
-			Engine.EmitSoundPlayer(ToZPPlayer(PlrInd), pMenuSound[SoundIndex]);
+			Engine.EmitSoundPlayer(ToZPPlayer(PlrInd), gMenuSound[SoundIndex]);
 		}
 
 		private bool IsNextPageExist()
@@ -1976,12 +1839,7 @@ namespace Radio
 
 		private bool IsAllowedGetBackToCAT()
 		{
-			return (MenuType == RS_FIREARMS || MenuType == RS_AMMO || MenuType == RS_MELEE || MenuType == RS_ITEMS) && CurrentPage == 1;
-		}
-
-		private bool CheckSFlag(int &in iTargetFlag)
-		{
-			return SoundIndex & iTargetFlag == iTargetFlag;
+			return (MenuType == RS_FIREARMS || MenuType == RS_DROP || MenuType == RS_AMMO || MenuType == RS_MELEE || MenuType == RS_ITEMS) && CurrentPage == 1;
 		}
 
 		void Think()
@@ -2006,155 +1864,8 @@ namespace Radio
 	}
 }
 
-namespace NPZ
-{
-	void DLight(CBaseEntity@ pPlayerEntity, const int &in index)
-	{
-		CBaseEntity@ pPlrDlight = FindEntityByName(null, (formatInt(index) + "dlight_origin"));
-
-		Engine.EmitSoundEntity(pPlayerEntity, "Buttons.snd14");
-
-		if (pPlrDlight !is null)
-		{
-			pPlrDlight.SUB_Remove();
-		}
-		else
-		{
-			CEntityData@ PropDynamicIPD = EntityCreator::EntityData();
-
-			PropDynamicIPD.Add("targetname", formatInt(index) + "dlight_origin");
-			PropDynamicIPD.Add("disableshadows", "1");
-			PropDynamicIPD.Add("solid", "0");
-			PropDynamicIPD.Add("DisableBoneFollowers", "1");
-			PropDynamicIPD.Add("spawnflags", "256");
-			PropDynamicIPD.Add("model", "models/props_junk/popcan01a.mdl");
-			PropDynamicIPD.Add("modelscale", "0.25");
-			PropDynamicIPD.Add("DefaultAnim", "idle");
-			PropDynamicIPD.Add("Effects", "18");	//2
-			PropDynamicIPD.Add("rendermode", "10");
-			PropDynamicIPD.Add("health", "0");
-			PropDynamicIPD.Add("fademindist", "1");
-			PropDynamicIPD.Add("fademaxdist", "2");
-
-			CBaseEntity@ pDlight = EntityCreator::Create("prop_dynamic_override", pPlayerEntity.GetAbsOrigin(), pPlayerEntity.GetAbsAngles(), PropDynamicIPD);
-
-			pDlight.SetParent(pPlayerEntity);
-			pDlight.SetParentAttachment("anim_attachment_LH", false);
-		}
-	}
-
-	void GiveThrowable(CZP_Player@ pPlayer, const string &in strClassname)
-	{
-		CBaseEntity@ pWeapon = pPlayer.GetCurrentWeapon();
-		string strCurWepClassname = pWeapon.GetClassname();
-
-		if (Utils.StrEql("weapon_emptyhand", strCurWepClassname))
-		{
-			pPlayer.GiveWeapon(strClassname);
-		}
-		else if (Utils.StrEql(strClassname, strCurWepClassname))
-		{
-			StripWeapon(pPlayer, strCurWepClassname);
-		}
-		else
-		{
-			StripWeapon(pPlayer, pWeapon.GetClassname());
-			pPlayer.GiveWeapon(strClassname);
-		}
-	}
-
-	bool SetFirefly(CBaseEntity@ pPlayerEntity, const int &in iIndex, int &in iR, int &in iG, int &in iB)
-	{
-		if (!RoundManager.IsRoundOngoing(false) || pPlayerEntity.GetTeamNumber() > TEAM_SPECTATORS)
-		{
-			Chat.PrintToChatPlayer(ToBasePlayer(iIndex), "{red}*{gold}Сейчас нельзя это сделать!");
-			return false;
-		}
-
-		if ((iR + iG + iB) < 48)
-		{
-			iR = Math::RandomInt(16, 255);
-			iG = Math::RandomInt(16, 255);
-			iB = Math::RandomInt(16, 255);
-		}
-
-		string SNDFile = "ZPlayer.AmmoPickup";
-		CBaseEntity@ pSpriteEnt = FindEntityByName(pSpriteEnt, iIndex + "firefly_sprite");
-		CBaseEntity@ pTrailEnt = FindEntityByName(pTrailEnt, iIndex + "firefly_trail");
-
-		if (pSpriteEnt !is null && pTrailEnt !is null)
-		{
-			Engine.Ent_Fire_Ent(pSpriteEnt, "color", "" + formatInt(iR) + " " + formatInt(iG) + " " + formatInt(iB));
-			Engine.Ent_Fire_Ent(pTrailEnt, "color", "" + formatInt(iR) + " " + formatInt(iG) + " " + formatInt(iB));
-			Chat.PrintToChatPlayer(ToBasePlayer(iIndex), "{green}*{gold}Цвет светлячка изменён на {white}[ {red}"+formatInt(iR)+" {green}"+formatInt(iG)+" {blue}"+formatInt(iB)+" {white}]");
-		}
-		else
-		{
-			if (pPlayerEntity.GetTeamNumber() != TEAM_SPECTATORS)
-			{
-				pPlayerEntity.ChangeTeam(TEAM_LOBBYGUYS);
-				ToZPPlayer(iIndex).ConsoleCommand("choose3");
-			}
-
-			CEntityData@ FFSpriteIPD = EntityCreator::EntityData();
-			CEntityData@ FFTrailIPD = EntityCreator::EntityData();
-
-			FFSpriteIPD.Add("targetname", formatInt(iIndex) + "firefly_sprite");
-			FFSpriteIPD.Add("model", "sprites/light_glow01.vmt");
-			FFSpriteIPD.Add("rendercolor", formatInt(iR) + " " + formatInt(iG) + " " + formatInt(iB));
-			FFSpriteIPD.Add("rendermode", "5");
-			FFSpriteIPD.Add("renderamt", "240");
-			FFSpriteIPD.Add("scale", "0.25");
-			FFSpriteIPD.Add("spawnflags", "1");
-			FFSpriteIPD.Add("framerate", "0");
-
-			FFTrailIPD.Add("targetname", formatInt(iIndex) + "firefly_trail");
-			FFTrailIPD.Add("endwidth", "12");
-			FFTrailIPD.Add("lifetime", "0.145");
-			FFTrailIPD.Add("rendercolor", formatInt(iR) + " " + formatInt(iG) + " " + formatInt(iB));
-			FFTrailIPD.Add("rendermode", "5");
-			FFTrailIPD.Add("renderamt", "84");
-			FFTrailIPD.Add("spritename", "sprites/xbeam2.vmt");
-			FFTrailIPD.Add("startwidth", "3");
-
-			EntityCreator::Create("env_spritetrail", pPlayerEntity.GetAbsOrigin(), pPlayerEntity.GetAbsAngles(), FFTrailIPD);
-			EntityCreator::Create("env_sprite", pPlayerEntity.GetAbsOrigin(), pPlayerEntity.GetAbsAngles(), FFSpriteIPD);
-
-			@pSpriteEnt = FindEntityByName(pSpriteEnt, formatInt(iIndex) + "firefly_sprite");
-			@pTrailEnt = FindEntityByName(pTrailEnt, formatInt(iIndex) + "firefly_trail");
-
-			pTrailEnt.SetParent(pSpriteEnt);
-			pSpriteEnt.SetParent(pPlayerEntity);
-			SNDFile = "Player.PickupWeapon";
-			Chat.PrintToChatPlayer(ToBasePlayer(iIndex), "{green}*{gold}Вы стали светлячком. Цвет в RGB {white}[ {red}"+formatInt(iR)+" {green}"+formatInt(iG)+" {blue}"+formatInt(iB)+" {white}]");
-		}
-
-		Engine.EmitSoundPosition(iIndex, SNDFile, pPlayerEntity.GetAbsOrigin(), 0.75F, 80, 105);
-		return true;
-	}
-
-	void StripWeapon(CZP_Player@ pPlayer, const string &in strClassname)
-	{
-		CBasePlayer@ pBasePlayer = pPlayer.opCast();
-		CBaseEntity@ pPlayerEntity = pBasePlayer.opCast();
-		CBaseEntity@ pWeapon;
-
-		pPlayer.StripWeapon(strClassname);
-
-		while ((@pWeapon = FindEntityByClassname(pWeapon, strClassname)) !is null)
-		{
-			CBaseEntity@ pOwner = pWeapon.GetOwner();
-
-			if (pPlayerEntity is pOwner)
-			{
-				pWeapon.SUB_Remove();
-			}
-		}
-	}
-}
-
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
-//
+//Lock and Load
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void CSZM_LocknLoad()
@@ -2162,23 +1873,22 @@ void CSZM_LocknLoad()
 	flRTWait = Globals.GetCurrentTime();
 
 	Engine.EmitSound("CS_MatchBeginRadio");
+
 	Globals.SetPlayerRespawnDelay(false, CONST_SPAWN_DELAY);
 	Globals.SetPlayerRespawnDelay(true, CONST_SPAWN_DELAY);
+
 	HealthSettings();
 
 	for (int i = 1; i <= iMaxPlayers; i++)
 	{
 		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(i);
 
-		if (pPlayerEntity is null)
+		if (pPlayerEntity is null || pPlayerEntity.GetTeamNumber() != TEAM_LOBBYGUYS)
 		{
 			continue;
 		}
 
-		if (pPlayerEntity.GetTeamNumber() == TEAM_LOBBYGUYS)
-		{
-			lobby_hint(ToZPPlayer(i));
-		}
+		lobby_hint(ToZPPlayer(i));
 	}
 }
 
@@ -2188,7 +1898,7 @@ void CSZM_LocknLoad()
 
 void OnEntityDropped(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 {
-	if (pEntity is null || pPlayer is null)
+	if (!bIsCSZM || pEntity is null || pPlayer is null)
 	{
 		return;
 	}
@@ -2204,9 +1914,28 @@ void OnEntityDropped(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 	}
 }
 
+void OnEntityUsed(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
+{
+	if (!bIsCSZM || pEntity is null || pPlayer is null)
+	{
+		return;
+	}
+
+	CBasePlayer@ pPlayerBase = pPlayer.opCast();
+	CBaseEntity@ pPlayerEntity = pPlayerBase.opCast();
+	int index = pPlayerEntity.entindex();
+
+	if (Utils.StrEql("dropped_money", pEntity.GetEntityName(), true))
+	{
+		Engine.EmitSoundPosition(pPlayerEntity.entindex(), ")cszm_fx/items/gunpickup1.wav", pPlayerEntity.GetAbsOrigin() + Vector(0, 0, 16), 0.7f, 65, 110);
+		Array_CSZMPlayer[index].CashBank += pEntity.GetHealth();
+		pEntity.SUB_Remove();
+	}
+}
+
 void OnItemDeliverUsed(CZP_Player@ pPlayer, CBaseEntity@ pEntity, int &in iEntityOutput)
 {
-	if (pEntity is null || pPlayer is null)
+	if (!bIsCSZM || pEntity is null || pPlayer is null)
 	{
 		return;
 	}
@@ -2632,9 +2361,18 @@ HookReturnCode CSZM_OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in Dama
 
 		if (iAttIndex == iVicIndex || !pAttackerEntity.IsPlayer())
 		{
-			KillFeed("", 0, strVicName, iVicTeam, false, true);
 			bSuicide = true;
-			pVicCSZMPlayer.AddMoney(ECO_Suiside);
+
+			if (iSeconds > 0)
+			{
+				KillFeed("", 0, strVicName, iVicTeam, false, true);
+			}
+
+			if (iVicTeam > TEAM_SPECTATORS)
+			{
+				pVicCSZMPlayer.AddMoney(ECO_Suiside);
+				Chat.PrintToChatPlayer(pPlrEnt, "{red}" + formatInt(ECO_Suiside) + "$ {gold}За самоубийство!");
+			}
 			/*if (!pVicCSZMPlayer.Spawn)
 			{
 				pVicCSZMPlayer.AddInfectPoints(25);
@@ -2652,7 +2390,6 @@ HookReturnCode CSZM_OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in Dama
 				DetachEyesLights(pBaseEnt);
 			}
 
-			//Don't emit die sound if blowed up or crushed
 			if (!(bDamageType(iDamageType, 6) || bDamageType(iDamageType, 0)))
 			{
 				pVicCSZMPlayer.EmitZombieSound(VOICE_ZM_DIE);
@@ -3019,7 +2756,7 @@ HookReturnCode CSZM_CORE_PlrSay(CZP_Player@ pPlayer, CASCommand@ pArgs)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
-//Rest funcs
+//Other funcs
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 void RoundTimer()
@@ -3049,9 +2786,9 @@ void GotVictim(CZP_Player@ pAttacker, CBaseEntity@ pPlayerEntity)
 {
 	if (pPlayerEntity.IsAlive())
 	{
-		float portion = ceil(CONST_REWARD_HEALTH * 0.375f);
+		float percent = ceil(CONST_REWARD_HEALTH * 0.375f);
 
-		pPlayerEntity.SetHealth(pPlayerEntity.GetHealth() + (CONST_REWARD_HEALTH + Math::RandomInt(int(-1 * portion), int(portion))));
+		pPlayerEntity.SetHealth(pPlayerEntity.GetHealth() + (CONST_REWARD_HEALTH + Math::RandomInt(int(-1 * percent), int(percent))));
 	}
 
 	Array_CSZMPlayer[pPlayerEntity.entindex()].AddMoney(ECO_Zombie_Kill);
@@ -3154,21 +2891,20 @@ void TurnToZombie(const int &in index)
 		int iRandomSound = 0;
 		CZP_Player@ pPlayer = ToZPPlayer(index);
 
+		NPZ::StripWeapon(pPlayer, "weapon_phone");
+		NPZ::StripWeapon(pPlayer, "weapon_emptyhands");
+
 		CBaseEntity@ pCurrentWeapon = pPlayer.GetCurrentWeapon();
+		string CurrentName = pCurrentWeapon.GetEntityName();
 
-		if (!(Utils.StrEql("weapon_phone", pCurrentWeapon.GetClassname(), true) || Utils.StrEql("weapon_emptyhands", pCurrentWeapon.GetClassname(), true)))
+		if (Utils.StrEql("", pCurrentWeapon.GetEntityName(), true))
 		{
-			string CurrentName = pCurrentWeapon.GetEntityName();
-
-			if (Utils.StrEql("", pCurrentWeapon.GetEntityName(), true))
-			{
-				CurrentName = "wep_plr_";
-			}
-
-			pCurrentWeapon.SetEntityName(CurrentName + formatInt(index));
-			pPlayer.DropWeapon(pPlayer.GetWeaponSlot(CurrentName + formatInt(index)));
-			pCurrentWeapon.SetEntityName(CurrentName);	
+			CurrentName = "wep_plr_";
 		}
+
+		pCurrentWeapon.SetEntityName(CurrentName + formatInt(index));
+		pPlayer.DropWeapon(pPlayer.GetWeaponSlot(CurrentName + formatInt(index)));
+		pCurrentWeapon.SetEntityName(CurrentName);	
 
 		if (Array_CSZMPlayer[index].FirstInfected)
 		{
@@ -3177,8 +2913,6 @@ void TurnToZombie(const int &in index)
 
 		EmitBloodEffect(pPlayer, Array_CSZMPlayer[index].Spawn);
 		pPlayerEntity.ChangeTeam(TEAM_ZOMBIES);
-		pPlayer.StripWeapon("weapon_phone");
-		pPlayer.StripWeapon("weapon_emptyhands");
 		pPlayer.GiveWeapon("weapon_arms");
 		pPlayer.SetVoice("eugene_z");
 		Engine.EmitSoundEntity(pPlayerEntity, "CSPlayer.Mute");	
@@ -3195,16 +2929,7 @@ void TurnToZombie(const int &in index)
 		}
 
 		iPreviousInfectIndex = iRandomSound;
-
-		if (!Array_CSZMPlayer[index].Spawn)
-		{
-			Engine.EmitSoundPosition(index, g_strInfectSND[iRandomSound], pPlayerEntity.GetAbsOrigin(), 1.0f, 85, Math::RandomInt(99, 107));			
-		}
-		else
-		{
-			Engine.EmitSoundPosition(index, ")npc/zombie/zombie_alert" + formatInt(Math::RandomInt(1, 3)) + ".wav", pPlayerEntity.GetAbsOrigin(), 1.0f, 80, Math::RandomInt(100, 105));
-		}
-
+		!Array_CSZMPlayer[index].Spawn ? Engine.EmitSoundPosition(index, g_strInfectSND[iRandomSound], pPlayerEntity.GetAbsOrigin(), 1.0f, 85, Math::RandomInt(99, 107)) : Engine.EmitSoundPosition(index, ")npc/zombie/zombie_alert" + formatInt(Math::RandomInt(1, 3)) + ".wav", pPlayerEntity.GetAbsOrigin(), 1.0f, 80, Math::RandomInt(100, 105));
 		ShakeInfected(pPlayerEntity);
 	}
 }
@@ -3223,11 +2948,7 @@ void RandomZombieModel(CZP_Player@ pPlayer, CBaseEntity@ pPlayerEntity)
 	iPreviousZombieVoiceIndex = iRNG_ZM_Voice;
 	pCSZMPlayer.SetZombieVoice(iRNG_ZM_Voice);
 	
-	if (pPlayer.IsCarrier())
-	{
-		pPlayerEntity.SetModel(MODEL_PLAYER_CARRIER);
-	}
-	else if (pCSZMPlayer.FirstInfected)
+	if (pCSZMPlayer.FirstInfected)
 	{
 		pPlayerEntity.SetModel(MODEL_PLAYER_CORPSE2);
 		pPlayerEntity.SetBodyGroup("EyesGlow", 1);
