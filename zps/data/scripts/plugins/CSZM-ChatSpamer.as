@@ -15,7 +15,8 @@ const array<string> g_strMsg =
 	"Зомби может купить доп. здоровье {cornflowerblue}только 2 раза за раунд{gold}.",
 	"Доп. здоровье зомби сохраняется {cornflowerblue}после возрождения{gold}.",
 	"Зомби {red}не сможет{gold} купить новую броню, {cornflowerblue}полностью{gold} не потратив старую.",
-	"Зомби получают небольшие {seagreen}деньги{gold}, ломая баррикады или другие вещи."
+	"Зомби получают небольшие {seagreen}деньги{gold}, ломая баррикады или другие вещи.",
+	"Будьте осторожны! У вас всего {cornflowerblue}одна жизнь на раунд{gold}. После смерти вы отправитесь в {white}наблюдатели{gold}."
 };
 
 array<string> g_strMsgToShow;
@@ -34,22 +35,27 @@ void OnMapInit()
 
 void OnMapShutdown()
 {
-	if (bIsCSZM)
+	if (!bIsCSZM)
 	{
-		bIsCSZM = false;
-		flMsgWaitTime = 0.0f;
+		return;
 	}
+
+	bIsCSZM = false;
+	flMsgWaitTime = 0.0f;
 }
 
 void OnProcessRound()
 {
-	if (bIsCSZM)
+	if (!bIsCSZM)
 	{
-		if (flMsgWaitTime <= Globals.GetCurrentTime())
-		{
-			flMsgWaitTime = Globals.GetCurrentTime() + Math::RandomFloat(65.00f, 130.00f);
-			ShowMsg();
-		}
+		return;
+	}
+
+	if (flMsgWaitTime <= Globals.GetCurrentTime())
+	{
+		flMsgWaitTime = Globals.GetCurrentTime() + Math::RandomFloat(65.00f, 130.00f);
+		//flMsgWaitTime = Globals.GetCurrentTime() + Math::RandomFloat(2.00f, 4.00f);
+		ShowMsg();
 	}
 }
 

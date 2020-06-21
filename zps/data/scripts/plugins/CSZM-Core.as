@@ -725,7 +725,7 @@ class CSZMPlayer
 
 		if (iArmor == 0)
 		{
-			pPlayer.SetArmor(500);
+			pPlayer.SetArmor(650);
 			Engine.EmitSoundEntity(FindEntityByEntIndex(PlayerIndex), "ZPlayer.ArmorPickup");
 			IsArmorAdded = true;
 		}
@@ -1344,10 +1344,10 @@ namespace Radio
 			{"PPK",				"75",		"weapon_ppk"},
 			{"AK47",			"625",		"weapon_ak47"},
 			{"M4",				"575",		"weapon_m4"},
-			{"MP5",				"415",		"weapon_mp5"},
-			{"Remington 870",	"705",		"weapon_870"},
-			{"SuperShorty",		"400",		"weapon_supershorty"},
-			{"Winchester",		"350",		"weapon_winchester"},
+			{"MP5",				"425",		"weapon_mp5"},
+			{"Remington 870",	"725",		"weapon_870"},
+			{"SuperShorty",		"385",		"weapon_supershorty"},
+			{"Winchester",		"345",		"weapon_winchester"},
 			{"Revolver",		"900",		"weapon_revolver"}
 		},
 		{
@@ -1359,8 +1359,8 @@ namespace Radio
 		},
 		{
 			{"Grenade",		"925",		"weapon_frag",	"0"},
-			{"IED",			"1150",		"weapon_ied", 	"0"},
-			{"FragMine",	"775",		"item_deliver",	"1"},
+			{"IED",			"1000",		"weapon_ied", 	"0"},
+			{"FragMine",	"875",		"item_deliver",	"1"},
 			{"Adrenaline",	"850",		"item_deliver",	"2"},
 			{"Antidote",	"1500",		"item_deliver", "3"}
 		},	
@@ -1372,9 +1372,9 @@ namespace Radio
 			{"",	"300"}
 		},
 		{
-			{"Extra HP",	"1400"},
-			{"Exrta Life",	"1800"},
-			{"Armor",		"750"}
+			{"Extra HP",	"1150"},
+			{"Exrta Life",	"1500"},
+			{"Armor",		"850"}
 		},
 		{
 			{"Get a Snowball",		"weapon_snowball"},
@@ -1484,7 +1484,7 @@ namespace Radio
 		Vector Eyes = pPlayerEntity.EyePosition() - Vector(0, 0, Math::RandomFloat(4, 16));
 		QAngle Angles = pPlayerEntity.EyeAngles() + QAngle(0, Math::RandomFloat(-5, 5), 0);
 		Globals.AngleVectors(Angles, Velocity);
-		Velocity = Velocity * Math::RandomInt(200, 300) + pPlayerEntity.GetAbsVelocity();
+		Velocity = Velocity * Math::RandomInt(185, 265) + pPlayerEntity.GetAbsVelocity() * 0.5f;
 		Angles *= QAngle(0, 1, 0);
 
 		CEntityData@ MoneyIPD = EntityCreator::EntityData();

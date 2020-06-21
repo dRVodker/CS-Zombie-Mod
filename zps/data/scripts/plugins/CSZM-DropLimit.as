@@ -28,21 +28,35 @@ void OnMapInit()
 
 void OnNewRound()
 {
-	if (bIsCSZM)
+	if (!bIsCSZM)
 	{
-		RemoveRange();
-		flTimeToDelete = Globals.GetCurrentTime() + 0.25f;
-		Engine.Ent_Fire("_items_to_kill", "kill", "0", "0.1");
+		return;
 	}
+
+	RemoveRange();
+	flTimeToDelete = Globals.GetCurrentTime() + 0.25f;
+	Engine.Ent_Fire("_items_to_kill", "kill", "0", "0.1");
 }
 
 void OnMapShutdown()
 {
-	if (bIsCSZM)
+	if (!bIsCSZM)
 	{
-		bIsCSZM = false;
-		RemoveRange();
+		return;
 	}
+
+	bIsCSZM = false;
+	RemoveRange();
+}
+
+void OnProcessRound()
+{
+	if (!bIsCSZM)
+	{
+		return;
+	}
+
+	MergeMoney();
 }
 
 void RemoveRange()
@@ -67,13 +81,20 @@ class DroppedItem
 		if (pItem !is null)
 		{
 			Eindex = -1;
-			pItem.SUB_StartFadeOut(0.05f, true);
+			pItem.SetOutline(false);
+			pItem.SetEntityName("_fadeout_item");
+			pItem.SUB_StartFadeOut(0.0f, true);
 		}
 	}
 }
 
 void OnEntityPickedUp(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 {
+	if (!bIsCSZM)
+	{
+		return;
+	}
+
 	if (Utils.StrContains("weapon", pEntity.GetClassname()) && !Utils.StrContains("_frag", pEntity.GetClassname()))
 	{
 		RemoveItem(gItemIndex.find(pEntity.entindex()));
@@ -82,6 +103,11 @@ void OnEntityPickedUp(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 
 void OnEntityDropped(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 {
+	if (!bIsCSZM)
+	{
+		return;
+	}
+
 	if ((Utils.StrContains("clip", pEntity.GetClassname()) || Utils.StrContains("armor", pEntity.GetClassname())) || (Utils.StrContains("weapon", pEntity.GetClassname()) && !Utils.StrContains("_frag", pEntity.GetClassname())))
 	{
 		InsertItem(pEntity.entindex());
@@ -90,7 +116,7 @@ void OnEntityDropped(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 
 HookReturnCode CSZM_DI_OnEntityCreation(const string &in strClassname, CBaseEntity@ pEntity)
 {
-	if (((Utils.StrContains("weapon", strClassname) || Utils.StrContains("item", strClassname)) && !(Utils.StrEql("weapon_phone", strClassname, true) || Utils.StrEql("item_deliver", strClassname, true) || Utils.StrEql("weapon_emptyhand", strClassname, true))) && flTimeToDelete > Globals.GetCurrentTime())
+	if (bIsCSZM && ((Utils.StrContains("weapon", strClassname) || Utils.StrContains("item", strClassname)) && !(Utils.StrEql("weapon_phone", strClassname, true) || Utils.StrEql("item_deliver", strClassname, true) || Utils.StrEql("weapon_emptyhand", strClassname, true))) && flTimeToDelete > Globals.GetCurrentTime())
 	{
 		pEntity.SetEntityName("_items_to_kill");
 	}
@@ -100,7 +126,7 @@ HookReturnCode CSZM_DI_OnEntityCreation(const string &in strClassname, CBaseEnti
 
 HookReturnCode CSZM_DI_OnEntityDestruction(const string &in strClassname, CBaseEntity@ pEntity)
 {
-	if ((Utils.StrEql("dropped_money", pEntity.GetEntityName(), true) || Utils.StrContains("clip", strClassname) || Utils.StrContains("armor", strClassname)) || (Utils.StrContains("weapon", strClassname) && !Utils.StrContains("_frag", strClassname)))
+	if (bIsCSZM && (Utils.StrEql("dropped_money", pEntity.GetEntityName(), true) || Utils.StrContains("clip", strClassname) || Utils.StrContains("armor", strClassname)) || (Utils.StrContains("weapon", strClassname) && !Utils.StrContains("_frag", strClassname)))
 	{
 		RemoveItem(gItemIndex.find(pEntity.entindex()));
 	}
@@ -149,6 +175,27 @@ void CheckDropCount()
 		gItem[0].Fade();
 		gItem.removeAt(0);
 		gItemIndex.removeAt(0);
+	}
+}
+
+void MergeMoney()
+{
+	CBaseEntity@ pMoneyFirst = null;
+	CBaseEntity@ pMoneySecond = null;
+
+	while ((@pMoneyFirst = FindEntityByName(pMoneyFirst, "dropped_money")) !is null)
+	{
+		while ((@pMoneySecond = FindEntityByName(pMoneySecond, "dropped_money")) !is null)
+		{
+			if (pMoneyFirst.Intersects(pMoneySecond) && pMoneyFirst !is pMoneySecond)
+			{
+				Engine.EmitSoundEntity(pMoneyFirst, "Cardboard.Break");
+				pMoneyFirst.SetHealth(pMoneyFirst.GetHealth() + pMoneySecond.GetHealth());
+				RemoveItem(gItemIndex.find(pMoneySecond.entindex()));
+				pMoneySecond.SUB_Remove();
+				return;
+			}
+		}
 	}
 }
 
