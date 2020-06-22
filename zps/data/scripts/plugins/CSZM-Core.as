@@ -7,11 +7,11 @@
 /*
 	текстовые каналы 
 	0 - таймер/обратный отсчёт разминки
-	1 - добавочное время/статистика в конце раунда/хитмаркер/подсказка в лобби
+	1 - добавочное время/статистика в конце раунда/хитмаркер
 	2 - меню
 	3 - деньги
 	4 - счётчик побед/подсказка в лобби
-	5 - убийста/жертвы
+	5 - убийста/жертвы/подсказка в лобби
 */
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 //Includes and DATA
@@ -560,18 +560,17 @@ class CSZMPlayer
 	{
 		DeathReset();
 
-		ZombieRespawnTime = 0;
-
-		Kills = 0;
-		Victims = 0;
-
-		PropHealth = 0;
-
-		InfResShowTime = 0;
 		Abuser = false;
 
+		ZombieRespawnTime = 0;
+		Kills = 0;
+		Victims = 0;
+		InfResShowTime = 0;
+		PropHealth = 0;
 		RecoverTime = 0;
 		VoiceTime = 0;
+		ExtraHealth = 0;
+		ExtraLife = 0;
 	}
 
 	void DeathReset()
@@ -2217,7 +2216,7 @@ HookReturnCode CSZM_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out Da
 
 				if (!pVicCSZMPlayer.Cured)
 				{
-					pVicCSZMPlayer.AddInfectPoints(10);
+					pVicCSZMPlayer.AddInfectPoints(15);
 					pAttCSZMPlayer.AddInfectPoints(-1);
 				}
 			}
@@ -2368,7 +2367,7 @@ HookReturnCode CSZM_OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in Dama
 				if (!pVicCSZMPlayer.Spawn)
 				{
 					pAttCSZMPlayer.AddInfectPoints(-5);
-					pVicCSZMPlayer.AddInfectPoints(10);
+					pVicCSZMPlayer.AddInfectPoints(15);
 				}
 			}
 		}
@@ -2388,7 +2387,7 @@ HookReturnCode CSZM_OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in Dama
 				if (!pVicCSZMPlayer.Cured)
 				{
 					pAttCSZMPlayer.AddInfectPoints(-10);
-					pVicCSZMPlayer.AddInfectPoints(15);
+					pVicCSZMPlayer.AddInfectPoints(20);
 				}
 			}
 
@@ -2773,6 +2772,11 @@ void AddTime(int &in iTime)
 
 void SelectPlrsForInfect()
 {
+	if (bIsPlayersSelected)
+	{
+		return;
+	}
+
 	bIsPlayersSelected = true;
 	int iInfected = 0;
 	float flIP = flInfectionPercent;
@@ -2833,7 +2837,7 @@ void SelectPlrsForInfect()
 		}
 
 		p_Survivors.removeAt(iArrayElement);
-		Array_CSZMPlayer[iPlayerIndex].AddInfectPoints(-15);
+		Array_CSZMPlayer[iPlayerIndex].AddInfectPoints(-21);
 		Array_CSZMPlayer[iPlayerIndex].FirstInfected = true;
 		TurnToZombie(iPlayerIndex);
 	}

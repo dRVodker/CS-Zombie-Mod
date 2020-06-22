@@ -1,6 +1,6 @@
 namespace Admin
 {
-	enum ComIndexes {CI_SET, CI_INF, CI_CURE, CI_SHOWI, CI_SHOWV, CI_SHOWC, CI_RESP, CI_TOG_R, CI_GIVECASH}
+	enum ComIndexes {CI_SET, CI_INF, CI_CURE, CI_SHOWI, CI_SHOWV, CI_SHOWC, CI_RESP, CI_TOG_R, CI_GIVECASH, CI_ENDWU, CI_FORCE}
 	enum VarIndexes {VI_CURRS, VI_RECOVER, VI_SPEED, VI_SECONDS, VI_ZMRRATE, VI_ZMRHP, VI_AAT, VI_RTIME, VI_GUTIME, VI_WUTIME, VI_WUSECONDS, VI_ZMHEALTH, VI_INFPER, VI_INFEHP, VI_ZMRDD, VI_E_DEFCASH, VI_E_STARTCASH, VI_E_HWIN, VI_E_HKILL, VI_E_ZWIN, VI_E_ZKILL, VI_E_LOSE, VI_E_SUIC}
 	const string STR_NULLPLAYER = "{red}*{gold}Игрок не найден!";
 	const array<array<string>> g_ChatComms =
@@ -14,7 +14,9 @@ namespace Admin
 			"showcom",
 			"respawn",
 			"toggle_respawn",
-			"givecash"
+			"givecash",
+			"endwarmup",
+			"forceselect"
 		},
 		{
 			"Установить значение для доступных переменных",
@@ -25,7 +27,9 @@ namespace Admin
 			"Показать команды",
 			"Возродить игрока",
 			"Включить/выключить респавн зомби",
-			"Дать денег"
+			"Дать денег",
+			"Завершить разминку",
+			"Принудительно превратить первых зараженных"
 		}
 	}; 
 	const array<array<string>> g_VariablesList =
@@ -454,6 +458,8 @@ namespace Admin
 			case CI_RESP: RespawnPlayer(pCaller, Utils.StringToInt(pCC.Arg(1)), pCC.Arg(2)); break;
 			case CI_TOG_R: ToggleZombieRespawn(pCaller); break;
 			case CI_GIVECASH: GiveCash(pCaller, Utils.StringToInt(pCC.Arg(1)), pCC.Arg(2)); break;
+			case CI_ENDWU: WarmUpEnd(); break;
+			case CI_FORCE: SelectPlrsForInfect(); break;
 
 			case -1: if (FromChat) {Chat.PrintToChatPlayer(pCaller, "{red}*{gold}Команда не найдена!");} break;
 		}

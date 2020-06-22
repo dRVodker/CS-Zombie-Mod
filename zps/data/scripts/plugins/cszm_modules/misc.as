@@ -70,18 +70,18 @@ void SetDoorFilter(const int &in iFilter)
 void lobby_hint(CZP_Player@ pPlayer)
 {
 	string sNextLine = "\n";
-	SendGameTextPlayer(pPlayer, strHintF1, 1, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color(64, 128, 255), Color(255, 95, 5));
+	SendGameTextPlayer(pPlayer, strHintF1, 5, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color(64, 128, 255), Color(255, 95, 5));
 	SendGameTextPlayer(pPlayer, "\n" + strHintF3, 4, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color(255, 255, 255), Color(255, 95, 5));
 }
 
 void lobby_hint_wu(CZP_Player@ pPlayer)
 {
-	SendGameTextPlayer(pPlayer, strHintF4WU, 1, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color(64, 255, 128), Color(255, 95, 5));
+	SendGameTextPlayer(pPlayer, strHintF4WU, 5, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color(64, 255, 128), Color(255, 95, 5));
 }
 
 void spec_hint(CZP_Player@ pPlayer)
 {
-	SendGameTextPlayer(pPlayer, strHintF4, 1, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 15.0f, Color(64, 255, 128), Color(255, 95, 5));
+	SendGameTextPlayer(pPlayer, strHintF4, 5, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 15.0f, Color(64, 255, 128), Color(255, 95, 5));
 }
 
 void PutPlrToLobby(CBaseEntity@ pEntPlayer)
@@ -508,12 +508,12 @@ void ApplyVictoryRewards(RoundWinState iWinState)
 					pCSZMPlayer.AddInfectPoints(5);
 					pCSZMPlayer.AddMoney(ECO_Lose);
 					Chat.PrintToChatPlayer(ToBasePlayer(i), "{red}" + formatInt(ECO_Lose) + "$ {gold}За поражение в раунде!");
-					pPlayerEntity.TakeDamage(CTakeDamageInfo(pPlayerEntity, pPlayerEntity, float(pPlayerEntity.GetHealth() + 200.0f), (1<<0)));
+					pPlayerEntity.TakeDamage(CTakeDamageInfo(pPlayerEntity, pPlayerEntity, float(pPlayerEntity.GetHealth() + 200.0f), 1));
 				}
 			}
 			else if (iWinState == STATE_ZOMBIE)
 			{
-				pCSZMPlayer.AddInfectPoints(-20);
+				pCSZMPlayer.AddInfectPoints(-15);
 				pCSZMPlayer.AddMoney(ECO_Zombie_Win);
 
 				if (pCSZMPlayer.FirstInfected)
