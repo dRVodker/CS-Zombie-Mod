@@ -332,22 +332,12 @@ void OnEntityUsed(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 		{
 			CFragMine@ pFragMine = FMArray[q];
 
-			if (pFragMine is null)
+			if (pFragMine is null || pFragMine.GetMineIndex() != pEntity.entindex())
 			{
 				continue;
 			}
 
-			if (pFragMine.GetMineIndex() == pEntity.entindex())
-			{
-				if (pFragMine.GetOwnerIndex() == iIndex || pFragMine.GetOwnerIndex() == 0)
-				{
-					DefuseFragMine(pEntity, pPlayer);
-				}
-				else
-				{
-					Chat.PrintToChatPlayer(pPlrEnt, "Эта мина одного из выживших, вы не можете обезвредить и забрать её!");
-				}
-			}
+			(pFragMine.GetOwnerIndex() == iIndex || pFragMine.GetOwnerIndex() == 0) ? DefuseFragMine(pEntity, pPlayer) : Chat.PrintToChatPlayer(pPlrEnt, "Эта мина одного из выживших, вы не можете обезвредить и забрать её!");
 		}
 	}
 }

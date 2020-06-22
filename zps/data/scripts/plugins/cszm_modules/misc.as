@@ -36,12 +36,7 @@ int PropHealthToMoney(const int &in nHealth)
 
 string BoolToString(bool boolean)
 {
-	if (boolean)
-	{
-		return "true";
-	}
-
-	return "false";
+	return (boolean) ? "true" : "false";
 }
 
 int CountPlrs(const int &in iTeamNum)
@@ -52,15 +47,12 @@ int CountPlrs(const int &in iTeamNum)
 	{
 		CBaseEntity@ pBaseEnt = FindEntityByEntIndex(i);
 
-		if (pBaseEnt is null)
+		if (pBaseEnt is null || pBaseEnt.GetTeamNumber() != iTeamNum)
 		{
 			continue;
 		}
 
-		if (pBaseEnt.GetTeamNumber() == iTeamNum)
-		{
-			iCount++;
-		}
+		iCount++;
 	}
 	
 	return iCount;
@@ -95,32 +87,27 @@ void spec_hint(CZP_Player@ pPlayer)
 void PutPlrToLobby(CBaseEntity@ pEntPlayer)
 {
 	array<CBaseEntity@> g_pLobbySpawn = {null};
-	CBaseEntity@ pEntity;
+	CBaseEntity@ pEntity = null;
 	
 	while ((@pEntity = FindEntityByClassname(pEntity, "info_player_commons")) !is null)
 	{
 		g_pLobbySpawn.insertLast(pEntity);
 	}
 
-	int iLength = g_pLobbySpawn.length() - 1;
+	int iLength = int(g_pLobbySpawn.length()) - 1;
 
 	if (pEntPlayer is null)
 	{
 		for (int i = 1; i <= iMaxPlayers; i++)
 		{
-			CZP_Player@ pPlayer = ToZPPlayer(i);
+			CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(i);
 
-			if (pPlayer is null)
+			if (pPlayerEntity is null || (pPlayerEntity.GetTeamNumber() != TEAM_SPECTATORS || pPlayerEntity.GetTeamNumber() != TEAM_LOBBYGUYS))
 			{
 				continue;
 			}
 
-			CBaseEntity@ pBaseEnt = FindEntityByEntIndex(i);
-
-			if (pBaseEnt.GetTeamNumber() == TEAM_SPECTATORS || pBaseEnt.GetTeamNumber() == TEAM_LOBBYGUYS)
-			{
-				pBaseEnt.SetAbsOrigin(g_pLobbySpawn[Math::RandomInt(1, iLength)].GetAbsOrigin());
-			}
+			pPlayerEntity.SetAbsOrigin(g_pLobbySpawn[Math::RandomInt(1, iLength)].GetAbsOrigin());
 		}
 	}
 	else
@@ -150,19 +137,14 @@ void PutPlrToPlayZone(CBaseEntity@ pEntPlayer)
 	{
 		for (int i = 1; i <= iMaxPlayers; i++)
 		{
-			CZP_Player@ pPlayer = ToZPPlayer(i);
+			CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(i);
 			
-			if (pPlayer is null)
+			if (pPlayerEntity is null || (pPlayerEntity.GetTeamNumber() != TEAM_SPECTATORS || pPlayerEntity.GetTeamNumber() != TEAM_LOBBYGUYS))
 			{
 				continue;
 			}
 			
-			CBaseEntity@ pBaseEnt = FindEntityByEntIndex(i);
-
-			if (pBaseEnt.GetTeamNumber() == TEAM_SPECTATORS || pBaseEnt.GetTeamNumber() == TEAM_LOBBYGUYS)
-			{
-				pBaseEnt.SetAbsOrigin(g_pOtherSpawn[Math::RandomInt(1, iLength)].GetAbsOrigin());
-			}
+			pPlayerEntity.SetAbsOrigin(g_pOtherSpawn[Math::RandomInt(1, iLength)].GetAbsOrigin());
 		}
 	}
 	else
@@ -353,7 +335,7 @@ void SetCustomPropHealth(CBaseEntity@ pEntity, const int &in iPlrCount)
 {
 	if (!(bIsPropJunk(pEntity) || bIsPropExplosive(pEntity)))
 	{
-		SetCustomHealth(pEntity, iPlrCount, 0.1f, PROP_MAX_HEALTH);
+		SetCustomHealth(pEntity, iPlrCount, 0.135f, PROP_MAX_HEALTH);
 	}
 }
 
@@ -361,7 +343,7 @@ void SetCustomFuncHealth(CBaseEntity@ pEntity, const int &in iPlrCount)
 {
 	if (!Utils.StrContains("special", pEntity.GetEntityName()))
 	{
-		SetCustomHealth(pEntity, iPlrCount, 0.215f, BRUSH_MAX_HEALTH);
+		SetCustomHealth(pEntity, iPlrCount, 0.341f, BRUSH_MAX_HEALTH);
 	}
 }
 
@@ -394,11 +376,11 @@ void SetCustomHealth(CBaseEntity@ pEntity, const int &in iPlrCount, const float 
 
 	if (iCustomHealth > MAX_HEALTH)
 	{
-		iCustomHealth = BRUSH_MAX_HEALTH;
+		iCustomHealth = MAX_HEALTH;
 	}
 
 	pEntity.SetHealth(iCustomHealth + Math::RandomInt(0, 35));
-	pEntity.SetMaxHealth(pEntity.GetHealth());	
+	pEntity.SetMaxHealth(pEntity.GetHealth());
 }
 
 string GetJustModel(const string &in strFullModelName)
@@ -555,7 +537,7 @@ void ShakeInfected(CBaseEntity@ pPlayerEntity)
 	ShakeIPD.Add("StartShake", "0", true);
 	ShakeIPD.Add("kill", "0", true, "0.25");
 
-	EntityCreator::Create("env_shake", pPlayerEntity.EyePosition(), QAngle(-90, 0, 0), ShakeIPD);	
+	EntityCreator::Create("env_shake", pPlayerEntity.EyePosition(), QAngle(-90, 0, 0), ShakeIPD);
 }
 
 int CheckSteamID(const string &in STR_STEAM)

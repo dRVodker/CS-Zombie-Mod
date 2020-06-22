@@ -1,4 +1,3 @@
-//WarmUp Related Funcs
 void WarmUpTimer()
 {
 	int iNumPlrs = CountPlrs(TEAM_LOBBYGUYS);

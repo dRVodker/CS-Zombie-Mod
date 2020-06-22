@@ -335,8 +335,6 @@ namespace Admin
 		string OldValue = "";
 		int iVarIndex = (g_VariablesList[0].find(strVariable) == -1) ? g_VariablesList[1].find(strVariable) : g_VariablesList[0].find(strVariable);
 
-		SD("iVarIndex = " + iVarIndex);
-
 		switch(iVarIndex)
 		{
 			case VI_CURRS:

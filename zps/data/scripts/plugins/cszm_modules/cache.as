@@ -21,7 +21,16 @@ void CacheModels()
 	Engine.PrecacheFile(model, "models/cszm/weapons/c_cszm_human_arms.mdl");
 	Engine.PrecacheFile(model, "models/cszm/weapons/c_cszm_zombie_arms.mdl");
 	Engine.PrecacheFile(model, "models/zp_props/100dollar/100dollar.mdl");
+}
+
+void CacheMaterials()
+{
 	Engine.PrecacheFile(material, "materials/effects/cszm_shading.vmt");
+	Engine.PrecacheFile(material, "materials/sprites/light_glow01.vmt");
+	Engine.PrecacheFile(material, "materials/sprites/lgtning.vmt");
+	Engine.PrecacheFile(material, "materials/vgui/images/fragmine.vmt");
+	Engine.PrecacheFile(material, "materials/vgui/images/adrenaline.vmt");
+	Engine.PrecacheFile(material, "materials/vgui/images/weapons/inoculator.vmt");
 }
 
 void CacheSounds()
@@ -128,4 +137,5 @@ void CacheSounds()
 	Engine.PrecacheFile(sound, "buttons/lightswitch2.wav");
 	Engine.PrecacheFile(sound, "weapons/slam/buttonclick.wav");
 	Engine.PrecacheFile(sound, "npc/zombie_poison/pz_alert2.wav");
+	Engine.PrecacheFile(sound, ")player/footsteps/sand2.wav");
 }
