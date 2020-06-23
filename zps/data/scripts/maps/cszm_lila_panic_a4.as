@@ -252,7 +252,7 @@ void SetUpStuff()
 
 	RemoveNativeSpawns("info_player_human");
 	RemoveNativeSpawns("info_player_zombie");
-	CreateSpawnsFromArray(LilaPanic_Spawns);
+	CreateSpawnsFromArray(LilaPanic_Spawns, true);
 }
 
 void VMSkins()

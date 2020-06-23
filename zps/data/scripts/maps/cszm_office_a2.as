@@ -111,7 +111,7 @@ void SetUpStuff()
 
 	RemoveNativeSpawns("info_player_human");
 	RemoveNativeSpawns("info_player_zombie");
-	CreateSpawnsFromArray(Office_HumanSpawns);
+	CreateSpawnsFromArray(Office_HumanSpawns, true);
 }
 
 HookReturnCode OnPlrSpawn(CZP_Player@ pPlayer)

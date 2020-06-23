@@ -81,7 +81,7 @@ void OnNewRound()
 void OnMatchBegin() 
 {
 	RemoveNativeSpawns("info_player_human");
-	CreateSpawnsFromArray(SecondaryHumanSpawns);
+	CreateSpawnsFromArray(SecondaryHumanSpawns, false);
 }
 
 void SetUpStuff()
@@ -95,7 +95,7 @@ void SetUpStuff()
 
 	RemoveNativeSpawns("info_player_human");
 	RemoveNativeSpawns("info_player_zombie");
-	CreateSpawnsFromArray(PrimaryHumanSpawns);
+	CreateSpawnsFromArray(PrimaryHumanSpawns, true);
 }
 
 HookReturnCode OnPlrSpawn(CZP_Player@ pPlayer)

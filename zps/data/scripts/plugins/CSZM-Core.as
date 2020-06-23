@@ -62,7 +62,7 @@ bool bAllowZombieRespawn;			//Разрешить респавн для зомб�
 
 int iWarmUpTime = 5;				//Время разминки в секундах. (значение по умолчанию - 75)
 int iGearUpTime = 30;				//Время в секундах, через которое превратится Первый зараженный.
-int iRoundTime = 150;				//Время в секундах отведённое на раунд.
+int iRoundTime = 270;				//Время в секундах отведённое на раунд.
 int iZombieHealth = 500;			//HP зомби
 int iZMRHealth = 5;					//Максимальное HP, восстанавливаемое регенерацие зомби за один так
 
@@ -73,6 +73,8 @@ float flInfectionPercent = 0.3f;	//Процент выживших, которы
 float flPSpeed = 0.22f;				//Часть скорости, которая останется у игрока после замедления
 float flRecover = 0.028f;			//Время между прибавками скорости
 float flCurrs = 1.125f;				//Часть от текущей скорости игрока, которая будет прибавляться для восстановления нормальной скорости игрока
+float flPropHPPercent = 0.135f;		//Часть от текущего HP, которая будет умножена на количество игроков для получения итогового HP
+float flBrushHPPercent = 0.314f;	//Часть от текущего HP, которая будет умножена на количество игроков для получения итогового HP
 
 int iPreviousZombieVoiceIndex;		//Предыдущий номер голоса зомби
 int iPreviousInfectIndex = -1;		//Предыдущий номер звука заражения
@@ -81,14 +83,16 @@ int iWUSeconds;						//Переменная используется для об
 int iRoundTimeFull;					//Время в секундах отведённое на раунд (ПОЛНОЕ).
 int iTurnTime;						//Время, когда превращаются зараженные
 
-int ECO_DefaultCash = 600;
+int ECO_DefaultCash = 600;			//Экономические переменные, говорят сами за себя
 int ECO_StartingCash = 400;
-int ECO_Human_Win = 600;
-int ECO_Human_Kill = 300;
+int ECO_Human_Win = 700;
+int ECO_Human_Kill = 325;
 int ECO_Zombie_Win = 500;
-int ECO_Zombie_Kill = 750;
+int ECO_Zombie_Kill = 650;
 int ECO_Lose = -1000;
-int ECO_Suiside = -600;
+int ECO_Suiside = -650;
+float ECO_Damage_Multiplier = 0.1f;
+float ECO_Health_Multiplier = 0.115f;
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 //Forwards
@@ -499,7 +503,7 @@ class CSZMPlayer
 	bool Abuser;							//Игроки, злоупотребляющие механиками, получают этот флаг (Записывается в SteamIDArray)
 	bool FirstInfected;						//Один из первых зараженных?
 
-	private float ZombieRespawnTime;		//???
+	private float ZombieRespawnTime;		//Время, по истечению которгого, зомби появится снова
 
 	bool Cured;								//true - Если был вылечен администратором
 	bool Spawn;								//true - Если возрадился играя за зомби
@@ -510,10 +514,10 @@ class CSZMPlayer
 	int ExtraLife;							//Extra Life
 	int ExtraHealth;						//Дополнительное здоровье
 
-	float Scale;							//???
+	float Scale;							//Масштаб игрока
 
 	array<TimeBasedDamage@> pTimeDamage;	//???
-	private ShowHealthPoints@ pShowHP;		//???
+	private ShowHealthPoints@ pShowHP;		//Объект, который показывает оставшееся HP у ломающихся вещей
 
 	Radio::Menu@ pMenu;						//Слот для меню
 	GameText::Cash@ pCash;					//Показывает деньги
@@ -725,7 +729,7 @@ class CSZMPlayer
 
 		if (iArmor == 0)
 		{
-			pPlayer.SetArmor(650);
+			pPlayer.SetArmor(500);
 			Engine.EmitSoundEntity(FindEntityByEntIndex(PlayerIndex), "ZPlayer.ArmorPickup");
 			IsArmorAdded = true;
 		}
@@ -764,10 +768,10 @@ class CSZMPlayer
 
 	void AddSlowdown()
 	{
-		int NewSpeed = int(float(DefSpeed) * flPSpeed);
-
 		CZP_Player@ pPlayer = ToZPPlayer(PlayerIndex);
 		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(PlayerIndex);
+		float flZAResist = (pPlayer.GetArmor() > 0 && pPlayerEntity.GetTeamNumber() == TEAM_ZOMBIES) ? (flPSpeed * 0.625f) : 0;
+		int NewSpeed = int(float(DefSpeed) * (flPSpeed + flZAResist));
 
 		if (pPlayerEntity.GetTeamNumber() == TEAM_ZOMBIES)
 		{
@@ -847,7 +851,6 @@ class CSZMPlayer
 		Utils.ScreenFade(pPlayer, Color(8, 16, 64, 50), 0.25f, (flADuration - 0.25f), fade_in);
 		Engine.EmitSoundPlayer(pPlayer, "ZPlayer.Panic");
 		AdrenalineTime = PlusGT(flADuration);
-		AddInfectPoints(1);
 		pPlayerEntity.SetMaxHealth(pPlayerEntity.GetMaxHealth() - AdrenaDamage);
 
 		CTakeDamageInfo AdrenaDMG;
@@ -1363,8 +1366,8 @@ namespace Radio
 			{"",	"300"}
 		},
 		{
-			{"Extra HP",	"1150"},
-			{"Exrta Life",	"1500"},
+			{"Extra HP",	"975"},
+			{"Exrta Life",	"1250"},
 			{"Armor",		"850"}
 		},
 		{
@@ -2194,6 +2197,7 @@ HookReturnCode CSZM_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out Da
 
 		if (iVicTeam == TEAM_SURVIVORS && iAttTeam == TEAM_ZOMBIES && bDamageType(iDamageType, 2))
 		{
+			pVicCSZMPlayer.AddInfectPoints(3);
 			DamageInfo.SetDamage(Math::RandomInt(15, 20));
 			DamageInfo.SetDamageType((1<<9));
 
@@ -2216,13 +2220,16 @@ HookReturnCode CSZM_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out Da
 
 				if (!pVicCSZMPlayer.Cured)
 				{
-					pVicCSZMPlayer.AddInfectPoints(15);
+					pVicCSZMPlayer.AddInfectPoints(12);
 					pAttCSZMPlayer.AddInfectPoints(-1);
 				}
 			}
 		}
-		
-		if (iVicTeam == TEAM_ZOMBIES && pBaseEnt.IsAlive())
+		else if (iVicTeam == TEAM_SURVIVORS && flDamage >= 10)
+		{
+			pVicCSZMPlayer.AddInfectPoints(1);
+		}
+		else if (iVicTeam == TEAM_ZOMBIES && pBaseEnt.IsAlive())
 		{
 			CBaseEntity@ pInflictor = DamageInfo.GetInflictor();
 
@@ -2252,16 +2259,16 @@ HookReturnCode CSZM_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out Da
 			if (iAttTeam == TEAM_SURVIVORS)
 			{
 				ShowHitMarker(iAttIndex, (pBaseEnt.GetHealth() <= DamageInfo.GetDamage()));
-				pAttCSZMPlayer.AddMoney(DamageToMoney(pBaseEnt.GetHealth(), int(DamageInfo.GetDamage())));
+				pAttCSZMPlayer.AddMoney(DamageToMoney(pBaseEnt.GetHealth(), DamageInfo.GetDamage()));
 			}
 
 			if (flDamage < pBaseEnt.GetHealth() && !bDamageType(iDamageType, 14) && ((iAttTeam == iVicTeam && iAttIndex == iVicIndex) || iAttTeam != iVicTeam))
 			{
 				//ZM ViewPunch
 				bool bLeft = Math::RandomInt(0 , 1) > 0;
-				float VP_X = bDamageType(iDamageType, 5) ? Math::RandomFloat(-0.15f, -0.30f) : Math::RandomFloat(-1.75f, 1.85f);
-				float VP_Y = bDamageType(iDamageType, 5) ? Math::RandomFloat(-4.75f, -7.15f) : Math::RandomFloat(-1.75f, 1.85f);
-				float VP_DAMP = bDamageType(iDamageType, 5) ? Math::RandomFloat(0 , 0.015f) : Math::RandomFloat(0.038f , 0.075f);
+				float VP_X = bDamageType(iDamageType, 5) ? Math::RandomFloat(-0.1f, -0.2f) : Math::RandomFloat(-1.75f, 1.85f);
+				float VP_Y = bDamageType(iDamageType, 5) ? Math::RandomFloat(-5.75f, -8.15f) : Math::RandomFloat(-1.75f, 1.85f);
+				float VP_DAMP = bDamageType(iDamageType, 5) ? Math::RandomFloat(0.005f, 0.0175f) : Math::RandomFloat(0.038f , 0.075f);
 				float VP_KICK = Math::RandomFloat(0.25f , 0.95f);
 
 				Utils.FakeRecoil(pPlayer, VP_KICK, VP_DAMP, VP_X, VP_Y, bLeft);
@@ -2269,7 +2276,7 @@ HookReturnCode CSZM_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out Da
 			}
 		}
 
-		if (!bDamageType(iDamageType, 17))
+		if (!(bDamageType(iDamageType, 17) && iVicTeam == TEAM_SURVIVORS))
 		{
 			pVicCSZMPlayer.AddSlowdown();
 		}
@@ -2552,10 +2559,10 @@ HookReturnCode CSZM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out Dama
 		}
 	}
 
-	//Slightly increas input damage if it's "prop_barricade"
+	//Slightly reduce input damage if it's "prop_barricade"
 	if (Utils.StrEql(strEntClassname, "prop_barricade"))
 	{
-		DamageInfo.SetDamage(DamageInfo.GetDamage() * 1.21f);
+		DamageInfo.SetDamage(DamageInfo.GetDamage() * 0.8f);
 	}
 
 	//Show HP to zombie attacker

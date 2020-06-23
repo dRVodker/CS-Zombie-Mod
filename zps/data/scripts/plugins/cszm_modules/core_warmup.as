@@ -40,9 +40,9 @@ void WarmUpEnd()
 
 	flWUWait = 0;
 	string TimerText = "\n\n\n"+strWarmUp+"\n| 0 |";
-	SendGameText(any, TimerText, 1, 0, -1, 0, 0, 0.35f, 0, Color(255, 175, 85), Color(255, 95, 5));
 	SendGameText(any, "", 1, 0, 0, 0, 0, 0, 0, Color(0, 0, 0), Color(0, 0, 0));
-	SendGameText(any, strHintF1, 1, 5, 0.05f, 0.1f, 0, 2.0f, 120, Color(64, 128, 255), Color(255, 95, 5));
+	SendGameText(any, TimerText, 1, 0, -1, 0, 0, 0.35f, 0, Color(255, 175, 85), Color(255, 95, 5));
+	SendGameText(any, strHintF1, 5, 0, 0.05f, 0.1f, 0, 2.0f, 120, Color(64, 128, 255), Color(255, 95, 5));
 	SendGameText(any, "\n" + strHintF3, 4, 0, 0.05f, 0.1f, 0, 2.0f, 120, Color(255, 255, 255), Color(255, 95, 5));
 	Engine.EmitSound("@buttons/button3.wav");
 }

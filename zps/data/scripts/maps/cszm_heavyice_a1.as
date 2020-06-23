@@ -295,7 +295,7 @@ void OnMatchBegin()
 {
 	Schedule::Task(1.00f, "DisableDamageForces");
 	RemoveNativeSpawns("info_player_human");
-	CreateSpawnsFromArray(SecondaryHumanSpawns);
+	CreateSpawnsFromArray(SecondaryHumanSpawns, false);
 }
 
 void OnProcessRound()
@@ -631,7 +631,7 @@ void SetUpStuff()
 
 	RemoveNativeSpawns("info_player_human");
 	RemoveNativeSpawns("info_player_zombie");
-	CreateSpawnsFromArray(PrimaryHumanSpawns);
+	CreateSpawnsFromArray(PrimaryHumanSpawns, true);
 }
 
 void FindExpBarrels()

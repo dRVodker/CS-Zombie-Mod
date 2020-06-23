@@ -46,7 +46,7 @@ class TimeBasedDamage
 		DamageInfo.SetAttacker(pAtt);
 		DamageInfo.SetInflictor(pVic);
 		DamageInfo.SetDamage(10);
-		DamageInfo.SetDamageType((1<<28));
+		DamageInfo.SetDamageType((1<<17));//1<<28
 		DamageInfo.SetDamageForce(Vector (0, 0, -128));
 		DamageInfo.SetDamagePosition(pVic.EyePosition());
 

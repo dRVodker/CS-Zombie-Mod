@@ -23,15 +23,19 @@ float PlusGT(float flTime)
 	return Globals.GetCurrentTime() + flTime;
 }
 
-int DamageToMoney(const int &in nVicHealth, int &in nDamage)
+int DamageToMoney(const int &in nVicHealth, float &in nDamage)
 {
-	if (nVicHealth < nDamage) {nDamage = nVicHealth;}
-	return int(ceil(nDamage / 1000.0f * 100));
+	if (nVicHealth < nDamage)
+	{
+		nDamage = nVicHealth;
+	}
+
+	return int(ceil(nDamage * ECO_Damage_Multiplier));
 }
 
 int PropHealthToMoney(const int &in nHealth)
 {
-	return int(ceil(nHealth / 1150.0f * 100));
+	return int(ceil(nHealth * ECO_Health_Multiplier));
 }
 
 string BoolToString(bool boolean)
@@ -335,7 +339,7 @@ void SetCustomPropHealth(CBaseEntity@ pEntity, const int &in iPlrCount)
 {
 	if (!(bIsPropJunk(pEntity) || bIsPropExplosive(pEntity)))
 	{
-		SetCustomHealth(pEntity, iPlrCount, 0.135f, PROP_MAX_HEALTH);
+		SetCustomHealth(pEntity, iPlrCount, flPropHPPercent, PROP_MAX_HEALTH);
 	}
 }
 
@@ -343,13 +347,14 @@ void SetCustomFuncHealth(CBaseEntity@ pEntity, const int &in iPlrCount)
 {
 	if (!Utils.StrContains("special", pEntity.GetEntityName()))
 	{
-		SetCustomHealth(pEntity, iPlrCount, 0.341f, BRUSH_MAX_HEALTH);
+		SetCustomHealth(pEntity, iPlrCount, flBrushHPPercent, BRUSH_MAX_HEALTH);
 	}
 }
 
 void SetCustomDoorHealth(CBaseEntity@ pEntity, const int &in iPlrCount)
 {
 	float flMultiplier = 3.0f;
+
 	if(Utils.StrContains("doormainmetal01", pEntity.GetModelName()))
 	{
 		flMultiplier = 6.2f;
@@ -367,7 +372,12 @@ void SetCustomDoorHealth(CBaseEntity@ pEntity, const int &in iPlrCount)
 		flMultiplier = 7.9f;
 	}
 
-	Engine.Ent_Fire_Ent(pEntity, "SetDoorHealth", formatInt(int((iPlrCount * flMultiplier) + Math::RandomInt(0, 25))), "0.00");
+	int NewHealth = int((iPlrCount * flMultiplier) + Math::RandomInt(0, 25));
+
+	pEntity.SetMaxHealth(NewHealth);
+	pEntity.SetHealth(NewHealth);
+
+	Engine.Ent_Fire_Ent(pEntity, "SetDoorHealth", formatInt(NewHealth), "0.00");
 }
 
 void SetCustomHealth(CBaseEntity@ pEntity, const int &in iPlrCount, const float &in flBaseHealthMult, const int &in MAX_HEALTH)
@@ -394,7 +404,6 @@ void CheckProp(CBaseEntity@ pProp, const string &in strClassname)
 {
 	string ModelName = GetJustModel(pProp.GetModelName());
 	string Targetname = pProp.GetEntityName();
-	pProp.SetMaxHealth(PROP_MAX_HEALTH + 65);
 
 	if (!Utils.StrContains("unbreakable", pProp.GetEntityDescription()))
 	{

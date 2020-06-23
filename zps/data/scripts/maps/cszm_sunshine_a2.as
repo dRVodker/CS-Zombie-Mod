@@ -35,6 +35,72 @@ array<array<CSpawnPoint@>> PrimaryHumanSpawns =
 		CSpawnPoint(Vector(359.085, -399.297, 8.03125), QAngle(-0.580772, 62.163, 0), "info_player_start"),
 		CSpawnPoint(Vector(962.664, 842.978, -7.71015), QAngle(-0.435567, -126.053, 0), "info_player_start"),
 		CSpawnPoint(Vector(2300.01, -417.953, -164.669), QAngle(-12.8865, 146.742, 0), "info_player_start")
+	},
+	{
+		CSpawnPoint(Vector(-364.06, -1333.51, -2.21761), QAngle(6.60653, 58.792, 0)),
+		CSpawnPoint(Vector(-369.983, -1096.56, -3.07562), QAngle(16.2986, -53.847, 0)),
+		CSpawnPoint(Vector(-179.466, -1378.34, -10.5882), QAngle(-0.835, 120.03, 0)),
+		CSpawnPoint(Vector(100.434, -1132.08, 8.03125), QAngle(2.2868, 123.841, 0)),
+		CSpawnPoint(Vector(-157.769, -997.932, -8.97089), QAngle(5.699, 95.3819, 0)),
+		CSpawnPoint(Vector(-458.172, -529.406, 8.03125), QAngle(0.871099, -29.7805, 0)),
+		CSpawnPoint(Vector(187.104, -461.116, 8.03125), QAngle(1.05259, 115.71, 0)),
+		CSpawnPoint(Vector(-135.749, 226.986, 8.03125), QAngle(21.0176, -33.3743, 0)),
+		CSpawnPoint(Vector(-252.927, -358.083, -36.6914), QAngle(0.87115, -79.076, 0)),
+		CSpawnPoint(Vector(-29.8035, -429.159, -9.72815), QAngle(7.25995, -125.467, 0)),
+		CSpawnPoint(Vector(445.986, 110.495, -0.984589), QAngle(6.31614, -148.204, 0)),
+		CSpawnPoint(Vector(259.881, -164.569, -27.3962), QAngle(4.71895, 26.1214, 0)),
+		CSpawnPoint(Vector(858.632, 707.193, -29.4603), QAngle(5.95312, -107.367, -0)),
+		CSpawnPoint(Vector(552.762, 574.599, 0.447208), QAngle(2.28682, -57.5993, 0)),
+		CSpawnPoint(Vector(1671.18, 285.795, 8.03125), QAngle(2.17792, -167.77, 0)),
+		CSpawnPoint(Vector(1476.2, 481.388, -2.5352), QAngle(3.48472, -141.198, 0)),
+		CSpawnPoint(Vector(1133.83, 62.8701, -57.0316), QAngle(-1.27059, 35.3652, 0)),
+		CSpawnPoint(Vector(2107.53, -290.48, -175.969), QAngle(5.5175, 38.9589, 0)),
+		CSpawnPoint(Vector(2372.58, -195.679, -167.969), QAngle(4.86411, 172.507, 0)),
+		CSpawnPoint(Vector(2286.64, 11.795, -167.969), QAngle(4.39222, -108.578, 0)),
+		CSpawnPoint(Vector(1651, -403.748, 8.03125), QAngle(2.3231, 58.2572, 0)),
+		CSpawnPoint(Vector(1795.66, -480.811, 8.03125), QAngle(-3.26708, 110.311, 0)),
+		CSpawnPoint(Vector(1069.82, 481.4, -5.32403), QAngle(8.53042, -54.4307, 0)),
+		CSpawnPoint(Vector(566.528, -76.683, -13.216), QAngle(3.92031, 31.092, 0)),
+
+		CSpawnPoint(Vector(359.085, -399.297, 8.03125), QAngle(-0.580772, 62.163, 0), "info_player_start"),
+		CSpawnPoint(Vector(-389.983, -938.032, -1.98685), QAngle(0, -0.184061, 0), "info_player_start"),
+		CSpawnPoint(Vector(69.8392, -1316.04, 8.03125), QAngle(0, 179.553, 0), "info_player_start"),
+		CSpawnPoint(Vector(-1021.43, 294.911, 3.89251), QAngle(0, 2.39168, 0), "info_player_start"),
+		CSpawnPoint(Vector(256.536, 1220.06, 8.03125), QAngle(0, -0.163876, 0), "info_player_start")
+	},
+	{
+		CSpawnPoint(Vector(2557.82, 208.598, -141.868), QAngle(7.55036, -155.015, 0)),
+		CSpawnPoint(Vector(2574.36, 89.99, -154.579), QAngle(12.7776, 175.473, 0)),
+		CSpawnPoint(Vector(2485.35, 178.968, -154.991), QAngle(-3.12181, -176.686, 0)),
+		CSpawnPoint(Vector(2372.25, 225.954, -142.688), QAngle(9.90989, -170.551, 0)),
+		CSpawnPoint(Vector(2334.62, 147.902, -152.738), QAngle(10.4907, -173.637, 0)),
+		CSpawnPoint(Vector(2228.81, 193.59, -143.601), QAngle(7.94968, -176.686, 0)),
+		CSpawnPoint(Vector(2233.29, 53.9173, -170.589), QAngle(2.72247, 158.775, 0)),
+		CSpawnPoint(Vector(2385.21, -11.5958, -182.03), QAngle(3.26699, 150.027, 0)),
+		CSpawnPoint(Vector(2295.94, -15.5983, -167.969), QAngle(9.9462, 150.753, 0)),
+		CSpawnPoint(Vector(2566.1, -12.4966, -158.749), QAngle(3.48481, 173.682, 0)),
+		CSpawnPoint(Vector(2485.15, -60.9909, -179.939), QAngle(2.14171, 179.417, 0)),
+		CSpawnPoint(Vector(2592.37, -91.8058, -159.12), QAngle(-1.34306, 176.84, 0)),
+		CSpawnPoint(Vector(2497.35, -158.932, -167.363), QAngle(4.28343, 174.262, 0)),
+		CSpawnPoint(Vector(2584.6, -221.756, -149.463), QAngle(2.94035, 167.402, 0)),
+		CSpawnPoint(Vector(2411.67, -178.243, -174.102), QAngle(3.15815, 170.886, 0)),
+		CSpawnPoint(Vector(2285.12, -178.175, -175.969), QAngle(5.00945, -177.352, 0)),
+		CSpawnPoint(Vector(2166.56, -57.7746, -165.531), QAngle(2.72255, 111.221, 0)),
+		CSpawnPoint(Vector(2214.1, -108.895, -167.969), QAngle(4.46496, 153.608, 0)),
+		CSpawnPoint(Vector(2186.76, -245.998, -167.969), QAngle(5.11836, 159.307, 0)),
+		CSpawnPoint(Vector(2308.99, -257.884, -171.755), QAngle(2.86773, 151.866, 0)),
+		CSpawnPoint(Vector(2503.71, -305.326, -138.888), QAngle(4.13824, 154.588, 0)),
+		CSpawnPoint(Vector(2379.62, -422.179, -149.366), QAngle(2.35954, 137.346, 0)),
+		CSpawnPoint(Vector(2279.09, -313.137, -175.969), QAngle(4.97313, 142.5, 0)),
+		CSpawnPoint(Vector(2138.29, -287.482, -175.969), QAngle(4.24713, 128.488, 0)),
+		CSpawnPoint(Vector(2243.48, -413.775, -165.33), QAngle(-1.12529, 124.459, 0)),
+		CSpawnPoint(Vector(2481.98, -371.801, -138.579), QAngle(7.04222, 142.428, 0)),
+		CSpawnPoint(Vector(2214.37, -341.564, -184.011), QAngle(-1.63347, 125.766, 0)),
+
+		CSpawnPoint(Vector(-200.031, -164.629, 0.03125), QAngle(0, -0.953902, 0), "info_player_start"),
+		CSpawnPoint(Vector(637.743, 115.44, -19.154), QAngle(0, -1.05914, 0), "info_player_start"),
+		CSpawnPoint(Vector(1631.7, 835.056, 8.03125), QAngle(0, -91.4409, 0), "info_player_start"),
+		CSpawnPoint(Vector(219.475, 896.399, 8.03125), QAngle(0, -1.29208, 0), "info_player_start")
 	}
 };
 
@@ -66,23 +132,17 @@ array<array<CSpawnPoint@>> SecondaryHumanSpawns =
 	}
 };
 
-const int TEAM_LOBBYGUYS = 0;
-const int TEAM_SURVIVORS = 2;
+enum ZPS_Teams {TEAM_LOBBYGUYS = 0, TEAM_SURVIVORS = 2}
 
 int iMaxPlayers;
 int iUNum;
 int iBlackCross;
-int iBustPitch = 75;
+int iBustPitch;
 
 float flWaitTime;
 
 bool bIsIPCCollected;
 bool bIsFirstRound = true;
-
-array<int> g_iIndex;
-array<Vector> g_vOrigin;
-array<QAngle> g_qAngles;
-array<float> g_flRSTime;
 
 array<int> g_iBlackCrossIndex;
 array<int> g_iSewerCapIndex;
@@ -193,7 +253,7 @@ void OnNewRound()
 void OnMatchBegin()
 {
 	RemoveNativeSpawns("info_player_human");
-	CreateSpawnsFromArray(SecondaryHumanSpawns);
+	CreateSpawnsFromArray(SecondaryHumanSpawns, false);
 }
 
 void OnMatchEnded()
@@ -206,7 +266,7 @@ void SetUpStuff()
 	iUNum = 0;
 	iBlackCross = 0;
 
-	iBustPitch = 100 - Math::RandomInt(-15, 25);
+	iBustPitch = Math::RandomInt(85, 125);
 
 	Engine.Ent_Fire("tonemap", "SetBloomScale", "0.85", "0.00");
 	Engine.Ent_Fire("tonemap", "SetAutoExposureMin", "0.64", "0.00");
@@ -224,7 +284,7 @@ void SetUpStuff()
 
 	RemoveNativeSpawns("info_player_human");
 	RemoveNativeSpawns("info_player_zombie");
-	CreateSpawnsFromArray(PrimaryHumanSpawns);
+	CreateSpawnsFromArray(PrimaryHumanSpawns, true);
 }
 
 HookReturnCode SH_OnEndTouch(CBaseEntity@ pTrigger, const string &in strEntityName, CBaseEntity@ pEntity)
@@ -345,17 +405,17 @@ void OnEntityOutput(const string &in strOutput, CBaseEntity@ pActivator, CBaseEn
 	}
 }
 
-void BlackCross(CBaseEntity@ pEntityPlayer)
+void BlackCross(CBaseEntity@ pPlayerEntity)
 {
-	CZP_Player@ pPlayer = ToZPPlayer(pEntityPlayer);
+	CZP_Player@ pPlayer = ToZPPlayer(pPlayerEntity);
 
 	if (pPlayer !is null)
 	{
 		int iRND = Math::RandomInt(1, 3);
 		Utils.ScreenFade(pPlayer, Color(0, 0, 0, 255), 3.0f, 0.0f, fade_in);
-		Engine.EmitSoundPlayer(pPlayer, "@physics/glass/glass_impact_bullet" + formatInt(iRND) + ".wav");
-		Engine.EmitSoundPlayer(pPlayer, "@physics/glass/glass_impact_bullet" + formatInt(iRND) + ".wav");
-		Engine.EmitSoundPlayer(pPlayer, "@physics/glass/glass_impact_bullet" + formatInt(iRND) + ".wav");
+		Engine.EmitSoundEntity(pPlayerEntity, "@physics/glass/glass_impact_bullet" + formatInt(iRND) + ".wav");
+		Engine.EmitSoundEntity(pPlayerEntity, "@physics/glass/glass_impact_bullet" + formatInt(iRND) + ".wav");
+		Engine.EmitSoundEntity(pPlayerEntity, "@physics/glass/glass_impact_bullet" + formatInt(iRND) + ".wav");
 	}
 
 	iBlackCross++;

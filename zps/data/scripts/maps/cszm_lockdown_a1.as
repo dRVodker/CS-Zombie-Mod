@@ -138,7 +138,7 @@ void Stuff()
 {
 	RemoveNativeSpawns("info_player_human");
 	RemoveNativeSpawns("info_player_zombie");
-	CreateSpawnsFromArray(LockDown_Spawns);
+	CreateSpawnsFromArray(LockDown_Spawns, true);
 	PlayLobbyAmbient();
 	Shadows();
 

@@ -35,16 +35,19 @@ class CSpawnPoint
 	}
 }
 
-void CreateSpawnsFromArray(array<array<CSpawnPoint@>> SpawnsArray)
+void CreateSpawnsFromArray(array<array<CSpawnPoint@>> SpawnsArray, const bool &in RememberIndex)
 {
 	int iRandom = Math::RandomInt(0, SpawnsArray.length() - 1);
 
-	while (iRandom == NS_PSCIndex && SpawnsArray.length() > 1)
+	if (RememberIndex && SpawnsArray.length() > 1)
 	{
-		iRandom = Math::RandomInt(0, SpawnsArray.length() - 1);
+		while (iRandom == NS_PSCIndex)
+		{
+			iRandom = Math::RandomInt(0, SpawnsArray.length() - 1);
+		}
+		
+		NS_PSCIndex = iRandom;
 	}
-
-	NS_PSCIndex = iRandom;
 
 	int ArrayLength = int(SpawnsArray[iRandom].length());
 

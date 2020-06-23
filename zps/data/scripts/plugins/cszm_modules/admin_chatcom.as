@@ -1,7 +1,7 @@
 namespace Admin
 {
 	enum ComIndexes {CI_SET, CI_INF, CI_CURE, CI_SHOWI, CI_SHOWV, CI_SHOWC, CI_RESP, CI_TOG_R, CI_GIVECASH, CI_ENDWU, CI_FORCE}
-	enum VarIndexes {VI_CURRS, VI_RECOVER, VI_SPEED, VI_SECONDS, VI_ZMRRATE, VI_ZMRHP, VI_AAT, VI_RTIME, VI_GUTIME, VI_WUTIME, VI_WUSECONDS, VI_ZMHEALTH, VI_INFPER, VI_INFEHP, VI_ZMRDD, VI_E_DEFCASH, VI_E_STARTCASH, VI_E_HWIN, VI_E_HKILL, VI_E_ZWIN, VI_E_ZKILL, VI_E_LOSE, VI_E_SUIC}
+	enum VarIndexes {VI_CURRS, VI_RECOVER, VI_SPEED, VI_SECONDS, VI_ZMRRATE, VI_ZMRHP, VI_AAT, VI_RTIME, VI_GUTIME, VI_WUTIME, VI_WUSECONDS, VI_ZMHEALTH, VI_INFPER, VI_INFEHP, VI_ZMRDD, VI_E_DEFCASH, VI_E_STARTCASH, VI_E_HWIN, VI_E_HKILL, VI_E_ZWIN, VI_E_ZKILL, VI_E_LOSE, VI_E_SUIC, VI_E_DMGM, VI_E_HPM, VI_PROPM, VI_BRUSHM}
 	const string STR_NULLPLAYER = "{red}*{gold}Игрок не найден!";
 	const array<array<string>> g_ChatComms =
 	{
@@ -57,7 +57,11 @@ namespace Admin
 			"money_zwin",
 			"money_zkill",
 			"money_lose",
-			"money_suicide"
+			"money_suicide",
+			"money_dmg_percent",
+			"money_hp_percent",
+			"prop_hp_percent",
+			"brush_hp_percent"
 		},
 		{
 			"flCurrs",
@@ -82,7 +86,11 @@ namespace Admin
 			"ECO_Zombie_Win",
 			"ECO_Zombie_Kill",
 			"ECO_Lose",
-			"ECO_Suiside"
+			"ECO_Suiside",
+			"ECO_Damage_Multiplier",
+			"ECO_Health_Multiplier",
+			"flPropHPPercent",
+			"flBrushHPPercent"
 		}
 	};
 	const array<string> g_TeamList =
@@ -342,15 +350,15 @@ namespace Admin
 		switch(iVarIndex)
 		{
 			case VI_CURRS:
-				OldValue = "" + flCurrs;
+				OldValue = flCurrs;
 				flCurrs = Utils.StringToFloat(strValue);
 			break;
 			case VI_RECOVER:
-				OldValue = "" + flRecover;
+				OldValue = flRecover;
 				flRecover = Utils.StringToFloat(strValue);
 			break;
 			case VI_SPEED:
-				OldValue = "" + flPSpeed;
+				OldValue = flPSpeed;
 				flPSpeed = Utils.StringToFloat(strValue);
 			break;
 			case VI_SECONDS:
@@ -358,7 +366,7 @@ namespace Admin
 				iSeconds = Utils.StringToInt(strValue);
 			break;
 			case VI_ZMRRATE:
-				OldValue = "" + flZMRRate;
+				OldValue = flZMRRate;
 				flZMRRate = Utils.StringToFloat(strValue);
 			break;
 			case VI_ZMRHP:
@@ -390,15 +398,15 @@ namespace Admin
 				iZombieHealth = Utils.StringToInt(strValue);
 			break;
 			case VI_INFPER:
-				OldValue = "" + flInfectionPercent;
+				OldValue = flInfectionPercent;
 				flInfectionPercent = Utils.StringToFloat(strValue);
 			break;
 			case VI_INFEHP:
-				OldValue = "" + flInfectedExtraHP;
+				OldValue = flInfectedExtraHP;
 				flInfectedExtraHP = Utils.StringToFloat(strValue);
 			break;
 			case VI_ZMRDD:
-				OldValue = "" + flZMRDamageDelay;
+				OldValue = flZMRDamageDelay;
 				flZMRDamageDelay = Utils.StringToFloat(strValue);
 			break;
 			case VI_E_DEFCASH:
@@ -432,6 +440,22 @@ namespace Admin
 			case VI_E_SUIC:
 				OldValue = formatInt(ECO_Suiside);
 				ECO_Suiside = Utils.StringToInt(strValue);
+			break;
+			case VI_E_DMGM:
+				OldValue = ECO_Damage_Multiplier;
+				ECO_Damage_Multiplier = Utils.StringToFloat(strValue);
+			break;
+			case VI_E_HPM:
+				OldValue = ECO_Health_Multiplier;
+				ECO_Health_Multiplier = Utils.StringToFloat(strValue);
+			break;
+			case VI_PROPM:
+				OldValue = flPropHPPercent;
+				flPropHPPercent = Utils.StringToFloat(strValue);
+			break;
+			case VI_BRUSHM:
+				OldValue = flBrushHPPercent;
+				flBrushHPPercent = Utils.StringToFloat(strValue);
 			break;
 
 			case -1:

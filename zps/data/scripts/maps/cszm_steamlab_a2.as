@@ -108,7 +108,7 @@ void SetUpStuff()
 
 	RemoveNativeSpawns("info_player_zombie");
 	RemoveNativeSpawns("info_player_human");
-	CreateSpawnsFromArray(SL_HumanSpawns);
+	CreateSpawnsFromArray(SL_HumanSpawns, true);
 }
 
 void CreatedByColors()

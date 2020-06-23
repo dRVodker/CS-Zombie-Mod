@@ -1,15 +1,13 @@
 bool bIsCSZM = false;
-float flMsgWaitTime = Globals.GetCurrentTime() + Math::RandomFloat(3.50f, 10.00f);
+float flMsgWaitTime = Globals.GetCurrentTime() + Math::RandomFloat(3.50f, 10.0f);
 const string lb = "{blue}[";
 const string rb = "{blue}] ";
 const string strCSZM = lb + "{coral}cszm"+rb;
-
 const array<string> g_strMsg =
 {
 	"Находясь в {white}наблюдателях{gold}, нажмите {cornflowerblue}F4{gold} чтоб вернуться в {green}лобби{gold}.",
 	"Используйте {cornflowerblue}антитод{gold} для повышения сопротивления к {green}инфекции{gold}.",
 	"Нажмите {cornflowerblue}Z {gold}[по умолчанию] или напишите в чат {cornflowerblue}!menu{gold}, чтоб открыть меню.",
-	"Играя за зомби, вы можете получить немного {selfmade}денег{gold}, ломая мебель или баррикады",
 	"В {cornflowerblue}Zombie Menu{gold} вы можете приобрести разные {cornflowerblue}улучшения{gold}.",
 	"Получить {cornflowerblue}оружие{gold} или иные {cornflowerblue}полезные предметы{gold} можно только из {cornflowerblue}магазина{gold}.",
 	"Зомби может купить доп. здоровье {cornflowerblue}только 2 раза за раунд{gold}.",
@@ -17,7 +15,8 @@ const array<string> g_strMsg =
 	"Зомби {red}не сможет{gold} купить новую броню, {cornflowerblue}полностью{gold} не потратив старую.",
 	"Зомби получают небольшие {selfmade}деньги{gold}, ломая баррикады или другие вещи.",
 	"Будьте осторожны! У вас всего {cornflowerblue}одна жизнь на раунд{gold}. После смерти вы отправитесь в {white}наблюдатели{gold}.",
-	"Мины с {white}белой{gold} обводкой - {cornflowerblue}ничейные{gold}, их можно забрать."
+	"Мины с {white}белой{gold} обводкой - {cornflowerblue}ничейные{gold}, их можно забрать.",
+	"{cornflowerblue}Бронированный{gold} зомби замедляется слабее от получаемого урона."
 };
 
 array<string> g_strMsgToShow;
@@ -54,8 +53,7 @@ void OnProcessRound()
 
 	if (flMsgWaitTime <= Globals.GetCurrentTime())
 	{
-		flMsgWaitTime = Globals.GetCurrentTime() + Math::RandomFloat(65.00f, 130.00f);
-		//flMsgWaitTime = Globals.GetCurrentTime() + Math::RandomFloat(2.00f, 4.00f);
+		flMsgWaitTime = Globals.GetCurrentTime() + Math::RandomFloat(65.0f, 95.0f);
 		ShowMsg();
 	}
 }
@@ -63,6 +61,7 @@ void OnProcessRound()
 void ShowMsg()
 {
 	int iMSGToShowLength = int(g_strMsgToShow.length());
+	
 	if (iMSGToShowLength == 0)
 	{
 		int iMSGLength = int(g_strMsg.length());
