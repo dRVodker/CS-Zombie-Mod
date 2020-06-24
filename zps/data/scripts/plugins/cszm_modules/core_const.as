@@ -14,7 +14,7 @@ const int CONST_ZOMBIE_LIVES = 0;				//Удерживать Жизни Зомб�
 const int CONST_MAX_INFECTRESIST = 2;			//Максимальное сопротивление инфекции (кол-во ударов, которое может пережить выживший)
 const float CONST_ADRENALINE_DURATION = 14.0f;	//Длительность действия адреналина в секундах
 const float CONST_ARMOR_MULT = 3.15f;			//Множитель для вычисления дополнительного HP для превращенного выжившего, если у него был армор (ExtraHP = iArmor * CONST_ARMOR_MULT)
-const float CONST_SWIPE_DELAY = 0.5f;			//Время, которое должно пройти чтоб заразить следующего выжившего
+const float CONST_SWIPE_DELAY = 0.5f;			//Задержка чтоб предотвратить заражение более одного выжившего одним ударом
 const float CONST_GAME_ROUND_TIME = 300.05;		//Удерживать внутриигровой таймер раунда на этом уровне (внутриигровой таймер раунда не используются в CSZM)
 const int CONST_MIN_ROUNDTIMER = 35;			//Минимальное время таймера рауда, при котором разрешено добавлять время за заражение/убийство
 
@@ -28,8 +28,6 @@ const string JUNK_PROP_MODELS = "vent001.mdl;glassjug01.mdl;glassbottle01a.mdl;p
 
 //Обводка зомби
 const float GLOW_BASE_DISTANCE = 1575.0f;
-const float GLOW_CARRIER_ADD_DISTANCE = 512.0f;
-const float GLOW_CARRIER_ROAR_DISTANCE = 10000.0f;
 
 //Голоса зомби
 const int VOICE_MAX_INDEX = 3;
@@ -89,6 +87,14 @@ const array<string> g_strInfectSND =
 	")cszm_fx/player/plr_infect1.wav",
 	")cszm_fx/player/plr_infect2.wav",
 	")cszm_fx/player/plr_infect3.wav"
+};
+
+const array<string> g_LocknLoadSND =
+{
+	"@cszm_fx/radio/gogogo.wav",
+	"@cszm_fx/radio/letsgo.wav",
+	"@cszm_fx/radio/locknload.wav",
+	"@cszm_fx/radio/moveout.wav"
 };
 
 const array<string> g_strWeaponToStrip = 

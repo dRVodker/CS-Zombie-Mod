@@ -67,7 +67,7 @@ void CreateSpawnsFromArray(array<array<CSpawnPoint@>> SpawnsArray, const bool &i
 			ID.Add("addoutput", "onplayerspawn !self:disablespawn::0:-1", true, "0.00");
 			ID.Add("addoutput", "onplayerspawn !self:enablespawn::10.0:-1", true, "0.00");
 
-			EntityCreator::Create(pSpawn.ClassName, pSpawn.Origin, pSpawn.Angles, ID);			
+			EntityCreator::Create(pSpawn.ClassName, pSpawn.Origin, pSpawn.Angles, ID);
 		}
 	}
 }

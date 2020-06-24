@@ -500,6 +500,8 @@ class CSZMPlayer
 	private float InfResShowTime;			//Время, по истечению которого показывается сообщение об кол-ве сопротивления инфекции
 	private float LobbyRespawnDelay;		//Время, которое должен ждать игрок в лобби, чтобы сново использовать "F4 Respawn"
 
+	private int WeaponIndex;
+
 	bool Abuser;							//Игроки, злоупотребляющие механиками, получают этот флаг (Записывается в SteamIDArray)
 	bool FirstInfected;						//Один из первых зараженных?
 
@@ -1016,10 +1018,19 @@ class CSZMPlayer
 					pPlayer.DoPlayerDSP(0);
 				}
 
-				if (LessThanGT(InfResShowTime) && Utils.StrContains("item_antidote", pPlayer.GetCurrentWeapon().GetEntityName()))
+				if (pPlayer.GetCurrentWeapon() !is null && LessThanGT(InfResShowTime) && Utils.StrContains("item_antidote", pPlayer.GetCurrentWeapon().GetEntityName()))
 				{
 					InfResShowTime = PlusGT(1.12f);
 					Chat.CenterMessagePlayer(pBasePlayer, strInfRes + formatInt(InfectResist));
+				}
+
+				if (pPlayer.GetCurrentWeapon() !is null && pPlayer.GetCurrentWeapon().entindex() != WeaponIndex)
+				{
+					WeaponIndex = pPlayer.GetCurrentWeapon().entindex();
+					if (Utils.StrEql("item_deliver", pPlayer.GetCurrentWeapon().GetClassname(), true))
+					{
+						Engine.Ent_Fire(pPlayer.GetCurrentWeapon().GetEntityName(), "addoutput", "effects 129", "0.00");
+					}
 				}
 			}
 		}
@@ -1032,7 +1043,6 @@ class CSZMPlayer
 		float HP = pPlayerEntity.GetHealth();
 		float HPP = (HP / MaxHP);
 		float BaseCChanel = 255.0f;
-		float ExtraDistance = 0.0f;
 		int cRed = 0;
 		int cGreen = 255;
 		int cBlue = 16;
@@ -1051,7 +1061,7 @@ class CSZMPlayer
 			cBlue = 255;
 		}
 	
-		pPlayerEntity.SetOutline(true, filter_team, TEAM_ZOMBIES, Color(cRed, cGreen, cBlue), GLOW_BASE_DISTANCE + ExtraDistance, true, RenderUnOccluded);	
+		pPlayerEntity.SetOutline(true, filter_team, TEAM_ZOMBIES, Color(cRed, cGreen, cBlue), GLOW_BASE_DISTANCE, true, RenderUnOccluded);	
 	}
 }
 
@@ -1074,16 +1084,6 @@ namespace GameText
 		"title",
 		"holdtime",
 		"fadeout"
-	};
-	const array<string> AMPItem = 
-	{
-		"item1",
-		"item2",
-		"item3",
-		"item4",
-		"item5",
-		"item6",
-		"item7"
 	};
 
 	class MenuKeyValyes
@@ -1138,20 +1138,18 @@ namespace GameText
 	{
 		Menu(const int iPlrInd, MenuKeyValyes@ nParams)
 		{
-			string FullMSG = "";
+			string FullMSG = nParams.GetKeyValue("title") + "\n";
 
-			FullMSG += nParams.GetKeyValue("title") + "\n";
-
-			for (uint i = 0; i < AMPItem.length(); i++)
+			for (int i = 1; i <= 7; i++)
 			{
-				string MI_Value = nParams.GetKeyValue(AMPItem[i]);
+				const string MI_Value = nParams.GetKeyValue("item" + formatInt(i));
 
-				if (MI_Value != "null")
+				if (!Utils.StrEql("null", MI_Value, true))
 				{
-					FullMSG += "\n" + formatInt(i + 1) + ". " + MI_Value;
+					FullMSG += "\n" + formatInt(i) + ". " + MI_Value;
 				}
 
-				if (i == AMPItem.length() - 1)
+				if (i == 7)
 				{
 					FullMSG += "\n";
 				}
@@ -1864,7 +1862,7 @@ void CSZM_LocknLoad()
 {
 	flRTWait = Globals.GetCurrentTime();
 
-	Engine.EmitSound("CS_MatchBeginRadio");
+	Engine.EmitSoundPosition(0, g_LocknLoadSND[Math::RandomInt(0, g_LocknLoadSND.length() - 1)], Vector(0, 0, 0), 1.0f, 0, 100);
 
 	Globals.SetPlayerRespawnDelay(false, CONST_SPAWN_DELAY);
 	Globals.SetPlayerRespawnDelay(true, CONST_SPAWN_DELAY);
