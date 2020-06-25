@@ -1,5 +1,6 @@
 #include "../SendGameText"
 #include "cszm_modules/newspawn"
+#include "cszm_modules/cashmaker"
 
 array<array<CSpawnPoint@>> PrimaryHumanSpawns =
 {
@@ -212,6 +213,7 @@ void OnMapInit()
 	Events::Player::OnPlayerSpawn.Hook(@SH_OnPlayerSpawn);
 
 	Schedule::Task(0.01f, "SetUpStuff");
+	CashDATA();
 }
 
 void FindIPC()
@@ -531,4 +533,53 @@ void RespawnEffects(Vector &in Origin)
 	EntityCreator::Create("env_spark", Origin, QAngle(-90, 0, 0), SparkIPD);	
 
 	Engine.EmitSoundPosition(0, "items/suitchargeok1.wav", Origin, 0.695f, 75, Math::RandomInt(135, 165));
+}
+
+void CashDATA()
+{
+	iMaxCash = 12;
+	iMinCash = 3;
+
+	g_Origins.insertLast(Vector(2008.62, -435.337, 81.0313));
+	g_Origins.insertLast(Vector(2607.8, -75.5436, -46.9688));
+	g_Origins.insertLast(Vector(2174.87, -339.638, -166.969));
+	g_Origins.insertLast(Vector(1687.77, -494.29, 54.4029));
+	g_Origins.insertLast(Vector(1406.01, 336.835, 1.03125));
+	g_Origins.insertLast(Vector(1596.26, 873.901, 9.03125));
+	g_Origins.insertLast(Vector(831.841, -260.68, 155.031));
+	g_Origins.insertLast(Vector(756.366, 1255.42, 9.03125));
+	g_Origins.insertLast(Vector(368.895, 1177.03, 321.031));
+	g_Origins.insertLast(Vector(437.055, 1043.55, 1.03125));
+	g_Origins.insertLast(Vector(447.632, 1042.02, 1.03125));
+	g_Origins.insertLast(Vector(463.667, 1019.52, 1.03125));
+	g_Origins.insertLast(Vector(1450.19, 1132.7, 45.972));
+	g_Origins.insertLast(Vector(1496.32, 1127.62, 9.03125));
+	g_Origins.insertLast(Vector(1128.63, 1263.5, 113.983));
+	g_Origins.insertLast(Vector(1087.88, 1131.55, 46.2174));
+	g_Origins.insertLast(Vector(876.94, 1219.83, 206.449));
+	g_Origins.insertLast(Vector(852.254, 1256.44, 185.029));
+	g_Origins.insertLast(Vector(1329.15, 909.134, 238.476));
+	g_Origins.insertLast(Vector(1107.64, 1061.74, 145.031));
+	g_Origins.insertLast(Vector(338.079, 915.731, -238.969));
+	g_Origins.insertLast(Vector(1331.17, -245.299, -198.833));
+	g_Origins.insertLast(Vector(1090.99, 398.722, -193.523));
+	g_Origins.insertLast(Vector(544.242, 127.878, 65.0313));
+	g_Origins.insertLast(Vector(-69.6797, 129.079, 12.0754));
+	g_Origins.insertLast(Vector(-174.067, -227.366, 65.0313));
+	g_Origins.insertLast(Vector(-467.726, -1448.28, 9.03125));
+	g_Origins.insertLast(Vector(-819.515, -360.434, 145.031));
+	g_Origins.insertLast(Vector(-1020.74, -6.86909, 281.031));
+	g_Origins.insertLast(Vector(-1062.96, -257.093, 281.031));
+	g_Origins.insertLast(Vector(-985.682, -220.644, 145.031));
+	g_Origins.insertLast(Vector(-1004.81, -146.292, 9.03125));
+	g_Origins.insertLast(Vector(-1141.7, -70.2236, 41.0312));
+	g_Origins.insertLast(Vector(-1226.97, 414.427, 71.0877));
+	g_Origins.insertLast(Vector(-1102.74, -53.1684, 77.2627));
+	g_Origins.insertLast(Vector(-688.779, 492.8, 9.03125));
+	g_Origins.insertLast(Vector(372.12, -424.413, 9.03125));
+	g_Origins.insertLast(Vector(-818.163, -290.123, 226.662));
+	g_Origins.insertLast(Vector(-883.249, 217.45, 172.031));
+	g_Origins.insertLast(Vector(-492.805, -580.37, 9.03125));
+	g_Origins.insertLast(Vector(-850.657, -458.73, 36.4255));
+	g_Origins.insertLast(Vector(-1005.643, -147.479, 327.388));
 }

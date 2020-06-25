@@ -261,7 +261,7 @@ void RegisterEntities()
 	Entities::RegisterPickup("item_deliver");
 	Entities::RegisterUse("item_deliver");
 	Entities::RegisterDrop("item_deliver");
-	Entities::RegisterUse("dropped_money");
+	Entities::RegisterUse("item_money");
 }
 
 string GetAttackerInfo(const string &in FullInfo)

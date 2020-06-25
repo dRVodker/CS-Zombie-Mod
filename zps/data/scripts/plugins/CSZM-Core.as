@@ -133,7 +133,7 @@ void OnMapInit()
 	}
 
 	bIsCSZM = true;
-	bWarmUp =  true;
+	bWarmUp = true;
 	bIsPlayersSelected = false;
 	iWUSeconds = iWarmUpTime;
 	flRTWait = 0;
@@ -171,7 +171,7 @@ void OnMapInit()
 	Array_CSZMPlayer.resize(iMaxPlayers + 1);
 
 	AutoMap();
-	SetUpIPD((1<<1) + (1<<2) + (1<<3));
+	SetUpIPD((1<<1) + (1<<2) + (1<<3) + (1<<4));
 	
 	//Set Doors Filter to 0 (any team)
 	SetDoorFilter(TEAM_LOBBYGUYS);
@@ -313,6 +313,7 @@ void OnMatchBegin()
 
 	LogicPlayerManager();
 	Schedule::Task(0.5f, "CSZM_LocknLoad");
+	Schedule::Task(0.5f, "SpawnCashItem");
 
 	if (iWUSeconds == 0)
 	{
@@ -1475,24 +1476,15 @@ namespace Radio
 		Velocity = Velocity * Math::RandomInt(185, 265) + pPlayerEntity.GetAbsVelocity() * 0.5f;
 		Angles *= QAngle(0, 1, 0);
 
-		CEntityData@ MoneyIPD = EntityCreator::EntityData();
+		CEntityData@ MoneyIPD = gMoneyIPD;
 
 		MoneyIPD.Add("targetname", "dropped_money");
-		MoneyIPD.Add("canfirehurt", "0");
-		MoneyIPD.Add("minhealthdmg", "1000");
-		MoneyIPD.Add("model", "models/zp_props/100dollar/100dollar.mdl");
-		MoneyIPD.Add("nodamageforces", "1");
-		MoneyIPD.Add("nofiresound", "1");
-		MoneyIPD.Add("physdamagescale", "0");
-		MoneyIPD.Add("spawnflags", "8582");
-		MoneyIPD.Add("unbreakable", "1");
-		MoneyIPD.Add("overridescript", "mass,1,");
 
 		CBaseEntity@ pMoney = EntityCreator::Create("prop_physics_override", Eyes, Angles, MoneyIPD);
 
 		pMoney.SetClassname("item_money");
 		pMoney.SetHealth(nCashToDrop);
-		pMoney.Teleport(Eyes, (Angles +  QAngle(0, 90, 0)), Velocity);
+		pMoney.Teleport(Eyes, (Angles + QAngle(0, 90, 0)), Velocity);
 		pMoney.SetOutline(true, filter_team, TEAM_SURVIVORS, Color(235, 65, 175), 185.0f, false, true);
 
 		Engine.EmitSoundEntity(pPlayerEntity, ")player/footsteps/sand2.wav");
@@ -1500,7 +1492,7 @@ namespace Radio
 		NetData nData;
 		nData.Write(pMoney.entindex());
 		nData.Write(PlrInd);
-		Network::CallFunction("OnItemCashCreation", nData);
+		Network::CallFunction("OnCashDropped", nData);
 	}
 
 	int GiveAmmo(CZP_Player@ pPlayer, const int &in nAmmoType, const int &in nAmount)
@@ -1913,7 +1905,7 @@ void OnEntityUsed(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 	CBaseEntity@ pPlayerEntity = pPlayerBase.opCast();
 	int index = pPlayerEntity.entindex();
 
-	if (Utils.StrEql("dropped_money", pEntity.GetEntityName(), true))
+	if (Utils.StrEql("item_money", pEntity.GetClassname(), true))
 	{
 		Engine.EmitSoundPosition(pPlayerEntity.entindex(), ")cszm_fx/items/gunpickup1.wav", pPlayerEntity.GetAbsOrigin() + Vector(0, 0, 16), 0.7f, 65, 110);
 		Array_CSZMPlayer[index].CashBank += pEntity.GetHealth();
@@ -2474,7 +2466,7 @@ HookReturnCode CSZM_OnEntityCreation(const string &in strClassname, CBaseEntity@
 
 HookReturnCode CSZM_OnEntityDestruction(const string &in strClassname, CBaseEntity@ pEntity)
 {
-	if (Utils.StrEql("npc_grenade_frag", strClassname, true))
+	if (bIsCSZM && Utils.StrEql("npc_grenade_frag", strClassname, true))
 	{
 		ShootTracers(pEntity.GetAbsOrigin());
 	}

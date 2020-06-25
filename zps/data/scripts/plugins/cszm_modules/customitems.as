@@ -1,6 +1,7 @@
 CEntityData@ gFragMineIPD = EntityCreator::EntityData();
 CEntityData@ gAdrenalineIPD = EntityCreator::EntityData();
 CEntityData@ gAntidoteIPD = EntityCreator::EntityData();
+CEntityData@ gMoneyIPD = EntityCreator::EntityData();
 
 void SetUpIPD(const int &in iFlags)
 {
@@ -50,6 +51,21 @@ void SetUpIPD(const int &in iFlags)
 		gAntidoteIPD.Add("DisableDamageForces", "0", true);
 		Log.PrintToServerConsole(LOGTYPE_INFO, "Custom Items", "{green}-={blueviolet}Antidote IPD {cyan}Added{green}=-");
 	}
+
+	if (iFlags & 1<<4 == 1<<4)
+	{
+		gMoneyIPD.Add("canfirehurt", "0");
+		gMoneyIPD.Add("minhealthdmg", "1000");
+		gMoneyIPD.Add("model", "models/zp_props/100dollar/100dollar.mdl");
+		gMoneyIPD.Add("nodamageforces", "1");
+		gMoneyIPD.Add("nofiresound", "1");
+		gMoneyIPD.Add("physdamagescale", "0");
+		gMoneyIPD.Add("spawnflags", "8582");
+		gMoneyIPD.Add("unbreakable", "1");
+		gMoneyIPD.Add("overridescript", "mass,1,");
+		gMoneyIPD.Add("DisableDamageForces", "0", true);
+		Log.PrintToServerConsole(LOGTYPE_INFO, "Custom Items", "{green}-={blueviolet}Money IPD {cyan}Added{green}=-");
+	}
 }
 
 void ClearIPD()
@@ -57,6 +73,7 @@ void ClearIPD()
 	@gFragMineIPD is null;
 	@gAdrenalineIPD is null;
 	@gAntidoteIPD is null;
+	@gMoneyIPD is null;
 }
 
 CBaseEntity@ SpawnWepFragMine(CBaseEntity@ pEntity)

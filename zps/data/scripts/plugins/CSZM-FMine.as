@@ -14,7 +14,6 @@ void OnPluginInit()
 	PluginData::SetAuthor("dR.Vodker");
 	PluginData::SetName("CSZM - Anti-personnel Mine");
 
-	Events::Entities::OnEntityCreation.Hook(@CSZM_FM_OnEntityCreation);
 	Events::Entities::OnEntityDestruction.Hook(@CSZM_FM_OnEntityDestruction);
 	Events::Custom::OnEntityDamaged.Hook(@CSZM_FM_OnEntDamaged);
 }
@@ -157,19 +156,6 @@ void OnProcessRound()
 			(FMArray[q] !is null) ? FMArray[q].Think() : FMArray.removeAt(q);
 		}
 	}
-}
-
-HookReturnCode CSZM_FM_OnEntityCreation(const string &in strClassname, CBaseEntity@ pEntity)
-{
-	if (bIsCSZM)
-	{
-		if (Utils.StrEql("weapon_machete", strClassname))
-		{
-			SpawnWepFragMine(pEntity);
-		}
-	}
-
-	return HOOK_CONTINUE;
 }
 
 HookReturnCode CSZM_FM_OnEntityDestruction(const string &in strClassname, CBaseEntity@ pEntity)

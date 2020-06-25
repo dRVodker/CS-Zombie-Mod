@@ -10,7 +10,7 @@ void SpawnCrates()
 {
 	if (bDebugCrates)
 	{
-		Chat.PrintToChat(all, "{cyan}-=info=-\n{gold}*Spawning crates.");		
+		Chat.PrintToChat(all, "{cyan}-=info=-\n{gold}*Spawning crates.");
 	}
 
 	uint iOriginLength = g_PICOrigin.length();
@@ -52,7 +52,7 @@ void SpawnCrates()
 		{
 			if (bDebugCrates)
 			{
-				Chat.PrintToChat(all, "{cyan}-=info=-\n{red}*Iterations limit has been hit!");					
+				Chat.PrintToChat(all, "{cyan}-=info=-\n{red}*Iterations limit has been hit!");
 			}
 			break;
 		}
@@ -73,7 +73,7 @@ bool CheckDist(array<Vector> TargetArray, Vector Subject)
 				Spawn = false;
 				if (bDebugCrates)
 				{
-					Chat.PrintToChat(all, "{cyan}-=info=-\n{gold}*Crate spawn points too close to each other - SKIPPING");						
+					Chat.PrintToChat(all, "{cyan}-=info=-\n{gold}*Crate spawn points too close to each other - SKIPPING");
 				}
 				break;
 			}

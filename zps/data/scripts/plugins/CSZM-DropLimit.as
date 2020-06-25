@@ -134,7 +134,7 @@ HookReturnCode CSZM_DI_OnEntityDestruction(const string &in strClassname, CBaseE
 	return HOOK_CONTINUE;
 }
 
-void OnItemCashCreation(NetObject@ pData)
+void OnCashDropped(NetObject@ pData)
 {
 	if (pData is null)
 	{

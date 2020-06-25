@@ -1,4 +1,5 @@
 #include "cszm_modules/newspawn"
+#include "cszm_modules/cashmaker"
 
 array<array<CSpawnPoint@>> SL_HumanSpawns = 
 {
@@ -82,7 +83,46 @@ array<array<CSpawnPoint@>> SL_HumanSpawns =
 };
 
 void OnMapInit()
-{	
+{
+	iMaxCash = 8;
+	iMinCash = 4;
+
+	g_Origins.insertLast(Vector(-1558.54, 2029.38, 951.016));
+	g_Origins.insertLast(Vector(-2339.93, 1094.39, 585.031));
+	g_Origins.insertLast(Vector(-2340.81, 1604.4, 801.031));
+	g_Origins.insertLast(Vector(-3656.48, 1667.89, 858.031));
+	g_Origins.insertLast(Vector(-3112.07, 1503.72, 877.979));
+	g_Origins.insertLast(Vector(-3231.59, 2187.62, 1119.29));
+	g_Origins.insertLast(Vector(-3011.24, 3403.88, 925.031));
+	g_Origins.insertLast(Vector(-2735.81, 2745.02, 889.031));
+	g_Origins.insertLast(Vector(-2673.71, 3150.15, 912.031));
+	g_Origins.insertLast(Vector(-1831.65, 3232.5, 1142.86));
+	g_Origins.insertLast(Vector(-2065.09, 2265.87, 929.031));
+	g_Origins.insertLast(Vector(-2037.45, 2484.9, 1121.03));
+	g_Origins.insertLast(Vector(-2457.99, 1459.38, 1141.03));
+	g_Origins.insertLast(Vector(-1807.19, 1493.12, 1261.03));
+	g_Origins.insertLast(Vector(-1595.84, 2127.81, 1033.03));
+	g_Origins.insertLast(Vector(-2429.9, 1419.61, 1065.03));
+	g_Origins.insertLast(Vector(-826.005, 2118.5, 993.031));
+	g_Origins.insertLast(Vector(-831.771, 2132.34, 993.031));
+	g_Origins.insertLast(Vector(-1434.88, 3348.66, 1156.92));
+	g_Origins.insertLast(Vector(-2417.47, 2938.16, 978.031));
+	g_Origins.insertLast(Vector(-1727.91, 2732.16, 977.031));
+	g_Origins.insertLast(Vector(-1816.53, 1435.91, 1261.03));
+	g_Origins.insertLast(Vector(-1598.65, 2092.52, 1069.03));
+	g_Origins.insertLast(Vector(-2748.19, 1583.44, 1105.03));
+	g_Origins.insertLast(Vector(-2740.27, 1539.08, 1041.03));
+	g_Origins.insertLast(Vector(-2902.64, 2674.69, 993.031));
+	g_Origins.insertLast(Vector(-2843.02, 1925.71, 966.031));
+	g_Origins.insertLast(Vector(-2840.93, 2953.43, 982.031));
+	g_Origins.insertLast(Vector(-3361.3, 1543.73, 1039.29));
+	g_Origins.insertLast(Vector(-1321.97, 2765.89, 1103.04));
+	g_Origins.insertLast(Vector(-2007.39, 2081.14, 1069.03));
+	g_Origins.insertLast(Vector(-1901.63, 2202.46, 1033.03));
+	g_Origins.insertLast(Vector(-2118.82, 2194.15, 1124.03));
+	g_Origins.insertLast(Vector(-2417.31, 1487.69, 1141.03));
+	g_Origins.insertLast(Vector(-1830.02, 1413.11, 1033.03));
+
 	Schedule::Task(0.05f, "SetUpStuff");
 }
 

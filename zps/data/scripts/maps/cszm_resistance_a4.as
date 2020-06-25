@@ -199,6 +199,8 @@ void SetUpStuff()
 	Engine.Ent_Fire("Precache", "kill");
 	Engine.Ent_Fire("SND_Ambient", "PlaySound");
 
+	Engine.Ent_Fire("prop*", "FireUser1", "0", "0.00");
+
 	PlayLobbyAmbient();
 
 	RemoveNativeSpawns("info_player_human");
