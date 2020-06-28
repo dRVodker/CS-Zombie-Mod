@@ -36,9 +36,9 @@ void CacheMaterials()
 void CacheSounds()
 {
 	Engine.PrecacheFile(sound, "items/smallmedkit1.wav");
-	Engine.PrecacheFile(sound, "cszm_fx/weapons/adrenaline_cap_off.wav");
-	Engine.PrecacheFile(sound, "cszm_fx/weapons/adrenaline_needle_open.wav");
-	Engine.PrecacheFile(sound, "cszm_fx/weapons/adrenaline_needle_in.wav");
+	Engine.PrecacheFile(sound, ")cszm_fx/weapons/adrenaline_cap_off.wav");
+	Engine.PrecacheFile(sound, ")cszm_fx/weapons/adrenaline_needle_open.wav");
+	Engine.PrecacheFile(sound, ")cszm_fx/weapons/adrenaline_needle_in.wav");
 	Engine.PrecacheFile(sound, "buttons/combine_button_locked.wav");
 	Engine.PrecacheFile(sound, ")impacts/flesh_impact_headshot-01.wav");
 	Engine.PrecacheFile(sound, "items/suitchargeok1.wav");
