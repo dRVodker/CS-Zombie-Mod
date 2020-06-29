@@ -1,6 +1,9 @@
 int iMaxCash = 10;
 int iMinCash = 3;
 
+float flMaxMPI = 200.0f;
+float flMinMPI = 25.0f;
+
 array<Vector> g_Origins;
 
 void SpawnCashItem()
@@ -38,7 +41,7 @@ void SpawnCashItem()
 
 		CBaseEntity@ pMoneyItem = EntityCreator::Create("prop_physics_override", p_Oririgns[RND_ArrPos], QAngle(0, Math::RandomFloat(-180.0f, 180.0f), 0), InputData);
 		pMoneyItem.SetClassname("item_money");
-		pMoneyItem.SetHealth(int(floor(Math::RandomFloat(25.0f, 200.0f) / 5) * 5));
+		pMoneyItem.SetHealth(int(floor(Math::RandomFloat(flMinMPI, flMaxMPI) / 5) * 5));
 		pMoneyItem.SetOutline(true, filter_team, 2, Color(235, 65, 175), 185.0f, false, true);
 
 		p_Oririgns.removeAt(RND_ArrPos);

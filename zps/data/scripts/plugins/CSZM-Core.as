@@ -2258,7 +2258,7 @@ HookReturnCode CSZM_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out Da
 				bool bLeft = Math::RandomInt(0 , 1) > 0;
 				float VP_X = bDamageType(iDamageType, 5) ? Math::RandomFloat(-0.1f, -0.2f) : Math::RandomFloat(-1.75f, 1.85f);
 				float VP_Y = bDamageType(iDamageType, 5) ? Math::RandomFloat(-5.75f, -8.15f) : Math::RandomFloat(-1.75f, 1.85f);
-				float VP_DAMP = bDamageType(iDamageType, 5) ? Math::RandomFloat(0.005f, 0.0175f) : Math::RandomFloat(0.038f , 0.075f);
+				float VP_DAMP = bDamageType(iDamageType, 5) ? Math::RandomFloat(0.085f, 0.205f) : Math::RandomFloat(0.021f , 0.058f);
 				float VP_KICK = Math::RandomFloat(0.25f , 0.95f);
 
 				Utils.FakeRecoil(pPlayer, VP_KICK, VP_DAMP, VP_X, VP_Y, bLeft);

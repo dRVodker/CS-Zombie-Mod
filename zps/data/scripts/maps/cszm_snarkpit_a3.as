@@ -1,5 +1,6 @@
 #include "cszm_modules/lobbyambient"
 #include "cszm_modules/newspawn"
+#include "cszm_modules/cashmaker"
 
 array<array<CSpawnPoint@>> New_Spawns = 
 {
@@ -113,6 +114,8 @@ void OnMapInit()
 	Entities::RegisterUse("func_button");
 	Events::Trigger::OnStartTouch.Hook(@OnStartTouch);
 	Events::Player::OnPlayerSpawn.Hook(@OnPlayerSpawn);
+
+	CashData();
 }
 
 void OnNewRound()
@@ -147,7 +150,7 @@ void SetUpStuff()
 	
 	Engine.Ent_Fire("tonemap", "SetBloomScale", "0.375");
 
-	Engine.Ent_Fire("info_player_z*", "kill", "0.00");
+	Engine.Ent_Fire("hurt_toxic*", "addoutput", "spawnflags 1088", "0.05");
 
 	TurnOnFan1();
 
@@ -156,6 +159,37 @@ void SetUpStuff()
 	RemoveNativeSpawns("info_player_zombie");
 	RemoveNativeSpawns("info_player_human");
 	CreateSpawnsFromArray(New_Spawns, true);
+}
+
+void CashData()
+{
+	iMaxCash = 12;
+	iMinCash = 8;
+	flMaxMPI = 175.0f;
+	flMinMPI = 45.0f;
+
+	g_Origins.insertLast(Vector(-356.433, -1429.81, 154.526));
+	g_Origins.insertLast(Vector(-355.539, -1410.98, 154.526));
+	g_Origins.insertLast(Vector(403.124, -914.462, 161.031));
+	g_Origins.insertLast(Vector(394.451, -769.401, 145.031));
+	g_Origins.insertLast(Vector(910.001, -408.19, 422.79));
+	g_Origins.insertLast(Vector(920.474, -390.295, 422.763));
+	g_Origins.insertLast(Vector(909.233, -382.09, 422.725));
+	g_Origins.insertLast(Vector(1233.67, -362.098, -359.874));
+	g_Origins.insertLast(Vector(410.493, -377.005, -542.969));
+	g_Origins.insertLast(Vector(432.5, -1206.51, -302.969));
+	g_Origins.insertLast(Vector(417.573, -1218.17, -302.969));
+	g_Origins.insertLast(Vector(367.772, -1176.92, -302.969));
+	g_Origins.insertLast(Vector(-339.996, -381.77, -230.074));
+	g_Origins.insertLast(Vector(-518.024, 89.659, -142.969));
+	g_Origins.insertLast(Vector(-122.988, -820.316, -142.969));
+	g_Origins.insertLast(Vector(-289.004, -719.739, -109.054));
+	g_Origins.insertLast(Vector(-312.326, -724.114, -109.032));
+	g_Origins.insertLast(Vector(79.2919, -451.216, 1.03125));
+	g_Origins.insertLast(Vector(71.0485, -429.527, 1.03125));
+	g_Origins.insertLast(Vector(62.9824, -446.235, 1.03125));
+	g_Origins.insertLast(Vector(-529.314, -354.646, 81.0313));
+	g_Origins.insertLast(Vector(-536.301, -341.571, 81.0313));
 }
 
 HookReturnCode OnPlayerSpawn(CZP_Player@ pPlayer)
