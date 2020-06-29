@@ -1,0 +1,351 @@
+"cityvoice_level5"
+{
+	"playrandom"
+	{
+		"time"		"10,25"
+		"volume"	"0.7,1.0"
+		"pitch"		"100"
+
+		"rndwave"
+		{
+			"wave"	"*underpass_ambient/overwatch/cityvoice/f_citizenshiprevoked_6_spkr.wav"
+			"wave"	"*underpass_ambient/overwatch/cityvoice/f_citizenshiprevoked_6_spkr.wav"
+			"wave"	"*underpass_ambient/overwatch/cityvoice/f_capitalmalcompliance_spkr.wav"
+			"wave"	"*underpass_ambient/overwatch/cityvoice/f_anticitizenreport_spkr.wav"
+			"wave"	"*underpass_ambient/overwatch/cityvoice/f_rationunitsdeduct_3_spkr.wav"
+			"wave"	"*underpass_ambient/overwatch/cityvoice/f_protectionresponse_5_spkr.wav"
+		}
+	}
+}
+
+"cityvoice_level0"
+{
+	"playrandom"
+	{
+		"time"		"15,35"
+		"volume"	"0.4,1.0"
+		"pitch"		"100"
+
+		"rndwave"
+		{
+			"wave"	"*underpass_ambient/overwatch/cityvoice/f_confirmcivilstatus_1_spkr.wav"
+			"wave"	"*underpass_ambient/overwatch/cityvoice/f_protectionresponse_1_spkr.wav"
+		}
+	}
+}
+
+"city_searching_level2"
+{
+	"playsoundscape"
+	{
+		"name"		"city_searching_level1"
+		"volume"	"1.0"
+	}
+
+	"playrandom"
+	{
+		"time"		"3,10"
+		"volume"	"0.3,1.0"
+		"pitch"		"95,105"
+		"position"	"random"
+		"soundlevel"	"SNDLVL_140db"
+		"rndwave"
+		{
+			"wave"	"ambient/machines/heli_pass1.wav"
+			"wave"	"ambient/machines/heli_pass_distant1.wav"
+			"wave"	"ambient/machines/heli_pass2.wav"
+			"wave"	"ambient/machines/heli_pass_quick1.wav"
+			"wave"	"ambient/machines/heli_pass_quick2.wav"
+		}
+	}
+}
+
+"city_searching_level1"
+{
+
+	"playlooping"
+	{
+		"volume"	"0.42"
+		"wave"		"ambient/atmosphere/station_ambience_loop2.wav"
+		"pitch"		"100"
+	}
+
+
+	"playrandom"
+	{
+		"time"		"5,15"
+		"volume"	"0.2,0.8"
+		"pitch"		"100"
+		"position"	"random"
+		"soundlevel"	"SNDLVL_140db"
+		"rndwave"
+		{
+			"wave"	"ambient/machines/heli_pass1.wav"
+			"wave"	"ambient/machines/aircraft_distant_flyby1.wav"
+			"wave"	"ambient/machines/aircraft_distant_flyby3.wav"
+			"wave"	"ambient/alarms/apc_alarm_pass1.wav"
+			"wave"	"ambient/alarms/manhack_alert_pass1.wav"
+			"wave"	"ambient/alarms/scanner_alert_pass1.wav"
+		}
+	}
+
+	"playrandom"
+	{
+		"time"		"30,60"
+		"volume"	"0.1,0.2"
+		"pitch"		"95,105"
+		"position"	"random"
+		"soundlevel"	"SNDLVL_140db"
+		"rndwave"
+		{
+			"wave"	"ambient/alarms/train_horn_distant1.wav"
+		}
+	}
+}
+
+"d1_canals.util_fardrips"
+{
+	"playrandom"
+	{
+		"volume"	"0.2,0.5"
+		"pitch"		"90,120"
+		"time"		"0.5, 5.0"
+		"position"	"random"
+		"soundlevel"	"SNDLVL_140db"
+		"rndwave"
+		{
+			"wave"	"ambient/water/distant_drip1.wav"
+			"wave"	"ambient/water/distant_drip2.wav"
+			"wave"	"ambient/water/distant_drip3.wav"
+			"wave"	"ambient/water/distant_drip4.wav"
+		}
+	}
+}
+
+"d1_canals.03entrytunnel"
+{
+	"dsp"	"1"
+	
+	"playsoundscape"	
+	{
+		"name"		"cityvoice_level5"
+		"volume"	"0.2"
+		
+	}
+
+	"playsoundscape"	
+	{
+		"name"		"city_searching_level2"
+		"volume"	"0.15"
+		
+	}
+
+	"playlooping"
+	{
+		"volume"	"0.25"
+		"pitch"		"100"
+		"soundlevel" "SNDLVL_80dB"
+		"position"	"0"
+		"wave"		"ambient/atmosphere/ambience_base.wav"
+	}
+
+	"playlooping"
+	{
+		"volume"	"0.1"
+		"pitch"		"100"
+		"soundlevel" "SNDLVL_90dB"
+		"position"	"2"
+		"wave"		"ambient/water/leak_1.wav"
+	}
+
+	"playsoundscape"
+	{
+		"name"		"d1_canals.util_fardrips"
+		// "position"	"0"
+		"volume"	"1.0"
+	}
+}
+
+"d1_canals_citystart"
+{
+	"dsp"	"1"
+
+	"playsoundscape"	
+	{
+		"name"		"cityvoice_level0"
+		"volume"	"0.7"
+	}
+
+	"playsoundscape"	
+	{
+		"name"		"city_searching_level1"
+		"volume"	"0.4"
+	}
+
+
+	"playrandom"
+	{
+		"time"		"10,20"
+		"volume"	"0.2,0.4"
+		"pitch"		"95,105"
+
+		"rndwave"
+		{
+			"wave"	"ambient/alarms/train_horn_distant1.wav"
+		}
+	}
+	
+}
+
+"d1_canals.util_toxic_slime"
+{
+	"playlooping"
+	{
+		"volume"	"0.2"
+		"wave"		"ambient/levels/canals/toxic_slime_loop1.wav"
+	}
+
+	"playrandom"
+	{
+		"volume"	"0.15,0.3"
+		"time"		"2.0,10.0"
+		"pitch"		"100"
+		"position"	"random"
+		"soundlevel"	"SNDLVL_140db"
+		"rndwave"
+		{
+			"wave"	"ambient/levels/canals/toxic_slime_gurgle3.wav"
+			"wave"	"ambient/levels/canals/toxic_slime_gurgle5.wav"
+			"wave"	"ambient/levels/canals/toxic_slime_gurgle6.wav"
+			"wave"	"ambient/levels/canals/toxic_slime_gurgle7.wav"
+			"wave"	"ambient/levels/canals/toxic_slime_gurgle8.wav"
+			"wave"	"ambient/levels/canals/toxic_slime_sizzle1.wav"
+			"wave"	"ambient/levels/canals/toxic_slime_sizzle2.wav"
+			"wave"	"ambient/levels/canals/toxic_slime_sizzle3.wav"
+			"wave"	"ambient/levels/canals/toxic_slime_sizzle4.wav"
+		}
+	}
+}
+
+"d1_canals.general_watery_tunnel"
+{
+	"dsp"	"1"
+
+	"playlooping"
+	{
+		"volume"	"0.2"
+		"wave"		"ambient/levels/canals/waterleak_loop1.wav"
+		"pitch"		"100"
+	}
+
+	"playsoundscape"
+	{
+		"name"		"d1_canals.util_fardrips"
+		"position"	"0"
+		"volume"	"1.0"
+	}
+
+	"playsoundscape"
+	{
+		"name"		"d1_canals.util_critters"
+		"position"	"1"
+		"volume"	"1.0"
+	}
+}
+
+"d1_canals.util_fardrips"
+{
+	"playrandom"
+	{
+		"volume"	"0.2,0.5"
+		"pitch"		"90,120"
+		"time"		"0.5, 5.0"
+		"position"	"random"
+		"soundlevel"	"SNDLVL_140db"
+		"rndwave"
+		{
+			"wave"	"ambient/water/distant_drip1.wav"
+			"wave"	"ambient/water/distant_drip2.wav"
+			"wave"	"ambient/water/distant_drip3.wav"
+			"wave"	"ambient/water/distant_drip4.wav"
+		}
+	}
+}
+
+"d1_canals.util_critters"
+{
+	"playrandom"
+	{
+		"time"		"7, 16"
+		"volume"	"0.1,0.2"
+		"pitch"		"95,110"
+		"position"	"random"
+		"soundlevel"	"SNDLVL_140db"
+		"rndwave"
+		{
+			"wave"	"ambient/levels/canals/critter1.wav"
+			"wave"	"ambient/levels/canals/critter2.wav"
+			"wave"	"ambient/levels/canals/critter3.wav"
+			"wave"	"ambient/levels/canals/critter4.wav"
+			"wave"	"ambient/levels/canals/critter5.wav"
+			"wave"	"ambient/levels/canals/critter6.wav"
+			"wave"	"ambient/levels/canals/critter7.wav"
+			"wave"	"ambient/levels/canals/critter8.wav"
+		}
+	}
+}
+
+"underpass.lobby"
+{
+
+	"playlooping"
+	{
+		"volume"	"0.2"
+		"wave"		"ambient/atmosphere/ambience_base.wav"
+		"pitch"		"100"
+	}
+
+	"playlooping"
+	{
+		"volume"		"0.5"
+		"pitch"			"95"
+		
+		"position"		"0"
+		"soundlevel"	"SNDLVL_70db"
+
+		"wave"			"custom/music/two.wav"
+	}
+	
+	"playlooping"
+	{
+		"volume"		"0.75"
+		"pitch"			"95"
+		
+		"position"		"1"
+		"soundlevel"	"SNDLVL_70db"
+
+		"wave"			"ambient/levels/canals/waterleak_loop1.wav"
+	}
+	
+	"playlooping"
+	{
+		"volume"		"0.45"
+		"pitch"			"95"
+		
+		"position"		"2"
+		"soundlevel"	"SNDLVL_60db"
+
+		"wave"			"ambient/materials/computalk1.wav"
+	}
+	
+	"playlooping"
+	{
+		"volume"		"0.65"
+		"pitch"			"95"
+		
+		"position"		"3"
+		"soundlevel"	"SNDLVL_60db"
+
+		"wave"			"ambient/materials/computalk2.wav"
+	}
+}

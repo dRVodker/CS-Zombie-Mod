@@ -1,0 +1,5 @@
+"vertexlitgeneric"
+{
+	"$basetexture" "zpcustommaterials/wood/finewood01"
+	"$bumpmap" "zpcustommaterials/wood/finewood01_normal"
+}

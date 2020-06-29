@@ -1,0 +1,8 @@
+"patch"
+{
+	"include"		"materials/CLUBZOMBO/MISC/METALROOF008A_WET.vmt"
+	"replace"
+	{
+		"$envmap"		"maps/cszm_sunshine_a2/c3734_1282_62"
+	}
+}

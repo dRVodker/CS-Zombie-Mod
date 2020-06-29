@@ -1,0 +1,10 @@
+Patch
+{
+	include "materials/dev/dev_measuregeneric01b.vmt"
+	insert
+	{
+		"$basetexture"		"cs_office/offlightcover_off"
+		"$translucent"		"1"
+		"$surfaceprop"		"glass"
+	}
+}

@@ -1,0 +1,12 @@
+Patch
+{
+	include "materials/models/props_c17/clock01.vmt"
+	insert
+	{
+		"$basetexture"	"models/props_lila_panic/vending_machine_skin2"
+		
+		"$selfillum"		"1"
+		"$selfillummask"	"models/props_lila_panic/vending_machine_mask"
+		"$selfillumtint"	"[2 2 2]"
+	}
+}

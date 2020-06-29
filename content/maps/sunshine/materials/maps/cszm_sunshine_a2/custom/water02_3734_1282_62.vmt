@@ -1,0 +1,11 @@
+"patch"
+{
+	"include"		"materials/CUSTOM/WATER02.vmt"
+	"replace"
+	{
+		"$envmap"		"maps/cszm_sunshine_a2/c3734_1282_62"
+		"Proxies"
+		{
+		}
+	}
+}

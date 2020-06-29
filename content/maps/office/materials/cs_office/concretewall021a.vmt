@@ -1,0 +1,14 @@
+Patch
+{
+	include "materials/dev/dev_measuregeneric01b.vmt"
+	insert
+	{
+		"$basetexture"		"cs_office/concretewall021a"
+		"$surfaceprop"		"concrete"
+		
+        "$detail" "detail\noise_detail_01"
+		"$detailscale" "7.345"
+		"$detailblendfactor" .6
+		"$detailblendmode" 0
+	}
+}

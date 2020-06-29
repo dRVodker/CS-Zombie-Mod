@@ -1,0 +1,6 @@
+"vertexlitgeneric"
+{
+	"$basetexture" "zpcustommaterials/arch/arch_woodwall01"
+      	"$surfaceprop" "wood"
+      	"%keywords" "arch" 
+}

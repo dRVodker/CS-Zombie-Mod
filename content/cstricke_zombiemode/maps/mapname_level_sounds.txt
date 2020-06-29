@@ -1,30 +1,9 @@
 //Замени "mapname" на имя файла карты чтобы
 //заменить/добавить на этой карте Game Sounds
 
-"Adrenaline.CapOff"
-{
-	"channel"		"CHAN_ITEM"
-	"soundlevel"	"SNDLVL_NORM"
-    "volume"		"0.65"
-	"wave"		")cszm_fx/weapons/adrenaline_cap_off.wav"
-}
-
-"Adrenaline.NeedleOpen"
-{
-	"channel"		"CHAN_STATIC"
-	"soundlevel"	"SNDLVL_NORM"
-    "volume"		"0.65"
-	"wave"		")cszm_fx/weapons/adrenaline_needle_open.wav"
-}
-
-"Adrenaline.NeedleIn"
-{
-	"channel"		"CHAN_ITEM"
-	"soundlevel"	"SNDLVL_NORM"
-    "volume"		"0.65"
-	"wave"		")cszm_fx/weapons/adrenaline_needle_in.wav"
-}
-
+///////////////////////////
+/////Sound Replacement/////
+///////////////////////////
 "BaseExplosionEffect.Sound"
 {
 	"channel"		"CHAN_WEAPON"
@@ -322,156 +301,35 @@
 	"wave"			"cszm_fx/misc/talk.wav"
 }
 
-"CS_ZombieWin"
+///////////////////////////
+////////CSZM Sounds////////
+///////////////////////////
+"Adrenaline.CapOff"
 {
 	"channel"		"CHAN_ITEM"
-	"volume"		"VOL_NORM"
-	"pitch"			"PITCH_NORM"
-
 	"soundlevel"	"SNDLVL_NORM"
-	"wave"			"@cszm_fx/misc/zwin.wav"
+    "volume"		"0.65"
+	"wave"		")cszm_fx/weapons/adrenaline_cap_off.wav"
 }
 
-"CS_HumanWin"
+"Adrenaline.NeedleOpen"
+{
+	"channel"		"CHAN_STATIC"
+	"soundlevel"	"SNDLVL_NORM"
+    "volume"		"0.65"
+	"wave"		")cszm_fx/weapons/adrenaline_needle_open.wav"
+}
+
+"Adrenaline.NeedleIn"
 {
 	"channel"		"CHAN_ITEM"
-	"volume"		"VOL_NORM"
-	"pitch"			"75, 125"
-
 	"soundlevel"	"SNDLVL_NORM"
-	"wave"			"@cszm_fx/misc/hwin.wav"
+    "volume"		"0.65"
+	"wave"		")cszm_fx/weapons/adrenaline_needle_in.wav"
 }
 
-"CS_FirstTurn"
-{
-	"channel"		"CHAN_USER_BASE"
-	"volume"		"VOL_NORM"
-	"pitch"			"90, 105"
 
-	"soundlevel"	"SNDLVL_NORM"
-
-	"wave"		"@cszm_fx/misc/suspense.wav"
-
-}
-
-"CS_FVox10"
-{
-	"channel"		"CHAN_USER_BASE"
-	"volume"		"0.725"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_NORM"
-
-	"wave"		"@cszm_fx/fvox/fv10.wav"
-}
-
-"CS_FVox9"
-{
-	"channel"		"CHAN_USER_BASE"
-	"volume"		"0.725"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_NORM"
-
-	"wave"		"@cszm_fx/fvox/fv9.wav"
-}
-
-"CS_FVox8"
-{
-	"channel"		"CHAN_USER_BASE"
-	"volume"		"0.725"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_NORM"
-
-	"wave"		"@cszm_fx/fvox/fv8.wav"
-}
-
-"CS_FVox7"
-{
-	"channel"		"CHAN_USER_BASE"
-	"volume"		"0.725"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_NORM"
-
-	"wave"		"@cszm_fx/fvox/fv7.wav"
-}
-
-"CS_FVox6"
-{
-	"channel"		"CHAN_USER_BASE"
-	"volume"		"0.725"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_NORM"
-
-	"wave"		"@cszm_fx/fvox/fv6.wav"
-}
-
-"CS_FVox5"
-{
-	"channel"		"CHAN_USER_BASE"
-	"volume"		"0.725"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_NORM"
-
-	"wave"		"@cszm_fx/fvox/fv5.wav"
-}
-
-"CS_FVox4"
-{
-	"channel"		"CHAN_USER_BASE"
-	"volume"		"0.725"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_NORM"
-
-	"wave"		"@cszm_fx/fvox/fv4.wav"
-}
-
-"CS_FVox3"
-{
-	"channel"		"CHAN_USER_BASE"
-	"volume"		"0.725"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_NORM"
-
-	"wave"		"@cszm_fx/fvox/fv3.wav"
-}
-
-"CS_FVox2"
-{
-	"channel"		"CHAN_USER_BASE"
-	"volume"		"0.725"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_NORM"
-
-	"wave"		"@cszm_fx/fvox/fv2.wav"
-}
-
-"CS_FVox1"
-{
-	"channel"		"CHAN_USER_BASE"
-	"volume"		"0.725"
-	"pitch"			"PITCH_NORM"
-	"soundlevel"	"SNDLVL_NORM"
-
-	"wave"		"@cszm_fx/fvox/fv1.wav"
-}
-
-"CS_MatchBeginRadio"
-{
-	"channel"		"CHAN_ITEM"
-	"volume"		"VOL_NORM"
-	"pitch"			"PITCH_NORM"
-
-	"soundlevel"	"SNDLVL_NORM"
-	
-	"rndwave"
-	{
-		"wave"		"@cszm_fx/radio/gogogo.wav"
-		"wave"		"@cszm_fx/radio/letsgo.wav"
-		"wave"		"@cszm_fx/radio/locknload.wav"
-		"wave"		"@cszm_fx/radio/moveout.wav"
-	}
-}
-
-"CSPlayer_Z.Pain1"
+"CSPlayer.Pain1"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"0.8"
@@ -490,7 +348,7 @@
 	}
 }
 
-"CSPlayer_Z.Die1"
+"CSPlayer.Die1"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"1"
@@ -533,7 +391,7 @@
 	}
 }
 
-"CSPlayer_Z.Pain2"
+"CSPlayer.Pain2"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"0.9"
@@ -551,7 +409,7 @@
 	}
 }
 
-"CSPlayer_Z.Die2"
+"CSPlayer.Die2"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"1"
@@ -590,7 +448,7 @@
 	}
 }
 
-"CSPlayer_Z.Pain3"
+"CSPlayer.Pain3"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"0.85"
@@ -608,7 +466,7 @@
 	}
 }
 
-"CSPlayer_Z.Die3"
+"CSPlayer.Die3"
 {
 	"channel"		"CHAN_VOICE"
 	"volume"		"1"

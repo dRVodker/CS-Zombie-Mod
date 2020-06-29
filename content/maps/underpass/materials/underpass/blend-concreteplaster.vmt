@@ -1,0 +1,21 @@
+Patch
+{
+	include "materials/nature/blendgrassdirt001a.vmt"
+	insert
+	{
+	"$basetexture" "plaster/plasterwall026a"
+	"$basetexture2" "concrete/concreteceiling004a"
+	"%tooltexture" "plaster/plasterwall026a"
+	
+	"$surfaceprop" "plaster"
+	"$surfaceprop" "concrete"
+	
+	
+	"$detail" "detail\plaster_detail_01"
+	"$detailscale" "6.783"
+	"$detailblendfactor" .8
+	"$detailblendmode" "0"
+	
+	"%keywords" "vodker"
+	}
+}

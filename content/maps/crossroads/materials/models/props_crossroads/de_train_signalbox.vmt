@@ -1,0 +1,6 @@
+VertexLitGeneric
+{
+	"$basetexture"	"models/props_crossroads/de_train_signalbox"
+	"$bumpmap"		"models/props_crossroads/de_train_signalbox_normal"
+	"$surfaceprop"	"metal"
+}

@@ -1,0 +1,42 @@
+soundscaples_manifest
+{
+	"file"		"scripts/soundscapes.txt"
+
+	// List additional soundscape files here
+
+	"file"		"scripts/soundscapes_canals.txt"
+	"file"		"scripts/soundscapes_klab.txt"
+	"file"		"scripts/soundscapes_elab.txt"
+	"file"		"scripts/soundscapes_streetwar.txt"
+	"file"		"scripts/soundscapes_citadel.txt"
+	"file"		"scripts/soundscapes_town.txt"
+	"file"		"scripts/soundscapes_coast.txt"
+	"file"		"scripts/soundscapes_prison.txt"
+	"file"		"scripts/soundscapes_trainyard.txt"
+	"file"		"scripts/soundscapes_labs.txt"
+
+	"file"		"scripts/soundscapes_blackout.txt"
+	"file"		"scripts/soundscapes_clubzombo.txt"
+	"file"		"scripts/soundscapes_deadblock.txt"
+	"file"		"scripts/soundscapes_deadend.txt"
+	"file"		"scripts/soundscapes_haunted.txt"
+	"file"		"scripts/soundscapes_policestation.txt"
+	"file"		"scripts/soundscapes_strike.txt"
+	"file"		"scripts/soundscapes_zpa_badbayou.txt"
+	"file"		"scripts/soundscapes_zpnightmare.txt"
+	"file"		"scripts/soundscapes_zpo_aquatica.txt"
+	"file"		"scripts/soundscapes_zpo_corpsington.txt"
+	"file"		"scripts/soundscapes_zpo_frozenheart.txt"
+	"file"		"scripts/soundscapes_zpo_harvest.txt"
+	"file"		"scripts/soundscapes_zpo_murksville.txt"
+	"file"		"scripts/soundscapes_zpo_shreddingfield.txt"
+	"file"		"scripts/soundscapes_zpo_zomboeing.txt"
+	"file"		"scripts/soundscapes_zpo_wellington.txt"
+	"file"		"scripts/soundscapes_zps_deathtrain.txt"
+	"file"		"scripts/soundscapes_zps_ruralpanic.txt"
+	"file"		"scripts/soundscapes_zps_silence.txt"
+	"file"		"scripts/soundscapes_zps_thrillvile.txt"
+	"file"		"scripts/soundscapes_zps_asylum.txt"
+	
+	"file"		"scripts/soundscapes_cszm_lila_panic_a4.txt"
+}

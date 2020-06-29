@@ -1,0 +1,21 @@
+CSZM_Lila_Panic created by dR.Vodker
+- Special for ZB ZP!S Server / RUS / EU -
+
+------------
+
+Credits:
+Remake based on zm_lila_panic created by CaRbOn for Counter-Strike
+
+Some textures, models and sounds taken from the games:
+-Counter-Strike Global Offensive
+-Counter-Strike Source
+-Black Mesa Source
+-Left 4 dead
+-Painkiller
+-Half-life
+
+------------
+
+     -=HAVE FUN=-
+
+------------

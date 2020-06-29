@@ -1,0 +1,6 @@
+LightmappedGeneric
+{
+	"$basetexture"				"cs_office/offwllb_brick"
+	"$surfaceprop"				"concrete"
+	"$bumpmap"					"cs_office/offwllb_brick_normal"
+}

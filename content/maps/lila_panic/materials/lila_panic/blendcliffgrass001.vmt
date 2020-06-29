@@ -1,0 +1,11 @@
+Patch
+{
+	include "materials/nature/blendgrassdirt001a.vmt"
+	insert
+	{
+	"$basetexture" "nature/cliffface002a"
+	"$basetexture2" "nature/dirtfloor002a"
+		"%tooltexture" "nature/cliffface002a"
+		"$surfaceprop" "dirt"
+	}
+}

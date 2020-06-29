@@ -1,0 +1,15 @@
+"Sprite"
+{
+	
+	"$spriteorientation" "vp_parallel"
+	"$spriteorigin" "[ 0.50 0.50 ]"
+	"$basetexture" "zph_sunshine/lightpurple"
+	
+	"$nofog" "1"
+	"$nodecal" "1"
+	
+	"$alphatest" "1"
+	"$alphatestReference" "0"
+	
+	"%keywords" "vodker"
+}

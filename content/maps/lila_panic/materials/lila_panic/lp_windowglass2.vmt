@@ -1,0 +1,17 @@
+Patch
+{
+	include "materials/dev/dev_measuregeneric01b.vmt"
+	insert
+	{
+//		"$basetexture"	"aquatica/aqglasswindow1"
+		"$surfaceprop"	"glass"
+		"$basetexture"	"glass/glasswindowbreak070a"
+		"$surfaceprop"	"glass"
+		"$translucent"	"1"
+		"$multipass"	"1"
+		"$envmap"		"lila_panic/envmap"
+		"$envmapmask"	"glass/glasswindowbreak070a_mask"
+		"$envmaptint"	"[0.3 0.15 0.05]"
+		"$fresnelreflection"		"0.5"
+	}
+}

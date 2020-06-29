@@ -1,0 +1,150 @@
+"CSZM.SnarkPit_Outside"
+{
+	"dsp"			"1"
+	"dsp_volume"	"1.25"
+	
+	"playlooping"
+	{
+		"volume"	"0.85"
+		"pitch"		"90"
+
+		"wave"		"ambient/atmosphere/town_ambience.wav"
+	}
+
+	"playlooping"
+	{
+		"volume"	"0.35"
+		"pitch"		"95"
+
+		"wave"		"ambient/wind/outside_wind-02.wav"
+	}
+}
+
+"CSZM.SnarkPit_Inside"
+{
+	"dsp"			"1"
+	"dsp_volume"	"0.9"
+
+	"playlooping"
+	{
+		"volume"	"0.35"
+		"pitch"		"90"
+
+		"wave"		"ambient/computer/computer-01.wav"
+	}
+
+	"playlooping"
+	{
+		"volume"	"0.1"
+		"pitch"		"85"
+
+		"wave"		"ambient/atmosphere/indoor1.wav"
+	}
+
+	"playlooping"
+	{
+		"volume"	"0.25"
+		"pitch"		"95"
+
+		"wave"		"ambient/atmosphere/tunnel1.wav"
+	}
+}
+
+"CSZM.SnarkPit_Balcony"
+{
+	"dsp"			"1"
+	"dsp_volume"	"1"
+
+	"playsoundscape"
+	{
+		"name"		"CSZM.SnarkPit_Inside"
+		"volume"	"1"
+	}
+
+	"playsoundscape"
+	{
+		"name"		"CSZM.SnarkPit_Outside"
+		"volume"	"0.65"
+	}
+}
+
+"CSZM.SnarkPit_Basement"
+{
+	"dsp"			"1"
+	"dsp_volume"	"1.75"
+
+	"playlooping"
+	{
+		"volume"	"0.125"
+		"pitch"		"90"
+
+		"wave"		"ambient/atmosphere/ambience_base.wav"
+	}
+
+	"playlooping"
+	{
+		"volume"	"0.125"
+		"pitch"		"85"
+
+		"wave"		"ambient/atmosphere/cargo_hold1.wav"
+	}
+
+	"playlooping"
+	{
+		"volume"	"0.25"
+		"pitch"		"45"
+
+		"wave"		"ambient/atmosphere/cave_outdoor1.wav"
+	}
+
+	"playlooping"
+	{
+		"volume"	"0.25"
+		"pitch"		"100"
+
+		"wave"		"ambient/atmosphere/indoor2.wav"
+	}
+}
+
+"CSZM.SnarkPit_Toxic"
+{
+	"dsp"			"1"
+	"dsp_volume"	"1.25"
+
+	"playsoundscape"
+	{
+		"name"		"CSZM.SnarkPit_Inside"
+		"volume"	"0.65"
+	}
+
+	"playlooping"
+	{
+		"volume"	"0.475"
+		"pitch"		"95"
+
+		"wave"		"ambient/levels/canals/toxic_slime_loop1.wav"
+	}
+
+	"playrandom"
+	{
+		"volume"		"0.25,0.65"
+		"time"			"10,18"
+		"pitch"			"90,105"
+
+		"rndwave"
+		{
+			"wave"	"ambient/levels/canals/toxic_slime_sizzle1.wav"
+			"wave"	"ambient/levels/canals/toxic_slime_sizzle2.wav"
+			"wave"	"ambient/levels/canals/toxic_slime_sizzle3.wav"
+			"wave"	"ambient/levels/canals/toxic_slime_sizzle4.wav"
+
+			"wave"	"ambient/levels/canals/toxic_slime_gurgle2.wav"
+			"wave"	"ambient/levels/canals/toxic_slime_gurgle3.wav"
+			"wave"	"ambient/levels/canals/toxic_slime_gurgle4.wav"
+			"wave"	"ambient/levels/canals/toxic_slime_gurgle5.wav"
+			"wave"	"ambient/levels/canals/toxic_slime_gurgle6.wav"
+			"wave"	"ambient/levels/canals/toxic_slime_gurgle7.wav"
+			"wave"	"ambient/levels/canals/toxic_slime_gurgle8.wav"
+		}
+	}
+}

@@ -1,0 +1,8 @@
+"patch"
+{
+	"include"		"materials/maps/cszm_sunshine_a2/custom/water02_3734_1282_62.vmt"
+	"insert"
+	{
+		"$waterdepth"		"3"
+	}
+}

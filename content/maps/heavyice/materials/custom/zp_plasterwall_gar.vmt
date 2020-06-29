@@ -1,0 +1,8 @@
+"LightMappedGeneric"
+{
+	"$basetexture" "custom/zp_plasterwall_gar"
+        "$bumpmap" "ZPcustomMaterials/Walls/zp_plasterwall004ab_normal_gar"
+	"$surfaceprop" "plaster"
+	"$Selfillum" "1"
+        "%keywords" "custom"
+}

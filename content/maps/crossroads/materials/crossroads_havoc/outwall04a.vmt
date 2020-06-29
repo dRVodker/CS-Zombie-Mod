@@ -1,0 +1,6 @@
+"lightmappedGeneric"
+{
+	"$baseTexture"	"crossroads_havoc/outwall04a"
+	"$surfaceprop"	"concrete"
+	"$bumpmap"		"crossroads_havoc/outwall04a_normal"
+}

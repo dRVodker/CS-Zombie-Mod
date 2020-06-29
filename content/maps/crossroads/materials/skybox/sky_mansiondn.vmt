@@ -1,0 +1,8 @@
+"unlitGeneric"
+{
+	"$nofog" "1"
+	"$ignorez" "1"
+	"$basetexture" "skybox/sky_deadenddn"
+
+	"$color" "[0.225 0.225 0.225]"
+}

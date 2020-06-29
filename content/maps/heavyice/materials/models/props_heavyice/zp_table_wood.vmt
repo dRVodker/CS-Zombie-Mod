@@ -1,0 +1,6 @@
+"vertexlitgeneric"
+{
+	"$basetexture" "zpcustommaterials\wood\zp_table_wood"
+	"$surfaceprop" "wood"
+	"$bumpmap" "zpcustommaterials\wood\zp_table_wood_bump"
+}

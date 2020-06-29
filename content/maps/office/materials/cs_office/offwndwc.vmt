@@ -1,0 +1,9 @@
+LightmappedGeneric
+{
+	"$basetexture"	"cs_office/offwndwc"
+	"$translucent"	"1"
+	"$envmap"		"env_cubemap"
+	"$envmapmask"	"cs_office/offwndwc_ref"
+	"$surfaceprop"	"glass"
+
+}

@@ -1,0 +1,10 @@
+Patch
+{
+	include "materials/dev/dev_measuregeneric01b.vmt"
+	insert
+	{	
+		"$basetexture" "lila_panic/metalwall_corrugated01_blu"
+		"$bumpmap" "lila_panic/metalwall_corrugated01_bump"
+		"$surfaceprop" "Metal"
+	}
+}

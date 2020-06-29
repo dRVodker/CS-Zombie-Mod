@@ -1,0 +1,8 @@
+"patch"
+{
+	"include"		"materials/ZPCUSTOMMATERIALS/WALLS/ZP_BRICKWALL010B_GAR.vmt"
+	"replace"
+	{
+		"$envmap"		"maps/cszm_sunshine_a2/c3734_1282_62"
+	}
+}

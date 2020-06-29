@@ -1,0 +1,10 @@
+Patch
+{
+	include "materials/dev/dev_measuregeneric01b.vmt"
+	insert
+	{
+		"$basetexture"		"cs_office/offwllc_brick"
+		"$surfaceprop"		"brick"
+		"$bumpmap"			"cs_office/offwllc_brick_normal"
+	}
+}

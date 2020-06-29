@@ -1,0 +1,6 @@
+LightmappedGeneric
+{
+	"$basetexture"	"cs_office/gen03"
+	"$selfillum" "1"
+	"$envmapmask"	"cs_office/gen03_ref"
+}

@@ -1,0 +1,10 @@
+Patch
+{
+	include "materials/dev/dev_measuregeneric01b.vmt"
+	insert
+	{
+		"$basetexture"		"cs_office/blinds_illuminated"
+		"$surfaceprop"		"plastic"
+		"$selfillum"		"1"
+	}
+}

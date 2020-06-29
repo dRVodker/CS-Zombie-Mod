@@ -1,0 +1,15 @@
+Patch
+{
+	include "materials/dev/dev_measuregeneric01b.vmt"
+	insert
+	{	
+		"$basetexture"				"tile/tilefloor001b"
+		"$surfaceprop"				"tile"
+		"$bumpmap"					"tile/tilefloor001b_normal"
+		
+		"$detail"				"detail/noise_detail_01"
+		"$detailscale"			"5.25"
+		"$detailblendfactor"	"0.375"
+		"$detailblendmode"		"0"
+	}
+}

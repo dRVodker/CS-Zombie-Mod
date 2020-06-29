@@ -1,0 +1,9 @@
+"LightmappedGeneric"
+{
+	"$basetexture" "custom/metalhatch001"
+	"$surfaceprop" "metal"
+	"%keywords" "c17custom"
+	
+	"$AlphaTest" "1"
+	"$AlphaTestReference" "0.75"
+}

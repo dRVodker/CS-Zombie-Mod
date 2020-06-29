@@ -1,0 +1,8 @@
+"vertexlitgeneric"
+{
+	"$baseTexture" "models/props_heavyice/gramophone"
+	"$envmap" "env_cubemap"
+	"$envmapmask" "models/props_heavyice/gramophonespecularmask"
+}
+
+

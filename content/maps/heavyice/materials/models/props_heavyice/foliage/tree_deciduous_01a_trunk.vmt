@@ -1,0 +1,8 @@
+"VertexLitGeneric"
+{
+	// Original shader: BaseTimesLightmap
+	"$basetexture" "models/props_heavyice/foliage/tree_deciduous_01a_trunk"
+	"$bumpmap" "snow/snowfloor001a_n"
+	"$surfaceprop" "wood"
+	"$nodecal" 1
+}

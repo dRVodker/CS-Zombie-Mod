@@ -1,0 +1,11 @@
+"LightmappedGeneric"
+{
+	"$basetexture" "Tools/toolsplayerclip"
+	"srgb?$basetexture" "Tools/toolsplayerclip"
+	"$translucent" "1"
+	"$surfaceprop" "snow"
+	"%compilenodraw" "1"
+	"%compilepassbullets" "1"
+	"%playerclip" "1"
+	"%keywords" "heavy_ice"
+}

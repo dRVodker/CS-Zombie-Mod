@@ -1,0 +1,382 @@
+"LPanic.Inside"
+{
+	
+	"dsp" "1"
+	"dsp_volume"	"1"
+
+	"playlooping"
+	{
+		"volume"		"0.45"
+		"pitch"		"100"
+		"wave"		"ambient/hums/hum-03.wav"
+	}
+	
+	"playrandom"
+	{
+
+		"time"		"10,15"
+		"volume"	"0.4"
+		"pitch"		"95,105"
+		"position" "random"
+
+		"rndwave"
+		{
+			"wav"	"ambient/voices/citizen_beaten1.wav"
+			"wav"	"ambient/voices/citizen_beaten2.wav"
+			"wav"	"ambient/voices/citizen_beaten3.wav"
+			"wav"	"ambient/voices/citizen_beaten4.wav"
+			"wav"	"ambient/voices/citizen_beaten5.wav"
+			"wav"	"ambient/voices/citizen_punches2.wav"
+			"wav"	"ambient/voices/cough4.wav"
+			"wav"	"ambient/voices/f_scream1.wav"
+			"wav"	"ambient/voices/m_scream1.wav"
+			"wav"	"physics/body/body_medium_break4.wav"
+			"wav"	"physics/cardboard/cardboard_box_break3.wav"
+			"wav"	"physics/flesh/flesh_bloody_break.wav"
+			"wav"	"physics/glass/glass_impact_bullet1.wav"
+			"wav"	"physics/glass/glass_largesheet_break3.wav"
+			"wav"	"physics/glass/glass_pottery_break4.wav"
+			"wav"	"physics/wood/wood_box_break1.wav"
+			"wav"	"physics/wood/wood_box_break2.wav"
+			"wav"	"physics/wood/wood_crate_break3.wav"
+			"wav"	"physics/wood/wood_furniture_break2.wav"
+			"wav"	"physics/wood/wood_furniture_break1.wav"
+			"wav"	"ambient/levels/labs/teleport_weird_voices1.wav"
+			"wav"	"ambient/levels/streetwar/city_scream3.wav"
+			"wav"	"ambient/levels/canals/windchine1.wav"
+			"wav"	"ambient/machines/keyboard_fast1_1second.wav"
+			"wav"	"ambient/machines/keyboard_fast3_1second.wav"
+			"wav"	"player/pl_shell1.wav"
+			"wav"	"player/pl_shell2.wav"
+			"wav"	"ambient/materials/shuffle1.wav"
+			"wav"	"ambient/materials/squeekyfloor1.wav"
+			"wav"	"ambient/materials/squeekyfloor2.wav"
+			"wav"	"ambient/materials/platedrop1.wav"
+			"wav"	"ambient/materials/platedrop2.wav"
+			"wav"	"ambient/materials/platedrop3.wav"
+			"wav"	"ambient/materials/footsteps_wood1.wav"
+			"wav"	"ambient/materials/footsteps_wood2.wav"
+			"wav"	"ambient/materials/footsteps_stairs2.wav"
+			"wav"	"ambient/materials/footsteps_stairs1.wav"
+			"wav"	"ambient/materials/footsteps_glass1.wav"
+			"wav"	"ambient/materials/footsteps_glass2.wav"
+			"wav"	"ambient/materials/flush1.wav"
+			"wav"	"ambient/materials/cupdrop.wav"
+			"wav"	"ambient/materials/dinnerplates5.wav"
+			"wav"	"ambient/materials/dinnerplates4.wav"
+			"wav"	"ambient/materials/dinnerplates1.wav"
+			"wav"	"ambient/materials/creaking.wav"
+			"wav"	"ambient/materials/creak5.wav"
+			"wav"	"ambient/materials/bump1.wav"
+			"wav"	"ambient/machines/thumper_hit.wav"
+			"wav"	"ambient/machines/sputter1.wav"
+			"wav"	"ambient/machines/slicer2.wav"
+			"wav"	"items/keys/keys_pickup-04.wav"
+			"wav"	"items/keys/keys_pickup-02.wav"
+			"wav"	"items/healthpack/smhealthpack-01.wav"
+			"wav"	"impacts/fallhard-03.wav"
+			"wav"	"foley/footsteps/leaf-01.wav"
+			"wav"	"doors/door1_stop.wav"
+			"wav"	"doors/door_locked2.wav"
+			"wav"	"custom/knock_wood_door.wav"
+			"wav"	"custom/icecooler_open.wav"
+			"wav"	"common/bugreporter_succeeded.wav"
+			"wav"	"ambient/creatures/rats1.wav"
+			"wav"	"ambient/creatures/rats2.wav"
+			"wav"	"ambient/creatures/rats3.wav"
+			"wav"	"ambient/creatures/rats4.wav"
+		}
+	
+	}
+	
+	"playrandom"
+	{
+		"volume"		"0.075,0.1"
+		"time"			"35.0, 55.0"
+		"pitch"			"50,100"
+		"soundlevel"	"SNDLVL_140dB"
+		"position"		"random"
+		"rndwave"
+		{
+			"wave" "ambient/levels/citadel/citadel_flyer1.wav"
+			"wave" "ambient/levels/citadel/strange_talk9.wav"
+			"wave" "ambient/levels/labs/teleport_winddown1.wav"
+		}
+	}
+	
+	"playrandom"
+	{
+
+		"time"		"40,50"
+		"volume"	"0.15"
+		"pitch"		"95,105"
+
+		"rndwave"
+		{
+			"wav"	"lpanic_ambient/airplane1.wav"
+			"wav"	"lpanic_ambient/airplane2.wav"
+			"wav"	"lpanic_ambient/airplane3.wav"
+		}
+	
+	}
+	
+	"playrandom"
+	{
+		"time"		"12,16"
+		"volume"	"0.1"
+		"pitch"		"95.105"
+		"position" "random"
+
+		"rndwave"
+		{
+			"wave"	"ambient/fx/metalscrape02.mp3"
+			"wave"	"ambient/fx/metalscrape03.mp3"
+			"wave"	"ambient/fx/metalscrape04.mp3"
+			"wave"	"ambient/fx/metalscrape05.mp3"
+			"wave"	"ambient/fx/metalscrape06.mp3"
+			"wave"	"ambient/fx/metalscrape07.mp3"
+			"wave"	"ambient/fx/metalscrape01.mp3"
+		}
+	}
+	
+}
+
+"LPanic.OutsideShare"
+{
+	
+	"dsp" "1"
+	"dsp_volume"	"1"
+
+	"playrandom"
+	{
+
+		"time"		"15,25"
+		"volume"	"0.125"
+		"pitch"		"95,105"
+
+		"rndwave"
+		{
+			"wav"	"lpanic_ambient/komenda_01.wav"
+			"wav"	"lpanic_ambient/komenda_02.wav"
+			"wav"	"lpanic_ambient/komenda_03.wav"
+			"wav"	"lpanic_ambient/komenda_04.wav"
+			"wav"	"lpanic_ambient/komenda_05.wav"
+			"wav"	"lpanic_ambient/komenda_06.wav"
+		}
+	
+	}
+	
+	"playrandom"
+	{
+
+		"time"		"35,40"
+		"volume"	"0.95"
+		"pitch"		"95,105"
+
+		"rndwave"
+		{
+			"wav"	"lpanic_ambient/airplane1.wav"
+			"wav"	"lpanic_ambient/airplane2.wav"
+			"wav"	"lpanic_ambient/airplane3.wav"
+		}
+	
+	}
+	
+	"playrandom"
+	{
+		"time"		"10,13"
+		"volume"	"0.1"
+		"pitch"		"95.105"
+		"position" "random"
+
+		"rndwave"
+		{
+			"wave"	"ambient/fx/metalscrape02.mp3"
+			"wave"	"ambient/fx/metalscrape03.mp3"
+			"wave"	"ambient/fx/metalscrape04.mp3"
+			"wave"	"ambient/fx/metalscrape05.mp3"
+			"wave"	"ambient/fx/metalscrape06.mp3"
+			"wave"	"ambient/fx/metalscrape07.mp3"
+			"wave"	"ambient/fx/metalscrape01.mp3"
+		}
+	}
+	
+	
+	"playrandom"
+	{
+		"volume"	"0.1,0.05"
+		"time" 		"2.5,5.7"
+		"pitch"		"80,110"
+		"position" "random"
+	
+	"rndwave"
+	{
+		"wave"	"ambient/levels/streetwar/city_battle1.wav"
+		"wave"	"ambient/levels/streetwar/city_battle2.wav"
+		"wave"	"ambient/levels/streetwar/city_battle3.wav"
+		"wave"	"ambient/levels/streetwar/city_battle4.wav"
+		"wave"	"ambient/levels/streetwar/city_battle5.wav"
+		"wave"	"ambient/levels/streetwar/city_battle6.wav"
+		"wave"	"ambient/levels/streetwar/city_battle7.wav"
+		"wave"	"ambient/levels/streetwar/city_battle8.wav"
+		"wave"	"ambient/levels/streetwar/city_battle9.wav"
+		"wave"	"ambient/levels/streetwar/city_battle10.wav"
+		"wave"	"ambient/levels/streetwar/city_battle11.wav"
+		"wave"	"ambient/levels/streetwar/city_battle11.wav"
+		"wave"	"ambient/levels/streetwar/city_battle12.wav"
+		"wave"	"ambient/levels/streetwar/city_battle13.wav"
+		"wave"	"ambient/levels/streetwar/city_battle14.wav"
+		"wave"	"ambient/levels/streetwar/city_battle15.wav"
+		"wave"	"ambient/levels/streetwar/city_battle16.wav"
+		"wave"	"ambient/levels/streetwar/city_battle17.wav"
+		"wave"	"ambient/levels/streetwar/city_battle18.wav"
+		"wave"	"ambient/levels/streetwar/city_battle19.wav"
+		}
+	}
+}
+
+"LPanic.Outside"
+{
+	
+	"dsp" "1"
+	"dsp_volume"	"1"
+
+	"playlooping"
+	{
+		"volume"		"1"
+		"pitch"		"100"
+		"wave"		"ambient/wind/wind_light-01.wav"
+	}
+	
+	"playlooping"
+	{
+		"volume"		"0.25"
+		"pitch"		"100"
+		"wave"		"ambient/wind/wasteland_wind.wav"
+	}
+	
+	"playlooping"
+	{
+		"volume"		"0.1"
+		"pitch"		"100"
+		"wave"		"ambient/explosions/battle_loop2.wav"
+	}
+	
+	"playlooping"
+	{
+		"volume"		"0.1"
+		"pitch"		"100"
+		"wave"		"ambient/explosions/battle_loop1.wav"
+	}
+	
+	"playlooping"
+	{
+		"volume"		"0.275"
+		"pitch"		"100"
+		"wave"		"lpanic_ambient/distantbattle.wav"
+	}
+	
+	"playlooping"
+	{
+		"volume"		"0.45"
+		"pitch"		"100"
+		"wave"		"ambient/wind/outside_wind-01.wav"
+	}
+	
+	"playsoundscape"
+	{ 
+		"name"	"LPanic.OutsideShare"
+	} 
+	
+}
+
+"LPanic.RoofTop"
+{
+	
+	"dsp" "1"
+	"dsp_volume"	"1"
+
+	"playlooping"
+	{
+		"volume"		"0.5"
+		"pitch"		"100"
+		"wave"		"ambient/wind/wind_light-01.wav"
+	}
+	
+	"playlooping"
+	{
+		"volume"		"1"
+		"pitch"		"100"
+		"wave"		"ambient/wind/wasteland_wind.wav"
+	}
+	
+	"playlooping"
+	{
+		"volume"		"0.25"
+		"pitch"		"100"
+		"wave"		"ambient/explosions/battle_loop2.wav"
+	}
+	
+	"playlooping"
+	{
+		"volume"		"0.25"
+		"pitch"		"100"
+		"wave"		"ambient/explosions/battle_loop1.wav"
+	}
+	
+	"playlooping"
+	{
+		"volume"		"0.375"
+		"pitch"		"100"
+		"wave"		"lpanic_ambient/distantbattle.wav"
+	}
+	
+	"playlooping"
+	{
+		"volume"		"0.40"
+		"pitch"		"100"
+		"wave"		"ambient/wind/outside_wind-01.wav"
+	}
+	
+	"playsoundscape"
+	{ 
+		"name"	"LPanic.OutsideShare"
+	} 
+	
+}
+
+"LPanic.Container"
+{
+	
+	"dsp" "1"
+	"dsp_volume"	"1"
+	
+	"playsoundscape"
+	{ 
+		"name"	"LPanic.Outside"
+//		"volume"	"0.5"
+		"positionoverride"	"0"
+		"ambientpositionoverride"	"1"
+	} 
+
+	"playlooping"
+	{
+		"volume"		"0.35"
+		"pitch"		"50"
+		"wave"		"ambient/hums/hum-03.wav"
+	}
+	
+}
+"LPanic.lobby"
+{
+	
+	"dsp" "0"
+	"dsp_volume"	"1"
+
+	"playlooping"
+	{
+		"volume"		"0.25"
+		"pitch"		"100"
+		"wave"		"lpanic_ambient/deepcover2_loop.wav"
+	}
+}

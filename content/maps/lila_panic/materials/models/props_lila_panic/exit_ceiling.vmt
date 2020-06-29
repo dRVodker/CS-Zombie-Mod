@@ -1,0 +1,9 @@
+Patch
+{
+	include "materials/models/props_c17/clock01.vmt"
+	insert
+	{
+		"$basetexture"	"models/props_lila_panic/exit_ceiling"
+		"$selfillum" "1"
+	}
+}

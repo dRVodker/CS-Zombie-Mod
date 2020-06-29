@@ -1,0 +1,7 @@
+"UnlitGeneric"
+{
+	"$envmap" "custom/env_stars"
+	"$surfaceprop" "glass"
+	"%compileNoLight" "1"
+	"$nofog" 1
+}

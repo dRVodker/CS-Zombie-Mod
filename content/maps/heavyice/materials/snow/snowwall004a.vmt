@@ -1,0 +1,12 @@
+"LightmappedGeneric"
+{
+	// Original shader: BaseTimesLightmap
+	"$basetexture" "nature/snowwall004a"
+	"$bumpmap" "snow/snowwall004a_n"
+	"$surfaceprop" "snow"
+	"$envmap" "env_cubemap"
+	"$normalmapalphaenvmapmask" 1
+	"$envmapcontrast" 1
+	"$envmapsaturation" .7
+	"$envmaptint" "[ .72 .72 .72 ]"
+}

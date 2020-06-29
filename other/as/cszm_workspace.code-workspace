@@ -4,5 +4,7 @@
 			"path": "..\\..\\zps\\data\\scripts"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"git.ignoreLimitWarning": true
+	}
 }

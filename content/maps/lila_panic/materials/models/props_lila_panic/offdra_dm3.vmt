@@ -1,0 +1,7 @@
+Patch
+{
+	include "materials/models/props_lila_panic/offdra.vmt"
+	insert
+	{
+	}
+}

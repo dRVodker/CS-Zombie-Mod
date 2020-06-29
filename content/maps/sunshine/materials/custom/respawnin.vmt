@@ -1,0 +1,9 @@
+"UnlitGeneric"
+{
+	"$basetexture" "custom/respawnin"
+	"$surfaceprop" "glass"
+	"%keywords" "c17custom"
+	
+	"$AlphaTest" "1"
+	"$AlphaTestReference" "0.75"
+}

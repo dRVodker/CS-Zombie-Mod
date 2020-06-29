@@ -1,0 +1,5 @@
+vertexlitgeneric
+{
+	"$basetexture"	"models/props_heavyice/tv_screen"
+	"$nodecal"		"1"
+}

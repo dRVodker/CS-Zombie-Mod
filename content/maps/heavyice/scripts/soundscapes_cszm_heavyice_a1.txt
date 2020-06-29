@@ -1,0 +1,472 @@
+"hi_outside"
+{
+
+	"dsp" "1"
+	"dsp_volume"	"2"
+	
+	"playlooping"
+	{
+		"volume"		"0.95"
+		"pitch"			"100"
+		"wave"			"ambient/wind/wind_cold-01.wav"
+	}
+	
+	"playlooping"
+	{
+		"volume"		"0.95"
+		"pitch"			"100"
+		"wave"			"heavyice_ambient/cold_wind.wav"
+	}
+	
+	"playlooping"
+	{
+		"volume"		"0.075"
+		"pitch"			"105"
+		"wave"			"ambient/levels/canals/windmill_wind_loop1.wav"
+	}
+
+	
+	"playlooping"
+	{
+		"volume"		"0.45"
+		"pitch"			"110"
+		"wave"			"heavyice_ambient/distantbattle.wav"
+	}
+	
+	"playrandom"
+	{
+		"time"			"8,18"
+		"volume"		"0.62,0.95"
+		"pitch"			"95.105"
+
+		"rndwave"
+		{
+			"wave"		"heavyice_ambient/airplane.wav"
+			"wave"		"heavyice_ambient/airplane2.wav"
+			"wave"		"heavyice_ambient/airplane3.wav"
+		}
+	}
+	
+	"playrandom"
+	{
+		"time"			"11,25"
+		"volume"		"0.185,0.115"
+		"pitch"			"90,105"
+		
+
+		"rndwave"
+		{
+			"wave"		"heavyice_ambient/komenda_01.wav"
+			"wave"		"heavyice_ambient/komenda_02.wav"
+			"wave"		"heavyice_ambient/komenda_03.wav"
+			"wave"		"heavyice_ambient/komenda_04.wav"
+			"wave"		"heavyice_ambient/komenda_05.wav"
+			"wave"		"heavyice_ambient/komenda_06.wav"
+			"wave"		"heavyice_ambient/oleg_vo1.wav"
+		}
+	}
+	
+	"playrandom"
+	{
+		"time"			"25,50"
+		"volume"		"0.095"
+		"pitch"			"90,110"
+
+		"rndwave"
+		{
+			"wave"		"heavyice_ambient/ptak.wav"
+			"wave"		"heavyice_ambient/sala_tortur_01.wav"
+			"wave"		"heavyice_ambient/sala_tortur_02.wav"
+			"wave"		"heavyice_ambient/sala_tortur_03.wav"
+			"wave"		"heavyice_ambient/ptak.wav"
+		}
+	}
+}
+
+"hi_brickhouse"
+{
+
+	"dsp" "9"
+	"dsp_volume"	"3"
+
+	"playlooping"
+	{
+		"volume"	"0.15"
+		"pitch"		"75"
+		"wave"		"heavyice_ambient/loop_deep_01.wav"
+	}
+	
+	"playlooping"
+	{
+		"volume"	"0.45"
+		"pitch"		"100"
+		"wave"		"ambient/hums/hum-03.wav"
+	}
+	
+	"playlooping"
+	{
+		"volume"	"0.4"
+		"pitch"		"90"
+		"soundlevel"	"SNDLVL_60db"
+		"wave"		"custom/music/two.wav"
+		"position" 	"0"
+	}
+	
+	"playrandom"
+	{
+		"volume"		"0.075,0.1"
+		"time"			"35.0, 55.0"
+		"pitch"			"50,100"
+		"soundlevel"	"SNDLVL_140dB"
+		"position"		"random"
+		"rndwave"
+		{
+			"wave"		"ambient/levels/citadel/citadel_flyer1.wav"
+			"wave"		"ambient/levels/citadel/strange_talk9.wav"
+			"wave"		"ambient/levels/labs/teleport_winddown1.wav"
+		}
+	}
+	
+	"playrandom"
+	{
+
+		"time"			"9,12"
+		"volume"		"0.4"
+		"pitch"			"95,105"
+		
+		"soundlevel"	"SNDLVL_70dB"
+		"position"		"random"
+
+		"rndwave"
+		{
+			"wav"	"ambient/voices/citizen_beaten1.wav"
+			"wav"	"ambient/voices/citizen_beaten2.wav"
+			"wav"	"ambient/voices/citizen_beaten3.wav"
+			"wav"	"ambient/voices/citizen_beaten4.wav"
+			"wav"	"ambient/voices/citizen_beaten5.wav"
+			"wav"	"ambient/voices/citizen_punches2.wav"
+			"wav"	"ambient/voices/cough4.wav"
+			"wav"	"ambient/voices/f_scream1.wav"
+			"wav"	"ambient/voices/m_scream1.wav"
+			"wav"	"physics/body/body_medium_break4.wav"
+			"wav"	"physics/cardboard/cardboard_box_break3.wav"
+			"wav"	"physics/flesh/flesh_bloody_break.wav"
+			"wav"	"physics/glass/glass_impact_bullet1.wav"
+			"wav"	"physics/glass/glass_largesheet_break3.wav"
+			"wav"	"physics/glass/glass_pottery_break4.wav"
+			"wav"	"physics/wood/wood_box_break1.wav"
+			"wav"	"physics/wood/wood_box_break2.wav"
+			"wav"	"physics/wood/wood_crate_break3.wav"
+			"wav"	"physics/wood/wood_furniture_break2.wav"
+			"wav"	"physics/wood/wood_furniture_break1.wav"
+			"wav"	"ambient/levels/labs/teleport_weird_voices1.wav"
+			"wav"	"ambient/levels/streetwar/city_scream3.wav"
+			"wav"	"ambient/levels/canals/windchine1.wav"
+			"wav"	"ambient/machines/keyboard_fast1_1second.wav"
+			"wav"	"ambient/machines/keyboard_fast3_1second.wav"
+			"wav"	"player/pl_shell1.wav"
+			"wav"	"player/pl_shell2.wav"
+			"wav"	"ambient/materials/shuffle1.wav"
+			"wav"	"ambient/materials/squeekyfloor1.wav"
+			"wav"	"ambient/materials/squeekyfloor2.wav"
+			"wav"	"ambient/materials/platedrop1.wav"
+			"wav"	"ambient/materials/platedrop2.wav"
+			"wav"	"ambient/materials/platedrop3.wav"
+			"wav"	"ambient/materials/footsteps_wood1.wav"
+			"wav"	"ambient/materials/footsteps_wood2.wav"
+			"wav"	"ambient/materials/footsteps_stairs2.wav"
+			"wav"	"ambient/materials/footsteps_stairs1.wav"
+			"wav"	"ambient/materials/footsteps_glass1.wav"
+			"wav"	"ambient/materials/footsteps_glass2.wav"
+			"wav"	"ambient/materials/flush1.wav"
+			"wav"	"ambient/materials/cupdrop.wav"
+			"wav"	"ambient/materials/dinnerplates5.wav"
+			"wav"	"ambient/materials/dinnerplates4.wav"
+			"wav"	"ambient/materials/dinnerplates1.wav"
+			"wav"	"ambient/materials/creaking.wav"
+			"wav"	"ambient/materials/creak5.wav"
+			"wav"	"ambient/materials/bump1.wav"
+			"wav"	"ambient/machines/thumper_hit.wav"
+			"wav"	"ambient/machines/sputter1.wav"
+			"wav"	"ambient/machines/slicer2.wav"
+			"wav"	"items/keys/keys_pickup-04.wav"
+			"wav"	"items/keys/keys_pickup-02.wav"
+			"wav"	"items/healthpack/smhealthpack-01.wav"
+			"wav"	"impacts/fallhard-03.wav"
+			"wav"	"foley/footsteps/leaf-01.wav"
+			"wav"	"doors/door1_stop.wav"
+			"wav"	"doors/door_locked2.wav"
+			"wav"	"custom/knock_wood_door.wav"
+			"wav"	"custom/icecooler_open.wav"
+			"wav"	"common/bugreporter_succeeded.wav"
+			"wav"	"ambient/creatures/rats1.wav"
+			"wav"	"ambient/creatures/rats2.wav"
+			"wav"	"ambient/creatures/rats3.wav"
+			"wav"	"ambient/creatures/rats4.wav"
+		}
+	}
+}
+
+"hi_brickhouse_dnb"
+{
+
+	"dsp" "23"
+	"dsp_volume"	"10"
+
+	"playlooping"
+	{
+		"volume"		"1"
+		"pitch"		"25"
+		"wave"		"heavyice_ambient/dnb.wav"
+	}
+	
+}
+
+
+"hi_greenhouse"
+{
+
+	"dsp" "9"
+	"dsp_volume"	"3"
+
+	"playlooping"
+	{
+		"volume"		"0.40"
+		"pitch"		"100"
+		"wave"		"ambient/hums/hum-02.wav"
+	}
+	
+	"playlooping"
+	{
+		"volume"		"0.1"
+		"pitch"		"100"
+		"wave"		"custom/music/ghosttrain.wav"
+	}
+	
+	"playrandom"
+	{
+		"volume"		"0.075,0.1"
+		"time"			"35.0, 55.0"
+		"pitch"			"50,100"
+		"soundlevel"	"SNDLVL_140dB"
+		"position"		"random"
+		"rndwave"
+		{
+			"wave" "ambient/levels/citadel/citadel_flyer1.wav"
+			"wave" "ambient/levels/citadel/strange_talk9.wav"
+			"wave" "ambient/levels/labs/teleport_winddown1.wav"
+		}
+	}
+	
+	"playrandom"
+	{
+
+		"time"		"9,13"
+		"volume"	"0.4,0.6"
+		"pitch"		"90,105"
+		
+		"soundlevel"	"SNDLVL_70dB"
+		"position"		"random"
+
+		"rndwave"
+		{
+			"wav"	"ambient/voices/citizen_beaten1.wav"
+			"wav"	"ambient/voices/citizen_beaten2.wav"
+			"wav"	"ambient/voices/citizen_beaten3.wav"
+			"wav"	"ambient/voices/citizen_beaten4.wav"
+			"wav"	"ambient/voices/citizen_beaten5.wav"
+			"wav"	"ambient/voices/citizen_punches2.wav"
+			"wav"	"ambient/voices/cough4.wav"
+			"wav"	"ambient/voices/f_scream1.wav"
+			"wav"	"ambient/voices/m_scream1.wav"
+			"wav"	"physics/body/body_medium_break4.wav"
+			"wav"	"physics/cardboard/cardboard_box_break3.wav"
+			"wav"	"physics/flesh/flesh_bloody_break.wav"
+			"wav"	"physics/glass/glass_impact_bullet1.wav"
+			"wav"	"physics/glass/glass_largesheet_break3.wav"
+			"wav"	"physics/glass/glass_pottery_break4.wav"
+			"wav"	"physics/wood/wood_box_break1.wav"
+			"wav"	"physics/wood/wood_box_break2.wav"
+			"wav"	"physics/wood/wood_crate_break3.wav"
+			"wav"	"physics/wood/wood_furniture_break2.wav"
+			"wav"	"physics/wood/wood_furniture_break1.wav"
+			"wav"	"ambient/levels/labs/teleport_weird_voices1.wav"
+			"wav"	"ambient/levels/streetwar/city_scream3.wav"
+			"wav"	"ambient/levels/canals/windchine1.wav"
+			"wav"	"ambient/machines/keyboard_fast1_1second.wav"
+			"wav"	"ambient/machines/keyboard_fast3_1second.wav"
+			"wav"	"player/pl_shell1.wav"
+			"wav"	"player/pl_shell2.wav"
+			"wav"	"ambient/materials/shuffle1.wav"
+			"wav"	"ambient/materials/squeekyfloor1.wav"
+			"wav"	"ambient/materials/squeekyfloor2.wav"
+			"wav"	"ambient/materials/platedrop1.wav"
+			"wav"	"ambient/materials/platedrop2.wav"
+			"wav"	"ambient/materials/platedrop3.wav"
+			"wav"	"ambient/materials/footsteps_wood1.wav"
+			"wav"	"ambient/materials/footsteps_wood2.wav"
+			"wav"	"ambient/materials/footsteps_stairs2.wav"
+			"wav"	"ambient/materials/footsteps_stairs1.wav"
+			"wav"	"ambient/materials/footsteps_glass1.wav"
+			"wav"	"ambient/materials/footsteps_glass2.wav"
+			"wav"	"ambient/materials/flush1.wav"
+			"wav"	"ambient/materials/cupdrop.wav"
+			"wav"	"ambient/materials/dinnerplates5.wav"
+			"wav"	"ambient/materials/dinnerplates4.wav"
+			"wav"	"ambient/materials/dinnerplates1.wav"
+			"wav"	"ambient/materials/creaking.wav"
+			"wav"	"ambient/materials/creak5.wav"
+			"wav"	"ambient/materials/bump1.wav"
+			"wav"	"ambient/machines/thumper_hit.wav"
+			"wav"	"ambient/machines/sputter1.wav"
+			"wav"	"ambient/machines/slicer2.wav"
+			"wav"	"items/keys/keys_pickup-04.wav"
+			"wav"	"items/keys/keys_pickup-02.wav"
+			"wav"	"items/healthpack/smhealthpack-01.wav"
+			"wav"	"impacts/fallhard-03.wav"
+			"wav"	"foley/footsteps/leaf-01.wav"
+			"wav"	"doors/door1_stop.wav"
+			"wav"	"doors/door_locked2.wav"
+			"wav"	"custom/knock_wood_door.wav"
+			"wav"	"custom/icecooler_open.wav"
+			"wav"	"common/bugreporter_succeeded.wav"
+			"wav"	"ambient/creatures/rats1.wav"
+			"wav"	"ambient/creatures/rats2.wav"
+			"wav"	"ambient/creatures/rats3.wav"
+			"wav"	"ambient/creatures/rats4.wav"
+		}
+	}
+}
+
+"hi_greenhouse_nm"
+{
+
+	"dsp" "23"
+	"dsp_volume"	"5"
+
+	"playlooping"
+	{
+		"volume"		"1"
+		"pitch"		"100"
+		"wave"		"ambient/levels/citadel/citadel_drone_loop5.wav"
+	}
+	
+	"playlooping"
+	{
+		"volume"		"1"
+		"pitch"		"85"
+		"wave"		"ambient/levels/citadel/citadel_ambient_scream_loop1.wav"
+	}
+
+	"playlooping"
+	{
+		"volume"		"0.75"
+		"pitch"		"87"
+		"wave"		"ambient/fire/fire_med_loop1.wav"
+	}
+
+		"playlooping"
+	{
+		"volume"		"0.45"
+		"pitch"		"95"
+		"wave"		"hl1/ambience/deadsignal2.wav"
+	}
+	
+}
+
+"hi_cover"
+{
+
+	"dsp" "11"
+	"dsp_volume"	"3"
+	
+	"playlooping"
+	{
+		"volume"		"0.25"
+		"pitch"			"75"
+		"wave"			"ambient/atmosphere/cave_outdoor1.wav"
+	}
+	
+	"playlooping"
+	{
+		"volume"		"0.35"
+		"pitch"			"100"
+		"wave"			"heavyice_ambient/loop_deep_01.wav"
+	}
+	
+	"playlooping"
+	{
+		"volume"		"0.7"
+		"pitch"			"100"
+		"soundlevel"	"SNDLVL_65dB"
+		"wave"			"heavyice_ambient/alien_beacon.wav"
+		"position" 		"0"
+	}
+}
+
+"hi_cover_s"
+{
+
+	"dsp" "13"
+	"dsp_volume"	"5"
+	
+	"playlooping"
+	{
+		"volume"		"0.35"
+		"pitch"			"65"
+		"wave"			"ambient/atmosphere/cave_outdoor1.wav"
+	}
+	
+	"playlooping"
+	{
+		"volume"		"0.45"
+		"pitch"			"100"
+		"wave"			"heavyice_ambient/loop_deep_01.wav"
+	}
+	
+	"playlooping"
+	{
+		"volume"		"0.25"
+		"pitch"			"100"
+		"wave"			"heavyice_ambient/alien_beacon.wav"
+	}
+}
+
+"hi_lobby_knockknock"
+{
+
+	"dsp" "0"
+
+	"playlooping"
+	{
+		"volume"	"0.35"
+		"pitch"		"100"
+		"wave"		"heavyice_ambient/knockknock.wav"
+	}
+}
+
+"hi_lobby_deepcover"
+{
+
+	"dsp" "0"
+
+	"playlooping"
+	{
+		"volume"	"0.2"
+		"pitch"		"100"
+		"wave"		"heavyice_ambient/deepcover.wav"
+	}
+}
+
+"hi_lobby_raul"
+{
+
+	"dsp" "0"
+
+	"playlooping"
+	{
+		"volume"	"0.35"
+		"pitch"		"100"
+		"wave"		"heavyice_ambient/raul.wav"
+	}
+}

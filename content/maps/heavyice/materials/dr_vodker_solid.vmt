@@ -1,0 +1,6 @@
+"UnlitGeneric"
+{
+	"$basetexture" "dr_vodker"
+	"$surfaceprop" "snow"
+	"$AlphaTest" "1"
+}

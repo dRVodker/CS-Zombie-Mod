@@ -1,0 +1,6 @@
+"UnlitGeneric"
+{
+	"$basetexture" "custom/cf_joinz"
+	"$surfaceprop" "glass"
+	"$AlphaTest" "1"
+}

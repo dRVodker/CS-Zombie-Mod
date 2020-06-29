@@ -1,0 +1,9 @@
+LightmappedGeneric
+{
+	"$basetexture"	"cs_office/offwlld"
+	"$surfaceprop" "concrete"
+	"$bumpmap" "cs_office/concretewall041d_normal"
+ 	"$envmap" "env_cubemap"
+	"$envmapcontrast" "1"
+	"$normalmapalphaenvmapmask" "1"
+}

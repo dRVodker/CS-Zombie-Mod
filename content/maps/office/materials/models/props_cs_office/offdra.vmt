@@ -1,0 +1,21 @@
+Patch
+{
+	include "materials/models/props_c17/clock01.vmt"
+	insert
+	{
+		"$basetexture"	"models/props_cs_office/offdra"
+		
+		"$detail"				"detail/plaster_detail_01"
+		"$detailscale"			"6"
+		"$detailblendfactor"	"0.35"
+		"$detailblendmode"		"0"
+		
+		"Proxies"
+		{
+			"ZombieVisionBreakable"
+			{
+				"resultVar"	"$selfillumtint"
+			}
+		}
+	}
+}

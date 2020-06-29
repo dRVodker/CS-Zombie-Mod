@@ -1,0 +1,5 @@
+LightmappedGeneric
+{
+	"$basetexture"	"crossroads_havoc/nuke_metaltrims_01"
+	"$surfaceprop" "metal"
+}

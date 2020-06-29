@@ -1,0 +1,6 @@
+"UnlitGeneric"
+{
+	"$basetexture" "custom/cf_spec"
+	"$surfaceprop" "glass"
+	"$AlphaTest" "1"
+}

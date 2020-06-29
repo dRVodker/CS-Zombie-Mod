@@ -1,0 +1,9 @@
+"LightmappedGeneric"
+{
+	"$translucent" 1
+	$alpha 0.85
+	"$basetexture" "Decals\window_dust2"
+	"$decal" 1
+	//"$decalscale" 0.25
+	"%keywords" "cstrike"
+}

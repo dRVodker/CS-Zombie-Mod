@@ -1,0 +1,6 @@
+LightmappedGeneric
+{
+	"$basetexture"	"crossroads_havoc/train_largemetal_door_01"
+	"$bumpmap"		"crossroads_havoc/train_largemetal_door_01_normal"
+	"$surfaceprop"	"metal_box"
+}

@@ -1,0 +1,21 @@
+Patch
+{
+	include "materials/models/props_c17/clock01.vmt"
+	insert
+	{
+		"$basetexture"	"models/props_safeplace/doormainmetal01"
+		
+		"$detail"				"detail/plaster_detail_01"
+		"$detailscale"			"3"
+		"$detailblendfactor"	"0.1975"
+		"$detailblendmode"		"0"
+		
+		"Proxies"
+		{
+			"ZombieVisionBreakable"
+			{
+				"resultVar"	"$selfillumtint"
+			}
+		}
+	}
+}

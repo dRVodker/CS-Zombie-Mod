@@ -1,0 +1,432 @@
+"prison.util_radio"
+{
+	"playrandom"
+	{
+		"volume"	"0.1,0.3"
+		"pitch"		"80,120"
+		"time"		"1.0, 15.0"
+		"rndwave"
+		{
+			"wave"	"ambient/levels/prison/radio_random1.wav"
+			"wave"	"ambient/levels/prison/radio_random2.wav"
+			"wave"	"ambient/levels/prison/radio_random3.wav"
+			"wave"	"ambient/levels/prison/radio_random4.wav"
+			"wave"	"ambient/levels/prison/radio_random5.wav"
+			"wave"	"ambient/levels/prison/radio_random6.wav"
+			"wave"	"ambient/levels/prison/radio_random7.wav"
+			"wave"	"ambient/levels/prison/radio_random8.wav"
+			"wave"	"ambient/levels/prison/radio_random9.wav"
+			"wave"	"ambient/levels/prison/radio_random10.wav"
+			"wave"	"ambient/levels/prison/radio_random11.wav"
+			"wave"	"ambient/levels/prison/radio_random12.wav"
+			"wave"	"ambient/levels/prison/radio_random13.wav"
+			"wave"	"ambient/levels/prison/radio_random14.wav"
+			"wave"	"ambient/levels/prison/radio_random15.wav"
+		}
+	}
+}
+
+"d1_canals.util_tunnel_windgusts"
+{
+	"playrandom"
+	{
+		"volume"	"0.2,0.5"
+		"pitch"		"80,120"
+		"time"		"5.0, 20.0"
+		"pitch"		"80,140"
+		"position"	"random"
+		"soundlevel"	"SNDLVL_140db"
+		"rndwave"
+		{
+			"wave" "ambient/wind/wind_snippet1.wav"
+			"wave" "ambient/wind/wind_snippet2.wav"
+		}
+	}
+}
+
+"prison.util_fardrips"
+{
+	"playrandom"
+	{
+		"volume"	"0.1,0.2"
+		"pitch"		"90,120"
+		"time"		"0.5, 5.0"
+		"position"	"random"
+		"soundlevel"	"SNDLVL_140dB"
+		"rndwave"
+		{
+			"wave"	"ambient/water/distant_drip1.wav"
+			"wave"	"ambient/water/distant_drip2.wav"
+			"wave"	"ambient/water/distant_drip3.wav"
+			"wave"	"ambient/water/distant_drip4.wav"
+		}
+	}
+}
+
+"prison.util_drips"
+{
+	"playrandom"
+	{
+		"volume"	"0.2,0.5"
+		"pitch"		"100"
+		"time"		"0.5, 5.0"
+		"position"	"random"
+		"rndwave"
+		{
+			"wave"	"ambient/water/rain_drip1.wav"
+			"wave"	"ambient/water/rain_drip2.wav"
+			"wave"	"ambient/water/rain_drip3.wav"
+			"wave"	"ambient/water/rain_drip4.wav"
+		}
+	}
+}
+
+"prison.util_distantcombat_light"
+{
+	"playrandom"
+	{
+		"time"		"1,16"
+		"volume"	"0.1,0.2"
+		"pitch"		"90,105"	
+		"rndwave"
+		{
+			"wave"	"ambient/levels/prison/inside_battle1.wav"
+			"wave"	"ambient/levels/prison/inside_battle2.wav"
+			"wave"	"ambient/levels/prison/inside_battle3.wav"
+			"wave"	"ambient/levels/prison/inside_battle4.wav"
+			"wave"	"ambient/levels/prison/inside_battle5.wav"
+			"wave"	"ambient/levels/prison/inside_battle6.wav"
+			"wave"	"ambient/levels/prison/inside_battle7.wav"
+			"wave"	"ambient/levels/prison/inside_battle8.wav"
+			"wave"	"ambient/levels/prison/inside_battle9.wav"
+		}
+		
+	}
+
+	"playrandom"
+	{
+		"time"		"2,16"
+		"volume"	"0.1,0.2"
+		"pitch"		"90,105"
+
+		"rndwave"
+		{
+			"wave"	"ambient/levels/prison/inside_battle_antlion1.wav"
+			"wave"	"ambient/levels/prison/inside_battle_antlion2.wav"
+			"wave"	"ambient/levels/prison/inside_battle_antlion3.wav"
+			"wave"	"ambient/levels/prison/inside_battle_antlion4.wav"
+			"wave"	"ambient/levels/prison/inside_battle_antlion5.wav"
+			"wave"	"ambient/levels/prison/inside_battle_antlion6.wav"
+			"wave"	"ambient/levels/prison/inside_battle_antlion7.wav"
+			"wave"	"ambient/levels/prison/inside_battle_antlion8.wav"
+			"wave"	"ambient/levels/prison/inside_battle_zombie1.wav"
+			"wave"	"ambient/levels/prison/inside_battle_zombie2.wav"
+			"wave"	"ambient/levels/prison/inside_battle_zombie3.wav"
+			"wave"	"ambient/levels/prison/inside_battle_soldier1.wav"
+			"wave"	"ambient/levels/prison/inside_battle_soldier2.wav"
+			"wave"	"ambient/levels/prison/inside_battle_soldier3.wav"
+		}
+	}
+}
+
+"combine.computer"
+{
+	
+	"playlooping"
+	{
+		"volume"	"0.4"
+		"wave"		"ambient/machines/combine_terminal_loop1.wav"
+		"pitch"		"100"
+		"soundlevel" "SNDLVL_65db"
+	}
+
+	"playrandom"
+	{
+		"time"		"5,15"
+		"volume"	"0.3,0.5"
+		"pitch"		"95,105"
+		"soundlevel" "SNDLVL_80db"
+		"rndwave"
+		{
+			"wave"	"buttons/combine_button2.wav"
+			"wave"	"buttons/combine_button5.wav"
+			"wave"	"buttons/combine_button3.wav"
+			"wave"	"buttons/combine_button7.wav"
+			//"wave"	"buttons/combine_terminal_loop1.wav"
+			//"wave"	"buttons/combine_terminal_loop2.wav"
+			"wave"	"ambient/machines/combine_terminal_idle1.wav"
+			"wave"	"ambient/machines/combine_terminal_idle2.wav"
+			"wave"	"ambient/machines/combine_terminal_idle3.wav"
+			"wave"	"ambient/machines/combine_terminal_idle4.wav"
+		}
+	}
+}
+
+"prison.util_distantcombat_verylight"
+{
+	"playrandom"
+	{
+		"time"		"1,30"
+		"volume"	"0.05,0.15"
+		"pitch"		"90,105"	
+		"rndwave"
+		{
+			"wave"	"ambient/levels/prison/inside_battle1.wav"
+			"wave"	"ambient/levels/prison/inside_battle2.wav"
+			"wave"	"ambient/levels/prison/inside_battle3.wav"
+			"wave"	"ambient/levels/prison/inside_battle4.wav"
+			"wave"	"ambient/levels/prison/inside_battle5.wav"
+			"wave"	"ambient/levels/prison/inside_battle6.wav"
+			"wave"	"ambient/levels/prison/inside_battle7.wav"
+			"wave"	"ambient/levels/prison/inside_battle8.wav"
+			"wave"	"ambient/levels/prison/inside_battle9.wav"
+		}
+	}
+
+	"playrandom"
+	{
+		"time"		"5,30"
+		"volume"	"0.05,0.1"
+		"pitch"		"90,105"
+
+		"rndwave"
+		{
+			"wave"	"ambient/levels/prison/inside_battle_antlion1.wav"
+			"wave"	"ambient/levels/prison/inside_battle_antlion2.wav"
+			"wave"	"ambient/levels/prison/inside_battle_antlion3.wav"
+			"wave"	"ambient/levels/prison/inside_battle_antlion4.wav"
+			"wave"	"ambient/levels/prison/inside_battle_antlion5.wav"
+			"wave"	"ambient/levels/prison/inside_battle_antlion6.wav"
+			"wave"	"ambient/levels/prison/inside_battle_antlion7.wav"
+			"wave"	"ambient/levels/prison/inside_battle_antlion8.wav"
+			"wave"	"ambient/levels/prison/inside_battle_zombie1.wav"
+			"wave"	"ambient/levels/prison/inside_battle_zombie2.wav"
+			"wave"	"ambient/levels/prison/inside_battle_zombie3.wav"
+			"wave"	"ambient/levels/prison/inside_battle_soldier1.wav"
+			"wave"	"ambient/levels/prison/inside_battle_soldier2.wav"
+			"wave"	"ambient/levels/prison/inside_battle_soldier3.wav"
+		}
+	}
+}
+
+"prison.control_room"
+{
+	"dsp"	"1"
+
+	"playlooping"
+	{
+		"volume"	"0.15"
+		"wave"		"ambient/atmosphere/city_rumble_loop1.wav"
+		"pitch"		"100"
+	}
+
+	"playsoundscape"
+	{
+		"name"	"prison.util_radio"
+		"volume"	"1.0"
+		"positionoverride"	"0"
+	}
+	
+	"playsoundscape"
+	{
+		"name"	"combine.computer"
+		"volume"	"0.4"
+		"positionoverride"	"1"
+	}
+}
+
+"prison.hall_with_burrows" 
+{
+	"dsp"	"1"
+
+	"playlooping"
+	{
+		"volume"	"0.1"
+		"wave"		"ambient/atmosphere/indoor2.wav"
+		"pitch"		"100"
+	}
+}
+
+"prison.general_hallway_vlightcombat"
+{
+	"dsp"	"1"
+
+	"playlooping"
+	{
+		"volume"	"0.18"
+		"wave"		"ambient/atmosphere/indoor2.wav"
+		"pitch"		"100"
+	}
+
+	
+	"playsoundscape"
+	{
+		"name"	"prison.util_distantcombat_verylight"
+		"volume"	"1.0"
+	}
+}
+
+"prison.larger_cellblock_vlightcombat"
+{
+	"dsp"	"1"
+
+	"playsoundscape"
+	{
+		"name"	"prison.util_quiet_cellblock"
+		"volume"	"1.0"
+	}
+
+	"playsoundscape"
+	{
+		"name"	"prison.util_distantcombat_verylight"
+		"volume"	"1.0"
+	}
+}
+
+"prison.larger_cellblock_lightcombat"
+{
+	"playsoundscape"
+	{
+		"name"	"prison.util_quiet_cellblock"
+		"volume"	"1.0"
+	}
+
+	"playsoundscape"
+	{
+		"name"	"prison.util_distantcombat_light"
+		"volume"	"1.0"
+	}
+}
+
+"prison.util_quiet_cellblock"
+{
+	"dsp"	"1"
+
+	"playlooping"
+	{
+		"volume"	"0.12"
+		"wave"		"ambient/atmosphere/undercity_loop1.wav"
+		"pitch"		"80"
+	}
+
+	"playsoundscape"
+	{
+		"name"	"prison.util_drips"
+		"volume"	"0.15"
+	}
+
+	"playrandom"
+	{
+		"time"		"3, 10"
+		"volume"	"0.05,0.15"
+		"pitch"		"95,105"
+		"position"	"random"
+
+		"rndwave"
+		{
+			"wave"	"ambient/materials/metal_rattle1.wav"
+			"wave"	"ambient/materials/metal_rattle2.wav"
+			"wave"	"ambient/materials/metal_rattle3.wav"
+		}
+	}
+}
+
+"prison.control_room_simple"
+{
+	"dsp"	"1"
+
+	"playlooping"
+	{
+		"volume"	"0.15"
+		"wave"		"ambient/atmosphere/indoor1.wav"
+		"pitch"		"100"
+	}
+
+	// position 0 is radio speaker
+
+	"playsoundscape"
+	{
+		"name"	"prison.util_radio"
+		"volume"	"1.0"
+		"positionoverride"	"0"
+	}
+}
+
+"prison.general_dripping_tunnel"
+{
+	"dsp"	"1"
+
+	"playlooping"
+	{
+		"volume"	"0.2"
+		"wave"		"ambient/water/drip_loop1.wav"
+		"pitch"		"100"
+	}
+
+	"playlooping"
+	{
+		"volume"	"0.25"
+		"wave"		"ambient/wind/wind_tunnel1.wav"
+		"pitch"		"100"
+	}
+
+	"playsoundscape"
+	{
+		"name"		"prison.util_fardrips"
+		"volume"	"1.0"
+	}
+	
+	"playsoundscape"
+	{
+		"name"		"d1_canals.util_tunnel_windgusts"
+		"volume"	"0.7"
+	}
+}
+
+"prison.showers"
+{
+	"dsp"	"1"
+
+	"playlooping"
+	{
+		"volume"	"0.25"
+		"wave"		"ambient/atmosphere/ambience6.wav"
+		"pitch"		"85"
+	}
+	
+	"playlooping"
+	{
+		"volume"	"0.2"
+		"wave"		"ambient/water/water_flow_loop1.wav"
+		"pitch"		"100"
+		"soundlevel"	"SNDLVL_90dB"
+		"position"	"0"
+	}
+
+	"playlooping"
+	{
+		"volume"	"0.3"
+		"wave"		"ambient/water/drip_loop1.wav"
+		"pitch"		"120"
+		"soundlevel"	"SNDLVL_90dB"
+		"position"	"1"
+	}
+
+	"playlooping"
+	{
+		"volume"	"0.2"
+		"wave"		"ambient/water/drip_loop1.wav"
+		"pitch"		"140"
+		"soundlevel"	"SNDLVL_90dB"
+		"position"	"1"
+	}
+
+	"playlooping"
+	{
+		"volume"	"0.15"
+		"wave"		"ambient/gas/steam_loop1.wav"
+		"pitch"		"100"
+		"soundlevel"	"SNDLVL_80dB"
+		"position"	"2"
+	}
+}

@@ -1,0 +1,6 @@
+VertexLitGeneric
+{
+	"$basetexture"	"models/props_crossroads/floodlighton"
+	"$selfillum" "1"
+
+}

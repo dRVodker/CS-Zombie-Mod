@@ -1,0 +1,11 @@
+"WorldVertexTransition"
+{
+	"%tooltexture"				"concrete/concretefloor037b"
+	"$basetexture"				"concrete/concretefloor037b"
+	"$bumpmap"					"concrete/concretefloor037b_normal"
+	"$basetexture2"				"nature/dirtfloor005c"
+	"$surfaceprop2"				"dirt"
+	"$surfaceprop"				"concrete"
+	"$basetexturetransform"		"center .5 .5 scale 1 1 rotate 0 translate 0 0"
+	"$basetexturetransform2"	"center .5 .5 scale 1 1 rotate 0 translate 0 0"
+}

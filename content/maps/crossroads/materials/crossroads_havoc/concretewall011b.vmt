@@ -1,0 +1,7 @@
+"LightmappedGeneric"
+{
+	"$basetexture" "crossroads_havoc/concretewall011b"
+	"$detail" "detail/detailconcrete001a"
+	"$detailscale" 4
+	"$surfaceprop" "concrete"
+}

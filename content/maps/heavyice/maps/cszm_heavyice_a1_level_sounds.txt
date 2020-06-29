@@ -1,0 +1,787 @@
+//
+///////////////////////////
+////////Map Sounds/////////
+///////////////////////////
+"HeavyIce.BustPain"
+{
+	"soundlevel"	"SNDLVL_70dB"
+	"volume"		"1"
+	"pitch"			"90,105"
+	"rndwave"
+	{
+		"wave"	"heavyice_ambient/vo/pain01.wav"
+		"wave"	"heavyice_ambient/vo/pain02.wav"
+		"wave"	"heavyice_ambient/vo/pain03.wav"
+		"wave"	"heavyice_ambient/vo/pain04.wav"
+		"wave"	"heavyice_ambient/vo/pain05.wav"
+		"wave"	"heavyice_ambient/vo/pain06.wav"
+		"wave"	"heavyice_ambient/vo/pain07.wav"
+		"wave"	"heavyice_ambient/vo/pain08.wav"
+		"wave"	"heavyice_ambient/vo/pain09.wav"
+	}
+}
+
+///////////////////////////
+/////Sound Replacement/////
+///////////////////////////
+"BaseExplosionEffect.Sound"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"soundlevel"		"SNDLVL_140dB"
+	"pitch"			"90,100"
+
+		"rndwave"
+	{
+		"wave"		"^cszm_fx/weapons/explode3.wav"
+		"wave"		"^cszm_fx/weapons/explode4.wav"
+		"wave"		"^cszm_fx/weapons/explode5.wav"
+	}
+}
+
+"BaseGrenade.Explode"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"0.5"
+	"soundlevel"  		"SNDLVL_85dB"
+
+	"rndwave"
+	{
+		"wave"		"^cszm_fx/weapons/debris1.wav"
+		"wave"		"^cszm_fx/weapons/debris2.wav"
+	}
+}
+
+"PropaneTank.Burst"
+{
+	"channel"	"CHAN_WEAPON"
+	"volume"	"1.0"
+	"pitch"		"95,110"
+	"soundlevel"	"SNDLVL_90db"
+	
+		"rndwave"
+	{
+		"wave"		"^cszm_fx/weapons/explode3.wav"
+		"wave"		"^cszm_fx/weapons/explode4.wav"
+		"wave"		"^cszm_fx/weapons/explode5.wav"
+	}
+}
+
+"Weapon_357.Single"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1"
+	"soundlevel"	"SNDLVL_GUNFIRE"
+	"pitch"			"90,100"	
+
+	"wave"			"^cszm_fx/weapons/357_fire.wav"
+}
+
+"weapon.StepLeft"
+{
+	"soundlevel"		"SNDLVL_75dB"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+	"wave"		"physics/metal/weapon_footstep1.wav"
+}
+
+"weapon.StepRight"
+{
+	"soundlevel"		"SNDLVL_75dB"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+	"wave"		"physics/metal/weapon_footstep2.wav"
+
+}
+
+"weapon.ImpactSoft"
+{
+	"soundlevel"		"SNDLVL_75dB"
+	"volume"		"0.6"
+	"pitch"		"98,100"
+	"rndwave"
+	{
+		"wave"	"physics/metal/weapon_impact_soft1.wav"
+		"wave"	"physics/metal/weapon_impact_soft2.wav"
+		"wave"	"physics/metal/weapon_impact_soft3.wav"
+	}
+}
+
+
+"weapon.ImpactHard"
+{
+	"soundlevel"		"SNDLVL_75dB"
+	"volume"		"0.6"
+	"pitch"		"98,100"
+	"rndwave"
+	{
+		"wave"	"physics/metal/weapon_impact_hard1.wav"
+		"wave"	"physics/metal/weapon_impact_hard2.wav"
+		"wave"	"physics/metal/weapon_impact_hard3.wav"
+	}
+}
+
+"weapon_small.StepLeft"
+{
+	"soundlevel"		"SNDLVL_75dB"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+	"wave"		"physics/metal/weapon_footstep1.wav"
+}
+
+"weapon_small.StepRight"
+{
+	"soundlevel"		"SNDLVL_75dB"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+	"wave"		"physics/metal/weapon_footstep2.wav"
+
+}
+
+"weapon_small.ImpactSoft"
+{
+	"soundlevel"		"SNDLVL_75dB"
+	"volume"		"0.6"
+	"pitch"		"98,100"
+	"rndwave"
+	{
+		"wave"	"physics/metal/weapon_impact_soft1.wav"
+		"wave"	"physics/metal/weapon_impact_soft2.wav"
+		"wave"	"physics/metal/weapon_impact_soft3.wav"
+	}
+}
+
+
+"weapon_small.ImpactHard"
+{
+	"soundlevel"		"SNDLVL_75dB"
+	"volume"		"0.6"
+	"pitch"		"98,100"
+	"rndwave"
+	{
+		"wave"	"physics/metal/weapon_impact_hard1.wav"
+		"wave"	"physics/metal/weapon_impact_hard2.wav"
+		"wave"	"physics/metal/weapon_impact_hard3.wav"
+	}
+}
+
+"Flesh.Headshot"
+{
+	"soundlevel"	"SNDLVL_70dB"
+	"volume"		"1"
+	"pitch"			"90,105"
+	"rndwave"
+	{
+		"wave"	")gibs/flesh_arm-01.wav"
+		"wave"	")gibs/flesh_arm-02.wav"
+		"wave"	")gibs/flesh_arm-03.wav"
+		"wave"	")gibs/flesh_arm-04.wav"
+		"wave"	")gibs/flesh_head-01.wav"
+		"wave"	")gibs/flesh_head-02.wav"
+		"wave"	")gibs/flesh_head-03.wav"
+	}
+}
+
+"Player.FallDamage"
+{
+	"channel"		"CHAN_AUTO"
+	"volume"		"0.70"
+	"pitch"			"100,105"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"rndwave"
+	{
+		"wave"	")cszm_fx/player/plr_pain1.wav"
+		"wave"	")cszm_fx/player/plr_pain2.wav"
+		"wave"	")cszm_fx/player/plr_pain3.wav"
+
+	}
+}
+
+"Flesh.HeadshotExplode"
+{
+	"soundlevel"		"SNDLVL_70dB"
+	"volume"			"1.0"
+	"pitch"				"85,110"
+	
+	"rndwave"
+	{
+		"wave"	")impacts/flesh_impact_headshot-01.wav"
+	}
+}
+
+"ZPlayer.Jolt"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+
+"ZPlayer.ArmorPickup"
+{
+	"channel"	"CHAN_USER_BASE3"
+	"volume"	"0.7"
+	"soundlevel"  "SNDLVL_65dB"
+
+	"wave"	")cszm_fx/items/armorpickup1.wav"
+}
+
+"ZP_HealthVial.Touch"
+{
+	"channel"	"CHAN_USER_BASE3"
+	"volume"	"0.8"
+	"soundlevel"  "SNDLVL_65dB"
+
+	"wave"	")items/smallmedkit1.wav"
+}
+
+"ZPlayer.AmmoPickup"
+{
+	"channel"	"CHAN_USER_BASE3"
+	"volume"	"0.7"
+	"soundlevel"  "SNDLVL_65dB"
+
+	"wave"	")cszm_fx/items/ammopickup1.wav"
+}
+
+"HL2Player.PickupWeapon"
+{
+	"channel"	"CHAN_USER_BASE3"
+	"volume"	"0.7"
+	"soundlevel"  "SNDLVL_65dB"
+
+	"wave"	")cszm_fx/items/gunpickup1.wav"
+}
+
+"Player.PickupWeapon"
+{
+	"channel"	"CHAN_USER_BASE3"
+	"volume"	"0.7"
+	"soundlevel"  "SNDLVL_65dB"
+
+	"wave"	")cszm_fx/items/gunpickup1.wav"
+}
+
+"Weapon_Claws.Single"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"0.85,1"
+	"soundlevel"		"SNDLVL_70dB"
+	"pitch"			"95,105"
+	"rndwave"
+	{
+		"wave"		")zombies/z_attack/swipe/z-swipe-1.wav"
+		"wave"		")zombies/z_attack/swipe/z-swipe-2.wav"
+		"wave"		")zombies/z_attack/swipe/z-swipe-3.wav"
+		"wave"		")zombies/z_attack/swipe/z-swipe-4.wav"
+		"wave"		")zombies/z_attack/swipe/z-swipe-5.wav"
+		"wave"		")zombies/z_attack/swipe/z-swipe-6.wav"
+	}
+}
+
+"Weapon_Claws.Melee_Hit"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"0.85,1"
+	"soundlevel"		"SNDLVL_70dB"
+	"pitch"			"100,105"
+
+	"rndwave"
+	{
+		"wave"		")cszm_fx/player/claw_strike1.wav"
+		"wave"		")cszm_fx/player/claw_strike2.wav"
+		"wave"		")cszm_fx/player/claw_strike3.wav"
+	}
+}
+
+"Weapon_Claws.Push"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"0.5,0.75"
+	"soundlevel"		"SNDLVL_70dB"
+	"pitch"			"100,105"
+
+	"rndwave"
+	{
+		"wave"		")cszm_fx/player/claw_strike1.wav"
+		"wave"		")cszm_fx/player/claw_strike2.wav"
+		"wave"		")cszm_fx/player/claw_strike3.wav"
+	}
+}
+
+"HudChat.Message"
+{
+	"channel"		"CHAN_USER_BASE4"
+	"volume"		"0.8"
+	"soundlevel" 	"SNDLVL_NONE"
+	"pitch"			"PITCH_NORM"
+
+	"wave"			"cszm_fx/misc/talk.wav"
+}
+
+///////////////////////////
+////////CSZM Sounds////////
+///////////////////////////
+"Adrenaline.CapOff"
+{
+	"channel"		"CHAN_ITEM"
+	"soundlevel"	"SNDLVL_NORM"
+    "volume"		"0.65"
+	"wave"		")cszm_fx/weapons/adrenaline_cap_off.wav"
+}
+
+"Adrenaline.NeedleOpen"
+{
+	"channel"		"CHAN_STATIC"
+	"soundlevel"	"SNDLVL_NORM"
+    "volume"		"0.65"
+	"wave"		")cszm_fx/weapons/adrenaline_needle_open.wav"
+}
+
+"Adrenaline.NeedleIn"
+{
+	"channel"		"CHAN_ITEM"
+	"soundlevel"	"SNDLVL_NORM"
+    "volume"		"0.65"
+	"wave"		")cszm_fx/weapons/adrenaline_needle_in.wav"
+}
+
+
+"CSPlayer.Pain1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"0.8"
+	"pitch"			"95, 105"
+
+	"soundlevel"	"SNDLVL_80dB"
+
+	"rndwave"
+	{
+		"wave"	")npc/zombie/zombie_pain1.wav"
+		"wave"	")npc/zombie/zombie_pain2.wav"
+		"wave"	")npc/zombie/zombie_pain3.wav"
+		"wave"	")npc/zombie/zombie_pain4.wav"
+		"wave"	")npc/zombie/zombie_pain5.wav"
+		"wave"	")npc/zombie/zombie_pain6.wav"
+	}
+}
+
+"CSPlayer.Die1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_80dB"
+
+	"rndwave"
+	{
+		"wave"	")npc/zombie/zombie_die1.wav"
+		"wave"	")npc/zombie/zombie_die2.wav"
+		"wave"	")npc/zombie/zombie_die3.wav"
+	}
+}
+
+"CSPlayer.Idle1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"0.298, 0.374"
+	"pitch"			"90, 105"
+
+	"soundlevel"	"SNDLVL_80dB"
+
+	"rndwave"
+	{
+		"wave"	")npc/zombie/zombie_voice_idle1.wav"
+		"wave"	")npc/zombie/zombie_voice_idle2.wav"
+		"wave"	")npc/zombie/zombie_voice_idle3.wav"
+		"wave"	")npc/zombie/zombie_voice_idle4.wav"
+		"wave"	")npc/zombie/zombie_voice_idle5.wav"
+		"wave"	")npc/zombie/zombie_voice_idle6.wav"
+		"wave"	")npc/zombie/zombie_voice_idle7.wav"
+		"wave"	")npc/zombie/zombie_voice_idle8.wav"
+		"wave"	")npc/zombie/zombie_voice_idle9.wav"
+		"wave"	")npc/zombie/zombie_voice_idle10.wav"
+		"wave"	")npc/zombie/zombie_voice_idle11.wav"
+		"wave"	")npc/zombie/zombie_voice_idle12.wav"
+		"wave"	")npc/zombie/zombie_voice_idle13.wav"
+		"wave"	")npc/zombie/zombie_voice_idle14.wav"
+	}
+}
+
+"CSPlayer.Pain2"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"0.9"
+	"pitch"			"95, 105"
+
+	"soundlevel"	"SNDLVL_80dB"
+
+	"rndwave"
+	{
+		"wave"	")cszm_fx/zombie/pain_01.wav"
+		"wave"	")cszm_fx/zombie/pain_02.wav"
+		"wave"	")cszm_fx/zombie/pain_03.wav"
+		"wave"	")cszm_fx/zombie/pain_04.wav"
+		"wave"	")cszm_fx/zombie/pain_05.wav"
+	}
+}
+
+"CSPlayer.Die2"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_80dB"
+
+	"rndwave"
+	{
+		"wave"	")cszm_fx/zombie/die_01.wav"
+		"wave"	")cszm_fx/zombie/die_02.wav"
+		"wave"	")cszm_fx/zombie/die_03.wav"
+		"wave"	")cszm_fx/zombie/die_04.wav"
+	}
+}
+
+"CSPlayer.Idle2"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"0.298, 0.374"
+	"pitch"			"90, 105"
+
+	"soundlevel"	"SNDLVL_80dB"
+
+	"rndwave"
+	{
+		"wave"	")cszm_fx/zombie/idle_01.wav"
+		"wave"	")cszm_fx/zombie/idle_02.wav"
+		"wave"	")cszm_fx/zombie/idle_03.wav"
+		"wave"	")cszm_fx/zombie/idle_04.wav"
+		"wave"	")cszm_fx/zombie/idle_05.wav"
+		"wave"	")cszm_fx/zombie/idle_06.wav"
+		"wave"	")cszm_fx/zombie/idle_07.wav"
+		"wave"	")cszm_fx/zombie/idle_08.wav"
+		"wave"	")cszm_fx/zombie/idle_09.wav"
+	}
+}
+
+"CSPlayer.Pain3"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"0.85"
+	"pitch"			"95, 105"
+
+	"soundlevel"	"SNDLVL_80dB"
+
+	"rndwave"
+	{
+		"wave"	")cszm_fx/zombie_d3/zombie_pain01.wav"
+		"wave"	")cszm_fx/zombie_d3/zombie_pain02.wav"
+		"wave"	")cszm_fx/zombie_d3/zombie_pain03.wav"
+		"wave"	")cszm_fx/zombie_d3/zombie_pain04.wav"
+		"wave"	")cszm_fx/zombie_d3/zombie_pain05.wav"
+	}
+}
+
+"CSPlayer.Die3"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_80dB"
+
+	"rndwave"
+	{
+		"wave"	")cszm_fx/zombie_d3/zombie_death01.wav"
+		"wave"	")cszm_fx/zombie_d3/zombie_death02.wav"
+		"wave"	")cszm_fx/zombie_d3/zombie_death03.wav"
+		"wave"	")cszm_fx/zombie_d3/zombie_death04.wav"
+	}
+}
+
+"CSPlayer.Idle3"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"0.298, 0.374"
+	"pitch"			"90, 105"
+
+	"soundlevel"	"SNDLVL_80dB"
+
+	"rndwave"
+	{
+		"wave"	")cszm_fx/zombie_d3/zombie_idle03.wav"
+		"wave"	")cszm_fx/zombie_d3/zombie_idle04.wav"
+		"wave"	")cszm_fx/zombie_d3/zombie_idle05.wav"
+		"wave"	")cszm_fx/zombie_d3/zombie_idle06.wav"
+		"wave"	")cszm_fx/zombie_d3/zombie_idle07.wav"
+		"wave"	")cszm_fx/zombie_d3/zombie_idle08.wav"
+		"wave"	")cszm_fx/zombie_d3/zombie_idle09.wav"
+	}
+}
+
+"CSPlayer.Turn"
+{
+	"channel"		"CHAN_USER_BASE1"
+	"volume"		"0.95"
+	"pitch"			"90, 105"
+
+	"soundlevel"	"SNDLVL_GUNFIRE"
+
+	"rndwave"
+	{
+		"wave"	"cszm_fx/player/plr_scream1.wav"
+		"wave"	"cszm_fx/player/plr_scream2.wav"
+	}
+}
+
+"CSPlayer.Mute"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_50dB"
+	
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+
+///////////////////////////
+//Mute some player sounds//
+///////////////////////////
+"Character_Jessica.Go"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+
+"Character_Lea.Go"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+
+"Character_Marcus.Go"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+
+"Character_Paul.Go"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+
+"Character_Pedro.Go"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+
+"Character_Vanessa.Go"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+
+"Character_Eugene.Go"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+
+"Character_Larry.Go"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+
+//////////////////////////////
+//Override Zombie Eugene set//
+//////////////////////////////
+"Character_Eugene_Z.BurnPain"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+
+
+"Character_Eugene_Z.Jump"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+
+"Character_Eugene_Z.Berserk"
+{
+	"channel"		"CHAN_USER_BASE1"
+	"volume"		"0.8"
+	"pitch"			"90, 95"
+
+	"soundlevel"	"SNDLVL_85dB"
+
+	"rndwave"
+	{
+		"wave"	"zombies/eugene/berserk/zmale_berserk-01.wav"
+		"wave"	"zombies/eugene/berserk/zmale_berserk-02.wav"
+		"wave"	"zombies/eugene/berserk/zmale_berserk-03.wav"
+		"wave"	"zombies/eugene/berserk/zmale_berserk-04.wav"
+		"wave"	"zombies/eugene/berserk/zmale_berserk-05.wav"
+		"wave"	"zombies/eugene/berserk/zmale_berserk-06.wav"
+		"wave"	"zombies/eugene/berserk/zmale_berserk-07.wav"
+		"wave"	"zombies/eugene/berserk/zmale_berserk-08.wav"
+	}
+}
+
+"Character_Eugene_Z.Melee"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+
+"Character_Eugene_Z.Pain"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+
+
+"Character_Eugene_Z.UseDeny"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+"Character_Eugene_Z.Taunt"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+"Character_Eugene_Z.Die"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+//////////////////////////////
+//////Mute Zombie Taunts//////
+//////////////////////////////
+"Character_Vanessa_Z.Taunt"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+"Character_Pedro_Z.Taunt"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+"Character_Paul_Z.Taunt"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+"Character_Marcus_Z.Taunt"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+"Character_Lea_Z.Taunt"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+"Character_Larry_Z.Taunt"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+"Character_Larry_Z.Taunt"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+"Character_Jessica_Z.Taunt"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}
+"Character_Jessica_Z.Taunt"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_50dB"
+	"wave"			"npc/combine_soldier/vo/_comma.wav"
+}

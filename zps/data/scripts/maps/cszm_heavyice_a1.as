@@ -236,6 +236,34 @@ class CExpBarrel
 	}
 }
 
+CAntidote@ pAntidote;
+
+class CAntidote
+{
+	int EIndex;
+	private Vector Origin;
+	private QAngle Angles;
+
+	CAntidote(int nIndex)
+	{
+		EIndex = nIndex;
+		Origin = Vector(832.0f, -224.0f, 149.0f);
+		Angles = QAngle(90, 0, 0);
+	}
+
+	void Rotate()
+	{
+		if (FindEntityByEntIndex(EIndex) is null || FindEntityByEntIndex(EIndex).GetOwner() !is null)
+		{
+			EIndex = -1;
+			return;
+		}
+
+		Angles += QAngle(0, 2.5f, 0);
+		FindEntityByEntIndex(EIndex).Teleport(Origin, Angles, Vector(0, 0, 0));
+	}
+}
+
 void OnMapInit()
 {
 	iMaxPlayers = Globals.GetMaxClients();
@@ -284,6 +312,8 @@ void OnMatchEnded()
 	g_CeilingAngles.removeRange(0, g_CeilingAngles.length());
 	g_CeilingOrigin.removeRange(0, g_CeilingOrigin.length());
 	g_CeilingModel.removeRange(0, g_CeilingModel.length());
+
+	@pAntidote is null;
 }
 
 void OnNewRound()
@@ -300,6 +330,18 @@ void OnMatchBegin()
 
 void OnProcessRound()
 {
+	if (pAntidote !is null)
+	{
+		if (pAntidote.EIndex == -1)
+		{
+			@pAntidote is null;
+		}
+		else
+		{
+			pAntidote.Rotate();
+		}
+	}
+
 	for (uint b = 0; b < Array_ExpBarrel.length(); b++)
 	{
 		CExpBarrel@ pBarrel = Array_ExpBarrel[b];
@@ -632,6 +674,17 @@ void SetUpStuff()
 	RemoveNativeSpawns("info_player_human");
 	RemoveNativeSpawns("info_player_zombie");
 	CreateSpawnsFromArray(PrimaryHumanSpawns, true);
+	FindAntidote();
+}
+
+void FindAntidote()
+{
+	CBaseEntity@ pAntidoteEntity = FindEntityByClassname(null, "item_deliver");
+
+	if (pAntidoteEntity !is null)
+	{
+		@pAntidote = CAntidote(pAntidoteEntity.entindex());
+	}
 }
 
 void FindExpBarrels()

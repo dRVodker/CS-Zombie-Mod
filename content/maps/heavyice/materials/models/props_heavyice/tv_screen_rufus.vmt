@@ -1,0 +1,30 @@
+"UnlitTwoTexture"
+{
+	"$basetexture"	"models/props_heavyice/tv_rufus"
+	"$selfillum"	"1"
+	"$texture2"		"dev/dev_scanline"
+	"$mod2x"		"1"
+	"$nodecal"		"1"
+
+	"Proxies"
+	{
+
+
+
+		"AnimatedTexture"
+		{
+			"animatedtexturevar" "$basetexture"
+			"animatedtextureframenumvar" "$frame"
+			"animatedtextureframerate" 35 
+		}
+
+
+		"TextureScroll"
+		{
+			"texturescrollvar" "$texture2transform"
+			"texturescrollrate" 1
+			"texturescrollangle" -90
+		}
+
+	}
+}

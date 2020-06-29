@@ -1,0 +1,15 @@
+Patch
+{
+	include "materials/dev/dev_measuregeneric01b.vmt"
+	insert
+	{
+		"$basetexture"		"cs_office/offwllc"
+		"$bumpmap"			"cs_office/offwllc_normal"
+		"$surfaceprop"		"plaster"
+		
+		"$detail"				"detail/plaster_detail_01"
+		"$detailscale"			"6"
+		"$detailblendfactor"	"0.65"
+		"$detailblendmode"		"0"
+	}
+}

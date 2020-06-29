@@ -1,0 +1,9 @@
+Patch
+{
+	include "materials/dev/dev_measuregeneric01b.vmt"
+	insert
+	{
+		"$basetexture"		"lila_panic/offdra"
+		"$surfaceprop"		"wood_panel"
+	}
+}

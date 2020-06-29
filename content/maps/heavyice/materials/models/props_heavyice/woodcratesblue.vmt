@@ -1,0 +1,9 @@
+
+"vertexlitgeneric"
+{
+	// Original shader: VertexLitTexture
+	"$basetexture" "models/props_heavyice/woodcratesblue"
+	"$surfaceprop" "wood"
+	
+}
+

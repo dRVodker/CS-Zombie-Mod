@@ -1,0 +1,16 @@
+"UnlitGeneric"
+{
+	"$basetexture"	"zph_sunshine/lightpurple"
+	
+	"$alphatest" "1"
+	"$alphatestReference" "0"
+
+	"$nofog" "1"
+	"$nodecal" "1"
+
+	"%compilepassbullets" "1"
+	"%compileDetail" "1"
+	"%compileNonSolid" "1"
+	
+	"$surfaceprop"	"concrete"
+}

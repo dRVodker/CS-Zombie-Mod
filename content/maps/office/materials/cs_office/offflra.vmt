@@ -1,0 +1,12 @@
+Patch
+{
+	include "materials/dev/dev_measuregeneric01b.vmt"
+	insert
+	{
+		"$basetexture"		"cs_office/offflra"
+		"$surfaceprop"		"carpet"
+		
+		"$detail" "detail/dt_carpet1"
+		"$detailscale" "12"
+	}
+}

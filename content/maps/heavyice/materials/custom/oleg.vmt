@@ -1,0 +1,10 @@
+"UnlitGeneric"
+{
+	"$basetexture" "custom/oleg"
+	"%compilepassbullets" "1"
+	"$surfaceprop" "glass"
+	"$AlphaTest" "1"
+	"$nodecal" "1"
+
+	"$color" "{160 1 255}"
+}

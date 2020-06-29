@@ -1,0 +1,9 @@
+"WorldVertexTransition"
+{
+	"$baseTexture" "dust_old/groundsand03"
+	"$basetexture2" "dust_old/groundsand03a"
+	"$surfaceprop" "sand"
+	"$bumpmap" "dust_old/groundsand03_normal"
+	"$bumpmap2" "dust_old/groundsand03a_normal"
+	"%keywords" "cstrike" 
+}

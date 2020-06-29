@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models/props_sunshine/light_streetlight_color03"
+	
+	"$selfillum" 1 
+}

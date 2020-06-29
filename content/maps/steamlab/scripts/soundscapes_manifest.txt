@@ -1,0 +1,10 @@
+soundscaples_manifest
+{
+	"file"		"scripts/soundscapes.txt"
+	
+	"file"		"scripts/soundscapes_steamlab.txt"
+	
+	"file"		"scripts/soundscapes_labs.txt"
+	"file"		"scripts/soundscapes_streetwar.txt"
+	"file"		"scripts/soundscapes_strike.txt"
+}

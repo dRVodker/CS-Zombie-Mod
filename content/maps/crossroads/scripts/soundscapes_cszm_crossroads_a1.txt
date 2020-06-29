@@ -1,0 +1,173 @@
+"CSZM.CrossRoads_Outside"
+{
+	"dsp"			"1"
+	"dsp_volume"	"1.25"
+
+	"playlooping"
+	{
+		"volume"	"0.2"
+		"pitch"		"125"
+
+		"wave"		"ambient/atmosphere/hole_amb3.wav"
+	}
+
+	"playlooping"
+	{
+		"volume"	"0.85"
+		"pitch"		"85"
+
+		"wave"		"ambient/wind/outside_wind-01.wav"
+	}
+
+	"playlooping"
+	{
+		"volume"	"0.125"
+		"pitch"		"95"
+
+		"wave"		"ambient/explosions/battle_loop1.wav"
+	}
+
+	"playlooping"
+	{
+		"volume"	"0.1"
+		"pitch"		"35"
+
+		"wave"		"ambient/wind/wasteland_wind.wav"
+	}
+
+	"playlooping"
+	{
+		"volume"	"0.05"
+		"pitch"		"35"
+
+		"wave"		"ambient/atmosphere/tone_quiet.wav"
+	}
+
+	"playrandom"
+	{
+		"volume"		"0.1,0.175"
+		"time"			"10,30"
+		"pitch"			"90,105"
+
+		"rndwave"
+		{
+			"wave"	"ambient/creatures/town_child_scream1.wav"
+			"wave"	"ambient/creatures/town_moan1.wav"
+			"wave"	"ambient/creatures/town_muffled_cry1.wav"
+			"wave"	"ambient/creatures/town_scared_breathing1.wav"
+			"wave"	"ambient/creatures/town_scared_breathing2.wav"
+			"wave"	"ambient/creatures/town_scared_sob1.wav"
+			"wave"	"ambient/creatures/town_scared_sob2.wav"
+			"wave"	"ambient/creatures/town_zombie_call1.wav"
+			"wave"	"ambient/car_tires/drive_spin-03.wav"
+			"wave"	"ambient/car_tires/drive_spin-04.wav"
+			"wave"	"ambient/vehicles/car/crash-01.wav"
+			"wave"	"ambient/vehicles/car/mustang_pass-01.wav"
+			"wave"	"ambient/vehicles/car/mustang_pass-02.wav"
+			"wave"	"ambient/siren/distant_siren-01.wav"
+			"wave"	"ambient/siren/distant_siren-02.wav"
+			"wave"	"ambient/siren/distant_siren-03.wav"
+			"wave"	"ambient/siren/police_siren-01.wav"
+			"wave"	"ambient/atmosphere/city_skypass1.wav"
+			"wave"	"ambient/atmosphere/city_truckpass1.wav"
+			"wave"	"ambient/machines/heli_pass_distant1.wav"
+			"wave"	"ambient/machines/heli_pass_quick1.wav"
+			"wave"	"ambient/machines/heli_pass1.wav"
+			"wave"	"ambient/machines/truck_pass_distant3.wav"
+			"wave"	"ambient/machines/truck_pass_distant2.wav"
+			"wave"	"ambient/machines/truck_pass_distant1.wav"
+			"wave"	"ambient/atmosphere/cave_hit3.wav"
+			"wave"	"ambient/atmosphere/cave_hit5.wav"
+			"wave"	"ambient/atmosphere/cave_hit4.wav"
+			"wave"	"ambient/atmosphere/thunder3.wav"
+			"wave"	"ambient/atmosphere/thunder4.wav"
+			"wave"	"ambient/materials/metal4.wav"
+			"wave"	"ambient/materials/metal5.wav"
+			"wave"	"ambient/materials/metal9.wav"
+			"wave"	"ambient/materials/metal_rattle1.wav"
+			"wave"	"ambient/materials/metal_rattle3.wav"
+			"wave"	"ambient/materials/metal_rattle4.wav"
+			"wave"	"ambient/materials/metal_stress3.wav"
+			"wave"	"ambient/levels/canals/critter4.wav"
+			"wave"	"ambient/levels/canals/critter5.wav"
+			"wave"	"ambient/levels/canals/swamp_bird4.wav"
+			"wave"	"ambient/levels/canals/swamp_bird2.wav"
+			"wave"	"ambient/levels/citadel/citadel_flyer1.wav"
+			"wave"	"ambient/levels/citadel/strange_talk9.wav"
+			"wave"	"ambient/levels/prison/inside_battle_zombie1.wav"
+			"wave"	"ambient/levels/prison/inside_battle4.wav"
+			"wave"	"ambient/levels/prison/inside_battle6.wav"
+			"wave"	"ambient/levels/prison/inside_battle7.wav"
+			"wave"	"ambient/levels/prison/inside_battle8.wav"
+			"wave"	"ambient/levels/streetwar/city_battle17.wav"
+			"wave"	"ambient/levels/streetwar/city_battle18.wav"
+			"wave"	"ambient/levels/streetwar/city_battle19.wav"
+			"wave"	"ambient/levels/streetwar/city_riot2.wav"
+			"wave"	"ambient/levels/streetwar/city_riot1.wav"
+			"wave"	"ambient/levels/streetwar/city_scream3.wav"
+			"wave"	"ambient/levels/streetwar/city_chant1.wav"
+			"wave"	"ambient/levels/streetwar/marching_distant1.wav"
+			"wave"	"ambient/levels/streetwar/marching_distant2.wav"
+		}
+	}
+}
+
+"CSZM.CrossRoads_Inside"
+{
+	"dsp"			"1"
+	"dsp_volume"	"1.25"
+
+	"playlooping"
+	{
+		"volume"	"0.2"
+		"pitch"		"80"
+
+		"wave"		"ambient/atmosphere/ambience_base.wav"
+	}
+
+	"playlooping"
+	{
+		"volume"	"0.65"
+		"pitch"		"45"
+
+		"wave"		"ambient/atmosphere/cave_outdoor1.wav"
+	}
+
+	"playlooping"
+	{
+		"volume"	"0.45"
+		"pitch"		"80"
+
+		"wave"		"ambient/computer/computer-01.wav"
+	}
+
+	"playrandom"
+	{
+		"volume"		"0.095,0.175"
+		"time"			"10,25"
+		"pitch"			"90,105"
+
+		"rndwave"
+		{
+			"wave"	"ambient/creatures/flies1.wav"
+			"wave"	"ambient/creatures/flies2.wav"
+			"wave"	"ambient/creatures/flies3.wav"
+			"wave"	"ambient/creatures/flies4.wav"
+			"wave"	"ambient/creatures/flies5.wav"
+			"wave"	"ambient/creatures/rats1.wav"
+			"wave"	"ambient/creatures/rats2.wav"
+			"wave"	"ambient/creatures/rats3.wav"
+			"wave"	"ambient/creatures/rats4.wav"
+			"wave"	"ambient/creatures/town_scared_breathing1.wav"
+			"wave"	"ambient/creatures/town_scared_breathing2.wav"
+			"wave"	"ambient/creatures/town_scared_sob1.wav"
+			"wave"	"ambient/creatures/town_scared_sob2.wav"
+		}
+	}
+
+	"playsoundscape"
+	{
+		"name"		"CSZM.CrossRoads_Outside"
+		"volume"	"0.225"
+	}
+}

@@ -1,0 +1,21 @@
+"UnlitGeneric"
+{
+	"$basetexture" "custom/count"
+	"$surfaceprop" "glass"
+	"%keywords" "c17custom"
+	
+	"$AlphaTest" "1"
+	"$AlphaTestReference" "0.75"
+
+
+	"Proxies"
+ 	  {
+    		  "ToggleTexture" 
+     			 {
+        				 "toggleTextureVar" "$baseTexture" 
+                    				 "toggleTextureFrameNumVar" "$frame" 
+                     				"toggleTextureShouldWrap" "0" 
+     			 } 
+ 	  } 
+
+}

@@ -1,0 +1,13 @@
+Patch
+{
+	include "materials/models/props_c17/clock01.vmt"
+	insert
+	{
+		"$basetexture" "Models/props_interiors/LightBulb01a"
+		"$surfaceprop" "glass"	
+		"$halflambert" "1"
+	}
+}
+
+
+

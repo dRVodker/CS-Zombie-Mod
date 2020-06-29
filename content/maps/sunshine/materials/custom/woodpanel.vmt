@@ -1,0 +1,6 @@
+"LightmappedGeneric"
+{
+	"$baseTexture" "zpcustommaterials/wall/woodpanel"
+	"$bumpmap" "zpcustommaterials/wall/woodpanel_normal"
+	"$surfaceprop" "Wood_Solid"
+}

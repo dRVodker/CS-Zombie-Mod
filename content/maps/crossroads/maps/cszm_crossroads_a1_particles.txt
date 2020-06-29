@@ -1,0 +1,5 @@
+particles_manifest
+{
+	"file"		"!particles/mansion_skybox.pcf"	
+}
+

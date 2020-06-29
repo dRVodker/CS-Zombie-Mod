@@ -1,0 +1,11 @@
+"Refract"
+{
+	"%tooltexture"		"aquatica/aqunevenglass2_n"
+	"$surfaceprop"		"glass"
+	"$refractamount"	"0.0785"
+	"$bluramount"		"0.35"
+	"$normalmap"		"aquatica/aqunevenglass2_n"
+	"$dudvmap"			"aquatica/aqunevenglass2"
+	"$envmap"			"lila_panic/envmap"
+	"$envmaptint"		"[1 0.85 0.75]"
+}

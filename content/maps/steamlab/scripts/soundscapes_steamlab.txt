@@ -1,0 +1,74 @@
+"steamlab_readyroom"
+{
+	"dsp"	"1"
+	"dsp_volume"	"1.15"
+	
+	"playlooping"
+	{
+		"volume"		".12"
+		"pitch"		"100"
+		"wave"		"ambient/machines/lab_loop1.wav"
+	}
+	
+	"playlooping"
+	{
+		"volume"		"1"
+		"pitch"		"125,100,75,50,150"
+		
+		"soundlevel"	"SNDLVL_70dB"
+		
+		"wave"		"custom\music\two.wav"
+		"position"	"0"
+	}
+	
+	"playlooping"
+	{
+		"volume"		"1"
+		"pitch"			"85,100,115"
+		
+		"soundlevel"	"SNDLVL_65dB"
+		
+		"wave"			"ambient/computer/computer-01.wav"
+		"position"		"3"
+	}
+	
+	"playrandom"
+	{
+		"time"		"4, 10"
+		"volume"		"0.1,0.15"
+		"pitch"		"100"
+		"soundlevel"	"SNDLVL_NORM"
+		"rndwave"
+		{
+			"wave"	"npc\headcrab_poison\ph_hiss1.wav"
+			"wave"	"npc\headcrab_poison\ph_idle1.wav"
+			"wave"	"npc\headcrab_poison\ph_idle2.wav"
+			"wave"	"npc\headcrab_poison\ph_idle3.wav"
+			"wave"	"npc\headcrab_poison\ph_talk1.wav"
+			"wave"	"npc\headcrab_poison\ph_talk2.wav"
+			"wave"	"npc\headcrab_poison\ph_talk3.wav"
+			"wave"	"npc\headcrab_poison\ph_warning1.wav"
+			"wave"	"npc\headcrab_poison\ph_warning2.wav"
+			"wave"	"npc\headcrab_poison\ph_warning3.wav"
+		}
+		"position"	"1"
+		// black
+	}
+	
+	"playrandom"
+	{
+		"time"		"7, 14"
+		"volume"		"0.3,0.5"
+		"pitch"		"100"
+		"soundlevel"	"SNDLVL_NORM"
+		"rndwave"
+		{
+			"wave"	"ambient\creatures\pigeon_idle1.wav"
+			"wave"	"ambient\creatures\pigeon_idle2.wav"
+			"wave"	"ambient\creatures\pigeon_idle3.wav"
+			"wave"	"ambient\creatures\pigeon_idle4.wav"
+		}
+		"position"	"2"
+		// pigeon
+	}
+}

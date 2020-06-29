@@ -1,0 +1,23 @@
+"unlitgeneric"
+{
+	"$baseTexture"			"maps/zps_sapidcerebrum/zombie-breakme"
+	"$surfaceprop"			"plastic_barrel"
+	"$translucent"			"1"
+	"$additive"				"1"
+	
+	"$nodecal"				"1"
+	
+ 	"Proxies"
+	{
+		"ZombieVisionTexture"
+		{
+			"texturevar" "$basetexturetransform"
+		}
+		"Animatedtexture"
+		{
+			"Animatedtexturevar" "$Basetexture"
+			"Animatedtextureframenumvar" "$frame"
+			"Animatedtextureframerate" "15"
+		}
+	}
+}

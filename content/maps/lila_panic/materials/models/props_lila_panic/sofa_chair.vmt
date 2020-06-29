@@ -1,0 +1,13 @@
+Patch
+{
+	include "materials/models/props_c17/clock01.vmt"
+	insert
+	{
+		"$basetexture"	"models/props_lila_panic/sofa"
+		
+		"$detail"				"detail/noise_detail_01"
+		"$detailscale"			"5"
+		"$detailblendfactor"	"0.45"
+		"$detailblendmode"		"0"
+	}
+}

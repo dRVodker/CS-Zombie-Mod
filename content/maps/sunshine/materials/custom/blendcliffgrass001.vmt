@@ -1,0 +1,6 @@
+"WorldVertexTransition"
+{
+	"$basetexture" "nature/cliffface002a"
+	"$basetexture2" "nature/dirtfloor002a"
+	"$surfaceprop" "dirt"
+}

@@ -1,0 +1,15 @@
+Patch
+{
+	include "materials/dev/dev_measuregeneric01b.vmt"
+	insert
+	{
+		"$basetexture"			"dev/dev_glassfrosted01a"
+		"$surfaceprop"			"glass"
+//		"$additive"				"1"
+		"%keywords"				"custom"
+		
+		"%compileNonSolid"		"1"
+		"%compileDetail"		"1"
+		"%compilepassbullets"	"1"
+	}
+}

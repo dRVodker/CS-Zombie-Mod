@@ -1,0 +1,7 @@
+LightmappedGeneric
+{
+	"$basetexture"	"crossroads_havoc/nuke_metalgrate_01"
+	"%compilepassbullets" 1
+	"$surfaceprop" "metalgrate"
+	"$alphatest" 1
+}

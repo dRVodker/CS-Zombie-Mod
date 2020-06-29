@@ -1,0 +1,9 @@
+Patch
+{
+	include "materials/dev/dev_measuregeneric01b.vmt"
+	insert
+	{
+		"$basetexture"		"cs_office/base01"
+		"$surfaceprop"		"concrete"
+	}
+}
