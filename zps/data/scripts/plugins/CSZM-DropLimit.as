@@ -116,9 +116,9 @@ void OnEntityDropped(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 
 HookReturnCode CSZM_DI_OnEntityCreation(const string &in strClassname, CBaseEntity@ pEntity)
 {
-	if (bIsCSZM && ((Utils.StrContains("weapon", strClassname) || Utils.StrContains("item", strClassname)) && !(Utils.StrEql("weapon_phone", strClassname, true) || Utils.StrEql("item_deliver", strClassname, true) || Utils.StrEql("weapon_emptyhand", strClassname, true))) && flTimeToDelete > Globals.GetCurrentTime())
+	if (bIsCSZM && ((Utils.StrContains("weapon", strClassname) || Utils.StrContains("item", strClassname)) && !(Utils.StrEql("weapon_phone", strClassname, true) || Utils.StrEql("weapon_emptyhand", strClassname, true))) && flTimeToDelete > Globals.GetCurrentTime())
 	{
-		pEntity.SetEntityName("_items_to_kill");
+		Utils.StrContains("_noremove", pEntity.GetEntityName()) ? pEntity.SetEntityName(Utils.StrReplace(pEntity.GetEntityName(), "_noremove", "")) : pEntity.SetEntityName("_items_to_kill");
 	}
 
 	return HOOK_CONTINUE;

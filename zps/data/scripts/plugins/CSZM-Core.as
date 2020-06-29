@@ -2840,7 +2840,7 @@ void SelectPlrsForInfect()
 	}
 
 	SD(strCSZM + "{gold}Произошла мутация зараженных ({red}" + formatInt(iInfected) + " {gold}из {blue}" + formatInt(iSurvCount) + "{gold})");
-	Engine.EmitSound("CS_FirstTurn");
+	Engine.EmitSoundPosition(0, "@cszm_fx/misc/suspense.wav", Vector(0, 0, 0), 1.0f, 0, Math::RandomInt(95, 105));
 }
 
 void TurnToZombie(const int &in index)
@@ -2875,7 +2875,8 @@ void TurnToZombie(const int &in index)
 		EmitBloodEffect(pPlayer, Array_CSZMPlayer[index].Spawn);
 		pPlayerEntity.ChangeTeam(TEAM_ZOMBIES);
 		pPlayer.GiveWeapon("weapon_arms");
-		pPlayer.SetVoice("eugene_z");
+//		pPlayer.SetVoice("eugene_z");
+		pPlayer.SetVoice(eugene);
 		Engine.EmitSoundEntity(pPlayerEntity, "CSPlayer.Mute");
 		pPlayer.SetArmModel(MODEL_ZOMBIE_ARMS);
 		Array_CSZMPlayer[index].SetDefSpeed(SPEED_ZOMBIE);

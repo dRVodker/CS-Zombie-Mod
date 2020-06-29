@@ -31,8 +31,8 @@ const float GLOW_BASE_DISTANCE = 1575.0f;
 
 //Голоса зомби
 const int VOICE_MAX_INDEX = 3;
-const string VOICE_ZM_PAIN = "CSPlayer_Z.Pain";
-const string VOICE_ZM_DIE = "CSPlayer_Z.Die";
+const string VOICE_ZM_PAIN = "CSPlayer.Pain";
+const string VOICE_ZM_DIE = "CSPlayer.Die";
 const string VOICE_ZM_IDLE = "CSPlayer.Idle";
 
 //Некоторые модели
