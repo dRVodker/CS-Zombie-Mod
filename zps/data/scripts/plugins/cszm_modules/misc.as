@@ -1,6 +1,7 @@
 void AutoMap()
 {
 	Schedule::Task(0.05f, "CSZM_SetScreenOverlay");
+	Schedule::Task(0.05f, "CSZM_SetColorCorrection");
 }
 
 bool bDamageType(int &in iSubjectDT, int &in iDMGNum)
@@ -442,6 +443,26 @@ void CSZM_SetScreenOverlay()
 		ScreenOverlayIPD.Add("StartOverlays", "0", true);
 
 		EntityCreator::Create("env_screenoverlay", Vector(0, 0, 0), QAngle(0, 0, 0), ScreenOverlayIPD);
+	}
+}
+
+void CSZM_SetColorCorrection()
+{
+	CBaseEntity@ pColor = FindEntityByClassname(pColor, "color_correction");
+	if (pColor is null)
+	{
+		CEntityData@ ColorCorrection = EntityCreator::EntityData();
+		ColorCorrection.Add("targetname", "cszm_colorcorrection");
+		ColorCorrection.Add("fadeInDuration", "0.01");
+		ColorCorrection.Add("fadeOutDuration", "0.01");
+		ColorCorrection.Add("filename", "materials/cc_zombiemod.raw");
+		ColorCorrection.Add("maxfalloff", "-1");
+		ColorCorrection.Add("maxweight", "0.25");
+		ColorCorrection.Add("minfalloff", "0");
+		ColorCorrection.Add("StartDisabled", "0");
+		ColorCorrection.Add("Enable", "0", true);
+
+		EntityCreator::Create("color_correction", Vector(0, 0, 0), QAngle(0, 0, 0), ColorCorrection);
 	}
 }
 

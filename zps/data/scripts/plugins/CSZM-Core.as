@@ -2875,7 +2875,6 @@ void TurnToZombie(const int &in index)
 		EmitBloodEffect(pPlayer, Array_CSZMPlayer[index].Spawn);
 		pPlayerEntity.ChangeTeam(TEAM_ZOMBIES);
 		pPlayer.GiveWeapon("weapon_arms");
-//		pPlayer.SetVoice("eugene_z");
 		pPlayer.SetVoice(eugene);
 		Engine.EmitSoundEntity(pPlayerEntity, "CSPlayer.Mute");
 		pPlayer.SetArmModel(MODEL_ZOMBIE_ARMS);
