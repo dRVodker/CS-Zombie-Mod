@@ -1074,7 +1074,7 @@ class CSZMPlayer
 #include "./cszm_modules/core_warmup.as"
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
-//GameText/RadioMenu/NonPlayZone
+//GameText/RadioMenu
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 namespace GameText
@@ -1843,6 +1843,48 @@ namespace Radio
 				PlaySound();
 			}
 		}
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+//MapPurchase
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+void MapPurchase(NetObject@ pData)
+{
+	if (pData is null)
+	{
+		return;
+	}
+
+	string sFunc = "null";
+	int iPlayerMoney = -1;
+	int iPlayerIndex = 0;
+	int iCustomIndex = -1;
+	int iCost = 0;
+
+	if (pData.HasIndexValue(0) && pData.HasIndexValue(1) && pData.HasIndexValue(2) && pData.HasIndexValue(3))
+	{
+		sFunc = pData.GetString(0);
+		iPlayerIndex = pData.GetInt(1);
+		iCost = pData.GetInt(2);
+		iCustomIndex = pData.GetInt(3);
+	}
+
+	iPlayerMoney = Array_CSZMPlayer[iPlayerIndex].CashBank;
+
+	if (iPlayerMoney < iCost)
+	{
+		Engine.EmitSoundPlayer(ToZPPlayer(iPlayerIndex), Radio::gMenuSound[1]);
+		Chat.PrintToChatPlayer(ToBasePlayer(iPlayerIndex), "{red}*{gold}" + Radio::gDeniedReason[0]);
+	}
+	else
+	{
+		Array_CSZMPlayer[iPlayerIndex].CashBank -= iCost;
+		
+		NetData PurchaseData;
+		PurchaseData.Write(iCustomIndex);
+		Network::CallFunction(sFunc, PurchaseData);
 	}
 }
 
