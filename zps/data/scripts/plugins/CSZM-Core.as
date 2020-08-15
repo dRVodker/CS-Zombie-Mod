@@ -1549,7 +1549,7 @@ namespace Radio
 			SoundIndex = -1;
 			Start = 0;
 			CurrentPage = 1;
-			RefreshTime = Globals.GetCurrentTime() + 0.089f;
+			RefreshTime = PlusGT(0.089f);
 			TotalItems = int(gMenuData[MenuType].length());
 			TotalPages = int(ceil(float(TotalItems) / float(MAX_ITEMS_ON_PAGE)));
 			Steps = (TotalItems > MAX_ITEMS_ON_PAGE) ? MAX_ITEMS_ON_PAGE : TotalItems;
