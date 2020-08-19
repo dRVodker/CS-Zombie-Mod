@@ -107,7 +107,7 @@ void PutPlrToLobby(CBaseEntity@ pEntPlayer)
 		{
 			CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(i);
 
-			if (pPlayerEntity is null || (pPlayerEntity.GetTeamNumber() != TEAM_SPECTATORS || pPlayerEntity.GetTeamNumber() != TEAM_LOBBYGUYS))
+			if (pPlayerEntity is null || pPlayerEntity.GetTeamNumber() > TEAM_SPECTATORS)
 			{
 				continue;
 			}
@@ -144,7 +144,7 @@ void PutPlrToPlayZone(CBaseEntity@ pEntPlayer)
 		{
 			CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(i);
 			
-			if (pPlayerEntity is null || (pPlayerEntity.GetTeamNumber() != TEAM_SPECTATORS || pPlayerEntity.GetTeamNumber() != TEAM_LOBBYGUYS))
+			if (pPlayerEntity is null || pPlayerEntity.GetTeamNumber() > TEAM_SPECTATORS)
 			{
 				continue;
 			}
