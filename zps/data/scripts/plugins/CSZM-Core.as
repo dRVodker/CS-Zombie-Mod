@@ -5,8 +5,8 @@
 //Info
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 /*
-	текстовые каналы 
-	0 - таймер/обратный отсчёт разминки
+	текстовые каналы (ИХ ВСЕГО 6)
+	0 - время раунда/обратный отсчёт разминки
 	1 - добавочное время/статистика в конце раунда/хитмаркер
 	2 - меню
 	3 - деньги
@@ -1610,7 +1610,7 @@ namespace Radio
 			@pMenuTextKV = GameText::MenuKeyValyes();
 			int iButtons = 0;
 			int iLength = 1;
-			int iStart = 7 * CurrentPage - 7;
+			int iStart = MaxItemsOnPage * CurrentPage - MaxItemsOnPage;
 			int iSteps = (TotalItems > MaxItemsOnPage) ? MaxItemsOnPage : TotalItems;
 
 			if (CurrentPage < TotalPages)
@@ -2057,7 +2057,6 @@ void MapPurchase(NetObject@ pData)
 	}
 
 	string sFunc = "null";
-	int iPlayerMoney = -1;
 	int iPlayerIndex = 0;
 	int iCustomIndex = -1;
 	int iCost = 0;
@@ -2070,9 +2069,7 @@ void MapPurchase(NetObject@ pData)
 		iCustomIndex = pData.GetInt(3);
 	}
 
-	iPlayerMoney = Array_CSZMPlayer[iPlayerIndex].CashBank;
-
-	if (iPlayerMoney < iCost)
+	if (Array_CSZMPlayer[iPlayerIndex].CashBank < iCost)
 	{
 		Engine.EmitSoundPlayer(ToZPPlayer(iPlayerIndex), Radio::gMenuSound[1]);
 		Chat.PrintToChatPlayer(ToBasePlayer(iPlayerIndex), "{red}*{gold}" + Radio::gDeniedReason[0]);
@@ -2192,21 +2189,17 @@ HookReturnCode CSZM_RoundWin(const string &in strMapname, RoundWinState iWinStat
 
 		if (iWinState == STATE_HUMAN)
 		{
-			Engine.EmitSoundPosition(0, "@cszm_fx/misc/hwin.wav", Vector(0, 0, 0), 1.0f, 0, Math::RandomInt(75, 125));
 			iHumanWin++;
+			Engine.EmitSoundPosition(0, "@cszm_fx/misc/hwin.wav", Vector(0, 0, 0), 1.0f, 0, Math::RandomInt(75, 125));
 		}
 		else if (iWinState == STATE_ZOMBIE)
 		{
-			Engine.EmitSoundPosition(0, "@cszm_fx/misc/zwin.wav", Vector(0, 0, 0), 1.0f, 0, 100);
 			iZombieWin++;
+			Engine.EmitSoundPosition(0, "@cszm_fx/misc/zwin.wav", Vector(0, 0, 0), 1.0f, 0, 100);
 		}
 
 		ApplyVictoryRewards(iWinState);
-
-		string strHW = "\n Люди: " + formatInt(iHumanWin);
-		string strZW = "\n Зомби: " + formatInt(iZombieWin);
-		
-		SendGameText(any, "-=Счётчик побед=-" + strHW + strZW, 4, 0, 0, 0.35f, 0.25f, 0, 10.10f, Color(235, 235, 235), Color(255, 95, 5));
+		SendGameText(any, "-=Счётчик побед=-" + "\n Люди: " + formatInt(iHumanWin) + "\n Зомби: " + formatInt(iZombieWin), 4, 0, 0, 0.35f, 0.25f, 0, 10.10f, Color(235, 235, 235), Color(255, 95, 5));
 	}
 
 	return HOOK_CONTINUE;
@@ -2219,7 +2212,7 @@ HookReturnCode CSZM_OnPlayerConnected(CZP_Player@ pPlayer)
 		CBasePlayer@ pPlrEnt = pPlayer.opCast();
 		CBaseEntity@ pBaseEnt = pPlrEnt.opCast();
 
-		const int index = pBaseEnt.entindex();
+		int index = pBaseEnt.entindex();
 
 		@Array_CSZMPlayer[index] = CSZMPlayer(index, pPlayer);
 	}
@@ -2724,7 +2717,7 @@ HookReturnCode CSZM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out Dama
 
 	CBaseEntity@ pAttacker = DamageInfo.GetAttacker();
 
-	if (pAttacker.IsPlayer() && Utils.StrEql("weapon_sledgehammer", (ToZPPlayer(pAttacker).GetCurrentWeapon()).GetClassname(), true) && pEntity.IsPlayer())
+	if (pAttacker.IsPlayer() && Utils.StrEql("weapon_sledgehammer", (ToZPPlayer(pAttacker).GetCurrentWeapon()).GetClassname(), true) && bDamageType(DamageInfo.GetDamageType() ,7) && pEntity.IsPlayer())
 	{
 		ToZPPlayer(pEntity).SetArmor(0);
 		DamageInfo.SetDamage(pEntity.GetHealth() * 2 + 200);
@@ -2781,7 +2774,7 @@ HookReturnCode CSZM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out Dama
 	{
 		if (bDamageType(iDMGType, 1))	//If damage type is BULLET
 		{
-			DamageInfo.SetDamage(DamageInfo.GetDamage() * 0.25f);		
+			DamageInfo.SetDamage(DamageInfo.GetDamage() * 0.25f);
 		}
 		else if (bDamageType(iDMGType, 6))	//If damage type is BLAST
 		{
@@ -2834,7 +2827,7 @@ HookReturnCode CSZM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out Dama
 		float flMass = pEntity.GetMass();
 		float flForceMultiplier = 1.0f;
 
-		//If Damage Type is BULLET reduce amount of damage and increase force by fake mass
+		//If Damage Type is BULLET reduce amount of damage and increase force by mass
 		if (bDamageType(iDMGType, 1) && pAttacker.IsPlayer())
 		{
 			string WeaponName = (ToZPPlayer(pAttacker).GetCurrentWeapon()).GetClassname();

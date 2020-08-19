@@ -50,9 +50,9 @@ int CountPlrs(const int &in iTeamNum)
 	
 	for (int i = 1; i <= iMaxPlayers; i++)
 	{
-		CBaseEntity@ pBaseEnt = FindEntityByEntIndex(i);
+		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(i);
 
-		if (pBaseEnt is null || pBaseEnt.GetTeamNumber() != iTeamNum)
+		if (pPlayerEntity is null || pPlayerEntity.GetTeamNumber() != iTeamNum)
 		{
 			continue;
 		}
@@ -272,7 +272,7 @@ string GetAttackerInfo(const string &in FullInfo)
 	{
 		int iFirst = FullInfo.findFirst("|", 0) + 1;
 		int iLast = FullInfo.findFirst("|", iFirst);
-		AttakerInfo = FullInfo.substr(iFirst, iLast - iFirst);			
+		AttakerInfo = FullInfo.substr(iFirst, iLast - iFirst);
 	}
 
 	return AttakerInfo;
@@ -579,7 +579,7 @@ int CheckSteamID(const string &in STR_STEAM)
 		if (Utils.StrEql(STR_STEAM, Array_SteamID[i][0], true))
 		{
 			iArrayElement = i;
-			return iArrayElement;
+			break;
 		}
 	}
 
