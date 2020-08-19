@@ -38,6 +38,7 @@ void WarmUpEnd()
 		bWarmUp = false;
 	}
 
+	iWUSeconds = 0;
 	flWUWait = 0;
 	string TimerText = "\n\n\n"+strWarmUp+"\n| 0 |";
 	SendGameText(any, "", 1, 0, 0, 0, 0, 0, 0, Color(0, 0, 0), Color(0, 0, 0));

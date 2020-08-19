@@ -1074,7 +1074,7 @@ class CSZMPlayer
 #include "./cszm_modules/core_warmup.as"
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
-//GameText/RadioMenu
+//GameText
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 namespace GameText
@@ -1088,13 +1088,11 @@ namespace GameText
 		"<blank>",
 		"<exit>"
 	};
-
 	const array<array<string>> gDefaultValues = 
 	{
 		{"title",		"holdtime",	"fadeout",	"<blank>",	"<exit>"},	//Keys
 		{"Empty Title",	"10.0",		"0.0",		"",			"0. Exit"}	//Default values
 	};
-
 	const array<string> gMenuSchema = 
 	{
 		"title",
@@ -1143,6 +1141,7 @@ namespace GameText
 						p_Key.insertLast("next");
 						p_Value.insertLast("9. Next\n");
 					break;
+
 					case 1:
 						p_Key.insertLast("prev");
 						p_Value.insertLast("8. Previous\n");
@@ -1319,6 +1318,10 @@ namespace GameText
 	}
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+//Radio
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 namespace Radio
 {
 	enum eSchemaSlots {SLOT_NAME, SLOT_COST, SLOT_TYPE, SLOT_CLASS}
@@ -1355,7 +1358,7 @@ namespace Radio
 		"spec",
 		"callfunc"
 	};
-	array<array<string>> CATMenuSchema = 
+	const array<array<string>> CATMenuSchema = 
 	{
 		{"Melee",		"0",	"cat",	"2"},
 		{"Firearms",	"0",	"cat",	"3"},
@@ -1363,13 +1366,13 @@ namespace Radio
 		{"Item",		"0",	"cat",	"5"},
 		{"Drop Money",	"0",	"cat",	"6"}
 	};
-	array<array<string>> MeleeMenuSchema = 
+	const array<array<string>> MeleeMenuSchema = 
 	{
 		{"Hammer",			"150",	"weapon",	"weapon_barricade",		},
 		{"Shovel",			"450",	"weapon",	"weapon_shovel",		},
 		{"Sledgehammer",	"2000",	"weapon",	"weapon_sledgehammer",	}
 	};
-	array<array<string>> FirearmsMenuSchema = 
+	const array<array<string>> FirearmsMenuSchema = 
 	{	
 		{"Glock18c",		"165",	"weapon",	"weapon_glock18c",		},
 		{"Glock",			"105",	"weapon",	"weapon_glock",			},
@@ -1383,7 +1386,7 @@ namespace Radio
 		{"Winchester",		"345",	"weapon",	"weapon_winchester",	},
 		{"Revolver",		"950",	"weapon",	"weapon_revolver",		}
 	};
-	array<array<string>> AmmoMenuSchema = 
+	const array<array<string>> AmmoMenuSchema = 
 	{
 		{"Pistol",		"85",	"ammo",	"0",	"15"},
 		{"Rifle",		"190",	"ammo",	"3",	"30"},
@@ -1391,7 +1394,7 @@ namespace Radio
 		{"Revovler",	"275",	"ammo",	"1",	"6"},
 		{"Barricade",	"250",	"ammo",	"4",	"1"}
 	};
-	array<array<string>> ItemsMenuSchema = 
+	const array<array<string>> ItemsMenuSchema = 
 	{
 		{"Grenade",		"925",	"weapon",	"weapon_frag"},
 		{"IED",			"1000",	"weapon",	"weapon_ied"},
@@ -1399,7 +1402,7 @@ namespace Radio
 		{"Adrenaline",	"850",	"deliver",	"2"},
 		{"Antidote",	"1500",	"deliver",	"3"}
 	};
-	array<array<string>> DropMenuSchema = 
+	const array<array<string>> DropMenuSchema = 
 	{
 		{"",	"100",	"drop"},
 		{"",	"200",	"drop"},
@@ -1407,13 +1410,13 @@ namespace Radio
 		{"",	"400",	"drop"},
 		{"",	"500",	"drop"}
 	};
-	array<array<string>> ZombieMenuSchema = 
+	const array<array<string>> ZombieMenuSchema = 
 	{
 		{"Extra HP",	"750",	"powerup",	"2"},
 		{"Exrta Life",	"1000",	"powerup",	"5"},
 		{"Armor",		"900",	"powerup",	"6"}
 	};
-	array<array<string>> LobbyMenuSchema = 
+	const array<array<string>> LobbyMenuSchema = 
 	{
 		{"Get a Snowball",		"",	"lobby",	"weapon_snowball"},
 		{"Get a Tennis ball",	"",	"lobby",	"weapon_tennisball"},
@@ -1421,7 +1424,7 @@ namespace Radio
 		{"Reduce Scale",		"",	"lobby",	""},
 		{"Increase Scale",		"",	"lobby",	""}
 	};
-	array<array<string>> SpecMenuSchema = 
+	const array<array<string>> SpecMenuSchema = 
 	{
 		{"Become a Firefly",	"",	"spec"}
 	};
@@ -1431,15 +1434,15 @@ namespace Radio
 		BaseMenu@ pResult;
 		switch(nMenuIndex)
 		{
-			case 1: @pResult = BaseMenu(nPlrInd, CATMenuSchema, "Menu", IsOpenFromCAT); break;
+			case 1: @pResult = BaseMenu(nPlrInd, CATMenuSchema, "Menu", false); break;
 			case 2: @pResult = BaseMenu(nPlrInd, MeleeMenuSchema, "Melee", IsOpenFromCAT); break;
 			case 3: @pResult = BaseMenu(nPlrInd, FirearmsMenuSchema, "Firearms", IsOpenFromCAT); break;
 			case 4: @pResult = BaseMenu(nPlrInd, AmmoMenuSchema, "Ammo", IsOpenFromCAT); break;
 			case 5: @pResult = BaseMenu(nPlrInd, ItemsMenuSchema, "Items", IsOpenFromCAT); break;
 			case 6: @pResult = BaseMenu(nPlrInd, DropMenuSchema, "Drop Money", IsOpenFromCAT); break;
-			case 7: @pResult = BaseMenu(nPlrInd, ZombieMenuSchema, "Zombie Menu", IsOpenFromCAT); break;
-			case 8: @pResult = BaseMenu(nPlrInd, LobbyMenuSchema, "Lobby Menu", IsOpenFromCAT); break;
-			case 9: @pResult = BaseMenu(nPlrInd, SpecMenuSchema, "Spec Menu", IsOpenFromCAT); break;
+			case 7: @pResult = BaseMenu(nPlrInd, ZombieMenuSchema, "Zombie Menu", false); break;
+			case 8: @pResult = BaseMenu(nPlrInd, LobbyMenuSchema, "Lobby Menu", false); break;
+			case 9: @pResult = BaseMenu(nPlrInd, SpecMenuSchema, "Spec Menu", false); break;
 		}
 
 		if (IsOpenFromCAT)
@@ -1457,16 +1460,7 @@ namespace Radio
 
 	CEntityData@ GetInputData(const int nDeliverType)
 	{
-		CEntityData@ pResult = EntityCreator::EntityData();
-
-		switch(nDeliverType)
-		{
-			case 1: @pResult = gFragMineIPD; break;
-			case 2: @pResult = gAdrenalineIPD; break;
-			case 3: @pResult = gAntidoteIPD; break;
-		}
-
-		return pResult;
+		return gCustomItemIPD[nDeliverType];
 	}
 
 	array<string> GetItemParams(const int &in iItemIndex, int &in iType, array<array<string>> &in nMenuData)
@@ -1598,7 +1592,7 @@ namespace Radio
 
 		bool CheckLife()
 		{
-			bool bDead = ((LifeTime <= Globals.GetCurrentTime() && LifeTime != 0) || TeamNum != FindEntityByEntIndex(PlayerIndex).GetTeamNumber() || (!FindEntityByEntIndex(PlayerIndex).IsAlive() && FindEntityByEntIndex(PlayerIndex).GetTeamNumber() != 1));
+			bool bDead = ((LifeTime <= Globals.GetCurrentTime() && LifeTime != 0) || RoundManager.GetRoundState() == rs_RoundEnd_Post || TeamNum != FindEntityByEntIndex(PlayerIndex).GetTeamNumber() || (!FindEntityByEntIndex(PlayerIndex).IsAlive() && FindEntityByEntIndex(PlayerIndex).GetTeamNumber() != 1));
 			if (bDead)
 			{
 				LifeTime = 0;
@@ -1756,7 +1750,7 @@ namespace Radio
 					}
 					else if (OpenedFromCAT)
 					{
-						Array_CSZMPlayer[PlayerIndex].AddMenu(OpenMenuByIndex(PlayerIndex, 1, false));
+						Array_CSZMPlayer[PlayerIndex].AddMenu(OpenMenuByIndex(PlayerIndex, 1, true));
 					}
 				}
 
@@ -1780,6 +1774,7 @@ namespace Radio
 				case IT_POWERUP: iPurchaseResult = GivePowerUp(PlayerIndex, iCost, Utils.StringToInt(pItemParams[1]), Utils.StringToInt(pItemParams[0])); break;
 				case IT_LOBBY: iPurchaseResult = LobbyMenu(PlayerIndex, Utils.StringToInt(pItemParams[1]), pItemParams[0]); break;
 				case IT_SPEC: iPurchaseResult = SpecMenu(PlayerIndex, Utils.StringToInt(pItemParams[0])); break;
+				case IT_DROP: iPurchaseResult = DropCash(PlayerIndex, iCost); break;
 			}
 
 			switch(iPurchaseResult)
@@ -1883,7 +1878,7 @@ namespace Radio
 				Velocity = Velocity * Math::RandomInt(185, 265) + pPlayerEntity.GetAbsVelocity() * 0.5f;
 				Angles *= QAngle(0, 1, 0);
 
-				CEntityData@ MoneyIPD = gMoneyIPD;
+				CEntityData@ MoneyIPD = gCustomItemIPD[4];
 				MoneyIPD.Add("targetname", "dropped_money");
 
 				CBaseEntity@ pMoney = EntityCreator::Create("prop_physics_override", Eyes, Angles, MoneyIPD);
@@ -2032,7 +2027,7 @@ namespace Radio
 		}
 		else if (Utils.StrEql("dropcash", pCC.Arg(0)) && team == TEAM_SURVIVORS && Array_CSZMPlayer[index].CashBank - Utils.StringToInt(pCC.Arg(1)) > 0 && Utils.StringToInt(pCC.Arg(1)) != 0)
 		{
-			if (Utils.StringToInt(pCC.Arg(1)) > 100)
+			if (Utils.StringToInt(pCC.Arg(1)) >= 100)
 			{
 				DropCash(index, Utils.StringToInt(pCC.Arg(1)));
 			}
