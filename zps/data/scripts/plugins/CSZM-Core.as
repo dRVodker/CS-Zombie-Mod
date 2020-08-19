@@ -83,16 +83,16 @@ int iWUSeconds;						//Переменная используется для об
 int iRoundTimeFull;					//Время в секундах отведённое на раунд (ПОЛНОЕ).
 int iTurnTime;						//Время, когда превращаются зараженные
 
-int ECO_DefaultCash = 600;			//Экономические переменные, говорят сами за себя
-int ECO_StartingCash = 400;
-int ECO_Human_Win = 700;
-int ECO_Human_Kill = 325;
+int ECO_DefaultCash = 300;			//Экономические переменные, говорят сами за себя
+int ECO_StartingCash = 300;
+int ECO_Human_Win = 750;
+int ECO_Human_Kill = 250;
 int ECO_Zombie_Win = 500;
 int ECO_Zombie_Kill = 650;
 int ECO_Lose = -1000;
 int ECO_Suiside = -650;
-float ECO_Damage_Multiplier = 0.1f;
-float ECO_Health_Multiplier = 0.115f;
+float ECO_Damage_Multiplier = 0.085f;
+float ECO_Health_Multiplier = 0.12f;
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 //Forwards
@@ -522,7 +522,7 @@ class CSZMPlayer
 	array<TimeBasedDamage@> pTimeDamage;	//???
 	private ShowHealthPoints@ pShowHP;		//Объект, который показывает оставшееся HP у ломающихся вещей
 
-	Radio::Menu@ pMenu;						//Слот для меню
+	Radio::BaseMenu@ pMenu;					//Слот для меню
 	GameText::Cash@ pCash;					//Показывает деньги
 
 	CSZMPlayer(int index, CZP_Player@ pPlayer)
@@ -787,24 +787,24 @@ class CSZMPlayer
 		pPlayer.SetMaxSpeed(NewSpeed);
 	}
 
-	void AddMenu(Radio::Menu@ nShop)
+	void AddMenu(Radio::BaseMenu@ nMenu)
 	{
-		@pMenu = nShop;
+		@pMenu = nMenu;
+		ToZPPlayer(PlayerIndex).RefuseWeaponSelection(true);
 	}
 
 	void ExitMenu()
 	{
 		@pMenu = null;
+		ToZPPlayer(PlayerIndex).RefuseWeaponSelection(false);
 	}
 
-	bool Input(const int nInput)
+	void Input(const int nInput)
 	{
-		bool IsMenuExist = (pMenu !is null);
-		if (IsMenuExist)
+		if (pMenu !is null)
 		{
 			pMenu.Input(nInput);
 		}
-		return IsMenuExist;
 	}
 
 	void SubtractInfectResist()
@@ -930,9 +930,9 @@ class CSZMPlayer
 			@pShowHP = null;
 		}
 
-		if (pMenu !is null)
+		if (pMenu !is null && pMenu.CheckLife())
 		{
-			pMenu.Think();
+			pMenu.CloseMenu();
 		}
 
 		if (pCash !is null)
@@ -1084,7 +1084,32 @@ namespace GameText
 	{
 		"title",
 		"holdtime",
-		"fadeout"
+		"fadeout",
+		"<blank>",
+		"<exit>"
+	};
+
+	const array<array<string>> gDefaultValues = 
+	{
+		{"title",		"holdtime",	"fadeout",	"<blank>",	"<exit>"},	//Keys
+		{"Empty Title",	"10.0",		"0.0",		"",			"0. Exit"}	//Default values
+	};
+
+	const array<string> gMenuSchema = 
+	{
+		"title",
+		"<blank>",
+		"item1",
+		"item2",
+		"item3",
+		"item4",
+		"item5",
+		"item6",
+		"item7",
+		"<blank>",
+		"prev",
+		"next",
+		"<exit>"
 	};
 
 	class MenuKeyValyes
@@ -1098,37 +1123,57 @@ namespace GameText
 			p_Value.insertLast(Value);
 		}
 
+		void AddPN(const int iType)
+		{
+			bool IsExist = false;
+			if (iType == 0)
+			{
+				IsExist = (p_Key.find("next") > -1);
+			}
+			else if (iType == 1)
+			{
+				IsExist = (p_Key.find("prev") > -1);
+			}
+
+			if (!IsExist)
+			{
+				switch(iType)
+				{
+					case 0:
+						p_Key.insertLast("next");
+						p_Value.insertLast("9. Next\n");
+					break;
+					case 1:
+						p_Key.insertLast("prev");
+						p_Value.insertLast("8. Previous\n");
+					break;
+				}
+			}
+		}
+
 		void Update(const string Key, const string Value)
 		{
 			int KeyIndex = p_Key.find(Key);
+			(KeyIndex > -1) ? Assign(KeyIndex, Value) : Add(Key, Value);
+		}
 
-			if (KeyIndex > -1)
-			{
-				p_Value[KeyIndex] = Value;
-			}
-			else
-			{
-				Add(Key, Value);
-			}
+		private void Assign(const int KeyIndex, const string Value)
+		{
+			p_Value[KeyIndex] = Value;
 		}
 
 		string GetKeyValue(const string Key)
 		{
-			string sResult = "null";
 			int KeyIndex = p_Key.find(Key);
+			return (KeyIndex > -1) ? p_Value[KeyIndex] : DefaultVlaue(gDefaultValues[0].find(Key));
+		}
 
-			if (KeyIndex > -1)
+		private string DefaultVlaue(const int Index)
+		{
+			string sResult = "null";
+			if (Index > -1)
 			{
-				sResult = p_Value[KeyIndex];
-			}
-			else
-			{
-				switch(AMPExtra.find(Key))
-				{
-					case 0: sResult = "Empty Title"; break;
-					case 1: sResult = "10.0"; break;
-					case 2: sResult = "0.0"; break;
-				}
+				sResult = gDefaultValues[1][Index];
 			}
 
 			return sResult;
@@ -1139,34 +1184,26 @@ namespace GameText
 	{
 		Menu(const int iPlrInd, MenuKeyValyes@ nParams)
 		{
-			string FullMSG = nParams.GetKeyValue("title") + "\n";
+			string FullMSG = "";
+			string sValue = "";
 
-			for (int i = 1; i <= 7; i++)
+			for(int i = 0; i < 13; i++)
 			{
-				const string MI_Value = nParams.GetKeyValue("item" + formatInt(i));
-
-				if (!Utils.StrEql("null", MI_Value, true))
-				{
-					FullMSG += "\n" + formatInt(i) + ". " + MI_Value;
-				}
-
-				if (i == 7)
+				if (i == 1 || i == 9)
 				{
 					FullMSG += "\n";
+					continue;
 				}
-			}
 
-			if (Utils.StrEql("true", nParams.GetKeyValue("prev")))
-			{
-				FullMSG +="\n8. Previous";
-			}
+				sValue = nParams.GetKeyValue(gMenuSchema[i]);
 
-			if (Utils.StrEql("true", nParams.GetKeyValue("next")))
-			{
-				FullMSG +="\n9. Next";
-			}
+				if (Utils.StrEql("null", sValue, true))
+				{
+					continue;
+				}
 
-			FullMSG +="\n0. Close";
+				FullMSG += sValue;
+			}
 
 			DrawMenu(ToZPPlayer(iPlrInd), FullMSG, Utils.StringToFloat(nParams.GetKeyValue("holdtime")), Utils.StringToFloat(nParams.GetKeyValue("fadeout")));
 		}
@@ -1284,24 +1321,14 @@ namespace GameText
 
 namespace Radio
 {
-	enum Menu_Inputs {IP_CLOSE, IP_PREV = 8, IP_NEXT, IP_MENU, IP_DROP}
-	enum MenuSound_Indexes {SF_ACCEPT, SF_DENIED, SF_CLOSE}
-	enum MenuGoTo {PAGE_PREV = -1, PAGE_NEXT = 1}
-	enum Denied_Reasons {DR_EMPTY = -1, DR_NOCASH, DR_NOSPACE, DR_MAXEHP, DR_MAXLIFE, DR_MAXARMOR}
-	enum RadioMenu_Types {RS_CAT, RS_MELEE, RS_FIREARMS, RS_AMMO, RS_ITEMS, RS_DROP, RS_ZOMBIE, RS_LOBBY, RS_SPEC}
-	const int MAX_ITEMS_ON_PAGE = 7;
-	const array<string> gMenuTitle =
-	{
-		"Menu",
-		"Melee",
-		"Firearms",
-		"Ammo",
-		"Items",
-		"Drop Money",
-		"Zombie Menu",
-		"Lobby Menu",
-		"Spectator Menu"
-	};
+	enum eSchemaSlots {SLOT_NAME, SLOT_COST, SLOT_TYPE, SLOT_CLASS}
+	enum eItemTypes {IT_WEAPON, IT_AMMO, IT_DELIVER, IT_POWERUP, IT_DROP, IT_CAT, IT_LOBBY, IT_SPEC, IT_CALLFUNC}
+	enum ePowerUpTypes {PUT_HEALTH, PUT_LIFE, PUT_ARMOR}
+	enum eMenuIndexes {MI_CAT, MI_MELEE, MI_FIREARMS}
+	enum eGoTo {GT_NEXT = 1, GT_PREV = -1}
+	enum eInputs {IP_EXIT, IP_PREV = 8, IP_NEXT, IP_DROP = 11, IP_MENU}
+	const int MaxItemsOnPage = 7;
+	const int DefaultMenuHoldTime = 20;
 	const array<string> gDeniedReason = 
 	{
 		"Недостаточно средств!",
@@ -1316,70 +1343,635 @@ namespace Radio
 		"buttons/combine_button_locked.wav",
 		"buttons/combine_button7.wav"
 	};
-	const array<array<array<string>>> gMenuData = 
+	const array<string> gItemType = 
 	{
-		{
-			{"Melee",		"1"},
-			{"Firearms",	"2"},
-			{"Ammo",		"3"},
-			{"Items",		"4"},
-			{"Drop Money",	"5"}
-		},
-		{
-			{"Hammer",			"150",		"weapon_barricade"},
-			{"Shovel",			"450",		"weapon_shovel"},
-			{"Sledgehammer",	"2000",		"weapon_sledgehammer"}
-		},	
-		{	
-			{"Glock18c",		"165",		"weapon_glock18c"},
-			{"Glock",			"105",		"weapon_glock"},
-			{"USP",				"110",		"weapon_usp"},
-			{"PPK",				"75",		"weapon_ppk"},
-			{"AK47",			"625",		"weapon_ak47"},
-			{"M4",				"575",		"weapon_m4"},
-			{"MP5",				"425",		"weapon_mp5"},
-			{"Remington 870",	"725",		"weapon_870"},
-			{"SuperShorty",		"385",		"weapon_supershorty"},
-			{"Winchester",		"345",		"weapon_winchester"},
-			{"Revolver",		"900",		"weapon_revolver"}
-		},
-		{
-			{"Pistol",		"75",	"15"},
-			{"Revovler",	"295",	"6"},
-			{"Shotgun",		"105",	"6"},
-			{"Rifle",		"175",	"30"},
-			{"Barricade",	"250",	"1"}
-		},
-		{
-			{"Grenade",		"925",		"weapon_frag",	"0"},
-			{"IED",			"1000",		"weapon_ied", 	"0"},
-			{"FragMine",	"875",		"item_deliver",	"1"},
-			{"Adrenaline",	"850",		"item_deliver",	"2"},
-			{"Antidote",	"1500",		"item_deliver", "3"}
-		},	
-		{
-			{"",	"100"},
-			{"",	"150"},
-			{"",	"200"},
-			{"",	"250"},
-			{"",	"300"}
-		},
-		{
-			{"Extra HP",	"975"},
-			{"Exrta Life",	"1250"},
-			{"Armor",		"850"}
-		},
-		{
-			{"Get a Snowball",		"weapon_snowball"},
-			{"Get a Tennis ball",	"weapon_tennisball"},
-			{"Become a Firefly",	""},
-			{"Reduce Scale",		""},
-			{"Increase Scale",		""}
-		},
-		{
-			{"Become a Firefly",	""}
-		}
+		"weapon",
+		"ammo",
+		"deliver",
+		"powerup",
+		"drop",
+		"cat",
+		"lobby",
+		"spec",
+		"callfunc"
 	};
+	array<array<string>> CATMenuSchema = 
+	{
+		{"Melee",		"0",	"cat",	"2"},
+		{"Firearms",	"0",	"cat",	"3"},
+		{"Ammo",		"0",	"cat",	"4"},
+		{"Item",		"0",	"cat",	"5"},
+		{"Drop Money",	"0",	"cat",	"6"}
+	};
+	array<array<string>> MeleeMenuSchema = 
+	{
+		{"Hammer",			"150",	"weapon",	"weapon_barricade",		},
+		{"Shovel",			"450",	"weapon",	"weapon_shovel",		},
+		{"Sledgehammer",	"2000",	"weapon",	"weapon_sledgehammer",	}
+	};
+	array<array<string>> FirearmsMenuSchema = 
+	{	
+		{"Glock18c",		"165",	"weapon",	"weapon_glock18c",		},
+		{"Glock",			"105",	"weapon",	"weapon_glock",			},
+		{"USP",				"110",	"weapon",	"weapon_usp",			},
+		{"PPK",				"75",	"weapon",	"weapon_ppk",			},
+		{"AK47",			"735",	"weapon",	"weapon_ak47",			},
+		{"M4",				"675",	"weapon",	"weapon_m4",			},
+		{"MP5",				"485",	"weapon",	"weapon_mp5",			},
+		{"Remington 870",	"725",	"weapon",	"weapon_870",			},
+		{"SuperShorty",		"385",	"weapon",	"weapon_supershorty",	},
+		{"Winchester",		"345",	"weapon",	"weapon_winchester",	},
+		{"Revolver",		"950",	"weapon",	"weapon_revolver",		}
+	};
+	array<array<string>> AmmoMenuSchema = 
+	{
+		{"Pistol",		"85",	"ammo",	"0",	"15"},
+		{"Rifle",		"190",	"ammo",	"3",	"30"},
+		{"Shotgun",		"145",	"ammo",	"2",	"6"},
+		{"Revovler",	"275",	"ammo",	"1",	"6"},
+		{"Barricade",	"250",	"ammo",	"4",	"1"}
+	};
+	array<array<string>> ItemsMenuSchema = 
+	{
+		{"Grenade",		"925",	"weapon",	"weapon_frag"},
+		{"IED",			"1000",	"weapon",	"weapon_ied"},
+		{"FragMine",	"875",	"deliver",	"1"},
+		{"Adrenaline",	"850",	"deliver",	"2"},
+		{"Antidote",	"1500",	"deliver",	"3"}
+	};
+	array<array<string>> DropMenuSchema = 
+	{
+		{"",	"100",	"drop"},
+		{"",	"200",	"drop"},
+		{"",	"300",	"drop"},
+		{"",	"400",	"drop"},
+		{"",	"500",	"drop"}
+	};
+	array<array<string>> ZombieMenuSchema = 
+	{
+		{"Extra HP",	"750",	"powerup",	"2"},
+		{"Exrta Life",	"1000",	"powerup",	"5"},
+		{"Armor",		"900",	"powerup",	"6"}
+	};
+	array<array<string>> LobbyMenuSchema = 
+	{
+		{"Get a Snowball",		"",	"lobby",	"weapon_snowball"},
+		{"Get a Tennis ball",	"",	"lobby",	"weapon_tennisball"},
+		{"Become a Firefly",	"",	"lobby",	""},
+		{"Reduce Scale",		"",	"lobby",	""},
+		{"Increase Scale",		"",	"lobby",	""}
+	};
+	array<array<string>> SpecMenuSchema = 
+	{
+		{"Become a Firefly",	"",	"spec"}
+	};
+
+	BaseMenu@ OpenMenuByIndex(const int &in nPlrInd, const int &in nMenuIndex, const bool &in IsOpenFromCAT)
+	{
+		BaseMenu@ pResult;
+		switch(nMenuIndex)
+		{
+			case 1: @pResult = BaseMenu(nPlrInd, CATMenuSchema, "Menu", IsOpenFromCAT); break;
+			case 2: @pResult = BaseMenu(nPlrInd, MeleeMenuSchema, "Melee", IsOpenFromCAT); break;
+			case 3: @pResult = BaseMenu(nPlrInd, FirearmsMenuSchema, "Firearms", IsOpenFromCAT); break;
+			case 4: @pResult = BaseMenu(nPlrInd, AmmoMenuSchema, "Ammo", IsOpenFromCAT); break;
+			case 5: @pResult = BaseMenu(nPlrInd, ItemsMenuSchema, "Items", IsOpenFromCAT); break;
+			case 6: @pResult = BaseMenu(nPlrInd, DropMenuSchema, "Drop Money", IsOpenFromCAT); break;
+			case 7: @pResult = BaseMenu(nPlrInd, ZombieMenuSchema, "Zombie Menu", IsOpenFromCAT); break;
+			case 8: @pResult = BaseMenu(nPlrInd, LobbyMenuSchema, "Lobby Menu", IsOpenFromCAT); break;
+			case 9: @pResult = BaseMenu(nPlrInd, SpecMenuSchema, "Spec Menu", IsOpenFromCAT); break;
+		}
+
+		if (IsOpenFromCAT)
+		{
+			MenuFeedback(nPlrInd, 4);
+		}
+
+		return pResult;
+	}
+
+	int GetItemType(const string &in sType)
+	{
+		return gItemType.find(sType);
+	}
+
+	CEntityData@ GetInputData(const int nDeliverType)
+	{
+		CEntityData@ pResult = EntityCreator::EntityData();
+
+		switch(nDeliverType)
+		{
+			case 1: @pResult = gFragMineIPD; break;
+			case 2: @pResult = gAdrenalineIPD; break;
+			case 3: @pResult = gAntidoteIPD; break;
+		}
+
+		return pResult;
+	}
+
+	array<string> GetItemParams(const int &in iItemIndex, int &in iType, array<array<string>> &in nMenuData)
+	{
+		array<string> nParams;
+		int Length = int(nMenuData[iItemIndex].length());
+
+		if (Length > 3)
+		{
+			for (int i = 3; i < Length; i++)
+			{
+				nParams.insertLast(nMenuData[iItemIndex][i]);
+			}
+		}
+
+		nParams.insertLast(formatInt(iItemIndex));
+
+		return nParams;
+	}
+
+	int LobbyMenu(const int &in nPlrInd, const int &in nItemIndex, const string &in nClassname)
+	{
+		bool IsFailure = false;
+		switch(nItemIndex)
+		{
+			case 0: NPZ::GiveThrowable(ToZPPlayer(nPlrInd), nClassname); break;
+			case 1: NPZ::GiveThrowable(ToZPPlayer(nPlrInd), nClassname); break;
+			case 2: IsFailure = !(NPZ::SetFirefly(FindEntityByEntIndex(nPlrInd), nPlrInd, 0, 0, 0)); break;
+			case 3: IsFailure = !(Array_CSZMPlayer[nPlrInd].ChangeScale(-0.05f)); break;
+			case 4: IsFailure = !(Array_CSZMPlayer[nPlrInd].ChangeScale(0.05f)); break;
+		}
+
+		return IsFailure ? MenuFeedback(nPlrInd, 7) : MenuFeedback(nPlrInd, 4);
+	}
+
+	int SpecMenu(const int &in nPlrInd, const int &in nItemIndex)
+	{
+		bool IsFailure = false;
+		switch(nItemIndex)
+		{
+			case 0: IsFailure = !(NPZ::SetFirefly(FindEntityByEntIndex(nPlrInd), nPlrInd, 0, 0, 0)); break;
+		}
+
+		return IsFailure ? MenuFeedback(nPlrInd, 7) : MenuFeedback(nPlrInd, 4);
+	}
+
+	int GivePowerUp(const int &in nPlrInd, const int &in nCost, const int &in nPowerUpIndex, const int &in nTextIndex)
+	{
+		int iResult = -1;
+
+		if (Array_CSZMPlayer[nPlrInd].CashBank < nCost)
+		{
+			MenuFeedback(nPlrInd, 0);
+			iResult = 0;
+		}
+		else
+		{
+			bool IsPowerUpAdded = false;
+			switch(nPowerUpIndex)
+			{
+				case PUT_HEALTH: IsPowerUpAdded = Array_CSZMPlayer[nPlrInd].AddExtraHealth(); break;
+				case PUT_LIFE: IsPowerUpAdded = Array_CSZMPlayer[nPlrInd].AddExtraLife(); break;
+				case PUT_ARMOR: IsPowerUpAdded = Array_CSZMPlayer[nPlrInd].AddZMArmor(); break;
+			}
+
+			iResult = IsPowerUpAdded ? PayCost(nPlrInd, nCost) : MenuFeedback(nPlrInd, nTextIndex);
+		}
+
+		return iResult;
+	}
+
+	int GiveAmmo(CZP_Player@ pPlayer, const int &in nAmmoType, const int &in nAmount)
+	{
+		int iResult = 0;
+
+		for (int i = 0; i < nAmount; i++)
+		{
+			if (!pPlayer.AmmoBank(add, AmmoBankSetValue(nAmmoType), 1))
+			{
+				break;
+			}
+
+			iResult++;
+		}
+
+		return iResult;
+	}
+
+	class BaseMenu
+	{
+		string MenuTitle;
+		int PlayerIndex;
+		int TeamNum;
+		int TotalItems;
+		int TotalPages;
+		int CurrentPage;
+		float LifeTime;
+		float RefreshTime;
+		float InputDelay;
+		float TextTime;
+		bool OpenedFromCAT;
+
+		GameText::MenuKeyValyes@ pMenuTextKV;
+		array<array<string>> pMenuData;
+
+		BaseMenu(const int nPlrInd, array<array<string>> nMenuData, const string nMenuTitle, const bool nOFCAT)
+		{
+			OpenedFromCAT = nOFCAT;
+			PlayerIndex = nPlrInd;
+			MenuTitle = nMenuTitle;
+			pMenuData = nMenuData;
+			FillMenu(float(DefaultMenuHoldTime));
+		}
+
+		private void FillMenu(const float nLifeTime)
+		{
+			ToZPPlayer(PlayerIndex).RefuseWeaponSelection(true);
+
+			TeamNum = FindEntityByEntIndex(PlayerIndex).GetTeamNumber();
+			RefreshTime = PlusGT(0.089f);
+			TextTime = PlusGT(0.951f);
+			LifeTime = PlusGT(nLifeTime);
+			TotalItems = int(pMenuData.length());
+			TotalPages = int(ceil(float(TotalItems) / float(MaxItemsOnPage)));
+			CurrentPage = 1;
+
+			ShowMenu();
+		}
+
+		bool CheckLife()
+		{
+			bool bDead = ((LifeTime <= Globals.GetCurrentTime() && LifeTime != 0) || TeamNum != FindEntityByEntIndex(PlayerIndex).GetTeamNumber() || (!FindEntityByEntIndex(PlayerIndex).IsAlive() && FindEntityByEntIndex(PlayerIndex).GetTeamNumber() != 1));
+			if (bDead)
+			{
+				LifeTime = 0;
+			}
+			else if (LessThanGT(TextTime))
+			{
+				UpdateTextMenu();
+			}
+
+			return bDead;
+		}
+
+		void ShowMenu()
+		{
+			@pMenuTextKV = GameText::MenuKeyValyes();
+			int iButtons = 0;
+			int iLength = 1;
+			int iStart = 7 * CurrentPage - 7;
+			int iSteps = (TotalItems > MaxItemsOnPage) ? MaxItemsOnPage : TotalItems;
+
+			if (CurrentPage < TotalPages)
+			{
+				iSteps = MaxItemsOnPage;
+			}
+			else if (CurrentPage == TotalPages && CurrentPage * MaxItemsOnPage > TotalItems)
+			{
+				iSteps = TotalItems - iStart;
+			}
+
+			iLength = iStart + iSteps;
+
+			pMenuTextKV.Add("holdtime", "1.1");
+			pMenuTextKV.Add("fadeout", "0");
+			pMenuTextKV.Add("title", "-=" + MenuTitle + "=-" + "\n");
+
+			for (int i = iStart; i < iLength; i++)
+			{
+				string sItem = "";
+				bool bAddChar;
+				bool bHasCost = (Utils.StringToInt(pMenuData[i][SLOT_COST]) > 0);
+				int iItemType = GetItemType(pMenuData[i][SLOT_TYPE]);
+
+				iButtons++;
+				sItem = formatInt(iButtons) + ". ";
+				sItem += pMenuData[i][SLOT_NAME] + " ";
+				sItem += (iItemType != IT_DROP && bHasCost) ? "- " : "";
+				sItem += (bHasCost) ? (pMenuData[i][SLOT_COST] + "$") : "";
+				sItem += "\n";
+				pMenuTextKV.Add("item" + formatInt(iButtons), sItem);
+			}
+
+			if ((TotalPages != 1 && CurrentPage == TotalPages) || (OpenedFromCAT && CurrentPage == 1))
+			{
+				pMenuTextKV.AddPN(1);	// 1= previous
+			}
+			else if (CurrentPage < TotalPages)
+			{
+				pMenuTextKV.AddPN(0);	// 0= next
+			}
+
+			if (TotalPages > 1)
+			{
+				if (CurrentPage < TotalPages)
+				{
+					pMenuTextKV.AddPN(0);
+				}
+				else if (CurrentPage == TotalPages)
+				{
+					pMenuTextKV.AddPN(1);
+				}
+				else
+				{
+					pMenuTextKV.AddPN(1);
+					pMenuTextKV.AddPN(0);
+				}
+			}
+
+			if (OpenedFromCAT)
+			{
+				pMenuTextKV.AddPN(1);
+			}
+
+			GameText::Menu(PlayerIndex, pMenuTextKV);
+		}
+
+		void UpdateTextMenu()
+		{
+			TextTime = PlusGT(0.951f);
+			GameText::Menu(PlayerIndex, pMenuTextKV);
+		}
+
+		void CloseMenu()
+		{
+			if (FindEntityByEntIndex(PlayerIndex).IsAlive() || FindEntityByEntIndex(PlayerIndex).GetTeamNumber() == TEAM_SPECTATORS)
+			{
+				MenuFeedback(PlayerIndex, 3);
+			}
+
+			pMenuTextKV.Update("holdtime", "0.0");
+			pMenuTextKV.Update("fadeout", "0.15");
+			GameText::Menu(PlayerIndex, pMenuTextKV);
+			ToZPPlayer(PlayerIndex).RefuseWeaponSelection(false);
+			Array_CSZMPlayer[PlayerIndex].ExitMenu();
+		}
+
+		private void GoToPage(int i)
+		{
+			MenuFeedback(PlayerIndex, 4);
+			CurrentPage += i;
+			ExtendLifeTime();
+		}
+
+		void Input(int InputIndex)
+		{
+			if (InputIndex == IP_DROP)
+			{
+				InputDelay = PlusGT(0.15f);
+			}
+			else if (InputIndex == IP_MENU)
+			{
+				InputIndex = IP_PREV;
+
+				if (CurrentPage == 1 && !OpenedFromCAT)
+				{
+					InputIndex = IP_EXIT;
+				}
+			}
+
+			if (!LessThanGT(InputDelay))
+			{
+				return;
+			}
+
+			InputDelay = PlusGT(0.1f);
+			UseItem(InputIndex);
+		}
+
+		void UseItem(int nItemIndex)
+		{
+			if (nItemIndex == 0 || nItemIndex == 8 || nItemIndex == 9)
+			{
+				if (nItemIndex == IP_EXIT)
+				{
+					CloseMenu();
+				}
+				else if (IsNextPageExist() && nItemIndex == IP_NEXT)
+				{
+					GoToPage(GT_NEXT);
+				}
+				else if (nItemIndex == IP_PREV)
+				{
+					if (IsPrevPageExist())
+					{
+						GoToPage(GT_PREV);
+					}
+					else if (OpenedFromCAT)
+					{
+						Array_CSZMPlayer[PlayerIndex].AddMenu(OpenMenuByIndex(PlayerIndex, 1, false));
+					}
+				}
+
+				return;
+			}
+
+			nItemIndex += (MaxItemsOnPage * CurrentPage - MaxItemsOnPage);
+			nItemIndex--; 
+
+			int iPurchaseResult = -1;
+			int iItemType = GetItemType(pMenuData[nItemIndex][SLOT_TYPE]);
+			int iCost = Utils.StringToInt(pMenuData[nItemIndex][SLOT_COST]);
+			array<string> pItemParams = GetItemParams(nItemIndex, iItemType, pMenuData);
+
+			switch(iItemType)
+			{
+				case IT_WEAPON: iPurchaseResult = PurchaseWeapon(PlayerIndex, pItemParams[0], iCost, GetInputData(0)); break;
+				case IT_AMMO: iPurchaseResult = PurchaseAmmo(PlayerIndex, iCost, Utils.StringToInt(pItemParams[0]), Utils.StringToInt(pItemParams[1])); break;
+				case IT_DELIVER: iPurchaseResult = PurchaseWeapon(PlayerIndex, "item_deliver", iCost, GetInputData(Utils.StringToInt(pItemParams[0]))); break;
+				case IT_CAT: Array_CSZMPlayer[PlayerIndex].AddMenu(OpenMenuByIndex(PlayerIndex, Utils.StringToInt(pItemParams[0]), true)); break;
+				case IT_POWERUP: iPurchaseResult = GivePowerUp(PlayerIndex, iCost, Utils.StringToInt(pItemParams[1]), Utils.StringToInt(pItemParams[0])); break;
+				case IT_LOBBY: iPurchaseResult = LobbyMenu(PlayerIndex, Utils.StringToInt(pItemParams[1]), pItemParams[0]); break;
+				case IT_SPEC: iPurchaseResult = SpecMenu(PlayerIndex, Utils.StringToInt(pItemParams[0])); break;
+			}
+
+			switch(iPurchaseResult)
+			{
+				case 1: ExtendLifeTime(); break;
+			}
+		}
+
+		private void ExtendLifeTime()
+		{
+			LifeTime += 10.5f;
+			ShowMenu();
+		}
+
+		private bool IsNextPageExist()
+		{
+			return CurrentPage < TotalPages && TotalPages > 1;
+		}
+
+		private bool IsPrevPageExist()
+		{
+			return CurrentPage != 1 && TotalPages > 1;
+		}
+	}
+
+	int PurchaseWeapon(const int &in nPlrInd, string &in nClassname, const int &in nCost, CEntityData@ pInputData)
+	{
+		int iResult = -1;
+		CZP_Player@ pPlayer = ToZPPlayer(nPlrInd);
+		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(nPlrInd);
+		CBaseEntity@ pGun = EntityCreator::Create(nClassname, pPlayerEntity.GetAbsOrigin(), pPlayerEntity.GetAbsAngles(), pInputData);
+
+		if (Array_CSZMPlayer[nPlrInd].CashBank < nCost)
+		{
+			MenuFeedback(nPlrInd, 0);
+			pGun.SUB_Remove();
+		}
+		else if (pPlayer.PutToInventory(pGun))
+		{
+			Engine.EmitSoundEntity(pPlayerEntity, "HL2Player.PickupWeapon");
+			iResult = PayCost(nPlrInd, nCost);
+		}
+		else
+		{
+			pGun.SUB_Remove();
+			iResult = 0;
+			MenuFeedback(nPlrInd, 1);
+		}
+
+		return iResult;
+	}
+
+	int PurchaseAmmo(const int &in nPlrInd, int &in nCost, const int &in iType, const int &in iAmount)
+	{
+		int iResult = -1;
+
+		if (Array_CSZMPlayer[nPlrInd].CashBank < nCost)
+		{
+			MenuFeedback(nPlrInd, 0);
+			iResult = 0;
+		}
+		else
+		{
+			int SoldOutAmount = GiveAmmo(ToZPPlayer(nPlrInd), iType, iAmount);
+			nCost = int(ceil((float(nCost) / float(iAmount)) * (float(SoldOutAmount) / float(nCost)) * float(nCost)));
+
+			if (SoldOutAmount > 0)
+			{
+				(iType == 4) ? Engine.EmitSoundEntity(FindEntityByEntIndex(nPlrInd), "HL2Player.PickupWeapon") : Engine.EmitSoundEntity(FindEntityByEntIndex(nPlrInd), "ZPlayer.AmmoPickup");
+				iResult = PayCost(nPlrInd, nCost);
+			}
+			else
+			{
+				MenuFeedback(nPlrInd, 1);
+			}
+		}
+
+		return iResult;
+	}
+
+	int DropCash(const int &in nPlrInd, const int &in nCashToDrop)
+	{
+		int iResult = -1;
+
+		if (!(nCashToDrop == 0 || FindEntityByEntIndex(nPlrInd) is null))
+		{
+			if (Array_CSZMPlayer[nPlrInd].CashBank < nCashToDrop)
+			{
+				MenuFeedback(nPlrInd, 0);
+				iResult = 0;
+			}
+			else
+			{
+				Array_CSZMPlayer[nPlrInd].CashBank -= nCashToDrop;
+
+				CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(nPlrInd);
+				Vector Velocity;
+				Vector Eyes = pPlayerEntity.EyePosition() - Vector(0, 0, Math::RandomFloat(4, 16));
+				QAngle Angles = pPlayerEntity.EyeAngles() + QAngle(0, Math::RandomFloat(-5, 5), 0);
+				Globals.AngleVectors(Angles, Velocity);
+				Velocity = Velocity * Math::RandomInt(185, 265) + pPlayerEntity.GetAbsVelocity() * 0.5f;
+				Angles *= QAngle(0, 1, 0);
+
+				CEntityData@ MoneyIPD = gMoneyIPD;
+				MoneyIPD.Add("targetname", "dropped_money");
+
+				CBaseEntity@ pMoney = EntityCreator::Create("prop_physics_override", Eyes, Angles, MoneyIPD);
+				pMoney.SetClassname("item_money");
+				pMoney.SetHealth(nCashToDrop);
+				pMoney.Teleport(Eyes, (Angles + QAngle(0, 90, 0)), Velocity);
+				pMoney.SetOutline(true, filter_team, TEAM_SURVIVORS, Color(235, 65, 175), 185.0f, false, true);
+
+				Engine.EmitSoundEntity(pPlayerEntity, ")player/footsteps/sand2.wav");
+
+				NetData nData;
+				nData.Write(pMoney.entindex());
+				nData.Write(nPlrInd);
+				Network::CallFunction("OnCashDropped", nData);
+				iResult = 1;
+				MenuFeedback(nPlrInd, 4);
+			}
+		}
+
+		return iResult;
+	}
+
+	int PayCost(const int &in nPlrInd, const int &in nCost)
+	{
+		Array_CSZMPlayer[nPlrInd].CashBank -= nCost;
+		return MenuFeedback(nPlrInd, 4);
+	}
+
+	int MenuFeedback(const int &in nPlrInd, const int &in nFBType)
+	{
+		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(nPlrInd);
+		int iSoundIndex = -1;
+		int iTextIndex = -1;
+		int iResult = 0;
+
+		switch(nFBType)
+		{
+			case 0:	//Нет денег
+				iSoundIndex = 1;
+				iTextIndex = 0;
+			break;
+
+			case 1:	//Нет места
+				iSoundIndex = 1;
+				iTextIndex = 1;
+			break;
+
+			case 2:	//Максимум дополнительного здоровья
+				iSoundIndex = 1;
+				iTextIndex = 2;
+			break;
+
+			case 3:	//закрыл меню
+				iSoundIndex = 2;
+			break;
+
+			case 4:	//успех
+				iSoundIndex = 0;
+				iResult = 1;
+			break;
+
+			case 5:	//Максимум дополнительных жизней
+				iSoundIndex = 1;
+				iTextIndex = 3;
+			break;
+
+			case 6:	//Уже есть броня
+				iSoundIndex = 1;
+				iTextIndex = 4;
+			break;
+
+			case 7:	//Провал
+				iSoundIndex = 1;
+			break;
+		}
+
+		if (iSoundIndex > -1)
+		{
+			Engine.EmitSoundPlayer(ToZPPlayer(nPlrInd), gMenuSound[iSoundIndex]);
+		}
+
+		if (iTextIndex > -1)
+		{
+			Chat.PrintToChatPlayer(ToBasePlayer(nPlrInd), "{red}*{gold}" + gDeniedReason[iTextIndex]);
+		}
+
+		return iResult;
+	}
 
 	bool Command(const int &in nPlrInd, CASCommand@ pCC)
 	{
@@ -1409,20 +2001,25 @@ namespace Radio
 		else if ((Utils.StrEql("taunt", pCC.Arg(0)) || Utils.StrEql("menu", pCC.Arg(0))) && RoundManager.GetRoundState() != rs_RoundEnd_Post)
 		{
 			IsCommandExist = !Utils.StrEql("taunt", pCC.Arg(0));
-			if (!Array_CSZMPlayer[nPlrInd].Input(IP_MENU) && (pPlayerEntity.IsAlive() || team == TEAM_SPECTATORS))
+
+			if (Array_CSZMPlayer[index].pMenu !is null)
+			{
+				Array_CSZMPlayer[nPlrInd].Input(IP_MENU);
+			}
+			else if (pPlayerEntity.IsAlive() || team == TEAM_SPECTATORS)
 			{
 				switch(team)
 				{
-					case TEAM_SURVIVORS: Array_CSZMPlayer[nPlrInd].AddMenu(Radio::Menu(nPlrInd, Radio::RS_CAT)); break;
-					case TEAM_ZOMBIES: Array_CSZMPlayer[nPlrInd].AddMenu(Radio::Menu(nPlrInd, Radio::RS_ZOMBIE)); break;
-					case TEAM_LOBBYGUYS: Array_CSZMPlayer[nPlrInd].AddMenu(Radio::Menu(nPlrInd, Radio::RS_LOBBY)); break;
-					case TEAM_SPECTATORS: Array_CSZMPlayer[nPlrInd].AddMenu(Radio::Menu(nPlrInd, Radio::RS_SPEC)); break;
+					case TEAM_SURVIVORS: Array_CSZMPlayer[nPlrInd].AddMenu(OpenMenuByIndex(index, 1, false)); break;
+					case TEAM_ZOMBIES: Array_CSZMPlayer[nPlrInd].AddMenu(OpenMenuByIndex(index, 7, false)); break;
+					case TEAM_LOBBYGUYS: Array_CSZMPlayer[nPlrInd].AddMenu(OpenMenuByIndex(index, 8, false)); break;
+					case TEAM_SPECTATORS: Array_CSZMPlayer[nPlrInd].AddMenu(OpenMenuByIndex(index, 9, false)); break;
 				}
 			}
 		}
 		else if (Utils.StrEql("ammo", pCC.Arg(0)) && team == TEAM_SURVIVORS && RoundManager.GetRoundState() != rs_RoundEnd_Post)
 		{
-			Array_CSZMPlayer[nPlrInd].AddMenu(Radio::Menu(nPlrInd, Radio::RS_AMMO));
+			Array_CSZMPlayer[nPlrInd].AddMenu(OpenMenuByIndex(index, 4, false));
 		}
 		else if (Utils.StrContains("holster", pCC.Arg(0)) && team == TEAM_LOBBYGUYS)
 		{
@@ -1435,7 +2032,14 @@ namespace Radio
 		}
 		else if (Utils.StrEql("dropcash", pCC.Arg(0)) && team == TEAM_SURVIVORS && Array_CSZMPlayer[index].CashBank - Utils.StringToInt(pCC.Arg(1)) > 0 && Utils.StringToInt(pCC.Arg(1)) != 0)
 		{
-			(Utils.StringToInt(pCC.Arg(1)) > 100) ? DropCash(index, Utils.StringToInt(pCC.Arg(1))) : Chat.PrintToChatPlayer(ToBasePlayer(index), strMinDrop);
+			if (Utils.StringToInt(pCC.Arg(1)) > 100)
+			{
+				DropCash(index, Utils.StringToInt(pCC.Arg(1)));
+			}
+			else
+			{
+				Chat.PrintToChatPlayer(ToBasePlayer(index), strMinDrop);
+			}
 		}
 		else
 		{
@@ -1443,406 +2047,6 @@ namespace Radio
 		}
 
 		return IsCommandExist;
-	}
-
-	CEntityData@ GetInputData(const int nDeliverType)
-	{
-		CEntityData@ pResult = EntityCreator::EntityData();
-
-		switch(nDeliverType)
-		{
-			case 1: @pResult = gFragMineIPD; break;
-			case 2: @pResult = gAdrenalineIPD; break;
-			case 3: @pResult = gAntidoteIPD; break;
-		}
-		return pResult;
-	}
-
-	void DropCash(const int &in PlrInd, const int &in nCashToDrop)
-	{
-		if (nCashToDrop == 0 || FindEntityByEntIndex(PlrInd) is null)
-		{
-			return;
-		}
-
-		Array_CSZMPlayer[PlrInd].CashBank -= nCashToDrop;
-
-		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(PlrInd);
-
-		Vector Velocity;
-		Vector Eyes = pPlayerEntity.EyePosition() - Vector(0, 0, Math::RandomFloat(4, 16));
-		QAngle Angles = pPlayerEntity.EyeAngles() + QAngle(0, Math::RandomFloat(-5, 5), 0);
-		Globals.AngleVectors(Angles, Velocity);
-		Velocity = Velocity * Math::RandomInt(185, 265) + pPlayerEntity.GetAbsVelocity() * 0.5f;
-		Angles *= QAngle(0, 1, 0);
-
-		CEntityData@ MoneyIPD = gMoneyIPD;
-
-		MoneyIPD.Add("targetname", "dropped_money");
-
-		CBaseEntity@ pMoney = EntityCreator::Create("prop_physics_override", Eyes, Angles, MoneyIPD);
-
-		pMoney.SetClassname("item_money");
-		pMoney.SetHealth(nCashToDrop);
-		pMoney.Teleport(Eyes, (Angles + QAngle(0, 90, 0)), Velocity);
-		pMoney.SetOutline(true, filter_team, TEAM_SURVIVORS, Color(235, 65, 175), 185.0f, false, true);
-
-		Engine.EmitSoundEntity(pPlayerEntity, ")player/footsteps/sand2.wav");
-
-		NetData nData;
-		nData.Write(pMoney.entindex());
-		nData.Write(PlrInd);
-		Network::CallFunction("OnCashDropped", nData);
-	}
-
-	int GiveAmmo(CZP_Player@ pPlayer, const int &in nAmmoType, const int &in nAmount)
-	{
-		int iResult = 0;
-
-		for (int i = 0; i < nAmount; i++)
-		{
-			if (!pPlayer.AmmoBank(add, AmmoBankSetValue(nAmmoType), 1))
-			{
-				break;
-			}
-
-			iResult++;
-		}
-
-		return iResult;
-	}
-
-	class Menu
-	{
-		private int MenuType;
-		private int PlrInd;
-		private int TeamNum;
-		private int TotalItems;
-		private int TotalPages;
-		private int CurrentPage;
-		private int Start;
-		private int Steps;
-		private int SoundIndex;
-		private float InputDelay;
-		private float LifeTime;
-		private float RefreshTime;
-		private GameText::MenuKeyValyes@ pMParams;
-
-		Menu(const int nPlrInd, const int nType)
-		{
-			PlrInd = nPlrInd;
-			MenuType = nType;
-			FillMenu(-1);
-		}
-
-		Menu(const int nPlrInd, const int nType, const int nLifeTime)
-		{
-			PlrInd = nPlrInd;
-			MenuType = nType;
-			FillMenu(nLifeTime);
-		}
-
-		private void FillMenu(const int nLifeTime)
-		{
-			ToZPPlayer(PlrInd).RefuseWeaponSelection(true);
-			TeamNum = FindEntityByEntIndex(PlrInd).GetTeamNumber();
-			SoundIndex = -1;
-			Start = 0;
-			CurrentPage = 1;
-			RefreshTime = PlusGT(0.089f);
-			TotalItems = int(gMenuData[MenuType].length());
-			TotalPages = int(ceil(float(TotalItems) / float(MAX_ITEMS_ON_PAGE)));
-			Steps = (TotalItems > MAX_ITEMS_ON_PAGE) ? MAX_ITEMS_ON_PAGE : TotalItems;
-
-			UpdateMenu(nLifeTime);
-		}
-
-		private void UpdatePage()
-		{
-			Start = 7 * CurrentPage - 7;
-
-			if (CurrentPage < TotalPages)
-			{
-				Steps = MAX_ITEMS_ON_PAGE;
-			}
-			else if (CurrentPage == TotalPages && CurrentPage * MAX_ITEMS_ON_PAGE > TotalItems)
-			{
-				Steps = TotalItems - Start;
-			}
-
-			UpdateMenu(-1);
-		}
-
-		private void UpdateMenu(float nLifeTime)
-		{
-			@pMParams = GameText::MenuKeyValyes();
-
-			int length = Start + Steps;
-			int Num = 0;
-			pMParams.Add("title", "-= " + gMenuTitle[MenuType] + " =-");
-			pMParams.Add("holdtime", "0.12");
-
-			for (int i = Start; i < length; i++)
-			{
-				string dItem = gMenuData[MenuType][i][0];
-
-				if (Utils.StringToInt(gMenuData[MenuType][i][1]) > 0 && MenuType != RS_CAT)
-				{
-					dItem += " - " + gMenuData[MenuType][i][1] + "$";
-				}
-
-				Num++;
-				pMParams.Add("item" + formatInt(Num), dItem);
-			}
-
-			if (TotalPages > 1)
-			{
-				if (CurrentPage < TotalPages)
-				{
-					pMParams.Add("next", "true");
-				}
-				else if (CurrentPage == TotalPages)
-				{
-					pMParams.Add("prev", "true");
-				}
-				else
-				{
-					pMParams.Add("next", "true");
-					pMParams.Add("prev", "true");
-				}
-			}
-
-			if (IsAllowedGetBackToCAT())
-			{
-				pMParams.Update("prev", "true");
-			}
-
-			if (LifeTime == Globals.GetCurrentTime())
-			{
-				pMParams.Add("fadeout", "0.2");
-			}
-
-			SendMenu(nLifeTime);
-		}
-
-		void Input(int iSlot)
-		{
-			if (!LessThanGT(InputDelay))
-			{
-				return;
-			}
-
-			InputDelay = PlusGT(0.04f);
-			CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(PlrInd);
-			SoundIndex = -1;
-
-			if (iSlot == IP_MENU)
-			{
-				iSlot = (IsAllowedGetBackToCAT() || IsPrevPageExist()) ? IP_PREV : IP_CLOSE;
-			}
-
-			if (iSlot == IP_CLOSE)
-			{
-				SendExit(false);
-			}
-			else if (iSlot == IP_NEXT && IsNextPageExist())
-			{
-				GoToPage(PAGE_NEXT);
-			}
-			else if (iSlot == IP_PREV)
-			{
-				if (IsPrevPageExist())
-				{
-					GoToPage(PAGE_PREV);
-				}
-				else if (IsAllowedGetBackToCAT())
-				{
-					SoundIndex = SF_ACCEPT;
-					Array_CSZMPlayer[PlrInd].AddMenu(Radio::Menu(PlrInd, RS_CAT));
-				}
-			}
-			else if (iSlot <= Steps)
-			{
-				SoundIndex = SF_ACCEPT;
-				Select(Start + iSlot - 1);
-			}
-
-			PlaySound();
-		}
-
-		void Select(const int iItemIndex)
-		{
-			CZP_Player@ pPlayer = ToZPPlayer(PlrInd);
-			int CashToPay = Utils.StringToInt(gMenuData[MenuType][iItemIndex][1]);
-
-			if (MenuType != RS_CAT && Array_CSZMPlayer[PlrInd].CashBank < CashToPay)
-			{
-				Denied(DR_NOCASH);
-				CashToPay = 0;
-			}
-			else if (MenuType == RS_CAT)
-			{
-				Array_CSZMPlayer[PlrInd].AddMenu(Radio::Menu(PlrInd, CashToPay));
-				CashToPay = 0;
-			}
-			else if (MenuType == RS_FIREARMS || MenuType == RS_MELEE || MenuType == RS_ITEMS)
-			{
-				CBaseEntity@ pGun = (MenuType == RS_ITEMS) ? EntityCreator::Create(gMenuData[MenuType][iItemIndex][2], Vector(0, 0, 0), QAngle(0, 0, 0), GetInputData(Utils.StringToInt(gMenuData[MenuType][iItemIndex][3]))) : EntityCreator::Create(gMenuData[MenuType][iItemIndex][2], Vector(0, 0, 0), QAngle(0, 0, 0));
-				if (pPlayer.PutToInventory(pGun))
-				{
-					Engine.EmitSoundEntity(FindEntityByEntIndex(PlrInd), "HL2Player.PickupWeapon");
-				}
-				else
-				{
-					pGun.SUB_Remove();
-					Denied(DR_NOSPACE);
-					CashToPay = 0;
-				}
-			}
-			else if (MenuType == RS_AMMO)
-			{
-				int Amount = Utils.StringToInt(gMenuData[MenuType][iItemIndex][2]);
-				int SoldOutAmount = GiveAmmo(pPlayer, iItemIndex, Amount);
-				int NewCost = int(ceil((float(CashToPay) / float(Amount)) * (float(SoldOutAmount) / float(CashToPay)) * float(CashToPay)));
-
-				if (SoldOutAmount > 0)
-				{
-					(iItemIndex == 4) ? Engine.EmitSoundEntity(FindEntityByEntIndex(PlrInd), "HL2Player.PickupWeapon") : Engine.EmitSoundEntity(FindEntityByEntIndex(PlrInd), "ZPlayer.AmmoPickup");
-					CashToPay = NewCost;
-				}
-				else
-				{
-					Denied(DR_NOSPACE);
-					CashToPay = 0;
-				}
-			}
-			else if (MenuType == RS_DROP)
-			{
-				DropCash(PlrInd, CashToPay);
-				CashToPay = 0;
-			}
-			else if (MenuType == RS_ZOMBIE)
-			{
-				switch(iItemIndex)
-				{
-					case 0: Array_CSZMPlayer[PlrInd].AddExtraHealth() ? TakeCost(CashToPay) : Denied(DR_MAXEHP); break;
-					case 1: Array_CSZMPlayer[PlrInd].AddExtraLife() ? TakeCost(CashToPay) : Denied(DR_MAXLIFE); break;
-					case 2: Array_CSZMPlayer[PlrInd].AddZMArmor() ? TakeCost(CashToPay) : Denied(DR_MAXARMOR); break;
-				}
-				CashToPay = 0;
-			}
-			else if (MenuType == RS_LOBBY)
-			{
-				switch(iItemIndex)
-				{
-					case 0: NPZ::GiveThrowable(pPlayer, gMenuData[MenuType][iItemIndex][1]); break;
-					case 1: NPZ::GiveThrowable(pPlayer, gMenuData[MenuType][iItemIndex][1]); break;
-					case 2: if (!NPZ::SetFirefly(FindEntityByEntIndex(PlrInd), PlrInd, 0, 0, 0)) {Denied(DR_EMPTY);} break;
-					case 3: if (!Array_CSZMPlayer[PlrInd].ChangeScale(-0.05f)) {Denied(DR_EMPTY);} break;
-					case 4: if (!Array_CSZMPlayer[PlrInd].ChangeScale(0.05f)) {Denied(DR_EMPTY);} break;
-				}
-			}
-			else if (MenuType == RS_SPEC)
-			{
-				switch(iItemIndex)
-				{
-					case 0: if (!NPZ::SetFirefly(FindEntityByEntIndex(PlrInd), PlrInd, 0, 0, 0)) {Denied(DR_EMPTY);} break;
-				}
-			}
-
-			TakeCost(CashToPay);
-			SendMenu(-1);
-		}
-
-		private void TakeCost(const int iCost)
-		{
-			if (iCost != 0)
-			{
-				Array_CSZMPlayer[PlrInd].CashBank -= iCost;
-				Array_CSZMPlayer[PlrInd].pCash.CheckCash();
-			}
-		}
-
-		private void Denied(const int iReason)
-		{
-			SoundIndex = SF_DENIED;
-			if (iReason > DR_EMPTY)
-			{
-				Chat.PrintToChatPlayer(ToBasePlayer(PlrInd), "{red}*{gold}" + gDeniedReason[iReason]);
-			}
-		}
-
-		private void GoToPage(int i)
-		{
-			SoundIndex = SF_ACCEPT;
-			CurrentPage += i;
-			UpdatePage();
-		}
-
-		private void SendMenu(float nLifeTime)
-		{
-			LifeTime = (nLifeTime < 0) ? PlusGT(10.0f) : PlusGT(nLifeTime);
-			GameText::Menu(PlrInd, pMParams);
-		}
-
-		private void SendExit(bool bSilent)
-		{
-			if (!bSilent)
-			{
-				SoundIndex = SF_CLOSE;
-			}
-
-			pMParams.Update("holdtime", "0.0");
-			pMParams.Update("fadeout", "0.15");
-			GameText::Menu(PlrInd, pMParams);
-			ToZPPlayer(PlrInd).RefuseWeaponSelection(false);
-			Array_CSZMPlayer[PlrInd].ExitMenu();
-		}
-
-		private void PlaySound()
-		{
-			if (SoundIndex == -1)
-			{
-				return;
-			}
-
-			Engine.EmitSoundPlayer(ToZPPlayer(PlrInd), gMenuSound[SoundIndex]);
-		}
-
-		private bool IsNextPageExist()
-		{
-			return CurrentPage < TotalPages && TotalPages > 1;
-		}
-
-		private bool IsPrevPageExist()
-		{
-			return CurrentPage != 1 && TotalPages > 1;
-		}
-
-		private bool IsAllowedGetBackToCAT()
-		{
-			return (MenuType == RS_FIREARMS || MenuType == RS_DROP || MenuType == RS_AMMO || MenuType == RS_MELEE || MenuType == RS_ITEMS) && CurrentPage == 1;
-		}
-
-		void Think()
-		{
-			if (LessThanGT(RefreshTime) && pMParams !is null)
-			{
-				RefreshTime = PlusGT(0.089f);
-				GameText::Menu(PlrInd, pMParams);
-
-				if ((!FindEntityByEntIndex(PlrInd).IsAlive() && FindEntityByEntIndex(PlrInd).GetTeamNumber() != TEAM_SPECTATORS) || FindEntityByEntIndex(PlrInd).GetTeamNumber() != TeamNum)
-				{
-					SendExit(true);
-				}
-			}
-
-			if (LessThanGT(LifeTime))
-			{
-				SendExit(false);
-				PlaySound();
-			}
-		}
 	}
 }
 
@@ -2135,12 +2339,12 @@ HookReturnCode CSZM_OnPlayerSpawn(CZP_Player@ pPlayer)
 				Array_CSZMPlayer[index].SetDefSpeed(SPEED_DEFAULT);
 				pPlayer.SetArmModel(MODEL_HUMAN_ARMS);
 				pBaseEnt.SetModel(MODEL_PLAYER_LOBBYGUY);
-				if (bWarmUp) {Array_CSZMPlayer[index].AddMenu(Radio::Menu(index, Radio::RS_LOBBY, 20.0f));}
+				if (bWarmUp) {Array_CSZMPlayer[index].AddMenu(Radio::OpenMenuByIndex(index, 8, false));}
 			break;
 
 			case TEAM_SURVIVORS:
 				Array_CSZMPlayer[index].SetDefSpeed(SPEED_HUMAN);
-				if (!bIsPlayersSelected && !Array_CSZMPlayer[index].Cured) {Array_CSZMPlayer[index].AddMenu(Radio::Menu(index, Radio::RS_CAT, 30.0f));}
+				if (!bIsPlayersSelected && !Array_CSZMPlayer[index].Cured) {Array_CSZMPlayer[index].AddMenu(Radio::OpenMenuByIndex(index, 1, false));}
 			break;
 		}
 
