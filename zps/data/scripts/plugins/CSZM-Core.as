@@ -603,7 +603,7 @@ class CSZMPlayer
 
 		if (pPlayerEntity.GetTeamNumber() == TEAM_ZOMBIES && (bAllowZombieRespawn || ExtraLife > 0))
 		{
-			ZombieRespawnTime = PlusGT(CONST_SPAWN_DELAY - 0.05f);
+			ZombieRespawnTime = PlusGT(CONST_SPAWN_DELAY - 0.1f);
 		}
 	}
 
@@ -773,7 +773,7 @@ class CSZMPlayer
 	{
 		CZP_Player@ pPlayer = ToZPPlayer(PlayerIndex);
 		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(PlayerIndex);
-		float flZAResist = (pPlayer.GetArmor() > 0 && pPlayerEntity.GetTeamNumber() == TEAM_ZOMBIES) ? (flPSpeed * 0.625f) : 0;
+		float flZAResist = (pPlayer.GetArmor() > 0 && pPlayerEntity.GetTeamNumber() == TEAM_ZOMBIES) ? (flPSpeed * 1.275f) : 0;
 		int NewSpeed = int(float(DefSpeed) * (flPSpeed + flZAResist));
 
 		if (pPlayerEntity.GetTeamNumber() == TEAM_ZOMBIES)
@@ -1412,7 +1412,7 @@ namespace Radio
 	};
 	const array<array<string>> ZombieMenuSchema = 
 	{
-		{"Extra HP",	"750",	"powerup",	"2"},
+		{"Extra HP",	"650",	"powerup",	"2"},
 		{"Exrta Life",	"1000",	"powerup",	"5"},
 		{"Armor",		"900",	"powerup",	"6"}
 	};
@@ -1526,7 +1526,7 @@ namespace Radio
 				case PUT_ARMOR: IsPowerUpAdded = Array_CSZMPlayer[nPlrInd].AddZMArmor(); break;
 			}
 
-			iResult = IsPowerUpAdded ? PayCost(nPlrInd, nCost) : MenuFeedback(nPlrInd, nTextIndex);
+			iResult = IsPowerUpAdded ? (PayCost(nPlrInd, nCost) + 1) : MenuFeedback(nPlrInd, nTextIndex);
 		}
 
 		return iResult;
@@ -1586,6 +1586,11 @@ namespace Radio
 			TotalItems = int(pMenuData.length());
 			TotalPages = int(ceil(float(TotalItems) / float(MaxItemsOnPage)));
 			CurrentPage = 1;
+
+			if (Array_CSZMPlayer[PlayerIndex].ExtraHealth > 0 && Utils.StrEql("Extra HP", pMenuData[0][SLOT_NAME], true))
+			{
+				DoubelCostForHealth();
+			}
 
 			ShowMenu();
 		}
@@ -1780,13 +1785,28 @@ namespace Radio
 			switch(iPurchaseResult)
 			{
 				case 1: ExtendLifeTime(); break;
+				case 2: ExtendLTPowerUps(); break;
 			}
+		}
+
+		private void ExtendLTPowerUps()
+		{
+			if (Array_CSZMPlayer[PlayerIndex].ExtraHealth > 0 && Utils.StrEql("Extra HP", pMenuData[0][SLOT_NAME], true))
+			{
+				DoubelCostForHealth();
+			}
+			ExtendLifeTime();
 		}
 
 		private void ExtendLifeTime()
 		{
 			LifeTime += 10.5f;
 			ShowMenu();
+		}
+
+		private void DoubelCostForHealth()
+		{
+			pMenuData[0][SLOT_COST] = formatInt(int(Utils.StringToFloat(ZombieMenuSchema[0][SLOT_COST]) * 2.231f));
 		}
 
 		private bool IsNextPageExist()
@@ -2457,6 +2477,11 @@ HookReturnCode CSZM_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out Da
 		{
 			CBaseEntity@ pInflictor = DamageInfo.GetInflictor();
 
+			if (pPlayer.GetArmor() > 0)
+			{
+				Engine.EmitSoundPosition(iVicIndex, "cszm_fx/player/plr_hitarmor1.wav", pBaseEnt.GetAbsOrigin(), 1.0f, 85, 105);
+			}
+
 			if (pInflictor !is null && Utils.StrEql("npc_grenade_frag", pInflictor.GetClassname(), true) && iDamageType == 1)
 			{
 				Engine.Ent_Fire_Ent(pInflictor, "settimer", "0", "0");
@@ -2482,7 +2507,17 @@ HookReturnCode CSZM_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out Da
 
 			if (iAttTeam == TEAM_SURVIVORS)
 			{
-				ShowHitMarker(iAttIndex, (pBaseEnt.GetHealth() <= DamageInfo.GetDamage()));
+				int iColorIndex = 0;
+				if (pBaseEnt.GetHealth() <= DamageInfo.GetDamage())
+				{
+					iColorIndex = 2;
+				}
+				else if (pPlayer.GetArmor() > 0)
+				{
+					iColorIndex = 1;
+				}
+
+				ShowHitMarker(iAttIndex, iColorIndex);
 				pAttCSZMPlayer.AddMoney(DamageToMoney(pBaseEnt.GetHealth(), DamageInfo.GetDamage()));
 			}
 

@@ -260,7 +260,9 @@ array<string> g_CSZMFile =
 	"sound/cszm_fx/zombie_d3/zombie_pain02.wav",
 	"sound/cszm_fx/zombie_d3/zombie_pain03.wav",
 	"sound/cszm_fx/zombie_d3/zombie_pain04.wav",
-	"sound/cszm_fx/zombie_d3/zombie_pain05.wav"
+	"sound/cszm_fx/zombie_d3/zombie_pain05.wav",
+
+	"sound/cszm_fx/player/plr_hitarmor1.wav"
 };
 
 void AddToDownloadTable()

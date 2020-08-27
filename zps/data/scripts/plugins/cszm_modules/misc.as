@@ -651,24 +651,18 @@ void ShootTracers(Vector Orinig)
 	}
 }
 
-void ShowHitMarker(const int &in PlayerIndex, const bool &in CriticalDamage)
+void ShowHitMarker(const int &in PlayerIndex, const int &in ColorIndex)
 {
 	CZP_Player@ pPlayer = ToZPPlayer(PlayerIndex);
-	int R = 0;
-	int G = 155;
-	int B = 255;
-	float Alpha = 0.78f;
 
-	if (CriticalDamage)
+	array<Vector> HitColor =
 	{
-		R = 255;
-		G = 75;
-		B = 75;
-	}
+		Vector(255, 155, 0),
+		Vector(0, 155, 255),
+		Vector(255, 75, 75)
+	};
 
-	R = int(R * Alpha);
-	G = int(G * Alpha);
-	B = int(B * Alpha);
+	Color nColor = Color(int(HitColor[ColorIndex].x), int(HitColor[ColorIndex].y), int(HitColor[ColorIndex].z));
 
 	HudTextParams pParams;
 	pParams.x = -1;
@@ -678,8 +672,8 @@ void ShowHitMarker(const int &in PlayerIndex, const bool &in CriticalDamage)
 	pParams.fadeoutTime = 0.2f;
 	pParams.holdTime = 0.075f;
 	pParams.fxTime = 0.0f;
-	pParams.SetColor(Color(R, G, B));
-	pParams.SetColor2(Color(0, 0, 0));
+	pParams.SetColor(nColor);
+	pParams.SetColor2(nColor);
 	Utils.GameTextPlayer(pPlayer, "+", pParams);
 }
 
