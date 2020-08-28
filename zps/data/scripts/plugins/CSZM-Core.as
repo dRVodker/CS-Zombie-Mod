@@ -88,7 +88,7 @@ int ECO_StartingCash = 300;
 int ECO_Human_Win = 750;
 int ECO_Human_Kill = 250;
 int ECO_Zombie_Win = 500;
-int ECO_Zombie_Kill = 650;
+int ECO_Zombie_Kill = 500;
 int ECO_Lose = -1000;
 int ECO_Suiside = -650;
 float ECO_Damage_Multiplier = 0.085f;
@@ -732,7 +732,7 @@ class CSZMPlayer
 
 		if (iArmor == 0)
 		{
-			pPlayer.SetArmor(500);
+			pPlayer.SetArmor(450);
 			Engine.EmitSoundEntity(FindEntityByEntIndex(PlayerIndex), "ZPlayer.ArmorPickup");
 			IsArmorAdded = true;
 		}
@@ -773,7 +773,7 @@ class CSZMPlayer
 	{
 		CZP_Player@ pPlayer = ToZPPlayer(PlayerIndex);
 		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(PlayerIndex);
-		float flZAResist = (pPlayer.GetArmor() > 0 && pPlayerEntity.GetTeamNumber() == TEAM_ZOMBIES) ? (flPSpeed * 1.275f) : 0;
+		float flZAResist = (pPlayer.GetArmor() > 0 && pPlayerEntity.GetTeamNumber() == TEAM_ZOMBIES) ? (flPSpeed * 2.4f) : 0; //1.275f
 		int NewSpeed = int(float(DefSpeed) * (flPSpeed + flZAResist));
 
 		if (pPlayerEntity.GetTeamNumber() == TEAM_ZOMBIES)
@@ -1414,7 +1414,7 @@ namespace Radio
 	{
 		{"Extra HP",	"650",	"powerup",	"2"},
 		{"Exrta Life",	"1000",	"powerup",	"5"},
-		{"Armor",		"900",	"powerup",	"6"}
+		{"Armor",		"850",	"powerup",	"6"}
 	};
 	const array<array<string>> LobbyMenuSchema = 
 	{
@@ -2479,7 +2479,7 @@ HookReturnCode CSZM_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out Da
 
 			if (pPlayer.GetArmor() > 0)
 			{
-				Engine.EmitSoundPosition(iVicIndex, "cszm_fx/player/plr_hitarmor1.wav", pBaseEnt.GetAbsOrigin(), 1.0f, 85, 105);
+				Engine.EmitSoundPosition(iVicIndex, "cszm_fx/player/plr_hitarmor3.wav", pBaseEnt.GetAbsOrigin(), 1.0f, 90, 105);
 			}
 
 			if (pInflictor !is null && Utils.StrEql("npc_grenade_frag", pInflictor.GetClassname(), true) && iDamageType == 1)

@@ -138,5 +138,5 @@ void CacheSounds()
 	Engine.PrecacheFile(sound, "weapons/slam/buttonclick.wav");
 	Engine.PrecacheFile(sound, "npc/zombie_poison/pz_alert2.wav");
 	Engine.PrecacheFile(sound, ")player/footsteps/sand2.wav");
-	Engine.PrecacheFile(sound, "cszm_fx/player/plr_hitarmor1.wav");
+	Engine.PrecacheFile(sound, "cszm_fx/player/plr_hitarmor3.wav");
 }

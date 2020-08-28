@@ -657,7 +657,7 @@ void ShowHitMarker(const int &in PlayerIndex, const int &in ColorIndex)
 
 	array<Vector> HitColor =
 	{
-		Vector(255, 155, 0),
+		Vector(255, 255, 255),
 		Vector(0, 155, 255),
 		Vector(255, 75, 75)
 	};
