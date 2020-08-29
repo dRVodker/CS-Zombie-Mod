@@ -83,7 +83,11 @@ int iWUSeconds;						//Переменная используется для об
 int iRoundTimeFull;					//Время в секундах отведённое на раунд (ПОЛНОЕ).
 int iTurnTime;						//Время, когда превращаются зараженные
 
-int ECO_DefaultCash = 300;			//Экономические переменные, говорят сами за себя
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+//ECO Data
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+int ECO_DefaultCash = 300;
 int ECO_StartingCash = 300;
 int ECO_Human_Win = 750;
 int ECO_Human_Kill = 250;
@@ -92,7 +96,7 @@ int ECO_Zombie_Kill = 500;
 int ECO_Lose = -1000;
 int ECO_Suiside = -650;
 float ECO_Damage_Multiplier = 0.085f;
-float ECO_Health_Multiplier = 0.12f;
+float ECO_Health_Multiplier = 0.13f;
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 //Forwards
@@ -171,7 +175,7 @@ void OnMapInit()
 	Array_CSZMPlayer.resize(iMaxPlayers + 1);
 
 	AutoMap();
-	SetUpIPD((1<<1) + (1<<2) + (1<<3) + (1<<4));
+	SetUpIPD(30);
 	
 	//Set Doors Filter to 0 (any team)
 	SetDoorFilter(TEAM_LOBBYGUYS);
@@ -199,13 +203,14 @@ void OnMapShutdown()
 
 	Array_CSZMPlayer.removeRange(0, Array_CSZMPlayer.length());
 	Array_SteamID.removeRange(0, Array_SteamID.length());
-	ClearIPD();
 
 	Engine.EnableCustomSettings(false);
 	Utils.ForceCollision(TEAM_SURVIVORS, false);
 	Utils.ForceCollision(TEAM_ZOMBIES, false);
 
 	@pCSZMTimer = null;
+
+	ClearIPD();
 }
 
 void OnProcessRound()
@@ -444,42 +449,6 @@ class HUDTimer
 	}
 }
 
-class ShowHealthPoints
-{
-	private array<string> Lines;
-	float lifetime;
-
-	ShowHealthPoints(CBasePlayer@ pPlayer, string sHP)
-	{
-		UpdateInfo(pPlayer, sHP);
-	}
-
-	void UpdateInfo(CBasePlayer@ pPlayer, string sHP)
-	{
-		Lines.insertLast(sHP);
-		lifetime = PlusGT(0.2f);
-		Show(pPlayer);
-	}
-
-	private void Show(CBasePlayer@ pPlayer)
-	{
-		string MSG;
-
-		for (uint i = 0; i < Lines.length(); i++)
-		{
-			if (i == 0)
-			{
-				MSG += Lines[i];
-				continue;
-			}
-
-			MSG += "\n" + Lines[i];
-		}
-
-		Chat.CenterMessagePlayer(pPlayer, MSG);
-	}
-}
-
 class CSZMPlayer
 {
 	private string SteamID;					//SteamID, Что тут ещё добавить?
@@ -520,7 +489,6 @@ class CSZMPlayer
 	float Scale;							//Масштаб игрока
 
 	array<TimeBasedDamage@> pTimeDamage;	//???
-	private ShowHealthPoints@ pShowHP;		//Объект, который показывает оставшееся HP у ломающихся вещей
 
 	Radio::BaseMenu@ pMenu;					//Слот для меню
 	GameText::Cash@ pCash;					//Показывает деньги
@@ -599,7 +567,6 @@ class CSZMPlayer
 		Scale = 1.0f;
 
 		pTimeDamage.removeRange(0, pTimeDamage.length());
-		@pShowHP = null;
 
 		if (pPlayerEntity.GetTeamNumber() == TEAM_ZOMBIES && (bAllowZombieRespawn || ExtraLife > 0))
 		{
@@ -869,20 +836,6 @@ class CSZMPlayer
 		SetUsed(PlayerIndex, pItemAdrenaline);
 	}
 
-	void ShowHealthLeft(int damage, int health)
-	{
-		string FullMSG = (damage > health) ? "- -" : "Health: " + formatInt(health - damage);
-
-		if (pShowHP is null)
-		{
-			@pShowHP = ShowHealthPoints(ToBasePlayer(PlayerIndex), FullMSG);
-		}
-		else
-		{
-			pShowHP.UpdateInfo(ToBasePlayer(PlayerIndex), FullMSG);
-		}
-	}
-
 	void AddKill()
 	{
 		Kills++;
@@ -923,11 +876,6 @@ class CSZMPlayer
 
 				pTimeDamage[i].Think(pPlayerEntity);
 			}
-		}
-
-		if (pShowHP !is null && pShowHP.lifetime < Globals.GetCurrentTime())
-		{
-			@pShowHP = null;
 		}
 
 		if (pMenu !is null && pMenu.CheckLife())
@@ -2066,6 +2014,72 @@ namespace Radio
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
+//Health Beacon
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+array<ShowHealth::HealthBeacon@> Array_HealthBeacon(2048);
+
+namespace ShowHealth
+{
+	class HealthBeacon
+	{
+		int Index;
+		int EntIndex;
+
+		HealthBeacon(CBaseEntity@ pEntity, const int nDamage)
+		{
+			Index = pEntity.entindex();
+			CreateBeacon(pEntity, nDamage);
+		}
+
+		void EntityDamaged(CBaseEntity@ pEntity, const int nDamage)
+		{
+			CBaseEntity@ pOldBeacon = FindEntityByEntIndex(EntIndex);
+			if (pOldBeacon !is null)
+			{
+				Engine.Ent_Fire_Ent(pOldBeacon, "TurnOff", "0", "0.00");
+				Engine.Ent_Fire_Ent(pOldBeacon, "Kill", "0", "0.00");
+			}
+
+			CreateBeacon(pEntity, nDamage);
+		}
+
+		private void CreateBeacon(CBaseEntity@ pEntity, const int nDamage)
+		{
+			int nHealth = pEntity.GetHealth();
+			int nMaxHealth = pEntity.GetMaxHealth();
+
+			if (nDamage < nHealth)
+			{
+				nHealth -= nDamage;
+				CEntityData@ ImputData = EntityCreator::EntityData();
+				ImputData.Add("targetname", "test_healthbeacon");
+				ImputData.Add("customicons", "1");
+				ImputData.Add("displayteam", "3");
+				ImputData.Add("distance", "250");
+				ImputData.Add("human_icon", "vgui/images/emptyimage");
+				ImputData.Add("zombie_icon", "vgui/images/emptyimage");
+				ImputData.Add("hinttype", "1");
+				ImputData.Add("showhealth", "0");
+				ImputData.Add("startactive", "1");
+				ImputData.Add("primary", "1");
+				ImputData.Add("zombielabel", formatInt(nHealth) + " HP");
+
+				ImputData.Add("SetHealthRatio", formatFloat((float(nHealth) / float(nMaxHealth)), 'l', 2, 2), true, "0.00");
+				ImputData.Add("ShowHealth", "1", true, "0.00");
+				ImputData.Add("Addoutput", "OnUser1 !self:TurnOff:0:0:1", true, "0.00");
+				ImputData.Add("Addoutput", "OnUser1 !self:Kill:0:0:1", true, "0.00");
+				ImputData.Add("FireUser1", "0", true, "0.95");
+
+				CBaseEntity@ pBeacon = EntityCreator::Create("info_beacon", pEntity.GetAbsOrigin(), QAngle(0, 0, 0), ImputData);
+				pBeacon.SetParent(pEntity);
+				EntIndex = pBeacon.entindex();
+			}
+		}
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
 //MapPurchase
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -2168,6 +2182,18 @@ void OnEntityUsed(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 		Engine.EmitSoundPosition(pPlayerEntity.entindex(), ")cszm_fx/items/gunpickup1.wav", pPlayerEntity.GetAbsOrigin() + Vector(0, 0, 16), 0.7f, 65, 110);
 		Array_CSZMPlayer[index].CashBank += pEntity.GetHealth();
 		pEntity.SUB_Remove();
+	}
+}
+
+void OnEntityOutput(const string &in strOutput, CBaseEntity@ pActivator, CBaseEntity@ pCaller)
+{
+	//SD("ActivatorClass: " + pActivator.GetClassname());
+	//SD("CallerClass: " + pCaller.GetClassname());
+	//SD("Output: " + strOutput);
+
+	if (Utils.StrEql("OnUser1", strOutput, true) && Utils.StrEql("info_beacon", pActivator.GetClassname(), true))
+	{
+		@Array_HealthBeacon[pActivator.entindex()] is null;
 	}
 }
 
@@ -2825,9 +2851,23 @@ HookReturnCode CSZM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out Dama
 	}
 
 	//Show HP to zombie attacker
-	if (pAttacker.IsPlayer() && iAttakerTeam == TEAM_ZOMBIES && !(bIsUnbreakable || bIsExplosive) && pEntity.GetMaxHealth() > 25 && !pEntity.IsPlayer() && bDamageType(DamageInfo.GetDamageType(), 2) && !Utils.StrContains("weapon", strEntClassname))
+	if (iAttakerTeam == TEAM_ZOMBIES && !bIsUnbreakable && !pEntity.IsPlayer() && !Utils.StrContains("weapon", strEntClassname))
 	{
-		Array_CSZMPlayer[iAttakerIndex].ShowHealthLeft(int(DamageInfo.GetDamage()), pEntity.GetHealth());
+		if (pEntity.GetHealth() > DamageInfo.GetDamage())
+		{
+			if (Array_HealthBeacon[EntIndex] is null)
+			{
+				@Array_HealthBeacon[EntIndex] = ShowHealth::HealthBeacon(pEntity, int(DamageInfo.GetDamage()));
+			}
+			else
+			{
+				Array_HealthBeacon[EntIndex].EntityDamaged(pEntity, int(DamageInfo.GetDamage()));
+			}
+		}
+		else
+		{
+			@Array_HealthBeacon[EntIndex] is null;
+		}
 	}
 
 	//Other stuff
