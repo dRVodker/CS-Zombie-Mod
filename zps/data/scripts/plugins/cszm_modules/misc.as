@@ -263,6 +263,7 @@ void RegisterEntities()
 	Entities::RegisterUse("item_deliver");
 	Entities::RegisterDrop("item_deliver");
 	Entities::RegisterUse("item_money");
+	Entities::RegisterOutput("OnUser1", "info_beacon");
 }
 
 string GetAttackerInfo(const string &in FullInfo)
