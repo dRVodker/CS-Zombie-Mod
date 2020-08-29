@@ -311,14 +311,14 @@ void RandomizePropCrate()
 	CBaseEntity@ pEntity;
 	while ((@pEntity = FindEntityByClassname(pEntity, "prop_itemcrate")) !is null)
 	{
-		if (!Utils.StrEql("breencrate", pEntity.GetEntityName()))
+		if (Utils.StrEql("breencrate", pEntity.GetEntityName()))
 		{
-			pEntity.SUB_Remove();
+			Engine.Ent_Fire_Ent(pEntity, "AddOutput", "ItemCount 0");
+			Engine.Ent_Fire_Ent(pEntity, "AddOutput", "ItemClass item_ammo_pistol");
 			continue;
 		}
 
-		Engine.Ent_Fire_Ent(pEntity, "AddOutput", "ItemCount 0");
-		Engine.Ent_Fire_Ent(pEntity, "AddOutput", "ItemClass item_ammo_pistol");
+		pEntity.SUB_Remove();
 	}
 }
 
