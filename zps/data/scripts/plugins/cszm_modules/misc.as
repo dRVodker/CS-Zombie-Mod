@@ -138,23 +138,26 @@ void PutPlrToPlayZone(CBaseEntity@ pEntPlayer)
 
 	int iLength = int(g_pOtherSpawn.length()) - 1;
 	
-	if (pEntPlayer is null)
+	if (iLength > 0)
 	{
-		for (int i = 1; i <= iMaxPlayers; i++)
+		if (pEntPlayer is null)
 		{
-			CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(i);
-			
-			if (pPlayerEntity is null || pPlayerEntity.GetTeamNumber() > TEAM_SPECTATORS)
+			for (int i = 1; i <= iMaxPlayers; i++)
 			{
-				continue;
+				CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(i);
+				
+				if (pPlayerEntity is null || pPlayerEntity.GetTeamNumber() > TEAM_SPECTATORS)
+				{
+					continue;
+				}
+				
+				pPlayerEntity.SetAbsOrigin(g_pOtherSpawn[Math::RandomInt(1, iLength)].GetAbsOrigin());
 			}
-			
-			pPlayerEntity.SetAbsOrigin(g_pOtherSpawn[Math::RandomInt(1, iLength)].GetAbsOrigin());
 		}
-	}
-	else
-	{
-		pEntPlayer.SetAbsOrigin(g_pOtherSpawn[Math::RandomInt(1, iLength)].GetAbsOrigin());
+		else
+		{
+			pEntPlayer.SetAbsOrigin(g_pOtherSpawn[Math::RandomInt(1, iLength)].GetAbsOrigin());
+		}
 	}
 }
 
