@@ -318,7 +318,7 @@ void OnMatchBegin()
 
 	LogicPlayerManager();
 	Schedule::Task(0.5f, "CSZM_LocknLoad");
-	Schedule::Task(0.5f, "SpawnCashItem");
+	Schedule::Task(0.5f, "SpawnCashItems");
 
 	if (iWUSeconds == 0)
 	{
@@ -640,7 +640,7 @@ class CSZMPlayer
 		{
 			Scale = nScale;
 			Engine.Ent_Fire_Ent(FindEntityByEntIndex(PlayerIndex), "SetModelScale", formatFloat(Scale, 'l', 2, 2));
-			Chat.CenterMessagePlayer(ToBasePlayer(PlayerIndex), "| Выш масштаб изменён до " + formatFloat(Scale, 'l', 2, 2) + " |");
+			Chat.CenterMessagePlayer(ToBasePlayer(PlayerIndex), "| Масштаб изменён: " + formatFloat(Scale, 'l', 2, 2) + " |");
 			IsScaleChanged = true;
 		}
 
@@ -1344,9 +1344,9 @@ namespace Radio
 	};
 	const array<array<string>> ItemsMenuSchema = 
 	{
-		{"Grenade",		"850",	"weapon",	"weapon_frag"},
-		{"IED",			"650",	"weapon",	"weapon_ied"},
-		{"FragMine",	"750",	"deliver",	"1"},
+		{"Grenade",		"800",	"weapon",	"weapon_frag"},
+		{"IED",			"900",	"weapon",	"weapon_ied"},
+		{"FragMine",	"725",	"deliver",	"1"},
 		{"Adrenaline",	"850",	"deliver",	"2"},
 		{"Antidote",	"1500",	"deliver",	"3"}
 	};

@@ -134,45 +134,45 @@ class CBrushDoor
 
 void CashDATA()
 {
-	iMaxCash = 8;
-	iMinCash = 2;
+	MaxRandomCash = 8;
+	MinRandomCash = 2;
 
-	g_Origins.insertLast(Vector(-4.58305, 742.143, 304.595));
-	g_Origins.insertLast(Vector(-110.399, 897.988, 273.031));
-	g_Origins.insertLast(Vector(274.831, 805.971, 169.031));
-	g_Origins.insertLast(Vector(250.886, 714.121, 173.031));
-	g_Origins.insertLast(Vector(-261.416, 612.668, 137.031));
-	g_Origins.insertLast(Vector(362.992, 650.264, 1.03125));
-	g_Origins.insertLast(Vector(-865.48, 248.085, 55.3741));
-	g_Origins.insertLast(Vector(-901.819, 611.206, 137.031));
-	g_Origins.insertLast(Vector(338.413, 630.164, 425.433));
-	g_Origins.insertLast(Vector(-174.823, 109.467, 537.031));
-	g_Origins.insertLast(Vector(736.779, -869.303, 429.304));
-	g_Origins.insertLast(Vector(863.411, 235.614, 122.082));
-	g_Origins.insertLast(Vector(236.318, 221.235, 357.679));
-	g_Origins.insertLast(Vector(179.209, -240.623, 157.19));
-	g_Origins.insertLast(Vector(-0.691135, -232.871, 216.602));
-	g_Origins.insertLast(Vector(-141.748, 227.959, 168.467));
-	g_Origins.insertLast(Vector(-29.3542, 230.695, 142.691));
-	g_Origins.insertLast(Vector(-219.247, -13.4412, 33.0313));
-	g_Origins.insertLast(Vector(240.878, -151.885, 69.2032));
-	g_Origins.insertLast(Vector(-60.5293, 240.814, 5.90483));
-	g_Origins.insertLast(Vector(-899.457, -717.978, 43.0313));
-	g_Origins.insertLast(Vector(454.025, 1262.15, -94.9688));
-	g_Origins.insertLast(Vector(875.436, 1700.42, -121.824));
-	g_Origins.insertLast(Vector(874.176, 1271.58, -121.824));
-	g_Origins.insertLast(Vector(863.308, 1564.45, -84.9688));
-	g_Origins.insertLast(Vector(-26.8838, 1436.85, -213.969));
-	g_Origins.insertLast(Vector(-795.078, 1931.48, -170.272));
-	g_Origins.insertLast(Vector(-930.02, 1569.44, -230.717));
-	g_Origins.insertLast(Vector(-599.967, 1480.12, -254.969));
-	g_Origins.insertLast(Vector(-1140.89, 647.903, -170.841));
-	g_Origins.insertLast(Vector(-633.085, 982.999, -197.771));
-	g_Origins.insertLast(Vector(-263.265, 817.959, -200.816));
-	g_Origins.insertLast(Vector(353.604, 863.145, -234.81));
-	g_Origins.insertLast(Vector(-191.621, -170.54, 411.031));
-	g_Origins.insertLast(Vector(212.584, 154.991, 411.031));
-	g_Origins.insertLast(Vector(589.627, -894.869, 1.03125));
+	InsertToArray(-4.58305, 742.143, 304.595);
+	InsertToArray(-110.399, 897.988, 273.031);
+	InsertToArray(274.831, 805.971, 169.031);
+	InsertToArray(250.886, 714.121, 173.031);
+	InsertToArray(-261.416, 612.668, 137.031);
+	InsertToArray(362.992, 650.264, 1.03125);
+	InsertToArray(-865.48, 248.085, 55.3741);
+	InsertToArray(-901.819, 611.206, 137.031);
+	InsertToArray(338.413, 630.164, 425.433);
+	InsertToArray(-174.823, 109.467, 537.031);
+	InsertToArray(736.779, -869.303, 429.304);
+	InsertToArray(863.411, 235.614, 122.082);
+	InsertToArray(236.318, 221.235, 357.679);
+	InsertToArray(179.209, -240.623, 157.19);
+	InsertToArray(-0.691135, -232.871, 216.602);
+	InsertToArray(-141.748, 227.959, 168.467);
+	InsertToArray(-29.3542, 230.695, 142.691);
+	InsertToArray(-219.247, -13.4412, 33.0313);
+	InsertToArray(240.878, -151.885, 69.2032);
+	InsertToArray(-60.5293, 240.814, 5.90483);
+	InsertToArray(-899.457, -717.978, 43.0313);
+	InsertToArray(454.025, 1262.15, -94.9688);
+	InsertToArray(875.436, 1700.42, -121.824);
+	InsertToArray(874.176, 1271.58, -121.824);
+	InsertToArray(863.308, 1564.45, -84.9688);
+	InsertToArray(-26.8838, 1436.85, -213.969);
+	InsertToArray(-795.078, 1931.48, -170.272);
+	InsertToArray(-930.02, 1569.44, -230.717);
+	InsertToArray(-599.967, 1480.12, -254.969);
+	InsertToArray(-1140.89, 647.903, -170.841);
+	InsertToArray(-633.085, 982.999, -197.771);
+	InsertToArray(-263.265, 817.959, -200.816);
+	InsertToArray(353.604, 863.145, -234.81);
+	InsertToArray(-191.621, -170.54, 411.031);
+	InsertToArray(212.584, 154.991, 411.031);
+	InsertToArray(589.627, -894.869, 1.03125);
 }
 
 void OnMapInit()

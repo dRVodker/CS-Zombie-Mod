@@ -1,5 +1,6 @@
 #include "cszm_modules/lobbyambient"
 #include "cszm_modules/newspawn"
+#include "cszm_modules/cashmaker"
 
 const int TEAM_LOBBYGUYS = 0;
 
@@ -174,6 +175,45 @@ void OnMapInit()
 	g_TeleportDelay.resize(iMaxPlayers + 1);
 
 	Events::Player::OnPlayerSpawn.Hook(@OnPlrSpawn);
+
+	MapCash();
+}
+
+void MapCash()
+{
+	MaxRandomCash = 8;
+	MinRandomCash = 2;
+
+	MaxMoneyPerItem = 110.0f;
+	MinMoneyPerItem = 30.0f;
+
+	InsertToArray(11.4171f, 398.509f, -1042.97f, 950);
+	InsertToArray(-80.0718f, 1364.34f, -902.663f, 500);
+
+	InsertToArray(81.3646f, 142.244f, -1185.17f);
+	InsertToArray(29.2226f, -142.162f, -920.0f);
+	InsertToArray(63.2106f, -383.62f, -958.969f);
+	InsertToArray(488.398f, -943.83f, -1214.15f);
+	InsertToArray(-28.4988f, -536.835f, -1203.07f);
+	InsertToArray(-571.954f, 19.2776f, -1214.97f);
+	InsertToArray(-453.723f, 281.249f, -1288.62f);
+	InsertToArray(-26.7921f, 604.304f, -902.874f);
+	InsertToArray(-322.352f, 1232.76f, -942.969f);
+	InsertToArray(765.505f, 932.906f, -1086.97f);
+	InsertToArray(662.912f, 1347.79f, -1103.91f);
+	InsertToArray(654.366f, 1333.53f, -1103.9f);
+	InsertToArray(204.444f, 1703.7f, -1134.97f);
+	InsertToArray(-202.786f, 1970.0f, -1174.7f);
+	InsertToArray(-87.8858f, 1731.11f, -1213.95f);
+	InsertToArray(-327.051f, 1721.28f, -1025.73f);
+	InsertToArray(497.008f, 347.183f, -1214.97f);
+	InsertToArray(284.921f, 516.682f, -1125.15f);
+	InsertToArray(192.564f, 657.321f, -1058.97f);
+	InsertToArray(65.7012f, 706.822f, -1214.97f);
+	InsertToArray(86.6535f, 690.58f, -1214.97f);
+	InsertToArray(185.323f, 1043.45f, -1324.72f);
+	InsertToArray(709.422f, 1270.38f, -1181.07f);
+	InsertToArray(674.613f, 1282.41f, -1188.03f);
 }
 
 void OnNewRound()
@@ -200,6 +240,7 @@ void SetUpStuff()
 	Engine.Ent_Fire("SND_Ambient", "PlaySound");
 
 	Engine.Ent_Fire("prop*", "FireUser1", "0", "0.00");
+	Engine.Ent_Fire("item_money", "kill", "0", "0.00");
 
 	PlayLobbyAmbient();
 

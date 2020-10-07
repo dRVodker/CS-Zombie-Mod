@@ -163,33 +163,33 @@ void SetUpStuff()
 
 void CashData()
 {
-	iMaxCash = 12;
-	iMinCash = 8;
-	flMaxMPI = 175.0f;
-	flMinMPI = 45.0f;
+	MaxRandomCash = 12;
+	MinRandomCash = 6;
+	MaxMoneyPerItem = 175.0f;
+	MinMoneyPerItem = 45.0f;
 
-	g_Origins.insertLast(Vector(-356.433, -1429.81, 154.526));
-	g_Origins.insertLast(Vector(-355.539, -1410.98, 154.526));
-	g_Origins.insertLast(Vector(403.124, -914.462, 161.031));
-	g_Origins.insertLast(Vector(394.451, -769.401, 145.031));
-	g_Origins.insertLast(Vector(910.001, -408.19, 422.79));
-	g_Origins.insertLast(Vector(920.474, -390.295, 422.763));
-	g_Origins.insertLast(Vector(909.233, -382.09, 422.725));
-	g_Origins.insertLast(Vector(1233.67, -362.098, -359.874));
-	g_Origins.insertLast(Vector(410.493, -377.005, -542.969));
-	g_Origins.insertLast(Vector(432.5, -1206.51, -302.969));
-	g_Origins.insertLast(Vector(417.573, -1218.17, -302.969));
-	g_Origins.insertLast(Vector(367.772, -1176.92, -302.969));
-	g_Origins.insertLast(Vector(-339.996, -381.77, -230.074));
-	g_Origins.insertLast(Vector(-518.024, 89.659, -142.969));
-	g_Origins.insertLast(Vector(-122.988, -820.316, -142.969));
-	g_Origins.insertLast(Vector(-289.004, -719.739, -109.054));
-	g_Origins.insertLast(Vector(-312.326, -724.114, -109.032));
-	g_Origins.insertLast(Vector(79.2919, -451.216, 1.03125));
-	g_Origins.insertLast(Vector(71.0485, -429.527, 1.03125));
-	g_Origins.insertLast(Vector(62.9824, -446.235, 1.03125));
-	g_Origins.insertLast(Vector(-529.314, -354.646, 81.0313));
-	g_Origins.insertLast(Vector(-536.301, -341.571, 81.0313));
+	InsertToArray(-356.433, -1429.81, 154.526);
+	InsertToArray(-355.539, -1410.98, 154.526);
+	InsertToArray(403.124, -914.462, 161.031);
+	InsertToArray(394.451, -769.401, 145.031);
+	InsertToArray(910.001, -408.19, 422.79);
+	InsertToArray(920.474, -390.295, 422.763);
+	InsertToArray(909.233, -382.09, 422.725);
+	InsertToArray(1233.67, -362.098, -359.874);
+	InsertToArray(410.493, -377.005, -542.969);
+	InsertToArray(432.5, -1206.51, -302.969);
+	InsertToArray(417.573, -1218.17, -302.969);
+	InsertToArray(367.772, -1176.92, -302.969);
+	InsertToArray(-339.996, -381.77, -230.074);
+	InsertToArray(-518.024, 89.659, -142.969);
+	InsertToArray(-122.988, -820.316, -142.969);
+	InsertToArray(-289.004, -719.739, -109.054);
+	InsertToArray(-312.326, -724.114, -109.032);
+	InsertToArray(79.2919, -451.216, 1.03125);
+	InsertToArray(71.0485, -429.527, 1.03125);
+	InsertToArray(62.9824, -446.235, 1.03125);
+	InsertToArray(-529.314, -354.646, 81.0313);
+	InsertToArray(-536.301, -341.571, 81.0313);
 }
 
 HookReturnCode OnPlayerSpawn(CZP_Player@ pPlayer)

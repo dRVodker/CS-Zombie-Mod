@@ -89,34 +89,34 @@ array<array<CSpawnPoint@>> Office_HumanSpawns =
 
 void OnMapInit() 
 {
-	iMaxCash = 11;
-	iMinCash = 5;
+	MaxRandomCash = 11;
+	MinRandomCash = 5;
 
-	g_Origins.insertLast(Vector(1398.82, 55.4421, -128.969));
-	g_Origins.insertLast(Vector(1876.26, 246.919, -138.81));
-	g_Origins.insertLast(Vector(2178.13, -159.937, -158.969));
-	g_Origins.insertLast(Vector(1407.23, -657.945, -79.4419));
-	g_Origins.insertLast(Vector(1165.1, -233.455, -74.8412));
-	g_Origins.insertLast(Vector(761.026, -118.686, -126.969));
-	g_Origins.insertLast(Vector(456.185, 610.667, -158.969));
-	g_Origins.insertLast(Vector(161.006, -193.455, -158.969));
-	g_Origins.insertLast(Vector(22.2357, -827.812, -278.969));
-	g_Origins.insertLast(Vector(-270.229, 391.343, -158.969));
-	g_Origins.insertLast(Vector(-700.003, 876.362, -174.969));
-	g_Origins.insertLast(Vector(-859.672, 213.707, -366.969));
-	g_Origins.insertLast(Vector(-888.778, -374.942, -174.969));
-	g_Origins.insertLast(Vector(-1529.09, -39.4409, -238.969));
-	g_Origins.insertLast(Vector(-1678.22, -584.44, -238.969));
-	g_Origins.insertLast(Vector(-1488, -1535.49, -326.969));
-	g_Origins.insertLast(Vector(-774.8, -1204.56, -174.49));
-	g_Origins.insertLast(Vector(-1326.02, -2166.26, -334.969));
-	g_Origins.insertLast(Vector(-331.708, -1903.93, -208.969));
-	g_Origins.insertLast(Vector(290.433, -1474.02, -214.49));
-	g_Origins.insertLast(Vector(1400.52, -1270.91, -174.969));
-	g_Origins.insertLast(Vector(648.638, -1632.41, -174.969));
-	g_Origins.insertLast(Vector(-454.314, -107.224, -128.969));
-	g_Origins.insertLast(Vector(-672.879, -120.148, -158.969));
-	g_Origins.insertLast(Vector(-729.401, -35.4573, -128.969));
+	InsertToArray(1398.82, 55.4421, -128.969);
+	InsertToArray(1876.26, 246.919, -138.81);
+	InsertToArray(2178.13, -159.937, -158.969);
+	InsertToArray(1407.23, -657.945, -79.4419);
+	InsertToArray(1165.1, -233.455, -74.8412);
+	InsertToArray(761.026, -118.686, -126.969);
+	InsertToArray(456.185, 610.667, -158.969);
+	InsertToArray(161.006, -193.455, -158.969);
+	InsertToArray(22.2357, -827.812, -278.969);
+	InsertToArray(-270.229, 391.343, -158.969);
+	InsertToArray(-700.003, 876.362, -174.969);
+	InsertToArray(-859.672, 213.707, -366.969);
+	InsertToArray(-888.778, -374.942, -174.969);
+	InsertToArray(-1529.09, -39.4409, -238.969);
+	InsertToArray(-1678.22, -584.44, -238.969);
+	InsertToArray(-1488, -1535.49, -326.969);
+	InsertToArray(-774.8, -1204.56, -174.49);
+	InsertToArray(-1326.02, -2166.26, -334.969);
+	InsertToArray(-331.708, -1903.93, -208.969);
+	InsertToArray(290.433, -1474.02, -214.49);
+	InsertToArray(1400.52, -1270.91, -174.969);
+	InsertToArray(648.638, -1632.41, -174.969);
+	InsertToArray(-454.314, -107.224, -128.969);
+	InsertToArray(-672.879, -120.148, -158.969);
+	InsertToArray(-729.401, -35.4573, -128.969);
 
 	Events::Player::OnPlayerSpawn.Hook(@OnPlrSpawn);
 	Schedule::Task(0.05f, "SetUpStuff");
