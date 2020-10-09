@@ -174,16 +174,18 @@ void OnMapInit()
 	WindowBlocker::FillImputData();
 	WindowBlocker::RegisterEnts();
 
-	flWaitBeforeCollect = Globals.GetCurrentTime() + 0.05f;
+	OnNewRound();
 }
 
 void OnNewRound()
 {
+	Schedule::Task(0.05f, "SetUpStuff");
 	flWaitBeforeCollect = Globals.GetCurrentTime() + 0.05f;
 }
 
 void OnMatchBegin()
 {
+	RemoveNativeSpawns("info_player_human");
 	CreateSpawnsFromArray(SecondarySpawns, false);
 }
 

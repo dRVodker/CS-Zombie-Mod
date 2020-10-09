@@ -4,10 +4,7 @@ const int TEAM_LOBBYGUYS = 0;
 
 void OnMapInit()
 {
-	iMinCrates = 4;
-	iMaxCrates = 8;
-
-	Schedule::Task(0.05f, "Hydro_FindCrates");
+	OnNewRound();
 }
 
 void OnNewRound()
@@ -15,6 +12,7 @@ void OnNewRound()
 	Engine.Ent_Fire("AmbientG", "StopSound");
 	Engine.Ent_Fire("AmbientG", "PlaySound");
 	Schedule::Task(0.05f, "Hydro_FindCrates");
+	Schedule::Task(0.05f, "SetUpStuff");
 }
 
 void OnMatchBegin() 

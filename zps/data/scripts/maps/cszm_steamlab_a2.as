@@ -127,6 +127,13 @@ void OnMapInit()
 	InsertToArray(-2118.82, 2194.15, 1124.03);
 	InsertToArray(-2417.31, 1487.69, 1141.03);
 	InsertToArray(-1830.02, 1413.11, 1033.03);
+
+	OnNewRound();
+}
+
+void OnNewRound()
+{
+	Schedule::Task(0.05f, "SetUpStuff");
 }
 
 void SetUpStuff()

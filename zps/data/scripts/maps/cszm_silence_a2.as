@@ -101,6 +101,12 @@ const int TEAM_SURVIVORS = 2;
 void OnMapInit()
 {
 	Events::Player::OnPlayerSpawn.Hook(@OnPlayerSpawn);
+	OnNewRound();
+}
+
+void OnNewRound()
+{
+	Schedule::Task(0.05f, "SetUpStuff");
 }
 
 void OnMatchStarting()

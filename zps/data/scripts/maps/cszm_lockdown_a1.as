@@ -120,9 +120,7 @@ int iMaxPlayers;
 void OnMapInit()
 {
 	iMaxPlayers = Globals.GetMaxClients();
-
 	Engine.PrecacheFile(sound, "buttons/lever8.wav");
-
 	Entities::RegisterOutput("OnPressed", "fan_button");
 
 	OnNewRound();
@@ -130,6 +128,7 @@ void OnMapInit()
 
 void OnNewRound()
 {
+	Schedule::Task(0.05f, "SetUpStuff");
 	Schedule::Task(0.05f, "LockDown_FindCrates");
 }
 

@@ -91,6 +91,12 @@ array<array<CSpawnPoint@>> SP_HumanSpawns =
 void OnMapInit()
 {
 	Events::Player::OnPlayerSpawn.Hook(@OnPlrSpawn);
+	OnNewRound();
+}
+
+void OnNewRound()
+{
+	Schedule::Task(0.05f, "SetUpStuff");
 }
 
 void SetUpStuff()

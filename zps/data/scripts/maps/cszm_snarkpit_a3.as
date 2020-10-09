@@ -114,6 +114,7 @@ void OnMapInit()
 	Events::Player::OnPlayerSpawn.Hook(@OnPlayerSpawn);
 
 	CashData();
+	OnNewRound();
 }
 
 void OnNewRound()
@@ -122,6 +123,7 @@ void OnNewRound()
 	bFan2IsOn = false;
 	iF1SPitch = 0;
 	iF2SPitch = 0;
+	Schedule::Task(0.05f, "SetUpStuff");
 }
 
 void OnProcessRound()

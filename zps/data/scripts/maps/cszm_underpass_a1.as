@@ -90,6 +90,12 @@ int iMaxPlayers;
 void OnMapInit()
 {
 	iMaxPlayers = Globals.GetMaxClients();
+	OnNewRound();
+}
+
+void OnNewRound()
+{
+	Schedule::Task(0.05f, "SetUpStuff");
 }
 
 void SetUpStuff()

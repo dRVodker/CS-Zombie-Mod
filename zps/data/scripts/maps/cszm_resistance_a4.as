@@ -177,6 +177,7 @@ void OnMapInit()
 	Events::Player::OnPlayerSpawn.Hook(@OnPlrSpawn);
 
 	MapCash();
+	Schedule::Task(0.05f, "SetUpStuff");
 }
 
 void MapCash()
@@ -220,6 +221,7 @@ void OnNewRound()
 {
 	Engine.Ent_Fire("SND_Ambient", "StopSound");
 	Engine.Ent_Fire("SND_Ambient", "PlaySound");
+	Schedule::Task(0.05f, "SetUpStuff");
 }
 
 void OnMatchBegin() 

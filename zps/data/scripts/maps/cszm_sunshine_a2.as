@@ -213,6 +213,12 @@ void OnMapInit()
 	Events::Player::OnPlayerSpawn.Hook(@SH_OnPlayerSpawn);
 
 	CashDATA();
+	OnNewRound();
+}
+
+void OnNewRound()
+{
+	Schedule::Task(0.05f, "SetUpStuff");
 }
 
 void FindIPC()

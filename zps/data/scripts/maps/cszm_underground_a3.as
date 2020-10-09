@@ -99,6 +99,12 @@ void OnMapInit()
 	iMaxPlayers = Globals.GetMaxClients();
 
 	Events::Player::OnPlayerSpawn.Hook(@OnPlayerSpawn);
+	OnNewRound();
+}
+
+void OnNewRound()
+{
+	Schedule::Task(0.05f, "SetUpStuff");
 }
 
 void OnNewRound()

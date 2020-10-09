@@ -302,6 +302,12 @@ void OnMapInit()
 	Events::Player::OnPlayerSpawn.Hook(@HI_OnPlrSpawn);
 
 	g_TeleportDelay.resize(iMaxPlayers + 1);
+	OnNewRound();
+}
+
+void OnNewRound()
+{
+	Schedule::Task(0.05f, "SetUpStuff");
 }
 
 void OnMatchEnded()

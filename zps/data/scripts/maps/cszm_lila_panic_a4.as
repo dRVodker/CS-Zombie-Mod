@@ -190,6 +190,12 @@ void OnMapInit()
 
 	Engine.Ent_Fire("breencrate", "FireUser1", "", "0.01");
 	CashDATA();
+	OnNewRound();
+}
+
+void OnNewRound()
+{
+	Schedule::Task(0.05f, "SetUpStuff");
 }
 
 HookReturnCode OnPlayerSpawn(CZP_Player@ pPlayer)

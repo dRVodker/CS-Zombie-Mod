@@ -69,8 +69,13 @@ array<array<CSpawnPoint@>> SecondaryHumanSpawns =
 void OnMapInit()
 {
 	Events::Player::OnPlayerSpawn.Hook(@OnPlrSpawn);
+	OnNewRound();
 }
 
+void OnNewRound()
+{
+	Schedule::Task(0.05f, "SetUpStuff");
+}
 
 void OnMatchBegin() 
 {
