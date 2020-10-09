@@ -212,7 +212,6 @@ void OnMapInit()
 	Events::Trigger::OnStartTouch.Hook(@SH_OnStartTouch);
 	Events::Player::OnPlayerSpawn.Hook(@SH_OnPlayerSpawn);
 
-	Schedule::Task(0.01f, "SetUpStuff");
 	CashDATA();
 }
 
@@ -244,8 +243,6 @@ void FindIPC()
 
 void OnNewRound()
 {
-	Schedule::Task(0.01f, "SetUpStuff");
-
 	if (bIsFirstRound)
 	{
 		bIsFirstRound = false;

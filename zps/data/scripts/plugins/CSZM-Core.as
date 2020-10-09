@@ -175,6 +175,7 @@ void OnMapInit()
 	Array_CSZMPlayer.resize(iMaxPlayers + 1);
 
 	AutoMap();
+	Schedule::Task(0.05f, "SetUpStuff");	//это вызовет функцию в других скриптах (преимущественно в скриптах для карт)
 	SetUpIPD(30);
 	
 	//Set Doors Filter to 0 (any team)
@@ -262,12 +263,12 @@ void OnNewRound()
 	}
 
 	AutoMap();
+	Schedule::Task(0.05f, "SetUpStuff");	//это вызовет функцию в других скриптах (преимущественно в скриптах для карт)
 
 	flRTWait = 0;
 	flWUWait = 0;
 
 	bIsPlayersSelected = false;
-
 	@pCSZMTimer = null;
 	
 	for (int i = 1; i <= iMaxPlayers; i++) 

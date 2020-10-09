@@ -109,8 +109,6 @@ void SD(const string &in strMSG)
 
 void OnMapInit()
 {
-	Schedule::Task(0.05f, "SetUpStuff");
-
 	Entities::RegisterUse("func_button");
 	Events::Trigger::OnStartTouch.Hook(@OnStartTouch);
 	Events::Player::OnPlayerSpawn.Hook(@OnPlayerSpawn);
@@ -124,7 +122,6 @@ void OnNewRound()
 	bFan2IsOn = false;
 	iF1SPitch = 0;
 	iF2SPitch = 0;
-	Schedule::Task(0.05f, "SetUpStuff");
 }
 
 void OnProcessRound()

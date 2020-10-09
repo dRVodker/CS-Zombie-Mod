@@ -119,13 +119,8 @@ void OnMapInit()
 	InsertToArray(-729.401, -35.4573, -128.969);
 
 	Events::Player::OnPlayerSpawn.Hook(@OnPlrSpawn);
-	Schedule::Task(0.05f, "SetUpStuff");
 }
 
-void OnNewRound() 
-{	
-	Schedule::Task(0.05f, "SetUpStuff");
-}
 
 void SetUpStuff() 
 {

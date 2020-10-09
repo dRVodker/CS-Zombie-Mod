@@ -97,7 +97,6 @@ int iMaxPlayers;
 void OnMapInit()
 {
 	iMaxPlayers = Globals.GetMaxClients();
-	Schedule::Task(0.025f, "SetUpStuff");
 
 	Events::Player::OnPlayerSpawn.Hook(@OnPlayerSpawn);
 }
@@ -106,8 +105,6 @@ void OnNewRound()
 {	
 	Engine.Ent_Fire("SND_Ambient", "StopSound");
 	Engine.Ent_Fire("SND_Ambient", "PlaySound");
-
-	Schedule::Task(0.025f, "SetUpStuff");
 }
 
 void OnMatchBegin() 

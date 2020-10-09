@@ -189,7 +189,6 @@ void OnMapInit()
 	Entities::RegisterOutput("OnFullyOpen", "func_door_rotating");
 
 	Engine.Ent_Fire("breencrate", "FireUser1", "", "0.01");
-	Schedule::Task(0.05f, "SetUpStuff");
 	CashDATA();
 }
 
@@ -275,11 +274,6 @@ void OnEntityOutput(const string &in strOutput, CBaseEntity@ pActivator, CBaseEn
 	{
 		pCDoor2.UpdateButton();
 	}
-}
-
-void OnNewRound()
-{
-	Schedule::Task(0.05f, "SetUpStuff");
 }
 
 void OnMatchBegin() 

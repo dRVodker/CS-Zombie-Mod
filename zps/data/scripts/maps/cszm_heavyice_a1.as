@@ -300,8 +300,6 @@ void OnMapInit()
 
 	Events::Custom::OnEntityDamaged.Hook(@HI_OnEntDamaged);
 	Events::Player::OnPlayerSpawn.Hook(@HI_OnPlrSpawn);
-	
-	Schedule::Task(0.01f, "SetUpStuff");
 
 	g_TeleportDelay.resize(iMaxPlayers + 1);
 }
@@ -314,11 +312,6 @@ void OnMatchEnded()
 	g_CeilingModel.removeRange(0, g_CeilingModel.length());
 
 	@pAntidote is null;
-}
-
-void OnNewRound()
-{
-	Schedule::Task(0.01f, "SetUpStuff");
 }
 
 void OnMatchBegin()

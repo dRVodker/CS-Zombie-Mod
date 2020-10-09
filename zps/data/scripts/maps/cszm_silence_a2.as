@@ -101,12 +101,6 @@ const int TEAM_SURVIVORS = 2;
 void OnMapInit()
 {
 	Events::Player::OnPlayerSpawn.Hook(@OnPlayerSpawn);
-	Schedule::Task(0.05f, "SetStuff");
-}
-
-void OnNewRound()
-{
-	Schedule::Task(0.05f, "SetStuff");
 }
 
 void OnMatchStarting()
@@ -114,7 +108,7 @@ void OnMatchStarting()
 	bIsBZSEnabled = false;
 }
 
-void SetStuff()
+void SetUpStuff()
 {
 	Engine.Ent_Fire("Precache", "kill");
 	Engine.Ent_Fire("shading", "StartOverlays");

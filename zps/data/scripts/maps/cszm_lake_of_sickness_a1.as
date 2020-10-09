@@ -175,15 +175,11 @@ void OnMapInit()
 	WindowBlocker::RegisterEnts();
 
 	flWaitBeforeCollect = Globals.GetCurrentTime() + 0.05f;
-
-	Schedule::Task(0.05f, "SetUpStuff");
 }
 
 void OnNewRound()
 {
 	flWaitBeforeCollect = Globals.GetCurrentTime() + 0.05f;
-
-	Schedule::Task(0.05f, "SetUpStuff");
 }
 
 void OnMatchBegin()

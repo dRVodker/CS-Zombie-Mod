@@ -130,11 +130,10 @@ void OnMapInit()
 
 void OnNewRound()
 {
-	Schedule::Task(0.05f, "Stuff");
 	Schedule::Task(0.05f, "LockDown_FindCrates");
 }
 
-void Stuff()
+void SetUpStuff()
 {
 	RemoveNativeSpawns("info_player_human");
 	RemoveNativeSpawns("info_player_zombie");

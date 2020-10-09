@@ -185,16 +185,6 @@ array<array<CSpawnPoint@>> BackUp_Spawns =
 	}
 };
 
-void OnMapInit()
-{
-	Schedule::Task(0.05f, "SetUpStuff");
-}
-
-void OnNewRound()
-{
-	Schedule::Task(0.05f, "SetUpStuff");
-}
-
 void OnMatchBegin() 
 {
 	RemoveNativeSpawns("info_player_human");
