@@ -151,7 +151,6 @@ CBaseEntity@ SpawnCashEntity(Vector nOrigin)
 
 	InputData.Add("canfirehurt", "0");
 	InputData.Add("minhealthdmg", "1000");
-//	InputData.Add("model", "models/zp_props/100dollar/100dollar.mdl");
 	InputData.Add("model", "models/cszm/weapons/w_rubles.mdl");
 	InputData.Add("nodamageforces", "1");
 	InputData.Add("nofiresound", "1");

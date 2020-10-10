@@ -61,6 +61,9 @@ array<string> g_CSZMFile =
 	"materials/models/cszm/w_knife_t.vmt",
 	"materials/models/cszm/w_knife_t.vtf",
 
+	"materials/models/cszm/w_rubles/world_rubles.vmt",
+	"materials/models/cszm/w_rubles/world_rubles.vtf",
+
 	"materials/vgui/images/adrenaline.vmt",
 	"materials/vgui/images/adrenaline.vtf",
 
@@ -112,6 +115,13 @@ array<string> g_CSZMFile =
 	"models/cszm/weapons/w_minefrag.sw.vtx",
 	"models/cszm/weapons/w_minefrag.vvd",
 	"models/cszm/weapons/w_minefrag.phy",
+
+	"models/cszm/weapons/w_rubles.dx80.vtx",
+	"models/cszm/weapons/w_rubles.dx90.vtx",
+	"models/cszm/weapons/w_rubles.mdl",
+	"models/cszm/weapons/w_rubles.sw.vtx",
+	"models/cszm/weapons/w_rubles.vvd",
+	"models/cszm/weapons/w_rubles.phy",
 
 	"models/cszm/cszm_anims.mdl",
 	"models/cszm/carrier.dx80.vtx",

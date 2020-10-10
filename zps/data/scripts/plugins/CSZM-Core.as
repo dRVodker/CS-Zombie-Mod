@@ -2504,7 +2504,7 @@ HookReturnCode CSZM_OnPlayerDamaged(CZP_Player@ pPlayer, CTakeDamageInfo &out Da
 
 			if (pPlayer.GetArmor() > 0)
 			{
-				Engine.EmitSoundPosition(iVicIndex, "cszm_fx/player/plr_hitarmor3.wav", pBaseEnt.GetAbsOrigin(), 1.0f, 90, 105);
+				Engine.EmitSoundPosition(iVicIndex, "cszm_fx/player/plr_hitarmor1.wav", pBaseEnt.GetAbsOrigin(), 1.0f, 90, 105);
 			}
 
 			if (pInflictor !is null && Utils.StrEql("npc_grenade_frag", pInflictor.GetClassname(), true) && iDamageType == 1)

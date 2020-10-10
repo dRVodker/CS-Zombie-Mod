@@ -59,7 +59,7 @@ void SetUpIPD(const int &in iFlags)
 	{
 		gCustomItemIPD[4].Add("canfirehurt", "0");
 		gCustomItemIPD[4].Add("minhealthdmg", "1000");
-		gCustomItemIPD[4].Add("model", "models/zp_props/100dollar/100dollar.mdl");
+		gCustomItemIPD[4].Add("model", "models/cszm/weapons/w_rubles.mdl");
 		gCustomItemIPD[4].Add("nodamageforces", "1");
 		gCustomItemIPD[4].Add("nofiresound", "1");
 		gCustomItemIPD[4].Add("physdamagescale", "0");

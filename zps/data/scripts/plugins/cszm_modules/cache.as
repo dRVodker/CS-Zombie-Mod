@@ -20,7 +20,7 @@ void CacheModels()
 	Engine.PrecacheFile(model, "models/cszm/weapons/w_knife_t.mdl");
 	Engine.PrecacheFile(model, "models/cszm/weapons/c_cszm_human_arms.mdl");
 	Engine.PrecacheFile(model, "models/cszm/weapons/c_cszm_zombie_arms.mdl");
-	Engine.PrecacheFile(model, "models/zp_props/100dollar/100dollar.mdl");
+	Engine.PrecacheFile(model, "models/cszm/weapons/w_rubles.mdl");
 }
 
 void CacheMaterials()
@@ -138,5 +138,5 @@ void CacheSounds()
 	Engine.PrecacheFile(sound, "weapons/slam/buttonclick.wav");
 	Engine.PrecacheFile(sound, "npc/zombie_poison/pz_alert2.wav");
 	Engine.PrecacheFile(sound, ")player/footsteps/sand2.wav");
-	Engine.PrecacheFile(sound, "cszm_fx/player/plr_hitarmor3.wav");
+	Engine.PrecacheFile(sound, "cszm_fx/player/plr_hitarmor1.wav");
 }
