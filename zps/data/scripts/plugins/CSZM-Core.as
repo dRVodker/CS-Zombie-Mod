@@ -1278,7 +1278,7 @@ namespace Radio
 	enum eGoTo {GT_NEXT = 1, GT_PREV = -1}
 	enum eInputs {IP_EXIT, IP_PREV = 8, IP_NEXT, IP_DROP = 11, IP_MENU}
 	const int MaxItemsOnPage = 7;
-	const int DefaultMenuHoldTime = 20;
+	const int DefaultMenuHoldTime = 15;
 	const array<string> gDeniedReason = 
 	{
 		"Недостаточно средств!",
@@ -1747,7 +1747,7 @@ namespace Radio
 
 		private void ExtendLifeTime()
 		{
-			LifeTime += 10.5f;
+			LifeTime += 5.5f;
 			ShowMenu();
 		}
 
