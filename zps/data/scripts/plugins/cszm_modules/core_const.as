@@ -2,7 +2,7 @@
 //Скорости движения игрока
 const int SPEED_DEFAULT = 240;		//225
 const int SPEED_HUMAN = 220;		//225
-const int SPEED_ZOMBIE = 200;		//213
+const int SPEED_ZOMBIE = 205;		//213
 const int SPEED_CARRIER = 225;		//220
 const int SPEED_ADRENALINE = 75;	//50
 
@@ -21,8 +21,8 @@ const int CONST_MIN_ROUNDTIMER = 35;			//Минимальное время та�
 enum AntidoteStates {AS_UNUSEABLE, AS_USEABLE}
 
 //Пропы
-const int PROP_MAX_HEALTH = 450;	//1250		//Максимальное HP для prop'ов
-const int BRUSH_MAX_HEALTH = 500;				//Максимальное HP для брашей
+const int PROP_MAX_HEALTH = 750;	//1250		//Максимальное HP для prop'ов
+const int BRUSH_MAX_HEALTH = 1000;				//Максимальное HP для брашей
 const string EXPLOSIVES_PROP_MODELS = "propanecanister001a.mdl;oildrum001_explosive.mdl;fire_extinguisher.mdl;canister01a.mdl;canister02a.mdl;propane_tank001a.mdl;gascan001a.mdl";
 const string JUNK_PROP_MODELS = "vent001.mdl;glassjug01.mdl;glassbottle01a.mdl;plasticcrate01a.mdl;popcan01a.mdl";
 

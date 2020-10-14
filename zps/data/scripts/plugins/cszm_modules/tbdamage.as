@@ -3,7 +3,7 @@
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 enum TBD_Types {TBD_BLEEDING}
-const float TBD_TikTime = 0.78f;
+const float TBD_TikTime = 0.74f;
 
 class TimeBasedDamage
 {
@@ -16,7 +16,7 @@ class TimeBasedDamage
 	{
 		Type = nType;
 		WaitTime = Globals.GetCurrentTime() + TBD_TikTime;
-		Tiks += int(ceil(nDamage / 126.0f * 20.0f));
+		Tiks += int(ceil(nDamage / 121.0f * 20.0f));
 		AttakerIndex = nAttakerIndex;
 	}
 
@@ -45,7 +45,7 @@ class TimeBasedDamage
 
 		DamageInfo.SetAttacker(pAtt);
 		DamageInfo.SetInflictor(pVic);
-		DamageInfo.SetDamage(10);
+		DamageInfo.SetDamage(15);
 		DamageInfo.SetDamageType((1<<17));//1<<28
 		DamageInfo.SetDamageForce(Vector (0, 0, -128));
 		DamageInfo.SetDamagePosition(pVic.EyePosition());
