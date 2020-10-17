@@ -60,18 +60,19 @@ bool bIsCSZM;						//Это CSZM карта?
 bool bAllowAddTime = true;			//Разрешить добавлять время за удачное заражение
 bool bAllowZombieRespawn;			//Разрешить респавн для зомби
 
-int iWarmUpTime = 75;				//Время разминки в секундах. (значение по умолчанию - 75)
-int iGearUpTime = 30;				//Время в секундах, через которое превратится Первый зараженный.
-int iRoundTime = 270;				//Время в секундах отведённое на раунд.
+int iWarmUpTime = 60;				//Время разминки в секундах. (значение по умолчанию - 75)
+int iGearUpTime = 45;				//Время в секундах, через которое превратится Первый зараженный.
+int iRoundTime = 255;				//Время в секундах отведённое на раунд.
+
 int iZombieHealth = 400;			//HP зомби
-int iZMRHealth = 5;					//Максимальное HP, восстанавливаемое регенерацие зомби за один тик
+int iZMRHealth = 6;					//Максимальное HP, восстанавливаемое регенерацие зомби за один тик
 
 float flZMRRate = 0.125f;			//Интервал времени регенерации зомби
 float flZMRDamageDelay = 0.75f;		//Задержка регенерации после получения урона
-float flInfectedExtraHP = 0.32f;	//Процент дополнительного HP для первых зараженных, от HP обычных зомби (от iZombieHealth)
+float flInfectedExtraHP = 0.475f;	//Процент дополнительного HP для первых зараженных, от HP обычных зомби (от iZombieHealth)
 float flInfectionPercent = 0.3f;	//Процент выживших, которые будут заражены в начале раунда
-float flPSpeed = 0.23f;				//Процент скорости, которая останется у игрока после замедления
-float flRecover = 0.037f;	//0.028	//Время между прибавками скорости
+float flPSpeed = 0.36f;		//0.22	//Процент скорости, которая останется у игрока после замедления
+float flRecover = 0.032f;	//0.028	//Время между прибавками скорости
 float flCurrs = 1.125f;				//Часть от текущей скорости игрока, которая будет прибавляться для восстановления нормальной скорости игрока
 
 float flPropHPPercent = 0.102f;		//Часть от текущего HP, которая будет умножена на количество игроков для получения итогового HP
@@ -90,14 +91,14 @@ int iTurnTime;						//Время, когда превращаются зараж
 
 int ECO_DefaultCash = 300;
 int ECO_StartingCash = 300;
-int ECO_Human_Win = 1250;
-int ECO_Human_Kill = 250;
+int ECO_Human_Win = 1000;
+int ECO_Human_Kill = 200;
 int ECO_Zombie_Win = 500;
-int ECO_Zombie_Kill = 500;
+int ECO_Zombie_Kill = 400;
 int ECO_Lose = -1000;
 int ECO_Suiside = -650;
-float ECO_Damage_Multiplier = 0.085f;
-float ECO_Health_Multiplier = 0.13f;
+float ECO_Damage_Multiplier = 0.108f;
+float ECO_Health_Multiplier = 0.218f;
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 //Forwards
@@ -699,7 +700,7 @@ class CSZMPlayer
 
 		if (iArmor == 0)
 		{
-			pPlayer.SetArmor(450);
+			pPlayer.SetArmor(300);
 			Engine.EmitSoundEntity(FindEntityByEntIndex(PlayerIndex), "ZPlayer.ArmorPickup");
 			IsArmorAdded = true;
 		}
@@ -740,7 +741,7 @@ class CSZMPlayer
 	{
 		CZP_Player@ pPlayer = ToZPPlayer(PlayerIndex);
 		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(PlayerIndex);
-		float flZAResist = (pPlayer.GetArmor() > 0 && pPlayerEntity.GetTeamNumber() == TEAM_ZOMBIES) ? (flPSpeed * 2.4f) : 0; //1.275f
+		float flZAResist = (pPlayer.GetArmor() > 0 && pPlayerEntity.GetTeamNumber() == TEAM_ZOMBIES) ? (flPSpeed * 1.75f) : 0; //1.275f
 		int NewSpeed = int(float(DefSpeed) * (flPSpeed + flZAResist));
 
 		if (pPlayerEntity.GetTeamNumber() == TEAM_ZOMBIES)
@@ -1318,37 +1319,37 @@ namespace Radio
 	{
 		{"Hammer",			"150",	"weapon",	"weapon_barricade",		},
 		{"Shovel",			"450",	"weapon",	"weapon_shovel",		},
-		{"Sledgehammer",	"2000",	"weapon",	"weapon_sledgehammer",	}
+		{"Sledgehammer",	"7500",	"weapon",	"weapon_sledgehammer",	}
 	};
 	const array<array<string>> FirearmsMenuSchema = 
 	{	
-		{"Glock18c",		"165",	"weapon",	"weapon_glock18c",		},
-		{"Glock",			"105",	"weapon",	"weapon_glock",			},
-		{"USP",				"110",	"weapon",	"weapon_usp",			},
-		{"PPK",				"75",	"weapon",	"weapon_ppk",			},
-		{"AK47",			"735",	"weapon",	"weapon_ak47",			},
-		{"M4",				"675",	"weapon",	"weapon_m4",			},
-		{"MP5",				"485",	"weapon",	"weapon_mp5",			},
-		{"Remington 870",	"725",	"weapon",	"weapon_870",			},
-		{"SuperShorty",		"385",	"weapon",	"weapon_supershorty",	},
-		{"Winchester",		"345",	"weapon",	"weapon_winchester",	},
-		{"Revolver",		"950",	"weapon",	"weapon_revolver",		}
+		{"Glock18c",		"185",	"weapon",	"weapon_glock18c",		},
+		{"Glock",			"115",	"weapon",	"weapon_glock",			},
+		{"USP",				"135",	"weapon",	"weapon_usp",			},
+		{"PPK",				"50",	"weapon",	"weapon_ppk",			},
+		{"AK47",			"635",	"weapon",	"weapon_ak47",			},
+		{"M4",				"575",	"weapon",	"weapon_m4",			},
+		{"MP5",				"385",	"weapon",	"weapon_mp5",			},
+		{"Remington 870",	"625",	"weapon",	"weapon_870",			},
+		{"SuperShorty",		"295",	"weapon",	"weapon_supershorty",	},
+		{"Winchester",		"245",	"weapon",	"weapon_winchester",	},
+		{"Revolver",		"750",	"weapon",	"weapon_revolver",		}
 	};
 	const array<array<string>> AmmoMenuSchema = 
 	{
 		{"Pistol",		"80",	"ammo",	"0",	"15"},
-		{"Rifle",		"180",	"ammo",	"3",	"30"},
-		{"Shotgun",		"160",	"ammo",	"2",	"6"},
-		{"Revovler",	"285",	"ammo",	"1",	"6"},
-		{"Barricade",	"275",	"ammo",	"4",	"1"}
+		{"Rifle",		"125",	"ammo",	"3",	"30"},
+		{"Shotgun",		"150",	"ammo",	"2",	"6"},
+		{"Revovler",	"275",	"ammo",	"1",	"6"},
+		{"Barricade",	"195",	"ammo",	"4",	"1"}
 	};
 	const array<array<string>> ItemsMenuSchema = 
 	{
-		{"Grenade",		"800",	"weapon",	"weapon_frag"},
-		{"IED",			"900",	"weapon",	"weapon_ied"},
-		{"FragMine",	"725",	"deliver",	"1"},
-		{"Adrenaline",	"850",	"deliver",	"2"},
-		{"Antidote",	"1500",	"deliver",	"3"}
+		{"Grenade",		"625",	"weapon",	"weapon_frag"},
+		{"IED",			"850",	"weapon",	"weapon_ied"},
+		{"FragMine",	"750",	"deliver",	"1"},
+		{"Adrenaline",	"900",	"deliver",	"2"},
+		{"Antidote",	"1400",	"deliver",	"3"}
 	};
 	const array<array<string>> DropMenuSchema = 
 	{
@@ -1360,9 +1361,9 @@ namespace Radio
 	};
 	const array<array<string>> ZombieMenuSchema = 
 	{
-		{"Extra HP",	"650",	"powerup",	"2"},
-		{"Exrta Life",	"1000",	"powerup",	"5"},
-		{"Armor",		"800",	"powerup",	"6"}
+		{"Extra HP",	"400",	"powerup",	"2", "0"},
+		{"Exrta Life",	"450",	"powerup",	"5", "1"},
+		{"Armor",		"650",	"powerup",	"6", "2"}
 	};
 	const array<array<string>> LobbyMenuSchema = 
 	{
@@ -1535,11 +1536,7 @@ namespace Radio
 			TotalPages = int(ceil(float(TotalItems) / float(MaxItemsOnPage)));
 			CurrentPage = 1;
 
-			if (Array_CSZMPlayer[PlayerIndex].ExtraHealth > 0 && Utils.StrEql("Extra HP", pMenuData[0][SLOT_NAME], true))
-			{
-				DoubelCostForHealth();
-			}
-
+			CheckPowerUps();
 			ShowMenu();
 		}
 
@@ -1739,10 +1736,7 @@ namespace Radio
 
 		private void ExtendLTPowerUps()
 		{
-			if (Array_CSZMPlayer[PlayerIndex].ExtraHealth > 0 && Utils.StrEql("Extra HP", pMenuData[0][SLOT_NAME], true))
-			{
-				DoubelCostForHealth();
-			}
+			CheckPowerUps();
 			ExtendLifeTime();
 		}
 
@@ -1752,9 +1746,26 @@ namespace Radio
 			ShowMenu();
 		}
 
-		private void DoubelCostForHealth()
+		private void CheckPowerUps()
 		{
-			pMenuData[0][SLOT_COST] = formatInt(int(Utils.StringToFloat(ZombieMenuSchema[0][SLOT_COST]) * 2.231f));
+			if (bAllowZombieRespawn && Utils.StrEql("Exrta Life", pMenuData[1][SLOT_NAME], true))
+			{
+				pMenuData.removeAt(1);
+				TotalItems = int(pMenuData.length());
+			}
+
+			if (Utils.StrEql("Extra HP", pMenuData[0][SLOT_NAME], true))
+			{
+				if (Array_CSZMPlayer[PlayerIndex].ExtraHealth > 0 && Array_CSZMPlayer[PlayerIndex].ExtraHealth < 2)
+				{
+					pMenuData[0][SLOT_COST] = formatInt(int(Utils.StringToFloat(ZombieMenuSchema[0][SLOT_COST]) * (1500.0f / float(Utils.StringToFloat(ZombieMenuSchema[0][SLOT_COST])))));
+				}
+				else if (Array_CSZMPlayer[PlayerIndex].ExtraHealth >= 2)
+				{
+					pMenuData.removeAt(0);
+					TotalItems = int(pMenuData.length());
+				}
+			}
 		}
 
 		private bool IsNextPageExist()
@@ -3252,23 +3263,23 @@ void SetZombieHealth(CBaseEntity@ pPlayerEntity)
 
 	CZP_Player@ pPlayer = ToZPPlayer(index);
 	
-	int iArmor = int(ceil(pPlayer.GetArmor() * (CONST_ARMOR_MULT + Math::RandomFloat(0.0f, 1.0f))));
+	//int iArmor = int(ceil(pPlayer.GetArmor() * (CONST_ARMOR_MULT + Math::RandomFloat(0.0f, 1.0f))));
 	int iExtraHealth = int(ceil(iZombieHealth * 0.45f * Array_CSZMPlayer[index].ExtraHealth));
 
-	if (iArmor > 0)
-	{
-		pPlayer.SetArmor(0);
-	}
+	//if (iArmor > 0)
+	//{
+	//	pPlayer.SetArmor(0);
+	//}
 
 	if (Array_CSZMPlayer[index].FirstInfected)
 	{
 		pPlayerEntity.SetMaxHealth(iZombieHealth + iExtraHealth);
-		pPlayerEntity.SetHealth(iZombieHealth + int((iZombieHealth + iExtraHealth) * flInfectedExtraHP) + iArmor);
+		pPlayerEntity.SetHealth(iZombieHealth + int((iZombieHealth + iExtraHealth) * flInfectedExtraHP));
 	}
 	else
 	{
 		pPlayerEntity.SetMaxHealth(iZombieHealth + iExtraHealth);
-		pPlayerEntity.SetHealth(iZombieHealth + iExtraHealth + iArmor);
+		pPlayerEntity.SetHealth(iZombieHealth + iExtraHealth);
 	}
 
 	Array_CSZMPlayer[index].UpdateOutline();

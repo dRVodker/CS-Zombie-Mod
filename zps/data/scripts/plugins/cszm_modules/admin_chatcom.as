@@ -339,7 +339,8 @@ namespace Admin
 		bAllowZombieRespawn = !bAllowZombieRespawn;
 		string strTurn = (bAllowZombieRespawn) ? "включен" : "выключен";
 		string strColor = (bAllowZombieRespawn) ? "cyan" : "red";
-		Chat.PrintToChatPlayer(pCaller, "{green}*{gold}Респавн зомби {"+strColor+"}"+strTurn+"{gold}!");
+		//Chat.PrintToChatPlayer(pCaller, "{green}*{gold}Респавн зомби {"+strColor+"}"+strTurn+"{gold}!");
+		SD("{green}*{gold}Респавн зомби {"+strColor+"}"+strTurn+"{gold}!");
 	}
 
 	void ChangeVariable(CBasePlayer@ pCaller, const string &in strVariable, string &in strValue)
