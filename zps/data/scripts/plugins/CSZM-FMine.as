@@ -323,7 +323,7 @@ void OnEntityUsed(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 				continue;
 			}
 
-			(pFragMine.GetOwnerIndex() == iIndex || pFragMine.GetOwnerIndex() == 0) ? DefuseFragMine(pEntity, pPlayer) : Chat.PrintToChatPlayer(pPlrEnt, "Эта мина одного из выживших, вы не можете обезвредить и забрать её!");
+			(pFragMine.GetOwnerIndex() == iIndex || pFragMine.GetOwnerIndex() == pFragMine.GetMineIndex()) ? DefuseFragMine(pEntity, pPlayer) : Chat.PrintToChatPlayer(pPlrEnt, "Эта мина одного из выживших, вы не можете обезвредить и забрать её!");
 		}
 	}
 }

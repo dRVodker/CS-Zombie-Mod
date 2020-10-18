@@ -58,20 +58,20 @@ array<array<string>> Array_SteamID;
 
 bool bIsCSZM;						//Это CSZM карта?
 bool bAllowAddTime = true;			//Разрешить добавлять время за удачное заражение
-bool bAllowZombieRespawn;			//Разрешить респавн для зомби
+bool bAllowZombieRespawn = true;	//Разрешить респавн для зомби
 
 int iWarmUpTime = 60;				//Время разминки в секундах. (значение по умолчанию - 75)
 int iGearUpTime = 45;				//Время в секундах, через которое превратится Первый зараженный.
 int iRoundTime = 255;				//Время в секундах отведённое на раунд.
 
-int iZombieHealth = 400;			//HP зомби
-int iZMRHealth = 6;					//Максимальное HP, восстанавливаемое регенерацие зомби за один тик
+int iZombieHealth = 300;			//HP зомби
+int iZMRHealth = 3;					//Максимальное HP, восстанавливаемое регенерацие зомби за один тик
 
 float flZMRRate = 0.125f;			//Интервал времени регенерации зомби
 float flZMRDamageDelay = 0.75f;		//Задержка регенерации после получения урона
 float flInfectedExtraHP = 0.475f;	//Процент дополнительного HP для первых зараженных, от HP обычных зомби (от iZombieHealth)
 float flInfectionPercent = 0.3f;	//Процент выживших, которые будут заражены в начале раунда
-float flPSpeed = 0.36f;		//0.22	//Процент скорости, которая останется у игрока после замедления
+float flPSpeed = 0.35f;		//0.22	//Процент скорости, которая останется у игрока после замедления
 float flRecover = 0.032f;	//0.028	//Время между прибавками скорости
 float flCurrs = 1.125f;				//Часть от текущей скорости игрока, которая будет прибавляться для восстановления нормальной скорости игрока
 
@@ -94,10 +94,10 @@ int ECO_StartingCash = 300;
 int ECO_Human_Win = 1000;
 int ECO_Human_Kill = 200;
 int ECO_Zombie_Win = 500;
-int ECO_Zombie_Kill = 400;
+int ECO_Zombie_Kill = 250;
 int ECO_Lose = -1000;
 int ECO_Suiside = -650;
-float ECO_Damage_Multiplier = 0.108f;
+float ECO_Damage_Multiplier = 0.111f;
 float ECO_Health_Multiplier = 0.218f;
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -476,7 +476,7 @@ class CSZMPlayer
 	bool Abuser;							//Игроки, злоупотребляющие механиками, получают этот флаг (Записывается в SteamIDArray)
 	bool FirstInfected;						//Один из первых зараженных?
 
-	private float ZombieRespawnTime;		//Время, по истечению которгого, зомби появится снова
+	float ZombieRespawnTime;		//Время, по истечению которгого, зомби появится снова
 
 	bool Cured;								//true - Если был вылечен администратором
 	bool Spawn;								//true - Если возрадился играя за зомби
@@ -545,7 +545,6 @@ class CSZMPlayer
 		PropHealth = 0;
 		RecoverTime = 0;
 		VoiceTime = 0;
-		ExtraHealth = 0;
 		ExtraLife = 0;
 	}
 
@@ -562,6 +561,7 @@ class CSZMPlayer
 		LobbyRespawnDelay = 0;
 		InfectResist = 0;
 		AdrenalineTime = 0;
+		ExtraHealth = 0;
 		RecoverTime = Globals.GetCurrentTime();
 		VoiceTime = Globals.GetCurrentTime();
 
@@ -569,7 +569,7 @@ class CSZMPlayer
 
 		pTimeDamage.removeRange(0, pTimeDamage.length());
 
-		if (pPlayerEntity.GetTeamNumber() == TEAM_ZOMBIES && (bAllowZombieRespawn || ExtraLife > 0))
+		if (bIsPlayersSelected && pPlayerEntity.GetTeamNumber() >= TEAM_SURVIVORS && (bAllowZombieRespawn || ExtraLife > 0))
 		{
 			ZombieRespawnTime = PlusGT(CONST_SPAWN_DELAY - 0.1f);
 		}
@@ -1323,33 +1323,33 @@ namespace Radio
 	};
 	const array<array<string>> FirearmsMenuSchema = 
 	{	
-		{"Glock18c",		"185",	"weapon",	"weapon_glock18c",		},
-		{"Glock",			"115",	"weapon",	"weapon_glock",			},
-		{"USP",				"135",	"weapon",	"weapon_usp",			},
-		{"PPK",				"50",	"weapon",	"weapon_ppk",			},
-		{"AK47",			"635",	"weapon",	"weapon_ak47",			},
-		{"M4",				"575",	"weapon",	"weapon_m4",			},
+		{"Glock18c",		"125",	"weapon",	"weapon_glock18c",		},
+		{"Glock",			"95",	"weapon",	"weapon_glock",			},
+		{"USP",				"100",	"weapon",	"weapon_usp",			},
+		{"PPK",				"45",	"weapon",	"weapon_ppk",			},
+		{"AK47",			"450",	"weapon",	"weapon_ak47",			},
+		{"M4",				"500",	"weapon",	"weapon_m4",			},
 		{"MP5",				"385",	"weapon",	"weapon_mp5",			},
-		{"Remington 870",	"625",	"weapon",	"weapon_870",			},
-		{"SuperShorty",		"295",	"weapon",	"weapon_supershorty",	},
-		{"Winchester",		"245",	"weapon",	"weapon_winchester",	},
-		{"Revolver",		"750",	"weapon",	"weapon_revolver",		}
+		{"Remington 870",	"250",	"weapon",	"weapon_870",			},
+		{"SuperShorty",		"325",	"weapon",	"weapon_supershorty",	},
+		{"Winchester",		"195",	"weapon",	"weapon_winchester",	},
+		{"Revolver",		"500",	"weapon",	"weapon_revolver",		}
 	};
 	const array<array<string>> AmmoMenuSchema = 
 	{
-		{"Pistol",		"80",	"ammo",	"0",	"15"},
-		{"Rifle",		"125",	"ammo",	"3",	"30"},
-		{"Shotgun",		"150",	"ammo",	"2",	"6"},
-		{"Revovler",	"275",	"ammo",	"1",	"6"},
-		{"Barricade",	"195",	"ammo",	"4",	"1"}
+		{"Pistol",		"45",	"ammo",	"0",	"15"},
+		{"Rifle",		"90",	"ammo",	"3",	"30"},
+		{"Shotgun",		"75",	"ammo",	"2",	"6"},
+		{"Revovler",	"125",	"ammo",	"1",	"6"},
+		{"Barricade",	"175",	"ammo",	"4",	"1"}
 	};
 	const array<array<string>> ItemsMenuSchema = 
 	{
-		{"Grenade",		"625",	"weapon",	"weapon_frag"},
-		{"IED",			"850",	"weapon",	"weapon_ied"},
-		{"FragMine",	"750",	"deliver",	"1"},
-		{"Adrenaline",	"900",	"deliver",	"2"},
-		{"Antidote",	"1400",	"deliver",	"3"}
+		{"Grenade",		"350",	"weapon",	"weapon_frag"},
+		{"IED",			"580",	"weapon",	"weapon_ied"},
+		{"FragMine",	"675",	"deliver",	"1"},
+		{"Adrenaline",	"750",	"deliver",	"2"},
+		{"Antidote",	"500",	"deliver",	"3"}
 	};
 	const array<array<string>> DropMenuSchema = 
 	{
@@ -1376,6 +1376,7 @@ namespace Radio
 	const array<array<string>> SpecMenuSchema = 
 	{
 		{"Become a Firefly",	"",	"spec"}
+		//{"Respawn",				"",	"spec"}
 	};
 
 	BaseMenu@ OpenMenuByIndex(const int &in nPlrInd, const int &in nMenuIndex, const bool &in IsOpenFromCAT)
@@ -1535,7 +1536,6 @@ namespace Radio
 			TotalItems = int(pMenuData.length());
 			TotalPages = int(ceil(float(TotalItems) / float(MaxItemsOnPage)));
 			CurrentPage = 1;
-
 			CheckPowerUps();
 			ShowMenu();
 		}
@@ -1748,6 +1748,11 @@ namespace Radio
 
 		private void CheckPowerUps()
 		{
+			if (TeamNum != TEAM_ZOMBIES)
+			{
+				return;
+			}
+			
 			if (bAllowZombieRespawn && Utils.StrEql("Exrta Life", pMenuData[1][SLOT_NAME], true))
 			{
 				pMenuData.removeAt(1);
@@ -1866,7 +1871,7 @@ namespace Radio
 				pMoney.Teleport(Eyes, (Angles + QAngle(0, 90, 0)), Velocity);
 				pMoney.SetOutline(true, filter_team, TEAM_SURVIVORS, Color(235, 65, 175), 185.0f, false, true);
 
-				Engine.EmitSoundEntity(pPlayerEntity, ")player/footsteps/sand2.wav");
+				Engine.EmitSoundPosition(nPlrInd, ")player/footsteps/sand2.wav", pPlayerEntity.GetAbsOrigin(), 0.8f, 70, 110);
 
 				NetData nData;
 				nData.Write(pMoney.entindex());
@@ -2188,7 +2193,7 @@ void OnEntityUsed(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 	CBaseEntity@ pPlayerEntity = pPlayerBase.opCast();
 	int index = pPlayerEntity.entindex();
 
-	if (Utils.StrEql("item_money", pEntity.GetClassname(), true))
+	if (Utils.StrEql("item_money", pEntity.GetClassname(), true) && pPlayerEntity.GetTeamNumber() == TEAM_SURVIVORS)
 	{
 		Engine.EmitSoundPosition(pPlayerEntity.entindex(), ")cszm_fx/items/gunpickup1.wav", pPlayerEntity.GetAbsOrigin() + Vector(0, 0, 16), 0.7f, 65, 110);
 		Array_CSZMPlayer[index].CashBank += pEntity.GetHealth();
@@ -2316,7 +2321,7 @@ HookReturnCode CSZM_OnConCommand(CZP_Player@ pPlayer, CASCommand@ pArgs)
 		{
 			if ((Utils.StrEql("choose1", pArgs.Arg(0)) || Utils.StrEql("choose2", pArgs.Arg(0))) && pBaseEnt.GetTeamNumber() == TEAM_LOBBYGUYS)
 			{
-				if (pCSZMPlayer.Abuser || bIsPlayersSelected)
+				if (pCSZMPlayer.Abuser || (bIsPlayersSelected && !bAllowZombieRespawn))
 				{
 					pPlayer.ConsoleCommand("choose3");
 					HOOK_RESULT = HOOK_HANDLED;
@@ -2326,6 +2331,10 @@ HookReturnCode CSZM_OnConCommand(CZP_Player@ pPlayer, CASCommand@ pArgs)
 					pBaseEnt.ChangeTeam(TEAM_SURVIVORS);
 					pPlayer.ForceRespawn();
 					pPlayer.SetHudVisibility(true);
+					if (bIsPlayersSelected)
+					{
+						TurnToZombie(index);
+					}
 					HOOK_RESULT = HOOK_HANDLED;
 				}
 			}
@@ -2413,6 +2422,7 @@ HookReturnCode CSZM_OnPlayerSpawn(CZP_Player@ pPlayer)
 			}
 		}
 
+		Array_CSZMPlayer[index].ZombieRespawnTime = 0;
 		RemoveProp(pBaseEnt);
 		Engine.EmitSoundEntity(pBaseEnt, "CSPlayer.Mute");
 	}
@@ -2618,7 +2628,7 @@ HookReturnCode CSZM_OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in Dama
 		CSZMPlayer@ pVicCSZMPlayer = Array_CSZMPlayer[iVicIndex];
 
 		int iDamageType = DamageInfo.GetDamageType();
-		
+
 		if (pAttackerEntity.IsPlayer()) 
 		{
 			@pAttCSZMPlayer = Array_CSZMPlayer[iAttIndex];
@@ -2626,7 +2636,7 @@ HookReturnCode CSZM_OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in Dama
 			strAttName = pPlrAttacker.GetPlayerName();
 		}
 
-		if (iAttIndex == iVicIndex || !pAttackerEntity.IsPlayer())
+		if ((iAttIndex == iVicIndex || !pAttackerEntity.IsPlayer()))
 		{
 			bSuicide = true;
 
@@ -2635,7 +2645,7 @@ HookReturnCode CSZM_OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in Dama
 				KillFeed("", 0, strVicName, iVicTeam, false, true);
 			}
 
-			if (iVicTeam > TEAM_SPECTATORS && RoundManager.GetRoundState() == rs_RoundOnGoing)
+			if (iVicTeam > TEAM_SPECTATORS && RoundManager.GetRoundState() == rs_RoundOnGoing && !Utils.StrEql(pAttackerEntity.GetClassname(), "npc_fragmine"))
 			{
 				pVicCSZMPlayer.AddMoney(ECO_Suiside);
 				Chat.PrintToChatPlayer(pPlrEnt, "{red}" + formatInt(ECO_Suiside) + "$ {gold}За самоубийство!");

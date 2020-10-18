@@ -540,8 +540,8 @@ void RespawnEffects(Vector &in Origin)
 
 void CashDATA()
 {
-	MaxRandomCash = 12;
-	MinRandomCash = 2;
+	MaxRandomCash = 19;
+	MinRandomCash = 8;
 
 	InsertToArray(2008.62, -435.337, 81.0313);
 	InsertToArray(2607.8, -75.5436, -46.9688);

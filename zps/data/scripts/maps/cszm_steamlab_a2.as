@@ -89,8 +89,8 @@ array<array<CSpawnPoint@>> SL_HumanSpawns =
 
 void OnMapInit()
 {
-	MaxRandomCash = 8;
-	MinRandomCash = 4;
+	MaxRandomCash = 18;
+	MinRandomCash = 10;
 
 	InsertToArray(-1558.54, 2029.38, 951.016);
 	InsertToArray(-2339.93, 1094.39, 585.031);

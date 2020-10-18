@@ -89,8 +89,8 @@ array<array<CSpawnPoint@>> Office_HumanSpawns =
 
 void OnMapInit() 
 {
-	MaxRandomCash = 11;
-	MinRandomCash = 5;
+	MaxRandomCash = 16;
+	MinRandomCash = 8;
 
 	InsertToArray(1398.82, 55.4421, -128.969);
 	InsertToArray(1876.26, 246.919, -138.81);

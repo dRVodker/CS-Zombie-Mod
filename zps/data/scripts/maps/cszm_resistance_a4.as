@@ -182,8 +182,8 @@ void OnMapInit()
 
 void MapCash()
 {
-	MaxRandomCash = 8;
-	MinRandomCash = 2;
+	MaxRandomCash = 15;
+	MinRandomCash = 8;
 
 	MaxMoneyPerItem = 110.0f;
 	MinMoneyPerItem = 30.0f;

@@ -70,6 +70,8 @@ array<string> g_CSZMFile =
 	"materials/vgui/images/fragmine.vmt",
 	"materials/vgui/images/fragmine.vtf",
 
+	"materials/cc_zombiemod.raw",
+
 	"models/cszm/weapons/v_adrenaline.dx80.vtx",
 	"models/cszm/weapons/v_adrenaline.dx90.vtx",
 	"models/cszm/weapons/v_adrenaline.mdl",

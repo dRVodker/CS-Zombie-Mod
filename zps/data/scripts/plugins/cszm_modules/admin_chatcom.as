@@ -307,7 +307,7 @@ namespace Admin
 			{
 				Chat.PrintToChatPlayer(pPlayerBase, "{red}*{gold}Нельзя возродить в команду "+g_TeamList[TeamNum]+"!");
 			}
-			else if (!pPlayerEntity.IsAlive() || pPlayerEntity.GetTeamNumber() == TEAM_SPECTATORS)
+			else if (!pPlayerEntity.IsAlive() || pPlayerEntity.GetTeamNumber() <= TEAM_SPECTATORS)
 			{
 				string sMsg = (pPlayer is pCaller) ? "{green}*{gold}Вы возродились." : "{violet}*{gold}Aдминистратор возродил вас в комманде "+g_TeamList[TeamNum]+".";
 

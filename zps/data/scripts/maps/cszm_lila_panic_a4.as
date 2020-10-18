@@ -134,8 +134,8 @@ class CBrushDoor
 
 void CashDATA()
 {
-	MaxRandomCash = 8;
-	MinRandomCash = 2;
+	MaxRandomCash = 27;
+	MinRandomCash = 15;
 
 	InsertToArray(-4.58305, 742.143, 304.595);
 	InsertToArray(-110.399, 897.988, 273.031);

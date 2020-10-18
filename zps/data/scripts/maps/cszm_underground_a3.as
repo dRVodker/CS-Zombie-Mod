@@ -1,5 +1,6 @@
 #include "cszm_modules/lobbyambient"
 #include "cszm_modules/newspawn"
+#include "cszm_modules/cashmaker"
 
 array<array<CSpawnPoint@>> New_Spawns = 
 {
@@ -100,15 +101,12 @@ void OnMapInit()
 
 	Events::Player::OnPlayerSpawn.Hook(@OnPlayerSpawn);
 	OnNewRound();
+	CashDATA();
 }
 
 void OnNewRound()
 {
 	Schedule::Task(0.05f, "SetUpStuff");
-}
-
-void OnNewRound()
-{	
 	Engine.Ent_Fire("SND_Ambient", "StopSound");
 	Engine.Ent_Fire("SND_Ambient", "PlaySound");
 }
@@ -177,4 +175,84 @@ void FlickerLight1Off()
 	Engine.Ent_Fire("FL-Prop1", "skin", "0");
 	Engine.Ent_Fire("FL-Light1", "TurnOff");
 	Engine.Ent_Fire("FL-Spr1", "HideSprite");
+}
+
+void CashDATA()
+{
+	MaxRandomCash = 31;
+	MinRandomCash = 17;
+
+	MaxMoneyPerItem = 185.0f;
+	MinMoneyPerItem = 40.0f;
+
+	InsertToArray(234.328, 2655.33, -63.7425);
+	InsertToArray(222.258, 2626.77, -63.7425);
+	InsertToArray(-70.902, 3280.86, -56.4082);
+	InsertToArray(-79.9659, 3264.88, -56.4082);
+	InsertToArray(-170.027, 3117.3, 37.0313);
+	InsertToArray(-202.379, 3105.23, 37.0313);
+	InsertToArray(-184.318, 2759.39, -79.263);
+	InsertToArray(-806.17, 2916.09, -62.9688);
+	InsertToArray(-648.354, 2555.14, -62.9688);
+	InsertToArray(-1134.45, 2707.8, -56.9688);
+	InsertToArray(-1047.96, 3251.03, -56.7188);
+	InsertToArray(-1291.25, 3446.95, -68.9581);
+	InsertToArray(-1548.4, 3328.03, -38.9783);
+	InsertToArray(-1782.21, 3145.92, -48.9688);
+	InsertToArray(-1772.97, 3156.18, -48.9688);
+	InsertToArray(-2162.98, 3060.82, -48.9688);
+	InsertToArray(-2147.18, 3052.99, -48.9688);
+	InsertToArray(-2144.51, 2799.46, -61.9688);
+	InsertToArray(-2150.59, 2675.49, -77.9688);
+	InsertToArray(-1894.81, 1761.63, -45.937);
+	InsertToArray(-1781.38, 1403.38, -30.9688);
+	InsertToArray(-2118.16, 591.246, -24.9688);
+	InsertToArray(-1850.94, 588.635, -26.9688);
+	InsertToArray(-1844.77, 575.387, -26.9688);
+	InsertToArray(-2031.39, 302.696, -26.0277);
+	InsertToArray(-2061.45, 284.439, -26.0277);
+	InsertToArray(-1909.33, 133.358, -51.6651);
+	InsertToArray(-2251.02, 108.016, -26.0278);
+	InsertToArray(-2247.63, 596.491, -26.0278);
+	InsertToArray(-1681.93, 493.948, -60.9445);
+	InsertToArray(-1515.97, 164.794, -61.154);
+	InsertToArray(-1515.97, 133.468, -35.9439);
+	InsertToArray(-1288.59, 148.705, -70.9688);
+	InsertToArray(-1171.52, 321.896, -62.9688);
+	InsertToArray(-1080.86, 752.254, -94.9688);
+	InsertToArray(-1090.05, 739.477, -94.9688);
+	InsertToArray(-676.997, 726.781, -79.3178);
+	InsertToArray(-377.763, 567.71, -62.9688);
+	InsertToArray(-581.862, 223.059, -79.1954);
+	InsertToArray(-623.351, 62.4185, -69.6909);
+	InsertToArray(-866.42, -78.7392, -63.7425);
+	InsertToArray(-865.395, -54.8727, -63.7425);
+	InsertToArray(-1004.69, -10.3378, -65.9688);
+	InsertToArray(-71.3286, -265.18, -76.4688);
+	InsertToArray(107.641, 240.537, -78.9688);
+	InsertToArray(-64.1869, 237.87, -94.9688);
+	InsertToArray(868.81, 59.3323, -62.9688);
+	InsertToArray(747.278, 69.3344, -94.9688);
+	InsertToArray(512.035, 374.449, 77.0313);
+	InsertToArray(223.184, 793.769, -55.2244);
+	InsertToArray(1563.12, 1205.63, 1.03125);
+	InsertToArray(1758.08, 1224.78, -29.9688);
+	InsertToArray(1752.24, 1242.57, -29.9688);
+	InsertToArray(997.409, 1701.1, -23.9688);
+	InsertToArray(988.893, 1702.62, 23.0312);
+	InsertToArray(838.9, 1399.83, -19.8672);
+	InsertToArray(810.38, 1397.25, 1.83644);
+	InsertToArray(826.469, 1399.02, 1.83645);
+	InsertToArray(812.753, 1400.09, 40.6603);
+	InsertToArray(1590.64, 1911.88, -404.617);
+	InsertToArray(1594.2, 1976.01, -382.914);
+	InsertToArray(1437.41, 1889.98, -414.969);
+	InsertToArray(815.965, 1621.38, -79.4441);
+	InsertToArray(241.974, 1551.02, -62.9688);
+	InsertToArray(184.267, 1945.73, -79.3642);
+	InsertToArray(-693.809, 1626.18, -79.011);
+	InsertToArray(-664.75, 1619.17, -79.6433);
+	InsertToArray(-1033.64, 1813.56, -64.7425);
+	InsertToArray(-1025.26, 1790.08, -64.7425);
+	InsertToArray(-1010.22, 1878.59, -64.7425);
 }
