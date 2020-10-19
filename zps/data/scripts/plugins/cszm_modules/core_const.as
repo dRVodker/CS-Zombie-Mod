@@ -1,8 +1,8 @@
 //Постоянные игрового процесса
 //Скорости движения игрока
 const int SPEED_DEFAULT = 240;		//225
-const int SPEED_HUMAN = 220;		//225
-const int SPEED_ZOMBIE = 205;		//213
+const int SPEED_HUMAN = 225;		//225
+const int SPEED_ZOMBIE = 200;		//213
 const int SPEED_CARRIER = 225;		//220
 const int SPEED_ADRENALINE = 75;	//50
 

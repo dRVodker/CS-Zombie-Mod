@@ -14,7 +14,7 @@
 	5 - убийста/жертвы/подсказка в лобби
 */
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
-//Includes and DATA
+//Includes
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 #include "./cszm_modules/noitems.as"
@@ -28,10 +28,145 @@
 #include "./cszm_modules/customitems.as"
 #include "./cszm_modules/teamnums.as"
 #include "./cszm_modules/core_text.as"
-#include "./cszm_modules/core_const.as"
+//#include "./cszm_modules/core_const.as"
 #include "./cszm_modules/admin_chatcom.as"
 
 #include "./cszm_modules/download_table.as"
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+//CONST
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+//Постоянные игрового процесса
+//Скорости движения игрока
+const int SPEED_DEFAULT = 240;		//225
+const int SPEED_HUMAN = 225;		//225
+const int SPEED_ZOMBIE = 200;		//213
+const int SPEED_CARRIER = 225;		//220
+const int SPEED_ADRENALINE = 75;	//50
+
+//Другие постоянные
+const float CONST_SPAWN_DELAY = 5.1f;			//Время в секундах, которое должны будут ждать все убитые игроки, чтобы снова возродиться
+const int CONST_REWARD_HEALTH = 75;				//Кол-во HP, которое зомби получит при удачном заражении человека.
+const int CONST_INFECT_ADDTIME = 15;			//Кол-во времени в секундах, которое будет добавлятся к таймеру раунда при удачном заражении чеорвека (если время на таймере меньше чем "CONST_MIN_ROUNDTIMER")
+const int CONST_ZOMBIE_LIVES = 0;				//Удерживать Жизни Зомби на этом уровне (Жизни Зомби не используются в CSZM) 
+const int CONST_MAX_INFECTRESIST = 2;			//Максимальное сопротивление инфекции (кол-во ударов, которое может пережить выживший)
+const float CONST_ADRENALINE_DURATION = 14.0f;	//Длительность действия адреналина в секундах
+//const float CONST_ARMOR_MULT = 3.15f;			//Множитель для вычисления дополнительного HP для превращенного выжившего, если у него был армор (ExtraHP = iArmor * CONST_ARMOR_MULT)
+const float CONST_SWIPE_DELAY = 0.5f;			//Задержка чтоб предотвратить заражение более одного выжившего одним ударом
+const float CONST_GAME_ROUND_TIME = 300.05;		//Удерживать внутриигровой таймер раунда на этом уровне (внутриигровой таймер раунда не используются в CSZM)
+const int CONST_MIN_ROUNDTIMER = 35;			//Минимальное время таймера рауда, при котором разрешено добавлять время за заражение/убийство
+
+enum AntidoteStates {AS_UNUSEABLE, AS_USEABLE}
+
+//Пропы
+const int PROP_MAX_HEALTH = 750;	//1250		//Максимальное HP для prop'ов
+const int BRUSH_MAX_HEALTH = 1000;				//Максимальное HP для брашей
+const string EXPLOSIVES_PROP_MODELS = "propanecanister001a.mdl;oildrum001_explosive.mdl;fire_extinguisher.mdl;canister01a.mdl;canister02a.mdl;propane_tank001a.mdl;gascan001a.mdl";
+const string JUNK_PROP_MODELS = "vent001.mdl;glassjug01.mdl;glassbottle01a.mdl;plasticcrate01a.mdl;popcan01a.mdl";
+
+//Обводка зомби
+const float GLOW_BASE_DISTANCE = 1415.0f;
+
+//Голоса зомби
+const int VOICE_MAX_INDEX = 3;
+const string VOICE_ZM_PAIN = "CSPlayer.Pain";
+const string VOICE_ZM_DIE = "CSPlayer.Die";
+const string VOICE_ZM_IDLE = "CSPlayer.Idle";
+
+//Некоторые модели
+const string MODEL_HUMAN_ARMS = "models/weapons/arms/c_eugene.mdl";
+const string MODEL_ZOMBIE_ARMS = "models/weapons/arms/c_carrier.mdl";
+const string MODEL_KNIFE = "models/cszm/weapons/w_knife_t.mdl";
+const string MODEL_PLAYER_CARRIER = "models/cszm/carrier.mdl";
+const string MODEL_PLAYER_LOBBYGUY = "models/cszm/lobby_guy.mdl";
+const string MODEL_PLAYER_CORPSE2 = "models/cszm/zombie_corpse2.mdl";
+
+//Ентити, которым нужно установить HP
+const array<string> g_strBreakableEntities =
+{
+	"prop_physics",
+	"prop_physics_multiplayer",
+	"prop_physics_override",
+	"prop_door_rotating",
+	"func_breakable",
+	"func_physbox",
+	"func_door_rotating",
+	"func_door"
+};
+
+//Список моделей, которые используются для зомби
+const array<string> g_strModels = 
+{
+	"models/cszm/zombie_classic.mdl",
+	"models/cszm/zombie_sci.mdl",
+	"models/cszm/zombie_corpse1.mdl",
+	"models/cszm/zombie_charple2.mdl",
+	"models/cszm/zombie_charple1.mdl",
+	"models/cszm/zombie_sawyer.mdl",
+	"models/cszm/zombie_bald.mdl",
+	"models/cszm/zombie_eugene.mdl"
+};
+
+array<string> g_strMDLToChoose;
+
+const array<string> g_strBloodSND =
+{
+	")gibs/flesh_arm-01.wav",
+	")gibs/flesh_arm-02.wav",
+	")gibs/flesh_arm-03.wav",
+	")gibs/flesh_arm-04.wav",
+	")gibs/flesh_head-01.wav",
+	")gibs/flesh_head-02.wav",
+	")gibs/flesh_head-03.wav"
+};
+
+const array<string> g_strInfectSND =
+{
+	")cszm_fx/player/plr_infect1.wav",
+	")cszm_fx/player/plr_infect2.wav",
+	")cszm_fx/player/plr_infect3.wav"
+};
+
+const array<string> g_LocknLoadSND =
+{
+	"@cszm_fx/radio/gogogo.wav",
+	"@cszm_fx/radio/letsgo.wav",
+	"@cszm_fx/radio/locknload.wav",
+	"@cszm_fx/radio/moveout.wav"
+};
+
+const array<string> g_strWeaponToStrip = 
+{
+	"weapon_baguette",
+	"weapon_crowbar",
+	"weapon_pot",
+	"weapon_spanner",
+	"weapon_fryingpan",
+	"weapon_pipewrench",
+	"weapon_wrench",
+	"weapon_racket",
+	"weapon_plank",
+	"weapon_keyboard",
+	"weapon_ppk",
+	"weapon_usp",
+	"weapon_glock",
+	"weapon_snowball",
+	"weapon_tennisball"
+};
+
+array<string> g_strStartWeapons =
+{
+	"weapon_usp",
+	"weapon_glock",
+	"weapon_glock18c"
+};
+
+const int iStartWeaponLength = int(g_strStartWeapons.length());
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
+//OtherData
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 CASConVar@ pSoloMode = null;
 CASConVar@ pTestMode = null;
@@ -60,9 +195,9 @@ bool bIsCSZM;						//Это CSZM карта?
 bool bAllowAddTime = true;			//Разрешить добавлять время за удачное заражение
 bool bAllowZombieRespawn = true;	//Разрешить респавн для зомби
 
-int iWarmUpTime = 60;				//Время разминки в секундах. (значение по умолчанию - 75)
-int iGearUpTime = 45;				//Время в секундах, через которое превратится Первый зараженный.
-int iRoundTime = 255;				//Время в секундах отведённое на раунд.
+int iWarmUpTime = 75;				//Время разминки в секундах. (значение по умолчанию - 75)
+int iGearUpTime = 40;				//Время в секундах, через которое превратится Первый зараженный.
+int iRoundTime = 260;				//Время в секундах отведённое на раунд.
 
 int iZombieHealth = 300;			//HP зомби
 int iZMRHealth = 3;					//Максимальное HP, восстанавливаемое регенерацие зомби за один тик
@@ -70,13 +205,15 @@ int iZMRHealth = 3;					//Максимальное HP, восстанавлив�
 float flZMRRate = 0.125f;			//Интервал времени регенерации зомби
 float flZMRDamageDelay = 0.75f;		//Задержка регенерации после получения урона
 float flInfectedExtraHP = 0.475f;	//Процент дополнительного HP для первых зараженных, от HP обычных зомби (от iZombieHealth)
-float flInfectionPercent = 0.3f;	//Процент выживших, которые будут заражены в начале раунда
-float flPSpeed = 0.35f;		//0.22	//Процент скорости, которая останется у игрока после замедления
+float flInfectionPercent = 0.165f;	//Процент выживших, которые будут заражены в начале раунда
+float flPSpeed = 0.32f;		//0.22	//Процент скорости, которая останется у игрока после замедления
 float flRecover = 0.032f;	//0.028	//Время между прибавками скорости
 float flCurrs = 1.125f;				//Часть от текущей скорости игрока, которая будет прибавляться для восстановления нормальной скорости игрока
 
 float flPropHPPercent = 0.102f;		//Часть от текущего HP, которая будет умножена на количество игроков для получения итогового HP
 float flBrushHPPercent = 0.325f;	//Часть от текущего HP, которая будет умножена на количество игроков для получения итогового HP
+
+float flMergeTime;
 
 int iPreviousZombieVoiceIndex;		//Предыдущий номер голоса зомби
 int iPreviousInfectIndex = -1;		//Предыдущий номер звука заражения
@@ -91,14 +228,14 @@ int iTurnTime;						//Время, когда превращаются зараж
 
 int ECO_DefaultCash = 300;
 int ECO_StartingCash = 300;
-int ECO_Human_Win = 1000;
+int ECO_Human_Win = 800;
 int ECO_Human_Kill = 200;
-int ECO_Zombie_Win = 500;
+int ECO_Zombie_Win = 400;
 int ECO_Zombie_Kill = 250;
-int ECO_Lose = -1000;
-int ECO_Suiside = -650;
-float ECO_Damage_Multiplier = 0.111f;
-float ECO_Health_Multiplier = 0.218f;
+int ECO_Lose = -650;
+int ECO_Suiside = -50;
+float ECO_Damage_Multiplier = 0.195f;
+float ECO_Health_Multiplier = 0.22f;
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 //Forwards
@@ -138,6 +275,10 @@ void OnMapInit()
 		return;
 	}
 
+	//Add all custom files of CSZM to Download Table
+	//Sounds, materials, models
+	AddToDownloadTable();
+
 	bIsCSZM = true;
 	bWarmUp = true;
 	bIsPlayersSelected = false;
@@ -162,10 +303,6 @@ void OnMapInit()
 	CacheModels();
 	CacheSounds();
 	CacheMaterials();
-
-	//Add all custom files of CSZM to Download Table
-	//Sounds, materials, models
-	AddToDownloadTable();
 
 	//Get MaxPlayers
 	iMaxPlayers = Globals.GetMaxClients();
@@ -234,6 +371,11 @@ void OnProcessRound()
 	if (LessThanGTZ(flWUWait))
 	{
 		WarmUpTimer();
+	}
+
+	if (LessThanGT(flMergeTime))
+	{
+		MergeMoney();
 	}
 
 	if (flSoloTime != -1 && LessThanGTZ(flSoloTime))
@@ -565,7 +707,7 @@ class CSZMPlayer
 		RecoverTime = Globals.GetCurrentTime();
 		VoiceTime = Globals.GetCurrentTime();
 
-		Scale = 1.0f;
+		//Scale = 1.0f;
 
 		pTimeDamage.removeRange(0, pTimeDamage.length());
 
@@ -795,7 +937,7 @@ class CSZMPlayer
 		AddInfectPoints(-1);
 
 		Utils.ScreenFade(pPlayer, Color(30, 125, 35, 75), 0.25, 0, fade_in);
-		pPlayerEntity.SetHealth(pPlayerEntity.GetHealth() + 5);
+		//pPlayerEntity.SetHealth(pPlayerEntity.GetHealth() + 5);
 		Engine.EmitSoundPosition(PlayerIndex, "items/smallmedkit1.wav", pPlayerEntity.EyePosition(), 0.5f, 75, 100);
 
 		SetUsed(PlayerIndex, pItemAntidote);
@@ -808,8 +950,8 @@ class CSZMPlayer
 		CBaseEntity@ pPlayerEntity = FindEntityByEntIndex(PlayerIndex);
 		CZP_Player@ pPlayer = ToZPPlayer(PlayerIndex);
 
-		int AdrenaDamage = Math::RandomInt(15, 25);
-		float flADuration = CONST_ADRENALINE_DURATION + Math::RandomFloat(0.25f, 3.15f);
+		int AdrenaDamage = Math::RandomInt(10, 15);
+		float flADuration = CONST_ADRENALINE_DURATION + Math::RandomFloat(-3.15f, 3.15f);
 		int NewSpeed = pPlayer.GetMaxSpeed() + SPEED_ADRENALINE;
 
 		if (NewSpeed > SPEED_ADRENALINE + SPEED_HUMAN)
@@ -1319,13 +1461,13 @@ namespace Radio
 	{
 		{"Hammer",			"150",	"weapon",	"weapon_barricade",		},
 		{"Shovel",			"450",	"weapon",	"weapon_shovel",		},
-		{"Sledgehammer",	"7500",	"weapon",	"weapon_sledgehammer",	}
+		{"Sledgehammer",	"4500",	"weapon",	"weapon_sledgehammer",	}
 	};
 	const array<array<string>> FirearmsMenuSchema = 
 	{	
-		{"Glock18c",		"125",	"weapon",	"weapon_glock18c",		},
-		{"Glock",			"95",	"weapon",	"weapon_glock",			},
-		{"USP",				"100",	"weapon",	"weapon_usp",			},
+		{"Glock18c",		"130",	"weapon",	"weapon_glock18c",		},
+		{"Glock",			"100",	"weapon",	"weapon_glock",			},
+		{"USP",				"105",	"weapon",	"weapon_usp",			},
 		{"PPK",				"45",	"weapon",	"weapon_ppk",			},
 		{"AK47",			"450",	"weapon",	"weapon_ak47",			},
 		{"M4",				"500",	"weapon",	"weapon_m4",			},
@@ -1361,9 +1503,9 @@ namespace Radio
 	};
 	const array<array<string>> ZombieMenuSchema = 
 	{
-		{"Extra HP",	"400",	"powerup",	"2", "0"},
+		{"Extra HP",	"405",	"powerup",	"2", "0"},
 		{"Exrta Life",	"450",	"powerup",	"5", "1"},
-		{"Armor",		"650",	"powerup",	"6", "2"}
+		{"Armor",		"655",	"powerup",	"6", "2"}
 	};
 	const array<array<string>> LobbyMenuSchema = 
 	{
@@ -1663,12 +1805,13 @@ namespace Radio
 			}
 			else if (InputIndex == IP_MENU)
 			{
-				InputIndex = IP_PREV;
+				InputIndex = IP_EXIT;
+				//InputIndex = IP_PREV;
 
-				if (CurrentPage == 1 && !OpenedFromCAT)
-				{
-					InputIndex = IP_EXIT;
-				}
+				//if (CurrentPage == 1 && !OpenedFromCAT)
+				//{
+				//	InputIndex = IP_EXIT;
+				//}
 			}
 
 			if (!LessThanGT(InputDelay))
@@ -1794,6 +1937,7 @@ namespace Radio
 		if (Array_CSZMPlayer[nPlrInd].CashBank < nCost)
 		{
 			MenuFeedback(nPlrInd, 0);
+			SendLog(pGun);
 			pGun.SUB_Remove();
 		}
 		else if (pPlayer.PutToInventory(pGun))
@@ -1803,6 +1947,7 @@ namespace Radio
 		}
 		else
 		{
+			SendLog(pGun);
 			pGun.SUB_Remove();
 			iResult = 0;
 			MenuFeedback(nPlrInd, 1);
@@ -2178,6 +2323,7 @@ void OnEntityDropped(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 
 	if (Utils.StrContains("used", pEntity.GetEntityName()))
 	{
+		SendLog(pEntity);
 		pEntity.SUB_Remove();
 	}
 }
@@ -2197,6 +2343,7 @@ void OnEntityUsed(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 	{
 		Engine.EmitSoundPosition(pPlayerEntity.entindex(), ")cszm_fx/items/gunpickup1.wav", pPlayerEntity.GetAbsOrigin() + Vector(0, 0, 16), 0.7f, 65, 110);
 		Array_CSZMPlayer[index].CashBank += pEntity.GetHealth();
+		SendLog(pEntity);
 		pEntity.SUB_Remove();
 	}
 }
@@ -2368,6 +2515,7 @@ HookReturnCode CSZM_OnPlayerSpawn(CZP_Player@ pPlayer)
 			if (pPlrDlight !is null)
 			{
 				Engine.EmitSoundEntity(pBaseEnt, "Buttons.snd14");
+				SendLog(pPlrDlight);
 				pPlrDlight.SUB_Remove();
 			}
 		}
@@ -2375,8 +2523,9 @@ HookReturnCode CSZM_OnPlayerSpawn(CZP_Player@ pPlayer)
 		if (TeamNum != TEAM_SPECTATORS)
 		{
 			CBaseEntity@ pSpriteEnt = FindEntityByName(pSpriteEnt, formatInt(index) + "firefly_sprite");
-			if (pSpriteEnt !is null)
+			if (pSpriteEnt !is null) //fixme
 			{
+				SendLog(pSpriteEnt);
 				pSpriteEnt.SUB_Remove();
 			}
 		}
@@ -2629,6 +2778,13 @@ HookReturnCode CSZM_OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in Dama
 
 		int iDamageType = DamageInfo.GetDamageType();
 
+		string strWeaponName = "";
+
+		if (DamageInfo.GetWeapon() !is null)
+		{
+			strWeaponName = DamageInfo.GetWeapon().GetClassname();
+		}
+
 		if (pAttackerEntity.IsPlayer()) 
 		{
 			@pAttCSZMPlayer = Array_CSZMPlayer[iAttIndex];
@@ -2645,11 +2801,11 @@ HookReturnCode CSZM_OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in Dama
 				KillFeed("", 0, strVicName, iVicTeam, false, true);
 			}
 
-			if (iVicTeam > TEAM_SPECTATORS && RoundManager.GetRoundState() == rs_RoundOnGoing && !Utils.StrEql(pAttackerEntity.GetClassname(), "npc_fragmine"))
+			/*if (iVicTeam > TEAM_SPECTATORS && RoundManager.GetRoundState() == rs_RoundOnGoing && !Utils.StrEql(pAttackerEntity.GetClassname(), "npc_fragmine"))
 			{
 				pVicCSZMPlayer.AddMoney(ECO_Suiside);
 				Chat.PrintToChatPlayer(pPlrEnt, "{red}" + formatInt(ECO_Suiside) + "$ {gold}За самоубийство!");
-			}
+			}*/
 			/*if (!pVicCSZMPlayer.Spawn)
 			{
 				pVicCSZMPlayer.AddInfectPoints(25);
@@ -2674,7 +2830,10 @@ HookReturnCode CSZM_OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in Dama
 
 			if (!bSuicide)
 			{
-				pAttCSZMPlayer.AddMoney(ECO_Human_Kill);
+				if (!Utils.StrEql(strWeaponName, "weapon_sledgehammer"))
+				{
+					pAttCSZMPlayer.AddMoney(ECO_Human_Kill);
+				}
 				pAttCSZMPlayer.AddKill();
 
 				if (!pVicCSZMPlayer.Spawn)
@@ -2722,20 +2881,28 @@ HookReturnCode CSZM_OnPlayerDisconnected(CZP_Player@ pPlayer)
 
 		int index = pBaseEnt.entindex();
 
-		if (Array_CSZMPlayer[index].FirstInfected)
+		if (pBaseEnt.GetTeamNumber() == TEAM_ZOMBIES)
 		{
-			Array_CSZMPlayer[index].AddInfectPoints(50);
-			Array_CSZMPlayer[index].SetAbuser(true);
+			if (Array_CSZMPlayer[index].FirstInfected)
+			{
+				Array_CSZMPlayer[index].AddInfectPoints(85);
+				Array_CSZMPlayer[index].SetAbuser(true);
+			}
+			else
+			{
+				Array_CSZMPlayer[index].AddInfectPoints(50);
+			}
+
+			if (Utils.GetNumPlayers(zombie, false) <= 1 && RoundManager.IsRoundOngoing(false))
+			{
+				flRTWait = 0;
+				Engine.EmitSound("buttons/button8.wav");
+				RoundManager.SetWinState(STATE_STALEMATE);
+				SD(strLastZLeave);
+			}
 		}
 
 		@Array_CSZMPlayer[index] = null;
-		
-		if (pBaseEnt.GetTeamNumber() == TEAM_ZOMBIES && Utils.GetNumPlayers(zombie, false) <= 1 && RoundManager.IsRoundOngoing(false))
-		{
-			Engine.EmitSound("buttons/button8.wav");
-			RoundManager.SetWinState(STATE_STALEMATE);
-			SD(strLastZLeave);
-		}
 	}
 	
 	return HOOK_CONTINUE;
@@ -2782,6 +2949,11 @@ HookReturnCode CSZM_OnEntityCreation(const string &in strClassname, CBaseEntity@
 
 HookReturnCode CSZM_OnEntityDestruction(const string &in strClassname, CBaseEntity@ pEntity)
 {
+	if(bIsCSZM)
+	{
+		Log.PrintToServerConsole(LOGTYPE_INFO, "Entity Destruction", "Class: "+strClassname+" | Name: " + pEntity.GetEntityName());
+	}
+
 	if (bIsCSZM && Utils.StrEql("npc_grenade_frag", strClassname, true))
 	{
 		ShootTracers(pEntity.GetAbsOrigin());
@@ -3182,11 +3354,13 @@ void TurnToZombie(const int &in index)
 		int iRandomSound = 0;
 		CZP_Player@ pPlayer = ToZPPlayer(index);
 
-		NPZ::StripWeapon(pPlayer, "weapon_phone");
-		NPZ::StripWeapon(pPlayer, "weapon_emptyhands");
-
 		CBaseEntity@ pCurrentWeapon = pPlayer.GetCurrentWeapon();
-		string CurrentName = pCurrentWeapon.GetEntityName();
+		if (!(Utils.StrEql("weapon_phone", pCurrentWeapon.GetClassname(), true) || Utils.StrEql("weapon_emptyhand", pCurrentWeapon.GetClassname(), true)))
+		{
+			pPlayer.DropWeapon(pPlayer.GetWeaponSlot(pCurrentWeapon.GetClassname()));
+		}
+
+		/*string CurrentName = pCurrentWeapon.GetEntityName();
 
 		if (Utils.StrEql("", pCurrentWeapon.GetEntityName(), true))
 		{
@@ -3195,7 +3369,7 @@ void TurnToZombie(const int &in index)
 
 		pCurrentWeapon.SetEntityName(CurrentName + formatInt(index));
 		pPlayer.DropWeapon(pPlayer.GetWeaponSlot(CurrentName + formatInt(index)));
-		pCurrentWeapon.SetEntityName(CurrentName);
+		pCurrentWeapon.SetEntityName(CurrentName);*/
 
 		if (Array_CSZMPlayer[index].FirstInfected)
 		{
@@ -3222,6 +3396,9 @@ void TurnToZombie(const int &in index)
 		iPreviousInfectIndex = iRandomSound;
 		!Array_CSZMPlayer[index].Spawn ? Engine.EmitSoundPosition(index, g_strInfectSND[iRandomSound], pPlayerEntity.GetAbsOrigin(), 1.0f, 85, Math::RandomInt(99, 107)) : Engine.EmitSoundPosition(index, ")npc/zombie/zombie_alert" + formatInt(Math::RandomInt(1, 3)) + ".wav", pPlayerEntity.GetAbsOrigin(), 1.0f, 80, Math::RandomInt(100, 105));
 		ShakeInfected(pPlayerEntity);
+
+		NPZ::StripWeapon(pPlayer, "weapon_phone");
+		NPZ::StripWeapon(pPlayer, "weapon_emptyhands");
 	}
 }
 
@@ -3270,16 +3447,9 @@ void RandomZombieModel(CZP_Player@ pPlayer, CBaseEntity@ pPlayerEntity)
 void SetZombieHealth(CBaseEntity@ pPlayerEntity)
 {
 	int index = pPlayerEntity.entindex();
-
 	CZP_Player@ pPlayer = ToZPPlayer(index);
-	
-	//int iArmor = int(ceil(pPlayer.GetArmor() * (CONST_ARMOR_MULT + Math::RandomFloat(0.0f, 1.0f))));
-	int iExtraHealth = int(ceil(iZombieHealth * 0.45f * Array_CSZMPlayer[index].ExtraHealth));
 
-	//if (iArmor > 0)
-	//{
-	//	pPlayer.SetArmor(0);
-	//}
+	int iExtraHealth = int(ceil(iZombieHealth * 0.45f * Array_CSZMPlayer[index].ExtraHealth));
 
 	if (Array_CSZMPlayer[index].FirstInfected)
 	{
@@ -3289,7 +3459,7 @@ void SetZombieHealth(CBaseEntity@ pPlayerEntity)
 	else
 	{
 		pPlayerEntity.SetMaxHealth(iZombieHealth + iExtraHealth);
-		pPlayerEntity.SetHealth(iZombieHealth + iExtraHealth);
+		pPlayerEntity.SetHealth(int((iZombieHealth + iExtraHealth) * 0.75f));
 	}
 
 	Array_CSZMPlayer[index].UpdateOutline();

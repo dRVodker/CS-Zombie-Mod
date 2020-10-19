@@ -1,9 +1,8 @@
 bool bIsCSZM = false;
 float flMsgWaitTime = Globals.GetCurrentTime() + Math::RandomFloat(3.50f, 10.0f);
-const string lb = "{blue}[";
-const string rb = "{blue}] ";
-const string strCSZM = lb + "{coral}cszm"+rb;
-const array<string> g_strMsg =
+const string strCSZM = "{blue}[{coral}cszm{blue}]{gold} ";
+const string strInfo = "{blue}[{white}info{blue}]{gold} ";
+const array<string> g_strCSZMMsg =
 {
 	"Находясь в {white}наблюдателях{gold}, нажмите {cornflowerblue}F4{gold} чтоб вернуться в {green}лобби{gold}.",
 	"Используйте {cornflowerblue}антитод{gold} для повышения сопротивления к {green}инфекции{gold}.",
@@ -21,7 +20,14 @@ const array<string> g_strMsg =
 	"Кувалда убивает любового зомби с {cornflowerblue}одного{gold} удара.",
 	"Последний {blue}выживший{gold} имеет 100% имунитет к {green}инфекции{gold}."
 };
+const array<string> g_strInfoMsg =
+{
+	"Архив с контентом для CSZM: {cyan}https://yadi.sk/d/8x1gFtYFMo9rgw",
+	"Архив с картами сервера: {cyan}https://yadi.sk/d/BG_jU6SMKvHykQ",
+	"Steam-чат сервера: {cyan}https://s.team/chat/bvibKkn9"
+};
 
+array<string> g_CurrentMSG;
 array<string> g_strMsgToShow;
 
 void OnPluginInit()
@@ -33,30 +39,34 @@ void OnPluginInit()
 
 void OnMapInit()
 {
-	bIsCSZM = Utils.StrContains("cszm", Globals.GetCurrentMapName());
+	if (Utils.StrContains("cszm", Globals.GetCurrentMapName()))
+	{
+		int iCSZMMSGLength = int(g_strCSZMMsg.length());
+		for (int i = 0; i < iCSZMMSGLength; i++)
+		{
+			g_CurrentMSG.insertLast(strCSZM + g_strCSZMMsg[i]);
+		}
+	}
+
+	int iInfoMSGLength = int(g_strInfoMsg.length());
+	for (int i = 0; i < iInfoMSGLength; i++)
+	{
+		g_CurrentMSG.insertLast(strInfo + g_strInfoMsg[i]);
+	}
+
+	flMsgWaitTime = 0.0f;
 }
 
 void OnMapShutdown()
 {
-	if (!bIsCSZM)
-	{
-		return;
-	}
-
-	bIsCSZM = false;
-	flMsgWaitTime = 0.0f;
+	flMsgWaitTime = 150.0f;
 }
 
 void OnProcessRound()
 {
-	if (!bIsCSZM)
-	{
-		return;
-	}
-
 	if (flMsgWaitTime <= Globals.GetCurrentTime())
 	{
-		flMsgWaitTime = Globals.GetCurrentTime() + Math::RandomFloat(65.0f, 95.0f);
+		flMsgWaitTime = Globals.GetCurrentTime() + Math::RandomFloat(27.0f, 48.0f);
 		ShowMsg();
 	}
 }
@@ -67,14 +77,14 @@ void ShowMsg()
 	
 	if (iMSGToShowLength == 0)
 	{
-		int iMSGLength = int(g_strMsg.length());
+		int iMSGLength = int(g_CurrentMSG.length());
 		for (int i = 0; i < iMSGLength; i++)
 		{
-			g_strMsgToShow.insertLast(g_strMsg[i]);
+			g_strMsgToShow.insertLast(g_CurrentMSG[i]);
 		}
 	}
 
 	int iRNG = Math::RandomInt(0, iMSGToShowLength - 1);
-	Chat.PrintToChat(all, strCSZM + "{gold}" + g_strMsgToShow[iRNG]);
+	Chat.PrintToChat(all, g_strMsgToShow[iRNG]);
 	g_strMsgToShow.removeAt(iRNG);
 }

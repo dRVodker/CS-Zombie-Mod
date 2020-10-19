@@ -177,7 +177,7 @@ void CheckDropCount()
 		gItemIndex.removeAt(0);
 	}
 }
-
+	/*
 void MergeMoney()
 {
 	CBaseEntity@ pMoneyFirst = null;
@@ -198,7 +198,7 @@ void MergeMoney()
 		}
 	}
 }
-
+	*/
 void RegisterEntity()
 {
 	const array<string> pClassName =
