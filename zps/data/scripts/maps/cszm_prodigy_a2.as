@@ -4,30 +4,90 @@
 array<array<CSpawnPoint@>> PrimarySpawns =
 {
 	{
-		CSpawnPoint(Vector(1781, 835, -375), QAngle(0, 30, 0)),
-		CSpawnPoint(Vector(1533, -1229, -472), QAngle(0, 300, 0)),
-		CSpawnPoint(Vector(2105, -1561, -472), QAngle(0, 165, 0)),
-		CSpawnPoint(Vector(885, -1581, -392), QAngle(0, 30, 0)),
-		CSpawnPoint(Vector(1503, -1410, -472), QAngle(0, 315, 0)),
-		CSpawnPoint(Vector(1949, 442, -375), QAngle(0, 30, 0)),
-		CSpawnPoint(Vector(2520, 484, -376), QAngle(0, 150, 0)),
-		CSpawnPoint(Vector(669, 35, -248), QAngle(0, 135, 0)),
-		CSpawnPoint(Vector(3114, -763, -472), QAngle(0, 45, 0)),
-		CSpawnPoint(Vector(3031, -12, -472), QAngle(0, 345, 0)),
-		CSpawnPoint(Vector(3297, 89, -472), QAngle(0, 240, 0)),
-		CSpawnPoint(Vector(3321, -763.231, -472), QAngle(0, 135, 0)),
-		CSpawnPoint(Vector(182.681, -786, -190), QAngle(0, 75, 0)),
-		CSpawnPoint(Vector(-110, -319, -198), QAngle(0, 315, 0)),
-		CSpawnPoint(Vector(599, -175, -285), QAngle(0, 225, 0)),
-		CSpawnPoint(Vector(551, -925, -392), QAngle(0, 60, 0)),
-		CSpawnPoint(Vector(373, 271, -288), QAngle(0, 60, 0)),
-		CSpawnPoint(Vector(615, 731, -288), QAngle(0, 225, 0)),
-		CSpawnPoint(Vector(99, 773, -288), QAngle(0, 315, 0)),
-		CSpawnPoint(Vector(1464, -826, -279), QAngle(0, 315, 0)),
-		CSpawnPoint(Vector(1790, -1108, -279), QAngle(0, 150, 0)),
-		CSpawnPoint(Vector(1280, -1233, -279), QAngle(0, 59.9999, 0)),
-		CSpawnPoint(Vector(1304, -642, -368), QAngle(0, 315, 0)),
-		CSpawnPoint(Vector(2462, 996, -375), QAngle(0, 225, 0)),
+		CSpawnPoint(Vector(2204, 1200, -359.5), QAngle(0, 0, 0)),
+		CSpawnPoint(Vector(2115, 1003, -375.5), QAngle(0, 300, 0)),
+		CSpawnPoint(Vector(1961, 1005, -375.5), QAngle(0, 225, 0)),
+		CSpawnPoint(Vector(1770, 825, -375.5), QAngle(0, 15, 0)),
+		CSpawnPoint(Vector(2452, 1180, -375.5), QAngle(0, 225, 0)),
+		CSpawnPoint(Vector(2672, -659, -472.5), QAngle(0, 165, 0)),
+		CSpawnPoint(Vector(3330, -392, -471.5), QAngle(0, 240, 0)),
+		CSpawnPoint(Vector(3343, -776, -471.5), QAngle(0, 135, 0)),
+		CSpawnPoint(Vector(3106.26, -776.524, -471.5), QAngle(0, 60, 0)),
+		CSpawnPoint(Vector(3612, -260, -471.5), QAngle(0, 135, 0)),
+		CSpawnPoint(Vector(3610, 106, -466), QAngle(0, 225, 0)),
+		CSpawnPoint(Vector(3074, 110, -471.5), QAngle(0, 315, 0)),
+		CSpawnPoint(Vector(3023, -77, -471.5), QAngle(0, 15, 0)),
+		CSpawnPoint(Vector(2887.05, -718.358, -471.5), QAngle(0, 45, 0)),
+		CSpawnPoint(Vector(1464, 980, -375.5), QAngle(0, 345, 0)),
+		CSpawnPoint(Vector(2449, 1613, -375.5), QAngle(0, 225, 0)),
+		CSpawnPoint(Vector(2248, 1531, -375.5), QAngle(0, 300, 0)),
+		CSpawnPoint(Vector(2506, 865, -375.5), QAngle(0, 225, 0)),
+		CSpawnPoint(Vector(2483, 449, -375.5), QAngle(0, 135, 0)),
+		CSpawnPoint(Vector(1952, 545, -370), QAngle(0, 330, 0)),
+		CSpawnPoint(Vector(1786, 415, -375.5), QAngle(0, 15, 0)),
+		CSpawnPoint(Vector(2832, 615, -374.5), QAngle(0, 135, 0)),
+		CSpawnPoint(Vector(2988, 610, -374.5), QAngle(0, 30, 0)),
+		CSpawnPoint(Vector(2948, -585, -471.5), QAngle(0, 195, 0)),
+
+		CSpawnPoint(Vector(2024, -752, -478), QAngle(0, 90, 0), "info_player_start"),
+		CSpawnPoint(Vector(3328, -272, -479), QAngle(0, 270, 0), "info_player_start"),
+		CSpawnPoint(Vector(816, -1280, -399), QAngle(0, 0, 0), "info_player_start")
+	},
+	{
+		CSpawnPoint(Vector(974.365, -1122, -393), QAngle(0, 180, 0)),
+		CSpawnPoint(Vector(862, -1600, -392), QAngle(0, 60, 0)),
+		CSpawnPoint(Vector(1234, -1471, -390), QAngle(0, 345, 0)),
+		CSpawnPoint(Vector(2149, -1599, -377), QAngle(0, 135, 0)),
+		CSpawnPoint(Vector(1499, -1406, -479), QAngle(0, 330, 0)),
+		CSpawnPoint(Vector(1836, -1224.08, -468), QAngle(0, 210, 0)),
+		CSpawnPoint(Vector(1529, -1228.02, -473), QAngle(0, 315, 0)),
+		CSpawnPoint(Vector(2109, -993, -471), QAngle(0, 120, 0)),
+		CSpawnPoint(Vector(1902.11, -884, -468), QAngle(0, 345, 0)),
+		CSpawnPoint(Vector(1816, -573, -456), QAngle(0, 315, 0)),
+		CSpawnPoint(Vector(1738, -588, -456), QAngle(0, 195, 0)),
+		CSpawnPoint(Vector(1461, -819, -281), QAngle(0, 330, 0)),
+		CSpawnPoint(Vector(1736, -1300, -281), QAngle(0, 135, 0)),
+		CSpawnPoint(Vector(1333, -1303, -281), QAngle(0, 60, 0)),
+		CSpawnPoint(Vector(1041, -1093, -274), QAngle(0, 60, 0)),
+		CSpawnPoint(Vector(1109, -693, -239), QAngle(0, 225, 0)),
+		CSpawnPoint(Vector(1796, -1109, -281), QAngle(0, 135, 0)),
+		CSpawnPoint(Vector(2407, -464, -279), QAngle(0, 135, 0)),
+		CSpawnPoint(Vector(2227, -227, -281), QAngle(0, 270, 0)),
+		CSpawnPoint(Vector(1592, -475, -279), QAngle(0, 330, 0)),
+		CSpawnPoint(Vector(1711, -337, -407), QAngle(0, 30, 0)),
+		CSpawnPoint(Vector(2241, -325, -407), QAngle(0, 135, 0)),
+		CSpawnPoint(Vector(2219, 163, -343.5), QAngle(0, 225, 0)),
+		CSpawnPoint(Vector(1718, 156, -343.5), QAngle(0, 330, 0)),
+
+		CSpawnPoint(Vector(2024, -752, -478), QAngle(0, 90, 0), "info_player_start"),
+		CSpawnPoint(Vector(3328, -272, -479), QAngle(0, 270, 0), "info_player_start"),
+		CSpawnPoint(Vector(816, -1280, -399), QAngle(0, 0, 0), "info_player_start")
+	},
+	{
+		CSpawnPoint(Vector(-35, 268, -288), QAngle(0, 60, 0)),
+		CSpawnPoint(Vector(109, 777, -288), QAngle(0, 300, 0)),
+		CSpawnPoint(Vector(274, 787, -288), QAngle(0, 300, 0)),
+		CSpawnPoint(Vector(477, 784, -288), QAngle(0, 285, 0)),
+		CSpawnPoint(Vector(677, 36.6151, -247), QAngle(0, 150, 0)),
+		CSpawnPoint(Vector(29, 163, -248), QAngle(0, 315, 0)),
+		CSpawnPoint(Vector(8, 44, -248), QAngle(0, 30, 0)),
+		CSpawnPoint(Vector(216.318, -441, -203), QAngle(0, 240, 0)),
+		CSpawnPoint(Vector(226, -355, -225), QAngle(0, 120, 0)),
+		CSpawnPoint(Vector(-127, -293, -190), QAngle(0, 330, 0)),
+		CSpawnPoint(Vector(-119, -536, -181), QAngle(0, 30, 0)),
+		CSpawnPoint(Vector(440, -619, -202), QAngle(0, 150, 0)),
+		CSpawnPoint(Vector(419, -391, -202), QAngle(0, 210, 0)),
+		CSpawnPoint(Vector(484.309, -803, -174), QAngle(0, 120, 0)),
+		CSpawnPoint(Vector(105, -769, -189), QAngle(0, 30, 0)),
+		CSpawnPoint(Vector(617.499, -160, -273), QAngle(0, 240, 0)),
+		CSpawnPoint(Vector(37, -262, -233), QAngle(0, 330, 0)),
+		CSpawnPoint(Vector(633, -349, -289), QAngle(0, 150, 0)),
+		CSpawnPoint(Vector(492, 264, -288), QAngle(0, 120, 0)),
+		CSpawnPoint(Vector(1107, 548, -243), QAngle(0, 150, 0)),
+		CSpawnPoint(Vector(-28, 454, -288), QAngle(0, 0, 0)),
+		CSpawnPoint(Vector(764, 567, -242), QAngle(0, 30, 0)),
+		CSpawnPoint(Vector(977, 901, -247), QAngle(0, 0, 0)),
+		CSpawnPoint(Vector(541, -926, -391), QAngle(0, 45, 0)),
 
 		CSpawnPoint(Vector(2024, -752, -478), QAngle(0, 90, 0), "info_player_start"),
 		CSpawnPoint(Vector(3328, -272, -479), QAngle(0, 270, 0), "info_player_start"),
@@ -64,6 +124,7 @@ void SetUpStuff()
 {
 	//RemoveNativeSpawns("info_player_human");
 	//RemoveNativeSpawns("info_player_zombie");
+	RemoveNativeSpawns("info_player_start");
 	CreateSpawnsFromArray(PrimarySpawns, true);
 
 	Engine.Ent_Fire("tonemap", "SetAutoExposureMax", "1.05", "0");
@@ -122,123 +183,90 @@ void OnMatchBegin()
 
 void CashDATA()
 {
-	MaxRandomCash = 14;
-	MinRandomCash = 8;
+	MaxRandomCash = 39;
+	MinRandomCash = 16;
 
-	MaxMoneyPerItem = 185.0f;
-	MinMoneyPerItem = 45.0f;
+	MaxMoneyPerItem = 110.0f;
+	MinMoneyPerItem = 25.0f;
 
-	InsertToArray(1241, -1295, -284);
-	InsertToArray(1593.2, -640.378, -460);
-	InsertToArray(2144.06, -853.513, -475);
-	InsertToArray(2371.97, -584.785, -414);
-	InsertToArray(3312.25, -219.319, -429);
-	InsertToArray(2637.5, -742, -476);
-	InsertToArray(2756.1, -715.06, -373);
-	InsertToArray(2816.12, -726.691, -424);
-	InsertToArray(3081, -471.984, -477);
-	InsertToArray(1867.59, -935.309, -430);
-	InsertToArray(2141, -1465, -382);
-	InsertToArray(1166.4, -1477.62, -375);
-	InsertToArray(1490, -1294, -452);
-	InsertToArray(1490, -1262, -429);
-	InsertToArray(1863, -1262, -444);
-	InsertToArray(1798, -1348, -389);
-	InsertToArray(1826, -1178, -375);
-	InsertToArray(1575, -1177, -375);
-	InsertToArray(1483, -1178, -375);
-	InsertToArray(1552, -1099, -453);
-	InsertToArray(1772, -834, -483);
-	InsertToArray(1544, -935, -396);
-	InsertToArray(1570, -802, -483);
-	InsertToArray(1814, -891, -383);
-	InsertToArray(1037.9, -1608.49, -396);
-	InsertToArray(2034, -1603, -238);
-	InsertToArray(2382, -532.482, -139);
-	InsertToArray(2349, -1353, -156);
-	InsertToArray(2882, -721.526, -156);
-	InsertToArray(1639, -948.05, -306);
-	InsertToArray(1655, -1113, -331);
-	InsertToArray(1296, -1306, -232);
-	InsertToArray(1434.91, -1310.79, -277);
-	InsertToArray(1752, -1312.63, -276);
-	InsertToArray(1789, -965, -183);
-	InsertToArray(1841, -1120, -283);
-	InsertToArray(1726, -809, -236);
-	InsertToArray(1525.75, -949.109, -259);
-	InsertToArray(1428, -880, -278);
-	InsertToArray(1580.22, -434.896, -195);
-	InsertToArray(2115.91, -518.741, -278);
-	InsertToArray(1784, -502, -285);
-	InsertToArray(2211.5, -185.145, -216);
-	InsertToArray(2276.7, -193.246, -183);
-	InsertToArray(2097, -367, -383);
-	InsertToArray(1899, -378, -412);
-	InsertToArray(2268.33, -170, -405);
-	InsertToArray(1697.86, -187.128, -334);
-	InsertToArray(2435.65, -414.486, -280);
-	InsertToArray(1303.77, -724, -141);
-	InsertToArray(1387, -653.005, -140);
-	InsertToArray(1387, -1116, -141);
-	InsertToArray(707, -399, -287);
-	InsertToArray(421.673, -520.623, -46);
-	InsertToArray(498, -704, -163);
-	InsertToArray(458.64, -369, -132);
-	InsertToArray(436, -358.118, -205);
-	InsertToArray(363, -372, -177);
-	InsertToArray(472, -626, -197.501);
-	InsertToArray(471, -629, -161.437);
-	InsertToArray(117, -685, -168);
-	InsertToArray(50, -646, -160);
-	InsertToArray(-167.914, -378, -213);
-	InsertToArray(-166.43, -473, -214);
-	InsertToArray(-77.7349, -237, -166);
-
-	InsertToArray(2225.39, 389, -300);
-	InsertToArray(1785, 550, -377);
-	InsertToArray(1951.95, 644, -378);
-	InsertToArray(1809.19, 725, -376);
-	InsertToArray(1128, 661.255, -252);
-	InsertToArray(1113, 621, -182);
-	InsertToArray(975, 443, -253);
-	InsertToArray(3323.58, 84, -455);
-	InsertToArray(3326, 25, -478);
-	InsertToArray(1888.16, 141, -284);
-	InsertToArray(2012, 61.7994, -413);
-	InsertToArray(2215.64, 64, -412);
-	InsertToArray(1755.92, 172, -348);
-	InsertToArray(1900.14, 8, -384);
-	InsertToArray(2015.3, 3, -412);
-	InsertToArray(3288, 566, -381);
-	InsertToArray(2929.13, 654, -343);
-	InsertToArray(384.723, 16, -162);
-	InsertToArray(428.045, 15, -251);
-	InsertToArray(89, 182, -250);
-	InsertToArray(-50.75, 36, -250);
-	InsertToArray(276, 351, -171);
-	InsertToArray(-95.0897, 633, -291);
-	InsertToArray(-17.4473, 784, -292);
-	InsertToArray(25.6151, 846, -194);
-	InsertToArray(389.032, 797, -292);
-	InsertToArray(91, 267.189, -289);
-	InsertToArray(694.402, 740, -291);
-	InsertToArray(534, 363, -293);
-	InsertToArray(782.917, 640, -215);
-	InsertToArray(816.762, 650, -251);
-	InsertToArray(1075, 934.717, -142);
-	InsertToArray(994.759, 844, -139);
-	InsertToArray(982.853, 941, -208);
-	InsertToArray(1774, 1029.51, -379);
-	InsertToArray(1593, 849.571, -344);
-	InsertToArray(1556, 847, -344);
-	InsertToArray(1948, 711, -135);
-	InsertToArray(1972.15, 718, -197);
-	InsertToArray(2197, 711, -136);
-	InsertToArray(2380, 420, -379);
-	InsertToArray(2475, 400.647, -266);
-	InsertToArray(2548, 420, -292);
-	InsertToArray(2559, 956.807, -287);
-	InsertToArray(2370, 1034, -380);
-	InsertToArray(2246.23, 542.133, -384.75);
-	InsertToArray(2175, 400, -331);
+	InsertToArray(1704.43, -196.481, -413.75);
+	InsertToArray(1714.08, 170.721, -349.75);
+	InsertToArray(2249.77, 161.819, -246.012);
+	InsertToArray(1969.42, -116.045, -113.75);
+	InsertToArray(1962.35, 2.63379, -413.75);
+	InsertToArray(1915.99, 58.0125, -413.75);
+	InsertToArray(2246.25, -179.995, -216.033);
+	InsertToArray(2281.04, -241.121, -182.012);
+	InsertToArray(708.525, -398, -281);
+	InsertToArray(883.31, -1611.48, -397.75);
+	InsertToArray(1229.73, -1597, -395);
+	InsertToArray(2158.22, -1571, -246);
+	InsertToArray(1509.02, -1267.87, -419.072);
+	InsertToArray(1491.31, -1295.5, -361.482);
+	InsertToArray(1520.78, -1175.4, -374.012);
+	InsertToArray(1676.68, -1172.65, -374.012);
+	InsertToArray(1876.65, -1228.24, -477.75);
+	InsertToArray(1799.41, -810.103, -485.75);
+	InsertToArray(1556.36, -927.132, -397.234);
+	InsertToArray(1570.01, -1097.32, -454.75);
+	InsertToArray(1814.69, -1069.14, -485.75);
+	InsertToArray(1574.91, -1597.9, -254);
+	InsertToArray(2169.63, -1466.39, -380.61);
+	InsertToArray(3341, -177, -447);
+	InsertToArray(3101.15, -447.448, -477.75);
+	InsertToArray(2757.22, -721.157, -372.75);
+	InsertToArray(2546.09, -694.828, -329.75);
+	InsertToArray(1875.51, -973.126, -418.684);
+	InsertToArray(2164.07, -971.668, -477.75);
+	InsertToArray(1587.55, -428.174, -195.234);
+	InsertToArray(1536.73, -917.419, -285.75);
+	InsertToArray(1774.4, -810, -181);
+	InsertToArray(1775.82, -865.459, -182.012);
+	InsertToArray(1742.6, -775, -181);
+	InsertToArray(1666.91, -946.228, -333.75);
+	InsertToArray(1824, -1149.1, -182);
+	InsertToArray(1388.21, -630.443, -141.75);
+	InsertToArray(1379, -1199, -143.649);
+	InsertToArray(1294.53, -1310.82, -232.198);
+	InsertToArray(441.72, -587.559, -49.7104);
+	InsertToArray(450.182, -336.528, -165.75);
+	InsertToArray(480.681, -350.9, -205.75);
+	InsertToArray(356, -372, -179);
+	InsertToArray(472, -632, -158.721);
+	InsertToArray(471, -630, -195.851);
+	InsertToArray(27.6868, -648.729, -189.15);
+	InsertToArray(90.4055, -699.625, -195.558);
+	InsertToArray(-75.8748, -238.548, -165.75);
+	InsertToArray(-34.543, 16.2731, -253.75);
+	InsertToArray(393.751, 18.569, -163.234);
+	InsertToArray(531.157, 364.495, -293.75);
+	InsertToArray(680.819, 756.444, -293.75);
+	InsertToArray(329.951, 848.313, -293.75);
+	InsertToArray(-61.5493, 840.646, -293.75);
+	InsertToArray(98.1201, 247.097, -293.75);
+	InsertToArray(784.544, 645.519, -253.75);
+	InsertToArray(1130.74, 662.085, -253.75);
+	InsertToArray(1061.13, 510.853, -163.234);
+	InsertToArray(1480.45, 841.284, -381.75);
+	InsertToArray(2264, 1065, -381.75);
+	InsertToArray(2380.41, 418.322, -381.75);
+	InsertToArray(2937.35, 613.485, -314.266);
+	InsertToArray(2566.74, 403.173, -302.336);
+	InsertToArray(1848.31, 383.961, -381.75);
+	InsertToArray(1893.9, 618.953, -380.75);
+	InsertToArray(1775, 1028.15, -381.75);
+	InsertToArray(1947.06, 726.282, -190.72);
+	InsertToArray(2563.15, 960.766, -290.364);
+	InsertToArray(2455.8, 1237.23, -344.546);
+	InsertToArray(2497.29, 1512.85, -381.75);
+	InsertToArray(2242.15, 1604.24, -320.123);
+	InsertToArray(2237, 1738, -381.75);
+	InsertToArray(2479, 1716, -381.75);
+	InsertToArray(2491.1, 2123.23, -247.75);
+	InsertToArray(2217, 2161, -247.75);
+	InsertToArray(2022.49, 413.619, -381.75);
+	InsertToArray(854.897, -947.256, -451.75);
+	InsertToArray(937.647, -853.516, -396.75);
+	InsertToArray(3586.57, -89.83, -426.79);
+	InsertToArray(2155.65, -763.89, -426.96);
 }

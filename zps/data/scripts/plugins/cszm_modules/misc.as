@@ -4,11 +4,6 @@ void AutoMap()
 	Schedule::Task(0.05f, "CSZM_SetColorCorrection");
 }
 
-void SendLog(CBaseEntity@ pEntity)
-{
-	Log.PrintToServerConsole(LOGTYPE_INFO, "-=SUB Remove=-", "Class: "+pEntity.GetClassname()+" | Name: " + pEntity.GetEntityName());
-}
-
 bool bDamageType(int &in iSubjectDT, int &in iDMGNum)
 {
 	return iSubjectDT & (1<<iDMGNum) == (1<<iDMGNum);
@@ -490,33 +485,31 @@ void AttachEyesLights(CBaseEntity@ pPlayerEntity)
 	CBaseEntity@ pL_Eye = EntityCreator::Create("env_sprite", pPlayerEntity.GetAbsOrigin(), QAngle(0, 0, 0), EyesLight);
 	CBaseEntity@ pR_Eye = EntityCreator::Create("env_sprite", pPlayerEntity.GetAbsOrigin(), QAngle(0, 0, 0), EyesLight);
 	
-	pL_Eye.SetEntityName(pPlayerEntity.entindex() + "_LeftEye");
-	pR_Eye.SetEntityName(pPlayerEntity.entindex() + "_RighrEye");
+	pL_Eye.SetEntityName(pPlayerEntity.entindex() + "_lefteye");
+	pR_Eye.SetEntityName(pPlayerEntity.entindex() + "_righreye");
 	
 	pL_Eye.SetParent(pPlayerEntity);
 	pR_Eye.SetParent(pPlayerEntity);
 	
-	pL_Eye.SetParentAttachment("LeftEye", false);
-	pR_Eye.SetParentAttachment("RightEye", false);
+	pL_Eye.SetParentAttachment("lefteye", false);
+	pR_Eye.SetParentAttachment("righteye", false);
 }
 
 void DetachEyesLights(CBaseEntity@ pPlayerEntity)
 {
-	pPlayerEntity.SetBodyGroup("EyesGlow", 0);
+	pPlayerEntity.SetBodyGroup("eyesglow", 0);
 	pPlayerEntity.SetSkin(0);
 
-	CBaseEntity@ pR_Eye = FindEntityByName(null, formatInt(pPlayerEntity.entindex()) + "_RighrEye");
-	CBaseEntity@ pL_Eye = FindEntityByName(null, formatInt(pPlayerEntity.entindex()) + "_LeftEye");
+	CBaseEntity@ pR_Eye = FindEntityByName(null, formatInt(pPlayerEntity.entindex()) + "_righreye");
+	CBaseEntity@ pL_Eye = FindEntityByName(null, formatInt(pPlayerEntity.entindex()) + "_lefteye");
 
 	if (pR_Eye !is null)
 	{
-		SendLog(pR_Eye);
 		pR_Eye.SUB_Remove();
 	}
 	
 	if (pL_Eye !is null)
 	{
-		SendLog(pL_Eye);
 		pL_Eye.SUB_Remove();
 	}
 }
@@ -542,14 +535,17 @@ void ApplyVictoryRewards(RoundWinState iWinState)
 
 		if (iWinState == STATE_HUMAN)
 		{
+			if (Team >= TEAM_SURVIVORS)
+			{
+				pCSZMPlayer.AddInfectPoints(-5);
+			}
+
 			if (Team == TEAM_SURVIVORS)
 			{
-				pCSZMPlayer.AddInfectPoints(-15);
 				pCSZMPlayer.AddMoney(ECO_Human_Win);
 			}
 			else if (Team == TEAM_ZOMBIES)
 			{
-				pCSZMPlayer.AddInfectPoints(5);
 				pCSZMPlayer.AddMoney(ECO_Lose);
 				Chat.PrintToChatPlayer(ToBasePlayer(i), "{red}" + formatInt(ECO_Lose) + "$ {gold}За поражение в раунде!");
 				pPlayerEntity.TakeDamage(CTakeDamageInfo(pPlayerEntity, pPlayerEntity, float(pPlayerEntity.GetHealth() + 200.0f), 1));
@@ -560,8 +556,7 @@ void ApplyVictoryRewards(RoundWinState iWinState)
 			if (Team == TEAM_SURVIVORS)
 			{
 				pCSZMPlayer.AddInfectPoints(5);
-				pCSZMPlayer.AddMoney(ECO_Lose);
-				Chat.PrintToChatPlayer(ToBasePlayer(i), "{red}" + formatInt(ECO_Lose) + "$ {gold}За поражение в раунде!");
+				pCSZMPlayer.AddMoney(ECO_Human_Win / 2);
 			}
 			else if (Team == TEAM_ZOMBIES)
 			{
@@ -615,7 +610,6 @@ void LogicPlayerManager()
 
 	if (pPlrManager !is null)
 	{
-		SendLog(pPlrManager);
 		pPlrManager.SUB_Remove();
 	}
 
@@ -710,7 +704,6 @@ namespace NPZ
 
 		if (pPlrDlight !is null)
 		{
-			SendLog(pPlrDlight);
 			pPlrDlight.SUB_Remove();
 		}
 		else
@@ -842,30 +835,7 @@ namespace NPZ
 
 			if (pPlayerEntity is pOwner)
 			{
-				SendLog(pWeapon);
 				pWeapon.SUB_Remove();
-			}
-		}
-	}
-}
-
-void MergeMoney()
-{
-	flMergeTime = PlusGT(0.25f);
-	CBaseEntity@ pMoneyFirst = null;
-	CBaseEntity@ pMoneySecond = null;
-
-	while ((@pMoneyFirst = FindEntityByName(pMoneyFirst, "dropped_money")) !is null)
-	{
-		while ((@pMoneySecond = FindEntityByName(pMoneySecond, "dropped_money")) !is null)
-		{
-			if (pMoneyFirst.Intersects(pMoneySecond) && pMoneyFirst !is pMoneySecond)
-			{
-				Engine.EmitSoundEntity(pMoneyFirst, "Cardboard.Break");
-				pMoneyFirst.SetHealth(pMoneyFirst.GetHealth() + pMoneySecond.GetHealth());
-				SendLog(pMoneySecond);
-				pMoneySecond.SUB_Remove();
-				return;
 			}
 		}
 	}

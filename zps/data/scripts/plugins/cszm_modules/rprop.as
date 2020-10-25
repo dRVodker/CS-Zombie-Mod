@@ -27,7 +27,6 @@ void RemoveProp(CBaseEntity@ pPlayer)
 				}
 				else
 				{
-					SendLog(pProp);
 					pProp.SUB_Remove();
 					break;
 				}

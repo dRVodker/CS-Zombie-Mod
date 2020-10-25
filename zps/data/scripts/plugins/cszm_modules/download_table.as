@@ -126,12 +126,13 @@ array<string> g_CSZMFile =
 	"models/cszm/weapons/w_rubles.phy",
 
 	"models/cszm/cszm_anims.mdl",
-	"models/cszm/carrier.dx80.vtx",
-	"models/cszm/carrier.dx90.vtx",
-	"models/cszm/carrier.mdl",
-	"models/cszm/carrier.sw.vtx",
-	"models/cszm/carrier.vvd",
-	"models/cszm/carrier.phy",
+	
+	//"models/cszm/carrier.dx80.vtx",
+	//"models/cszm/carrier.dx90.vtx",
+	//"models/cszm/carrier.mdl",
+	//"models/cszm/carrier.sw.vtx",
+	//"models/cszm/carrier.vvd",
+	//"models/cszm/carrier.phy",
 
 	"models/cszm/lobby_guy.dx80.vtx",
 	"models/cszm/lobby_guy.dx90.vtx",

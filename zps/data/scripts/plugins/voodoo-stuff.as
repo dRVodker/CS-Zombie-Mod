@@ -91,7 +91,7 @@ HookReturnCode VooDoo_OnPlayerSpawn(CZP_Player@ pPlayer)
 	CBasePlayer@ pPlayerBase = pPlayer.opCast();
 	CBaseEntity@ pPlayerEntity = pPlayerBase.opCast();
 
-	if (!bIsCSZM)
+	/*if (!bIsCSZM)
 	{
 		int iLobbyGuySpeed = 25;
 		int iExtraSpeed = 20;
@@ -102,18 +102,13 @@ HookReturnCode VooDoo_OnPlayerSpawn(CZP_Player@ pPlayer)
 		}
 
 		pPlayer.SetMaxSpeed(pPlayer.GetMaxSpeed() + iExtraSpeed);
-	}
+	}*/
 
 	return HOOK_CONTINUE;
 }
 
 HookReturnCode VooDoo_OnPlayerInitSpawn(CZP_Player@ pPlayer)
 {
-	string Name = pPlayer.GetPlayerName();
-	string IP = pPlayer.GrabIP();
-	string SteamID64 = pPlayer.GetSteamID64();
-
-	Log.PrintToServerConsole(LOGTYPE_INFO, "IPs", "Player ["+Name+"] | SteamID64 ["+SteamID64+"] | IP Address ["+IP+"]");
 
 	return HOOK_CONTINUE;
 }
