@@ -14,6 +14,7 @@ enum SDM_States {ST_DISABLED = 0, ST_ENABLED}
 float SDM_BlockDistance = 725.0f;
 
 int iMaxPlayers;
+bool bIsCSZM;
 
 CSpawnDistanceManager@ gSDManager = null;
 
@@ -46,7 +47,11 @@ void SD(const string &in strMSG)
 
 void OnMapInit()
 {
-	iMaxPlayers = Globals.GetMaxClients();
+	if (Utils.StrContains("cszm", Globals.GetCurrentMapName()))
+	{
+		bIsCSZM = true;
+		iMaxPlayers = Globals.GetMaxClients();
+	}
 }
 
 void OnInfectedTurns(NetObject@ pData)
@@ -63,11 +68,12 @@ void OnMatchEnded()
 void OnMapShutdown()
 {
 	@gSDManager = null;
+	bIsCSZM = false;
 }
 
 void OnProcessRound()
 {
-	if (gSDManager !is null)
+	if (bIsCSZM && gSDManager !is null)
 	{
 		gSDManager.Think();
 	}
@@ -132,7 +138,7 @@ class CSpawnDistanceManager
 		}
 	}
 
-	int CheckDist(CBaseEntity@ pSpawn)
+	private int CheckDist(CBaseEntity@ pSpawn)
 	{
 		int iSpawnState = ST_ENABLED;
 
@@ -147,9 +153,8 @@ class CSpawnDistanceManager
 
 			Vector PlayerOrigin = Vector(pPlayerEntity.GetAbsOrigin().x, pPlayerEntity.GetAbsOrigin().y, 0);
 			Vector SpawnOrigin = Vector(pSpawn.GetAbsOrigin().x, pSpawn.GetAbsOrigin().y, 0);
-			float flResultDist = Globals.Distance(PlayerOrigin, SpawnOrigin);
 
-			if (flResultDist < SDM_BlockDistance)
+			if (Globals.Distance(PlayerOrigin, SpawnOrigin) < SDM_BlockDistance)
 			{
 				iSpawnState = ST_DISABLED;
 			}
@@ -158,7 +163,7 @@ class CSpawnDistanceManager
 		return iSpawnState;
 	}
 
-	void EnableSpawn(CBaseEntity@ pSpawn)
+	private void EnableSpawn(CBaseEntity@ pSpawn)
 	{
 		if (IsValidSpawn(pSpawn) && Utils.StrEql("enabled", pSpawn.GetEntityDescription(), true))
 		{
@@ -172,7 +177,7 @@ class CSpawnDistanceManager
 		//SD("*{green}EnableSpawn");
 	}
 
-	void DisableSpawn(CBaseEntity@ pSpawn)
+	private void DisableSpawn(CBaseEntity@ pSpawn)
 	{
 		if ((IsValidSpawn(pSpawn) && Utils.StrEql("disabled", pSpawn.GetEntityDescription(), true)) || (SDM_DisabledCount + 5 >= SDM_Length))
 		{
@@ -185,7 +190,7 @@ class CSpawnDistanceManager
 		//SD("*{red}DisableSpawn");
 	}
 
-	void UpdateArray()
+	private void UpdateArray()
 	{
 		if (SDM_Length > 0)
 		{
