@@ -78,7 +78,7 @@ const string VOICE_ZM_IDLE = "CSPlayer.Idle";
 const string MODEL_HUMAN_ARMS = "models/weapons/arms/c_eugene.mdl";
 const string MODEL_ZOMBIE_ARMS = "models/weapons/arms/c_carrier.mdl";
 const string MODEL_KNIFE = "models/cszm/weapons/w_knife_t.mdl";
-const string MODEL_PLAYER_CARRIER = "models/cszm/carrier.mdl";
+//const string MODEL_PLAYER_CARRIER = "models/cszm/carrier.mdl";
 const string MODEL_PLAYER_LOBBYGUY = "models/cszm/lobby_guy.mdl";
 const string MODEL_PLAYER_CORPSE2 = "models/cszm/zombie_corpse2.mdl";
 
@@ -104,8 +104,8 @@ const array<string> g_strModels =
 	"models/cszm/zombie_charple2.mdl",
 	"models/cszm/zombie_charple1.mdl",
 	"models/cszm/zombie_sawyer.mdl",
-	"models/cszm/zombie_bald.mdl",
-	"models/cszm/zombie_eugene.mdl"
+	"models/cszm/zombie_bald.mdl"
+	//"models/cszm/zombie_eugene.mdl"
 };
 
 array<string> g_strMDLToChoose;
@@ -224,17 +224,18 @@ int iTurnTime;						//Время, когда превращаются зараж
 //ECO Data
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-int ECO_DefaultCash = 300;
-int ECO_StartingCash = 300;
-int ECO_Human_Win = 800;
-int ECO_Human_Kill = 200;
-int ECO_Zombie_Win = 400;
+int ECO_DefaultCash = 200;
+int ECO_StartingCash = 150;
+int ECO_Human_Win = 600;
+int ECO_Human_Kill = 150;
+int ECO_Human_Last = 250;
+int ECO_Zombie_Win = 200;
 int ECO_Zombie_Kill = 250;
 int ECO_Zombie_Dead = 75;
-int ECO_Lose = -650;
+int ECO_Lose = -625;
 int ECO_Suiside = -50;
-float ECO_Damage_Multiplier = 0.195f;
-float ECO_Health_Multiplier = 0.22f;
+float ECO_Damage_Multiplier = 0.19f;
+float ECO_Health_Multiplier = 0.185f;
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 //Forwards
@@ -582,6 +583,10 @@ class HUDTimer
 			RPTime = PlusGT(RPBaseTime);
 			Alpha = (Alpha != 1.0f) ? 1.0f : 0.1765f;
 			ShowHUDTime();
+		}
+		else if (RPBaseTime == 0 && Alpha != 1)
+		{
+			Alpha = 1.0f;
 		}
 	}
 }
@@ -3328,6 +3333,9 @@ void SelectPlrsForInfect()
 
 	SD(strCSZM + "{gold}Произошла мутация зараженных ({red}" + formatInt(iInfected) + " {gold}из {blue}" + formatInt(iSurvCount) + "{gold})");
 	Engine.EmitSoundPosition(0, "@cszm_fx/misc/suspense.wav", Vector(0, 0, 0), 1.0f, 0, Math::RandomInt(95, 105));
+
+	NetData nData;
+	Network::CallFunction("OnInfectedTurns", nData);
 }
 
 void TurnToZombie(const int &in index)
@@ -3344,17 +3352,6 @@ void TurnToZombie(const int &in index)
 		{
 			pPlayer.DropWeapon(pPlayer.GetWeaponSlot(pCurrentWeapon.GetClassname()));
 		}
-
-		/*string CurrentName = pCurrentWeapon.GetEntityName();
-
-		if (Utils.StrEql("", pCurrentWeapon.GetEntityName(), true))
-		{
-			CurrentName = "wep_plr_";
-		}
-
-		pCurrentWeapon.SetEntityName(CurrentName + formatInt(index));
-		pPlayer.DropWeapon(pPlayer.GetWeaponSlot(CurrentName + formatInt(index)));
-		pCurrentWeapon.SetEntityName(CurrentName);*/
 
 		if (Array_CSZMPlayer[index].FirstInfected)
 		{

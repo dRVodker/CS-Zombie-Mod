@@ -145,6 +145,83 @@ array<array<CSpawnPoint@>> New_Spawns =
 	}
 };
 
+array<array<CSpawnPoint@>> New_ZombieSpawns =
+{
+	{
+		CSpawnPoint(Vector(-579.069, -673.992, -1209.18), QAngle(2.1741, 85.2942, -0)),
+		CSpawnPoint(Vector(-372.764, -862.873, -1212.14), QAngle(-20.0778, 70.9194, 0)),
+		CSpawnPoint(Vector(-102.738, -922.14, -1209.32), QAngle(-22.5099, 92.0096, 0)),
+		CSpawnPoint(Vector(147.031, -848.002, -1210.77), QAngle(-25.5591, 116.149, 0)),
+		CSpawnPoint(Vector(363.268, -686.285, -1211.53), QAngle(-27.12, 150.816, 0)),
+		CSpawnPoint(Vector(-145.303, -596.93, -1195.87), QAngle(5.73146, -148.817, 0)),
+		CSpawnPoint(Vector(92.9236, -589.323, -1195.82), QAngle(7.18346, -66.6342, 0)),
+		CSpawnPoint(Vector(399.532, -1002.07, -1215), QAngle(-1.34703, 123.817, 0)),
+		CSpawnPoint(Vector(-82.8461, -1128.4, -1209.09), QAngle(-3.48873, 76.5458, 0)),
+		CSpawnPoint(Vector(-526.095, -1015.37, -1210.05), QAngle(2.13778, 43.3676, 0)),
+		CSpawnPoint(Vector(518.891, -351.477, -1215.97), QAngle(0.104993, 115.496, 0)),
+		CSpawnPoint(Vector(660.009, -69.4061, -1215.97), QAngle(-3.41611, 97.3458, 0)),
+		CSpawnPoint(Vector(423.882, -186.405, -1215.97), QAngle(8.88959, -78.7583, 0)),
+		CSpawnPoint(Vector(197.089, -77.3976, -1215.97), QAngle(-0.475812, 32.6958, 0)),
+		CSpawnPoint(Vector(443.663, 65.4715, -1089.95), QAngle(48.1661, -128.344, 0)),
+		CSpawnPoint(Vector(547.877, 109.694, -1089.95), QAngle(52.4858, 33.8808, 0)),
+		CSpawnPoint(Vector(524.884, 64.8026, -1215.97), QAngle(2.71847, -23.7508, 0)),
+		CSpawnPoint(Vector(668.715, 588.518, -1215.97), QAngle(2.42806, 117.01, 0)),
+		CSpawnPoint(Vector(453.066, 436.651, -1215.97), QAngle(34.0817, 89.9778, -0)),
+		CSpawnPoint(Vector(130.232, 128.796, -1215.97), QAngle(8.67173, 22.0363, 0)),
+		CSpawnPoint(Vector(38.9059, 227.429, -1215.97), QAngle(4.20683, 43.78, 0)),
+		CSpawnPoint(Vector(216.866, 415.448, -1215.97), QAngle(8.78063, -141.762, 0)),
+		CSpawnPoint(Vector(2.02832, 547.01, -1215.97), QAngle(8.85322, 173.625, 0)),
+		CSpawnPoint(Vector(240.541, 600.915, -1215.97), QAngle(2.17403, -148.732, 0)),
+		CSpawnPoint(Vector(-194.215, 37.2016, -954.969), QAngle(34.4084, -13.9499, 0)),
+		CSpawnPoint(Vector(-361.823, -319.907, -951.969), QAngle(-1.12935, 30.7353, 0)),
+		CSpawnPoint(Vector(-315.021, -143.026, -959.969), QAngle(-1.52865, -25.6023, 0)),
+		CSpawnPoint(Vector(-77.7873, -143.456, -951.969), QAngle(11.1764, -150.874, 0)),
+		CSpawnPoint(Vector(-140.22, -423.416, -959.969), QAngle(40.9061, -68.8354, 0)),
+		CSpawnPoint(Vector(38.3047, -412.212, -959.969), QAngle(42.1402, -122.523, 0)),
+		CSpawnPoint(Vector(-501.86, -336.23, -1215.96), QAngle(-2.29104, 102.332, 0)),
+		CSpawnPoint(Vector(-613.179, 133.718, -1215.97), QAngle(5.11414, -77.8613, 0)),
+		CSpawnPoint(Vector(-162.378, 322.829, -1211.35), QAngle(17.928, 130.61, 0)),
+		CSpawnPoint(Vector(-628.772, 334.849, -1215.97), QAngle(20.1061, 46.6113, 0)),
+		CSpawnPoint(Vector(-423.549, 1008.74, -1325.86), QAngle(10.6317, -41.888, 0)),
+		CSpawnPoint(Vector(-173.346, 757.281, -1329.06), QAngle(12.9912, 110.318, 0)),
+		CSpawnPoint(Vector(25.9322, 999.901, -1321.71), QAngle(14.9877, -75.4292, 0)),
+		CSpawnPoint(Vector(74.2632, 726.458, -1330.55), QAngle(13.6809, 85.9606, 0)),
+		CSpawnPoint(Vector(486.193, 1013.06, -1320.03), QAngle(14.9514, -135.391, -0)),
+		CSpawnPoint(Vector(402.109, 730.108, -1343.58), QAngle(8.81675, 116.03, 0)),
+		CSpawnPoint(Vector(-643.302, 848.531, -1204.37), QAngle(12.0475, -13.3792, 0)),
+		CSpawnPoint(Vector(-457.977, 1173.47, -1215.97), QAngle(6.96545, -140.853, 0)),
+		CSpawnPoint(Vector(-654.66, 1484.05, -1215.97), QAngle(7.50995, -55.1967, 0)),
+		CSpawnPoint(Vector(-454.154, 1446.14, -1215.97), QAngle(11.3577, -123.114, -0)),
+		CSpawnPoint(Vector(-630.82, 1764.01, -1175.89), QAngle(17.0569, -43.3994, 0)),
+		CSpawnPoint(Vector(-623.091, 1569.21, -1215.97), QAngle(13.1364, 28.7651, 0)),
+		CSpawnPoint(Vector(-415.449, 1836.76, -1215.97), QAngle(11.6118, 19.4723, 0)),
+		CSpawnPoint(Vector(-420.084, 1962.08, -1215.97), QAngle(14.3343, -33.562, 0)),
+		CSpawnPoint(Vector(50.8621, 1927.67, -1187.53), QAngle(17.0931, -156.692, 0)),
+		CSpawnPoint(Vector(428.697, 1996.53, -1135.97), QAngle(19.38, -124.094, 0)),
+		CSpawnPoint(Vector(305.111, 2011.6, -1135.97), QAngle(25.7325, -59.916, 0)),
+		CSpawnPoint(Vector(711.068, 1677.78, -1135.97), QAngle(8.01808, -132.298, 0)),
+		CSpawnPoint(Vector(726.969, 1413.97, -1133.98), QAngle(6.02155, -154.369, 0)),
+		CSpawnPoint(Vector(687.542, 1393.07, -1020.48), QAngle(-0.802814, -134.185, 0)),
+		CSpawnPoint(Vector(549.969, 1359.22, -1013.77), QAngle(5.6586, -128.849, 0)),
+		CSpawnPoint(Vector(738.461, 956.009, -1087.97), QAngle(20.5052, 158.152, 0)),
+		CSpawnPoint(Vector(664.545, 1222.92, -1195.36), QAngle(11.4665, -131.062, 0)),
+		CSpawnPoint(Vector(394.033, 1157.1, -1215.97), QAngle(10.668, -113.203, -0)),
+		CSpawnPoint(Vector(74.5957, 1101.78, -1215.97), QAngle(-1.92813, -77.4109, 0)),
+		CSpawnPoint(Vector(-278.225, 1137.68, -1215.97), QAngle(-2.10961, -65.0325, 0)),
+		CSpawnPoint(Vector(-321.258, 300.557, -951.969), QAngle(24.6072, 104.416, 0)),
+		CSpawnPoint(Vector(-165.796, 308.969, -951.969), QAngle(14.8789, 137.957, 0)),
+		CSpawnPoint(Vector(-149.445, 466.161, -951.969), QAngle(27.0031, 157.56, 0)),
+		CSpawnPoint(Vector(-123.175, 682.781, -943.969), QAngle(13.6083, -40.2029, 0)),
+		CSpawnPoint(Vector(101.353, 702.122, -1215.97), QAngle(39.5267, 107.575, 0)),
+		CSpawnPoint(Vector(-658.894, 1487.58, -989.254), QAngle(4.60613, -54.9042, 0)),
+		CSpawnPoint(Vector(-437.815, 1490.59, -993.769), QAngle(16.9119, -128.92, 0)),
+		CSpawnPoint(Vector(-609.09, 1200.72, -930.337), QAngle(31.7585, -67.7631, 0)),
+		CSpawnPoint(Vector(-317.514, 1188.75, -930.537), QAngle(31.7949, -53.4156, 0)),
+		CSpawnPoint(Vector(-647.839, 892.949, -926.25), QAngle(29.7984, 2.59533, 0)),
+		CSpawnPoint(Vector(-647.51, 614.618, -926.25), QAngle(17.7831, 4.74917, 0))
+	}
+};
+
 int iMaxPlayers;
 
 array<float> g_TeleportDelay;
@@ -176,17 +253,17 @@ void OnMapInit()
 
 	Events::Player::OnPlayerSpawn.Hook(@OnPlrSpawn);
 
-	MapCash();
+	CashDATA();
 	Schedule::Task(0.05f, "SetUpStuff");
 }
 
-void MapCash()
+void CashDATA()
 {
 	MaxRandomCash = 15;
 	MinRandomCash = 8;
 
-	MaxMoneyPerItem = 110.0f;
-	MinMoneyPerItem = 30.0f;
+	MaxMoneyPerItem = 75.0f;
+	MinMoneyPerItem = 15.0f;
 
 	InsertToArray(11.4171f, 398.509f, -1042.97f, 950);
 	InsertToArray(-80.0718f, 1364.34f, -902.663f, 500);
@@ -227,6 +304,8 @@ void OnNewRound()
 void OnMatchBegin() 
 {
 	Engine.Ent_Fire("SND_Ambient", "PlaySound");
+	RemoveNativeSpawns("info_player_human");
+	CreateSpawnsFromArray(New_ZombieSpawns, false);
 }
 
 void SetUpStuff()

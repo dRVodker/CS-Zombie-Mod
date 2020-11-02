@@ -169,12 +169,12 @@ array<string> g_CSZMFile =
 	"models/cszm/zombie_corpse1.vvd",
 	"models/cszm/zombie_corpse1.phy",
 
-	"models/cszm/zombie_eugene.dx80.vtx",
-	"models/cszm/zombie_eugene.dx90.vtx",
-	"models/cszm/zombie_eugene.mdl",
-	"models/cszm/zombie_eugene.sw.vtx",
-	"models/cszm/zombie_eugene.vvd",
-	"models/cszm/zombie_eugene.phy",
+	//"models/cszm/zombie_eugene.dx80.vtx",
+	//"models/cszm/zombie_eugene.dx90.vtx",
+	//"models/cszm/zombie_eugene.mdl",
+	//"models/cszm/zombie_eugene.sw.vtx",
+	//"models/cszm/zombie_eugene.vvd",
+	//"models/cszm/zombie_eugene.phy",
 
 	"models/cszm/zombie_corpse2.dx80.vtx",
 	"models/cszm/zombie_corpse2.dx90.vtx",

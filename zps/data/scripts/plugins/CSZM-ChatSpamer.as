@@ -26,8 +26,8 @@ const array<string> g_strCSZMMsg =
 const array<string> g_strInfoMsg =
 {
 	"IP Адрес сервера: {blueviolet}45.12.4.113:27015",
-	"Архив с контентом для CSZM: {cyan}https://yadi.sk/d/8x1gFtYFMo9rgw",
-	"Архив с картами сервера: {cyan}https://yadi.sk/d/BG_jU6SMKvHykQ",
+	//"Архив с контентом для CSZM: {cyan}https://yadi.sk/d/8x1gFtYFMo9rgw",
+	//"Архив с картами сервера: {cyan}https://yadi.sk/d/BG_jU6SMKvHykQ",
 	"ZB ZP!S Discord-сервер: {cyan}https://discord.gg/uV6n598"
 };
 const array<string> g_strZPSMsg = //{gold}{cornflowerblue}{selfmade}
@@ -38,7 +38,7 @@ const array<string> g_strZPSMsg = //{gold}{cornflowerblue}{selfmade}
 	"Если у вас есть {selfmade}ненужные патроны{gold}, нажмите {cornflowerblue}Alt{gold} чтобы выкинуть их.",
 	"Доски можно {selfmade}поворачивать{gold} нажатиеми кнопок {cornflowerblue}R{gold} и {cornflowerblue}N{gold}.",
 	"Красный шприц даёт {selfmade}+100HP{gold}.",
-	"Белый шприц даёт {selfmade}+35HP{gold}."
+	"Белый шприц даёт {selfmade}+30HP{gold}."
 };
 
 array<string> g_CurrentMSG;

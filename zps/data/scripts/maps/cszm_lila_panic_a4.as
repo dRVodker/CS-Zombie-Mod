@@ -137,6 +137,9 @@ void CashDATA()
 	MaxRandomCash = 27;
 	MinRandomCash = 15;
 
+	MaxMoneyPerItem = 75.0f;
+	MinMoneyPerItem = 25.0f;
+
 	InsertToArray(-4.58305, 742.143, 304.595);
 	InsertToArray(-110.399, 897.988, 273.031);
 	InsertToArray(274.831, 805.971, 169.031);

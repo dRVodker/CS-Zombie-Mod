@@ -92,6 +92,120 @@ array<array<CSpawnPoint@>> New_Spawns =
 	}
 };
 
+array<array<CSpawnPoint@>> New_ZombieSpawns = 
+{
+	{
+		CSpawnPoint(Vector(1934.9, 1120.73, -575.969), QAngle(3.41012, -140.395, 0)),
+		CSpawnPoint(Vector(1482.93, 942.283, -575.969), QAngle(6.82231, 18.7205, 0)),
+		CSpawnPoint(Vector(2096.43, 966.257, -575.969), QAngle(3.41011, -83.8269, 0)),
+		CSpawnPoint(Vector(1466.59, 1384.72, -575.969), QAngle(0.578725, -146.118, 0)),
+		CSpawnPoint(Vector(1763.72, 1373.75, -675.969), QAngle(-11.9447, -146.771, 0)),
+		CSpawnPoint(Vector(1745.58, 1211.14, -767.969), QAngle(2.03073, 164.429, 0)),
+		CSpawnPoint(Vector(1490.15, 985.579, -766.969), QAngle(1.12324, 111.758, 0)),
+		CSpawnPoint(Vector(904.19, 1631.02, -766.969), QAngle(-1.01846, -141.23, 0)),
+		CSpawnPoint(Vector(620.423, 954.887, -766.969), QAngle(1.41362, 65.1851, 0)),
+		CSpawnPoint(Vector(159.495, 1359.84, -767.969), QAngle(6.20521, -26.1218, 0)),
+		CSpawnPoint(Vector(177.927, 1189.2, -675.969), QAngle(-14.5947, 53.7147, 0)),
+		CSpawnPoint(Vector(426.578, 1345.41, -575.969), QAngle(4.4628, -29.2671, 0)),
+		CSpawnPoint(Vector(727.716, 1632.25, -574.969), QAngle(1.8855, -111.886, 0)),
+		CSpawnPoint(Vector(1126.1, 1607.68, -574.969), QAngle(0.941688, -89.8881, 0)),
+		CSpawnPoint(Vector(590.459, 503.403, -575.969), QAngle(7.54832, 133.697, 0)),
+		CSpawnPoint(Vector(46.2179, 488.209, -575.969), QAngle(6.96751, 37.2113, 0)),
+		CSpawnPoint(Vector(604.354, 792.246, -511.969), QAngle(19.0191, -133.217, 0)),
+		CSpawnPoint(Vector(1000.64, 738.433, -637.969), QAngle(-0.76444, -59.5645, 0)),
+		CSpawnPoint(Vector(1391.83, 693.516, -639.969), QAngle(6.24146, -162.729, 0)),
+		CSpawnPoint(Vector(1465.47, 442.19, -639.969), QAngle(0.687564, -178.919, 0)),
+		CSpawnPoint(Vector(1003.85, 318.039, -639.969), QAngle(3.37376, 65.1751, 0)),
+		CSpawnPoint(Vector(1126.11, 546.831, -587.969), QAngle(17.7123, -177.431, 0)),
+		CSpawnPoint(Vector(194.583, 83.2964, -575.969), QAngle(1.341, 56.8014, 0)),
+		CSpawnPoint(Vector(720.764, -461.94, -575.969), QAngle(7.0038, 132.317, 0)),
+		CSpawnPoint(Vector(751.969, -204.541, -575.969), QAngle(2.06701, -176.427, 0)),
+		CSpawnPoint(Vector(751.969, -312.153, -575.969), QAngle(-1.38146, -164.376, 0)),
+		CSpawnPoint(Vector(575.178, -495.969, -575.969), QAngle(4.46284, 100.229, 0)),
+		CSpawnPoint(Vector(527.936, -216.261, -575.969), QAngle(8.16545, 103.279, 0)),
+		CSpawnPoint(Vector(1055.97, 103.996, -575.969), QAngle(0.324655, -129.187, 0)),
+		CSpawnPoint(Vector(976.031, -623.969, -399.969), QAngle(-4.68474, 43.4193, 0)),
+		CSpawnPoint(Vector(1503.97, -623.969, -223.969), QAngle(11.0332, 128.906, 0)),
+		CSpawnPoint(Vector(1301.42, -38.7565, -223.969), QAngle(6.20524, -57.7123, 0)),
+		CSpawnPoint(Vector(1599.38, -472.424, -223.969), QAngle(5.76963, 120.267, 0)),
+		CSpawnPoint(Vector(1578.63, -576.269, -255.969), QAngle(6.38673, -30.0516, 0)),
+		CSpawnPoint(Vector(1178.29, -762.158, -255.969), QAngle(-11.4003, 155.018, 0)),
+		CSpawnPoint(Vector(1805.19, 513.989, -255.969), QAngle(1.15952, -131.801, 0)),
+		CSpawnPoint(Vector(1833.4, 110.993, -255.969), QAngle(1.99442, 129.39, 0)),
+		CSpawnPoint(Vector(1589.5, 412.312, -255.969), QAngle(-4.75738, 145.345, 0)),
+		CSpawnPoint(Vector(1448.02, 264.585, -255.969), QAngle(3.80941, 63.2157, 0)),
+		CSpawnPoint(Vector(1791.97, 815.969, -399.969), QAngle(1.44994, -141.226, 0)),
+		CSpawnPoint(Vector(1791.54, -39.9688, -575.969), QAngle(2.2122, 127.081, 0)),
+		CSpawnPoint(Vector(1323.08, -26.6891, -575.969), QAngle(4.93471, 52.5206, 0)),
+		CSpawnPoint(Vector(2216.03, 214.982, -573.969), QAngle(7.94761, 134.196, 0)),
+		CSpawnPoint(Vector(1944.03, 410.272, -575.969), QAngle(5.4429, -1.784, 0)),
+		CSpawnPoint(Vector(2260.13, 631.674, -575.969), QAngle(5.37031, -149.561, 0)),
+		CSpawnPoint(Vector(1969.6, 715.823, -511.969), QAngle(29.7639, -45.7067, 0)),
+		CSpawnPoint(Vector(2087.57, 474.044, -575.969), QAngle(10.1982, -87.7058, -0)),
+		CSpawnPoint(Vector(2133.44, -0.134772, -575.969), QAngle(5.11622, 159.401, 0)),
+		CSpawnPoint(Vector(1631.97, 879.969, -223.969), QAngle(5.33401, -143.281, 0)),
+		CSpawnPoint(Vector(1631.97, 672.031, -223.969), QAngle(1.88552, 164.774, 0)),
+		CSpawnPoint(Vector(1135.71, 991.969, -223.969), QAngle(-1.09105, -162.448, 0)),
+		CSpawnPoint(Vector(942.722, 907.918, -223.969), QAngle(14.6269, -119.941, 0)),
+		CSpawnPoint(Vector(800.031, 672.031, -223.969), QAngle(9.29076, 84.6591, 0)),
+		CSpawnPoint(Vector(751.969, 879.969, -223.969), QAngle(0.723959, -148.509, 0)),
+		CSpawnPoint(Vector(211.615, 569.285, -214.969), QAngle(10.1983, 78.4031, 0)),
+		CSpawnPoint(Vector(189.978, 798.999, -223.969), QAngle(16.0063, -21.4822, 0)),
+		CSpawnPoint(Vector(707.193, 413.165, -223.969), QAngle(10.3435, 132.297, 0)),
+		CSpawnPoint(Vector(552.954, 715.948, -223.969), QAngle(3.91839, -82.9312, 0)),
+		CSpawnPoint(Vector(715.309, 946.928, -255.969), QAngle(1.84931, 153.483, 0)),
+		CSpawnPoint(Vector(646.863, 1177.97, -253.969), QAngle(-1.49029, -145.374, -0)),
+		CSpawnPoint(Vector(-111.888, 1147.84, -255.969), QAngle(-0.110886, -61.6935, 0)),
+		CSpawnPoint(Vector(84.4875, 830.559, -255.969), QAngle(-1.45399, -103.151, -0)),
+		CSpawnPoint(Vector(-29.7929, 307.862, -254.969), QAngle(-5.41069, -9.68834, 0)),
+		CSpawnPoint(Vector(-11.804, 91.7586, -251.969), QAngle(-6.57229, 19.1748, -0)),
+		CSpawnPoint(Vector(341.465, -70.9734, -223.969), QAngle(19.2007, 125.074, 0)),
+		CSpawnPoint(Vector(215.26, 456.066, -223.969), QAngle(19.3822, -53.0433, 0)),
+		CSpawnPoint(Vector(-111.969, -776.37, -255.969), QAngle(-15.4295, 52.5336, 0)),
+		CSpawnPoint(Vector(580.823, -566.341, -255.969), QAngle(4.02731, -36.5827, -0)),
+		CSpawnPoint(Vector(978.497, -566.776, -255.969), QAngle(5.58822, -142.869, -0)),
+		CSpawnPoint(Vector(653.304, -318.137, -223.969), QAngle(14.3365, 161.955, 0)),
+		CSpawnPoint(Vector(160.031, -485.371, -223.969), QAngle(-19.4588, 22.4046, 0)),
+		CSpawnPoint(Vector(703.969, -485.443, -47.9688), QAngle(11.9044, 126.876, 0)),
+		CSpawnPoint(Vector(204.476, -488.907, -47.9688), QAngle(10.7429, 46.1086, 0)),
+		CSpawnPoint(Vector(271.222, -282.707, -47.9688), QAngle(6.60465, 9.6997, 0)),
+		CSpawnPoint(Vector(757.597, -13.2536, -47.9688), QAngle(2.57528, -43.1531, 0)),
+		CSpawnPoint(Vector(1055.97, -495.969, -47.9688), QAngle(4.06362, 121.117, 0)),
+		CSpawnPoint(Vector(772.794, -463.717, -47.9688), QAngle(4.71701, 56.3838, -0)),
+		CSpawnPoint(Vector(1106.24, -611.619, -47.9688), QAngle(6.16909, 41.4385, 0)),
+		CSpawnPoint(Vector(1478.64, -189.26, -47.9688), QAngle(2.53909, -130.188, 0)),
+		CSpawnPoint(Vector(1357.97, -185.787, -47.9688), QAngle(4.7897, -100.131, 0)),
+		CSpawnPoint(Vector(1253.17, -192.665, -47.9688), QAngle(5.26161, -57.0433, 0)),
+		CSpawnPoint(Vector(1631.97, -511.969, -47.9688), QAngle(4.0637, 136.835, 0)),
+		CSpawnPoint(Vector(1591.88, -113.871, -47.9688), QAngle(8.2019, 164.423, 0)),
+		CSpawnPoint(Vector(1141.33, 242.98, -47.9688), QAngle(1.4501, -170.929, 0)),
+		CSpawnPoint(Vector(1162.03, 102.984, -47.9688), QAngle(4.3904, 156.038, 0)),
+		CSpawnPoint(Vector(481.019, 70.6954, -47.9688), QAngle(9.00051, 56.7217, 0)),
+		CSpawnPoint(Vector(451.684, 284.327, -47.9688), QAngle(6.74991, -44.9182, 0)),
+		CSpawnPoint(Vector(650.562, 400.242, -47.9688), QAngle(10.8881, 127.094, 0)),
+		CSpawnPoint(Vector(190.362, 566.403, -47.9688), QAngle(10.6341, 38.6446, 0)),
+		CSpawnPoint(Vector(179.441, 855.583, -47.9688), QAngle(15.9702, -51.7061, 0)),
+		CSpawnPoint(Vector(471.146, 827.204, -47.9688), QAngle(15.3167, -104.558, -0)),
+		CSpawnPoint(Vector(826.315, 970.179, -47.9688), QAngle(0.288556, -39.2189, 0)),
+		CSpawnPoint(Vector(1631.97, 879.969, -47.9688), QAngle(-0.1833, -130.368, 0)),
+		CSpawnPoint(Vector(719.031, 378.031, -45.9688), QAngle(1.9221, 35.0885, 0)),
+		CSpawnPoint(Vector(1005.97, 378.031, -45.9688), QAngle(3.91859, 122.753, 0)),
+		CSpawnPoint(Vector(719.031, 733.969, -45.9688), QAngle(1.84949, -57.0046, 0)),
+		CSpawnPoint(Vector(895.184, 516.708, -45.9688), QAngle(6.5322, 77.2327, 0)),
+		CSpawnPoint(Vector(1391.97, 408.031, -47.9688), QAngle(0.833115, 127.231, 0)),
+		CSpawnPoint(Vector(1072.03, 623.969, -223.969), QAngle(-1.88939, -22.6403, 0)),
+		CSpawnPoint(Vector(988.843, -29.9152, -223.969), QAngle(4.82611, -53.8825, 0)),
+		CSpawnPoint(Vector(1040.56, -468.041, -223.969), QAngle(2.0673, 35.3066, 0)),
+		CSpawnPoint(Vector(903.969, -367.969, -223.969), QAngle(-1.78052, 145.768, 0)),
+		CSpawnPoint(Vector(416.031, -111.969, -223.969), QAngle(0.5065, 51.6063, 0)),
+		CSpawnPoint(Vector(716.233, -1.91156, -223.969), QAngle(3.22898, -150.258, 0)),
+		CSpawnPoint(Vector(454.107, 76.8016, -223.969), QAngle(-3.15974, 22.8934, 0)),
+		CSpawnPoint(Vector(486.55, 263.187, -223.969), QAngle(3.37426, -32.2826, 0)),
+		CSpawnPoint(Vector(1351.04, 591.49, -223.969), QAngle(3.12015, -135.919, 0)),
+		CSpawnPoint(Vector(876.414, 42.0792, -223.969), QAngle(7.29467, 100.334, 0))
+	}
+};
+
 int iSurvInBasement;
 bool bIsBZSEnabled;
 
@@ -112,6 +226,12 @@ void OnNewRound()
 void OnMatchStarting()
 {
 	bIsBZSEnabled = false;
+}
+
+void OnMatchBegin() 
+{
+	RemoveNativeSpawns("info_player_human");
+	CreateSpawnsFromArray(New_ZombieSpawns, false);
 }
 
 void SetUpStuff()

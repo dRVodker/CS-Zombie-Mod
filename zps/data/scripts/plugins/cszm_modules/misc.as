@@ -556,7 +556,7 @@ void ApplyVictoryRewards(RoundWinState iWinState)
 			if (Team == TEAM_SURVIVORS)
 			{
 				pCSZMPlayer.AddInfectPoints(5);
-				pCSZMPlayer.AddMoney(ECO_Human_Win / 2);
+				pCSZMPlayer.AddMoney(ECO_Human_Last);
 			}
 			else if (Team == TEAM_ZOMBIES)
 			{
@@ -565,7 +565,7 @@ void ApplyVictoryRewards(RoundWinState iWinState)
 
 				if (pCSZMPlayer.FirstInfected)
 				{
-					pCSZMPlayer.AddMoney(ECO_Zombie_Win);
+					pCSZMPlayer.AddMoney(ECO_Zombie_Win * 2);
 				}
 			}
 		}

@@ -1,11 +1,6 @@
 #include "./cszm_modules/teamnums.as"
 #include "./cszm_modules/customitems.as"
 
-void SendLog(CBaseEntity@ pEntity)
-{
-	Log.PrintToServerConsole(LOGTYPE_INFO, "-=SUB Remove=-", "Class: "+pEntity.GetClassname()+" | Name: " + pEntity.GetEntityName());
-}
-
 const float CONST_FMINE_TIK = 0.05f;
 
 int iMaxPlayers;
@@ -342,7 +337,6 @@ void OnEntityDropped(CZP_Player@ pPlayer, CBaseEntity@ pEntity)
 
 	if (Utils.StrEql(pEntity.GetEntityName(), "wf_used"))
 	{
-		SendLog(pEntity);
 		pEntity.SUB_Remove();
 	}
 }
