@@ -2,7 +2,7 @@ void OnPluginInit()
 {
 	PluginData::SetVersion("1.0");
 	PluginData::SetAuthor("dR.Vodker");
-	PluginData::SetName("CSZM - SpawnDist");
+	PluginData::SetName("CSZM - Spawn Dist");
 	OnMapInit();
 }
 
@@ -90,11 +90,14 @@ class CSpawnDistanceManager
 	private array<int> SDM_EntIndex;
 	private float SDM_ThinkTime;
 	private int SDM_Length;
+	private int SDM_DisabledCount;
+
 	bool DoUpdate;
 
 	CSpawnDistanceManager()
 	{
 		//SD("*{cyan}SDM Created");
+		SDM_DisabledCount = 0;
 		UpdateArray();
 	}
 
@@ -162,6 +165,7 @@ class CSpawnDistanceManager
 			return;
 		}
 
+		SDM_DisabledCount--;
 		pSpawn.SetEntityDescription("enabled");
 		Engine.Ent_Fire_Ent(pSpawn, "enablespawn");
 
@@ -170,11 +174,12 @@ class CSpawnDistanceManager
 
 	void DisableSpawn(CBaseEntity@ pSpawn)
 	{
-		if (IsValidSpawn(pSpawn) && Utils.StrEql("disabled", pSpawn.GetEntityDescription(), true))
+		if ((IsValidSpawn(pSpawn) && Utils.StrEql("disabled", pSpawn.GetEntityDescription(), true)) || (SDM_DisabledCount + 5 >= SDM_Length))
 		{
 			return;
 		}
 
+		SDM_DisabledCount++;
 		pSpawn.SetEntityDescription("disabled");
 		Engine.Ent_Fire_Ent(pSpawn, "DisableSpawn");
 		//SD("*{red}DisableSpawn");
