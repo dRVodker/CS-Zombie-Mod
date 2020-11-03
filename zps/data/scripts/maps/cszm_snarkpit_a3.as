@@ -191,6 +191,12 @@ void OnMapInit()
 	Events::Trigger::OnStartTouch.Hook(@OnStartTouch);
 	Events::Player::OnPlayerSpawn.Hook(@OnPlayerSpawn);
 
+	CNetworked@ pNetworked = Network::Get("cszm_spawnsist");
+	if (pNetworked !is null)
+	{
+		pNetworked.Save("distvalue", 750.0f);
+	}
+
 	CashData();
 	OnNewRound();
 }

@@ -218,6 +218,13 @@ void OnMapInit()
 	InsertToArray(-729.401, -35.4573, -128.969);
 
 	Events::Player::OnPlayerSpawn.Hook(@OnPlrSpawn);
+
+	CNetworked@ pNetworked = Network::Get("cszm_spawnsist");
+	if (pNetworked !is null)
+	{
+		pNetworked.Save("distvalue", 1200.0f);
+	}
+
 	OnNewRound();
 }
 

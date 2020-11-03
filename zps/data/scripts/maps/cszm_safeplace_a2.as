@@ -181,6 +181,14 @@ array<array<CSpawnPoint@>> SP_ZombieSpawns =
 void OnMapInit()
 {
 	Events::Player::OnPlayerSpawn.Hook(@OnPlrSpawn);
+
+	CNetworked@ pNetworked = Network::Get("cszm_spawnsist");
+
+	if (pNetworked !is null)
+	{
+		pNetworked.Save("distvalue", 1024.0f);
+	}
+
 	OnNewRound();
 }
 

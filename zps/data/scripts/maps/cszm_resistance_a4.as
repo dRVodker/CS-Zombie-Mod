@@ -253,6 +253,12 @@ void OnMapInit()
 
 	Events::Player::OnPlayerSpawn.Hook(@OnPlrSpawn);
 
+	CNetworked@ pNetworked = Network::Get("cszm_spawnsist");
+	if (pNetworked !is null)
+	{
+		pNetworked.Save("distvalue", 1050.0f);
+	}
+
 	CashDATA();
 	Schedule::Task(0.05f, "SetUpStuff");
 }

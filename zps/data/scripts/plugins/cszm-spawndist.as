@@ -1,22 +1,31 @@
-void OnPluginInit()
-{
-	PluginData::SetVersion("1.0");
-	PluginData::SetAuthor("dR.Vodker");
-	PluginData::SetName("CSZM - Spawn Dist");
-	OnMapInit();
-}
-
 //------------------------------------------------------------------------------------------------------------------------------
 //DATA
 //------------------------------------------------------------------------------------------------------------------------------
 
 enum SDM_States {ST_DISABLED = 0, ST_ENABLED}
-float SDM_BlockDistance = 725.0f;
+const float SDM_BlockDistance = 950.0f;
 
 int iMaxPlayers;
 bool bIsCSZM;
 
+CNetworked@ pNetworked = Network::Create("cszm_spawnsist", false);
 CSpawnDistanceManager@ gSDManager = null;
+
+//------------------------------------------------------------------------------------------------------------------------------
+//Plugin Initialization
+//------------------------------------------------------------------------------------------------------------------------------
+
+void OnPluginInit()
+{
+	PluginData::SetVersion("1.0");
+	PluginData::SetAuthor("dR.Vodker");
+	PluginData::SetName("CSZM - Spawn Dist");
+
+	pNetworked.Save("distvalue", SDM_BlockDistance);
+	pNetworked.Save("updatespawn", false);
+
+	OnMapInit();
+}
 
 //------------------------------------------------------------------------------------------------------------------------------
 //Booleans
@@ -57,18 +66,25 @@ void OnMapInit()
 void OnInfectedTurns(NetObject@ pData)
 {
 	@gSDManager = CSpawnDistanceManager();
-	//SD("{blueviolet}OnInfectedTurns");
 }
 
 void OnMatchEnded()
 {
-	@gSDManager = null;
+	if (bIsCSZM)
+	{
+		@gSDManager = null;
+	}
 }
 
 void OnMapShutdown()
 {
-	@gSDManager = null;
-	bIsCSZM = false;
+	if (bIsCSZM)
+	{
+		@gSDManager = null;
+		bIsCSZM = false;
+
+		ResetSpawnDist();
+	}
 }
 
 void OnProcessRound()
@@ -79,11 +95,15 @@ void OnProcessRound()
 	}
 }
 
-void UpdateSpawnsArray()
+//------------------------------------------------------------------------------------------------------------------------------
+//Reset Spawn Distance
+//------------------------------------------------------------------------------------------------------------------------------
+
+void ResetSpawnDist()
 {
-	if (gSDManager !is null)
+	if (pNetworked.GetFloat("distvalue") != SDM_BlockDistance)
 	{
-		gSDManager.DoUpdate = true;
+		pNetworked.Save("distvalue", SDM_BlockDistance);
 	}
 }
 
@@ -98,11 +118,8 @@ class CSpawnDistanceManager
 	private int SDM_Length;
 	private int SDM_DisabledCount;
 
-	bool DoUpdate;
-
 	CSpawnDistanceManager()
 	{
-		//SD("*{cyan}SDM Created");
 		SDM_DisabledCount = 0;
 		UpdateArray();
 	}
@@ -113,9 +130,9 @@ class CSpawnDistanceManager
 		{
 			SDM_ThinkTime = 0;
 
-			if (DoUpdate)
+			if (pNetworked.GetBool("updatespawn"))
 			{
-				DoUpdate = false;
+				pNetworked.Save("updatespawn", false);
 				UpdateArray();
 				return;
 			}
@@ -154,7 +171,7 @@ class CSpawnDistanceManager
 			Vector PlayerOrigin = Vector(pPlayerEntity.GetAbsOrigin().x, pPlayerEntity.GetAbsOrigin().y, 0);
 			Vector SpawnOrigin = Vector(pSpawn.GetAbsOrigin().x, pSpawn.GetAbsOrigin().y, 0);
 
-			if (Globals.Distance(PlayerOrigin, SpawnOrigin) < SDM_BlockDistance)
+			if (Globals.Distance(PlayerOrigin, SpawnOrigin) < pNetworked.GetFloat("distvalue"))
 			{
 				iSpawnState = ST_DISABLED;
 			}
@@ -173,8 +190,6 @@ class CSpawnDistanceManager
 		SDM_DisabledCount--;
 		pSpawn.SetEntityDescription("enabled");
 		Engine.Ent_Fire_Ent(pSpawn, "enablespawn");
-
-		//SD("*{green}EnableSpawn");
 	}
 
 	private void DisableSpawn(CBaseEntity@ pSpawn)
@@ -186,8 +201,7 @@ class CSpawnDistanceManager
 
 		SDM_DisabledCount++;
 		pSpawn.SetEntityDescription("disabled");
-		Engine.Ent_Fire_Ent(pSpawn, "DisableSpawn");
-		//SD("*{red}DisableSpawn");
+		Engine.Ent_Fire_Ent(pSpawn, "disablespawn");
 	}
 
 	private void UpdateArray()
@@ -200,15 +214,11 @@ class CSpawnDistanceManager
 		CBaseEntity@ pSpawn = null;
 		while ((@pSpawn = FindEntityByClassname(pSpawn, "info_player_human")) !is null)
 		{
-			pSpawn.SetEntityDescription("enabled");
-			Engine.Ent_Fire_Ent(pSpawn, "EnableSpawn");
-
 			SDM_EntIndex.insertLast(pSpawn.entindex());
 		}
 
 		SDM_Length = int(SDM_EntIndex.length());
 		StartThinking();
-		//SD("*{violet}Arrays Updated");
 	}
 
 	private void StartThinking()

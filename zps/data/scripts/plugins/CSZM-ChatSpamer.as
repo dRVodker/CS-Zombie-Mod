@@ -12,11 +12,8 @@ const array<string> g_strCSZMMsg =
 	"Нажмите {cornflowerblue}Z {gold}[по умолчанию] или напишите в чат {cornflowerblue}!menu{gold}, чтоб открыть меню.",
 	"В {cornflowerblue}Zombie Menu{gold} вы можете приобрести {cornflowerblue}улучшения{gold}.",
 	"Получить {cornflowerblue}оружие{gold} или иные {cornflowerblue}полезные предметы{gold} можно только из {cornflowerblue}магазина{gold}.",
-	//"Зомби может купить доп. здоровье {cornflowerblue}только 2 раза за раунд{gold}.",
-	//"Доп. здоровье зомби сохраняется {cornflowerblue}после возрождения{gold}.",
 	"Зомби {red}не сможет{gold} купить новую броню, {cornflowerblue}полностью{gold} не потратив старую.",
 	"Зомби получают небольшие {selfmade}деньги{gold}, ломая баррикады или другие вещи.",
-	//"Будьте осторожны! У вас всего {cornflowerblue}одна жизнь на раунд{gold}. После смерти вы отправитесь в {white}наблюдатели{gold}.",
 	"Мины с {white}белой{gold} обводкой - {cornflowerblue}ничейные{gold}, их можно забрать.",
 	"{cornflowerblue}Бронированный{gold} зомби замедляется слабее от получаемого урона.",
 	"На картах могут быть спрятаны {selfmade}деньги{gold} в разных местах.",
@@ -26,8 +23,6 @@ const array<string> g_strCSZMMsg =
 const array<string> g_strInfoMsg =
 {
 	"IP Адрес сервера: {blueviolet}45.12.4.113:27015",
-	//"Архив с контентом для CSZM: {cyan}https://yadi.sk/d/8x1gFtYFMo9rgw",
-	//"Архив с картами сервера: {cyan}https://yadi.sk/d/BG_jU6SMKvHykQ",
 	"ZB ZP!S Discord-сервер: {cyan}https://discord.gg/uV6n598"
 };
 const array<string> g_strZPSMsg = //{gold}{cornflowerblue}{selfmade}

@@ -233,7 +233,6 @@ int ECO_Zombie_Win = 200;
 int ECO_Zombie_Kill = 250;
 int ECO_Zombie_Dead = 75;
 int ECO_Lose = -625;
-int ECO_Suiside = -50;
 float ECO_Damage_Multiplier = 0.19f;
 float ECO_Health_Multiplier = 0.185f;
 
@@ -2793,16 +2792,6 @@ HookReturnCode CSZM_OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in Dama
 			{
 				KillFeed("", 0, strVicName, iVicTeam, false, true);
 			}
-
-			/*if (iVicTeam > TEAM_SPECTATORS && RoundManager.GetRoundState() == rs_RoundOnGoing && !Utils.StrEql(pAttackerEntity.GetClassname(), "npc_fragmine"))
-			{
-				pVicCSZMPlayer.AddMoney(ECO_Suiside);
-				Chat.PrintToChatPlayer(pPlrEnt, "{red}" + formatInt(ECO_Suiside) + "$ {gold}За самоубийство!");
-			}*/
-			/*if (!pVicCSZMPlayer.Spawn)
-			{
-				pVicCSZMPlayer.AddInfectPoints(25);
-			}*/
 		}
 		else if (iAttIndex != iVicIndex && pAttackerEntity.IsPlayer())
 		{
@@ -2823,7 +2812,7 @@ HookReturnCode CSZM_OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in Dama
 
 			if (!bSuicide)
 			{
-				if (!Utils.StrEql(strWeaponName, "weapon_sledgehammer"))
+				if (!(Utils.StrEql(strWeaponName, "weapon_sledgehammer") && bDamageType(iDamageType, 7)))
 				{
 					pAttCSZMPlayer.AddMoney(ECO_Human_Kill);
 					pVicCSZMPlayer.AddMoney(ECO_Zombie_Dead);
@@ -2836,8 +2825,7 @@ HookReturnCode CSZM_OnPlayerKilled(CZP_Player@ pPlayer, CTakeDamageInfo &in Dama
 				pAttCSZMPlayer.AddKill();
 			}
 		}
-
-		if (iVicTeam == TEAM_SURVIVORS)
+		else if (iVicTeam == TEAM_SURVIVORS)
 		{
 			if (Utils.GetNumPlayers(survivor, false) == 1 && Utils.GetNumPlayers(zombie, false) > 0)
 			{

@@ -207,6 +207,13 @@ void OnMapInit()
 	iMaxPlayers = Globals.GetMaxClients();
 
 	Events::Player::OnPlayerSpawn.Hook(@OnPlayerSpawn);
+
+	CNetworked@ pNetworked = Network::Get("cszm_spawnsist");
+	if (pNetworked !is null)
+	{
+		pNetworked.Save("distvalue", 1250.0f);
+	}
+
 	OnNewRound();
 	CashDATA();
 }

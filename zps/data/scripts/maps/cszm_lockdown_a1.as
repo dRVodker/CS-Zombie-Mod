@@ -202,6 +202,12 @@ void OnMapInit()
 	Engine.PrecacheFile(sound, "buttons/lever8.wav");
 	Entities::RegisterOutput("OnPressed", "fan_button");
 
+	CNetworked@ pNetworked = Network::Get("cszm_spawnsist");
+	if (pNetworked !is null)
+	{
+		pNetworked.Save("distvalue", 1150.0f);
+	}
+
 	OnNewRound();
 }
 
