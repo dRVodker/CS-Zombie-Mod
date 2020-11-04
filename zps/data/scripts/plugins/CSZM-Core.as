@@ -101,8 +101,8 @@ const array<string> g_strModels =
 	"models/cszm/zombie_charple2.mdl",
 	"models/cszm/zombie_charple1.mdl",
 	"models/cszm/zombie_sawyer.mdl",
-	"models/cszm/zombie_bald.mdl"
-	//"models/cszm/zombie_eugene.mdl"
+	"models/cszm/zombie_bald.mdl",
+	"models/cszm/zombie_eugene2.mdl"
 };
 
 array<string> g_strMDLToChoose;
