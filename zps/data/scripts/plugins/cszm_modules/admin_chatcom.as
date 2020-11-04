@@ -1,7 +1,7 @@
 namespace Admin
 {
 	enum ComIndexes {CI_SET, CI_INF, CI_CURE, CI_SHOWI, CI_SHOWV, CI_SHOWC, CI_RESP, CI_TOG_R, CI_GIVECASH, CI_ENDWU, CI_FORCE}
-	enum VarIndexes {VI_CURRS, VI_RECOVER, VI_SPEED, VI_SECONDS, VI_ZMRRATE, VI_ZMRHP, VI_AAT, VI_RTIME, VI_GUTIME, VI_WUTIME, VI_WUSECONDS, VI_ZMHEALTH, VI_INFPER, VI_INFEHP, VI_ZMRDD, VI_E_DEFCASH, VI_E_STARTCASH, VI_E_HWIN, VI_E_HKILL, VI_E_ZWIN, VI_E_ZKILL, VI_E_LOSE, VI_E_SUIC, VI_E_DMGM, VI_E_HPM, VI_PROPM, VI_BRUSHM}
+	enum VarIndexes {VI_CURRS, VI_RECOVER, VI_SPEED, VI_SECONDS, VI_ZMRRATE, VI_ZMRHP, VI_AAT, VI_RTIME, VI_GUTIME, VI_WUTIME, VI_WUSECONDS, VI_ZMHEALTH, VI_INFPER, VI_INFEHP, VI_ZMRDD, VI_E_DEFCASH, VI_E_STARTCASH, VI_E_HWIN, VI_E_HKILL, VI_E_ZWIN, VI_E_ZKILL, VI_E_LOSE, VI_E_DMGM = VI_E_LOSE + 1, VI_E_HPM, VI_PROPM, VI_BRUSHM}
 	const string STR_NULLPLAYER = "{red}*{gold}Игрок не найден!";
 	const array<array<string>> g_ChatComms =
 	{
@@ -86,7 +86,6 @@ namespace Admin
 			"ECO_Zombie_Win",
 			"ECO_Zombie_Kill",
 			"ECO_Lose",
-			"ECO_Suiside",
 			"ECO_Damage_Multiplier",
 			"ECO_Health_Multiplier",
 			"flPropHPPercent",
@@ -437,10 +436,6 @@ namespace Admin
 			case VI_E_LOSE:
 				OldValue = formatInt(ECO_Lose);
 				ECO_Lose = Utils.StringToInt(strValue);
-			break;
-			case VI_E_SUIC:
-				OldValue = formatInt(ECO_Suiside);
-				ECO_Suiside = Utils.StringToInt(strValue);
 			break;
 			case VI_E_DMGM:
 				OldValue = ECO_Damage_Multiplier;
