@@ -344,7 +344,7 @@ void SetCustomPropHealth(CBaseEntity@ pEntity, const int &in iPlrCount)
 {
 	if (!(bIsPropJunk(pEntity) || bIsPropExplosive(pEntity)))
 	{
-		SetCustomHealth(pEntity, iPlrCount, flPropHPPercent, PROP_MAX_HEALTH);
+		SetCustomHealth(pEntity, iPlrCount, flPropHPPercent);
 	}
 }
 
@@ -352,12 +352,13 @@ void SetCustomFuncHealth(CBaseEntity@ pEntity, const int &in iPlrCount)
 {
 	if (!Utils.StrContains("special", pEntity.GetEntityName()))
 	{
-		SetCustomHealth(pEntity, iPlrCount, flBrushHPPercent, BRUSH_MAX_HEALTH);
+		SetCustomHealth(pEntity, iPlrCount, flBrushHPPercent);
 	}
 }
 
 void SetCustomDoorHealth(CBaseEntity@ pEntity, const int &in iPlrCount)
 {
+	CBasePropDoor@ pDoor = ToBasePropDoor(pEntity);
 	float flMultiplier = 3.0f;
 
 	if(Utils.StrContains("doormainmetal01", pEntity.GetModelName()))
@@ -381,21 +382,15 @@ void SetCustomDoorHealth(CBaseEntity@ pEntity, const int &in iPlrCount)
 
 	pEntity.SetMaxHealth(NewHealth);
 	pEntity.SetHealth(NewHealth);
-
-	Engine.Ent_Fire_Ent(pEntity, "SetDoorHealth", formatInt(NewHealth), "0.00");
+	pDoor.SetDoorHealth(NewHealth);
 }
 
-void SetCustomHealth(CBaseEntity@ pEntity, const int &in iPlrCount, const float &in flBaseHealthMult, const int &in MAX_HEALTH)
+void SetCustomHealth(CBaseEntity@ pEntity, const int &in iPlrCount, const float &in flBaseHealthMult)
 {
-	int iCustomHealth = int((pEntity.GetHealth() * flBaseHealthMult) * iPlrCount);
+	int iCustomHealth = int((pEntity.GetHealth() * flBaseHealthMult) * iPlrCount) + Math::RandomInt(0, 35);
 
-	if (iCustomHealth > MAX_HEALTH)
-	{
-		iCustomHealth = MAX_HEALTH;
-	}
-
-	pEntity.SetHealth(iCustomHealth + Math::RandomInt(0, 35));
-	pEntity.SetMaxHealth(pEntity.GetHealth());
+	pEntity.SetHealth(iCustomHealth);
+	pEntity.SetMaxHealth(iCustomHealth);
 }
 
 string GetJustModel(const string &in strFullModelName)

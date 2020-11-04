@@ -28,7 +28,6 @@
 #include "./cszm_modules/customitems.as"
 #include "./cszm_modules/teamnums.as"
 #include "./cszm_modules/core_text.as"
-//#include "./cszm_modules/core_const.as"
 #include "./cszm_modules/admin_chatcom.as"
 
 #include "./cszm_modules/download_table.as"
@@ -42,7 +41,6 @@
 const int SPEED_DEFAULT = 240;		//225
 const int SPEED_HUMAN = 225;		//225
 const int SPEED_ZOMBIE = 195;		//213
-//const int SPEED_CARRIER = 225;	//220
 const int SPEED_ADRENALINE = 75;	//50
 
 //Другие постоянные
@@ -52,7 +50,6 @@ const int CONST_INFECT_ADDTIME = 15;			//Кол-во времени в секу�
 const int CONST_ZOMBIE_LIVES = 0;				//Удерживать Жизни Зомби на этом уровне (Жизни Зомби не используются в CSZM) 
 const int CONST_MAX_INFECTRESIST = 2;			//Максимальное сопротивление инфекции (кол-во ударов, которое может пережить выживший)
 const float CONST_ADRENALINE_DURATION = 14.0f;	//Длительность действия адреналина в секундах
-//const float CONST_ARMOR_MULT = 3.15f;			//Множитель для вычисления дополнительного HP для превращенного выжившего, если у него был армор (ExtraHP = iArmor * CONST_ARMOR_MULT)
 const float CONST_SWIPE_DELAY = 0.5f;			//Задержка чтоб предотвратить заражение более одного выжившего одним ударом
 const float CONST_GAME_ROUND_TIME = 300.05;		//Удерживать внутриигровой таймер раунда на этом уровне (внутриигровой таймер раунда не используются в CSZM)
 const int CONST_MIN_ROUNDTIMER = 35;			//Минимальное время таймера рауда, при котором разрешено добавлять время за заражение/убийство
@@ -78,9 +75,9 @@ const string VOICE_ZM_IDLE = "CSPlayer.Idle";
 const string MODEL_HUMAN_ARMS = "models/weapons/arms/c_eugene.mdl";
 const string MODEL_ZOMBIE_ARMS = "models/weapons/arms/c_carrier.mdl";
 const string MODEL_KNIFE = "models/cszm/weapons/w_knife_t.mdl";
-//const string MODEL_PLAYER_CARRIER = "models/cszm/carrier.mdl";
 const string MODEL_PLAYER_LOBBYGUY = "models/cszm/lobby_guy.mdl";
 const string MODEL_PLAYER_CORPSE2 = "models/cszm/zombie_corpse2.mdl";
+//const string MODEL_PLAYER_CARRIER = "models/cszm/carrier.mdl";
 
 //Ентити, которым нужно установить HP
 const array<string> g_strBreakableEntities =
@@ -128,41 +125,13 @@ const array<string> g_strInfectSND =
 	")cszm_fx/player/plr_infect3.wav"
 };
 
-const array<string> g_LocknLoadSND =
+const array<string> g_strLocknLoadSND =
 {
 	"@cszm_fx/radio/gogogo.wav",
 	"@cszm_fx/radio/letsgo.wav",
 	"@cszm_fx/radio/locknload.wav",
 	"@cszm_fx/radio/moveout.wav"
 };
-
-const array<string> g_strWeaponToStrip = 
-{
-	"weapon_baguette",
-	"weapon_crowbar",
-	"weapon_pot",
-	"weapon_spanner",
-	"weapon_fryingpan",
-	"weapon_pipewrench",
-	"weapon_wrench",
-	"weapon_racket",
-	"weapon_plank",
-	"weapon_keyboard",
-	"weapon_ppk",
-	"weapon_usp",
-	"weapon_glock",
-	"weapon_snowball",
-	"weapon_tennisball"
-};
-
-array<string> g_strStartWeapons =
-{
-	"weapon_usp",
-	"weapon_glock",
-	"weapon_glock18c"
-};
-
-const int iStartWeaponLength = int(g_strStartWeapons.length());
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------
 //OtherData
@@ -210,8 +179,8 @@ float flPSpeed = 0.33f;		//0.22	//Процент скорости, котора�
 float flRecover = 0.033f;	//0.028	//Время между прибавками скорости
 float flCurrs = 1.115f;				//Часть от текущей скорости игрока, которая будет прибавляться для восстановления нормальной скорости игрока
 
-float flPropHPPercent = 0.102f;		//Часть от текущего HP, которая будет умножена на количество игроков для получения итогового HP
-float flBrushHPPercent = 0.325f;	//Часть от текущего HP, которая будет умножена на количество игроков для получения итогового HP
+float flPropHPPercent = 0.085f;		//Часть от текущего HP, которая будет умножена на количество игроков для получения итогового HP
+float flBrushHPPercent = 0.285f;	//Часть от текущего HP, которая будет умножена на количество игроков для получения итогового HP
 
 int iPreviousZombieVoiceIndex;		//Предыдущий номер голоса зомби
 int iPreviousInfectIndex = -1;		//Предыдущий номер звука заражения
@@ -2283,7 +2252,7 @@ void CSZM_LocknLoad()
 {
 	flRTWait = Globals.GetCurrentTime();
 
-	Engine.EmitSoundPosition(0, g_LocknLoadSND[Math::RandomInt(0, g_LocknLoadSND.length() - 1)], Vector(0, 0, 0), 1.0f, 0, 100);
+	Engine.EmitSoundPosition(0, g_strLocknLoadSND[Math::RandomInt(0, g_strLocknLoadSND.length() - 1)], Vector(0, 0, 0), 1.0f, 0, 100);
 
 	Globals.SetPlayerRespawnDelay(false, CONST_SPAWN_DELAY);
 	Globals.SetPlayerRespawnDelay(true, CONST_SPAWN_DELAY);
