@@ -1,10 +1,11 @@
 CASConVar@ pInfectionFate = null;
 bool bIsCSZM = false;
+bool bShowInfectionRate = false;
 float flMsgWaitTime = Globals.GetCurrentTime() + Math::RandomFloat(3.50f, 10.0f);
-float flInfRateWaitTime = Globals.GetCurrentTime() + Math::RandomFloat(3.50f, 10.0f);
 const string strCSZM = "{blue}[{coral}cszm{blue}]{gold} ";
 const string strInfo = "{blue}[{white}info{blue}]{gold} ";
 const string strZPS = "{blue}[{red}zps{blue}]{gold} ";
+const string strInfect = "{blue}[{green}infection rate{blue}]{gold} ";
 const array<string> g_strCSZMMsg =
 {
 	"Находясь в {white}наблюдателях{gold}, нажмите {cornflowerblue}F4{gold} чтоб вернуться в {green}лобби{gold}.",
@@ -56,58 +57,60 @@ void OnMapInit()
 	FillArray();
 }
 
+void OnMapShutdown()
+{
+	flMsgWaitTime = 150.0f;
+	g_CurrentMSG.removeRange(0, g_CurrentMSG.length());
+}
+
 void FillArray()
 {
+	int iLength = 0;
 	g_CurrentMSG.removeRange(0, g_CurrentMSG.length());
 
 	if (bIsCSZM)
 	{
-		int iCSZMMSGLength = int(g_strCSZMMsg.length());
-		for (int i = 0; i < iCSZMMSGLength; i++)
+		iLength = int(g_strCSZMMsg.length());
+		for (int i = 0; i < iLength; i++)
 		{
 			g_CurrentMSG.insertLast(strCSZM + g_strCSZMMsg[i]);
 		}
 	}
 
-	int iZPSMSGLength = int(g_strZPSMsg.length());
-	for (int i = 0; i < iZPSMSGLength; i++)
+	iLength = int(g_strZPSMsg.length());
+	for (int i = 0; i < iLength; i++)
 	{
 		g_CurrentMSG.insertLast(strZPS + g_strZPSMsg[i]);
 	}
 
-	int iInfoMSGLength = int(g_strInfoMsg.length());
-	for (int i = 0; i < iInfoMSGLength; i++)
+	iLength = int(g_strInfoMsg.length());
+	for (int i = 0; i < iLength; i++)
 	{
 		g_CurrentMSG.insertLast(strInfo + g_strInfoMsg[i]);
 	}
 
-	flMsgWaitTime = Globals.GetCurrentTime() + Math::RandomFloat(60.0f, 90.0f);
-	flInfRateWaitTime = Globals.GetCurrentTime() + Math::RandomFloat(25.0f, 30.0f);
-}
-
-void OnMapShutdown()
-{
-	flMsgWaitTime = 150.0f;
-	flInfRateWaitTime = 150.0f;
+	flMsgWaitTime = Globals.GetCurrentTime() + Math::RandomFloat(35.0f, 50.0f);
 }
 
 void OnProcessRound()
 {
 	if (flMsgWaitTime <= Globals.GetCurrentTime())
 	{
-		flMsgWaitTime = Globals.GetCurrentTime() + Math::RandomFloat(60.0f, 90.0f);;
-		ShowMsg();
-	}
+		flMsgWaitTime = Globals.GetCurrentTime() + Math::RandomFloat(35.0f, 50.0f);
 
-	if (!bIsCSZM && flInfRateWaitTime != 0 && flInfRateWaitTime <= Globals.GetCurrentTime())
-	{
-		flInfRateWaitTime = Globals.GetCurrentTime() + Math::RandomFloat(40.0f, 60.0f);
-		Chat.PrintToChat(all, strZPS + "Infection Rate: {green}" +pInfectionFate.GetValue()+ "%");
+		(bShowInfectionRate && !bIsCSZM) ? ShowInfectRate() : ShowMsg();
 	}
+}
+
+void ShowInfectRate()
+{
+	Chat.PrintToChat(all, strInfect + "Шанс заражения: {red}" +pInfectionFate.GetValue()+ "%");
+	bShowInfectionRate = !bShowInfectionRate;
 }
 
 void ShowMsg()
 {
+	bShowInfectionRate = !bShowInfectionRate;
 	int iMSGToShowLength = int(g_strMsgToShow.length());
 	
 	if (iMSGToShowLength == 0)
