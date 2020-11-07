@@ -424,7 +424,6 @@ void OnMatchBegin()
 
 	LogicPlayerManager();
 	Schedule::Task(0.5f, "CSZM_LocknLoad");
-	Schedule::Task(0.5f, "SpawnCashItems");
 
 	if (iWUSeconds == 0)
 	{
