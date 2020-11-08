@@ -1,5 +1,5 @@
 void CacheModels()
-{   
+{
 	Engine.PrecacheFile(model, "models/cszm/weapons/w_antidote.mdl");
 	Engine.PrecacheFile(model, "models/cszm/weapons/v_antidote.mdl");
 	Engine.PrecacheFile(model, "models/cszm/weapons/w_adrenaline.mdl");
