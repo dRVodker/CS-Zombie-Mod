@@ -584,7 +584,7 @@ class CSZMPlayer
 	bool Abuser;							//Игроки, злоупотребляющие механиками, получают этот флаг (Записывается в SteamIDArray)
 	bool FirstInfected;						//Один из первых зараженных?
 
-	float ZombieRespawnTime;		//Время, по истечению которгого, зомби появится снова
+	float ZombieRespawnTime;				//Время, по истечению которгого, зомби появится снова
 
 	bool Cured;								//true - Если был вылечен администратором
 	bool Spawn;								//true - Если возрадился играя за зомби
@@ -802,11 +802,9 @@ class CSZMPlayer
 	bool AddZMArmor()
 	{
 		bool IsArmorAdded = false;
-
 		CZP_Player@ pPlayer = ToZPPlayer(PlayerIndex);
-		int iArmor = pPlayer.GetArmor();
 
-		if (iArmor == 0)
+		if (pPlayer.GetArmor() == 0)
 		{
 			pPlayer.SetArmor(315);
 			Engine.EmitSoundEntity(FindEntityByEntIndex(PlayerIndex), "ZPlayer.ArmorPickup");
@@ -1477,9 +1475,9 @@ namespace Radio
 	{
 		{"Get a Snowball",		"",	"lobby",	"weapon_snowball"},
 		{"Get a Tennis ball",	"",	"lobby",	"weapon_tennisball"},
-		{"Become a Firefly",	"",	"lobby",	""},
+		{"Become a Firefly",	"",	"lobby",	""}/*,
 		{"Reduce Scale",		"",	"lobby",	""},
-		{"Increase Scale",		"",	"lobby",	""}
+		{"Increase Scale",		"",	"lobby",	""}*/
 	};
 	const array<array<string>> SpecMenuSchema = 
 	{

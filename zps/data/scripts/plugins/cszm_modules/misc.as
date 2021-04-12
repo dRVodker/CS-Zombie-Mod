@@ -543,7 +543,7 @@ void ApplyVictoryRewards(RoundWinState iWinState)
 			{
 				pCSZMPlayer.AddMoney(ECO_Lose);
 				Chat.PrintToChatPlayer(ToBasePlayer(i), "{red}" + formatInt(ECO_Lose) + "$ {gold}За поражение в раунде!");
-				pPlayerEntity.TakeDamage(CTakeDamageInfo(pPlayerEntity, pPlayerEntity, float(pPlayerEntity.GetHealth() + 200.0f), 1));
+				pPlayerEntity.TakeDamage(CTakeDamageInfo(pPlayerEntity, pPlayerEntity, float(pPlayerEntity.GetHealth() + 315.0f), 1));
 			}
 		}
 		else if (iWinState == STATE_ZOMBIE)
