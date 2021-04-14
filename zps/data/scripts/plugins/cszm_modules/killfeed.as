@@ -15,7 +15,7 @@ void ShowTextPlr(CZP_Player@ pPlayer, const string &in strMessage, int iChannel,
 
 void KillFeed(const string &in strAttName, const int &in iAttTeam, const string &in strVicName, const int &in iVicTeam, const bool &in bIsInfect, const bool &in bIsSuicide)
 {
-	string strKill = (bIsInfect) ? "заразил" : "убил";
+	string strKill = (bIsInfect) ? TEXT_KF_Infected : TEXT_KF_Killed;
 	string VicColor = "green";
 	string AttColor = "green";
 	
@@ -33,7 +33,7 @@ void KillFeed(const string &in strAttName, const int &in iAttTeam, const string 
 		case 3: VicColor = "red"; break;
 	}
 
-	!bIsSuicide ? Chat.PrintToChat(all, "{"+AttColor+"}" + strAttName + " {default}" + strKill + " {"+VicColor+"}" + strVicName + "{default}.") : Chat.PrintToChat(all, "{"+VicColor+"}" + strVicName + "{default} совершил самоубийство.");
+	!bIsSuicide ? Chat.PrintToChat(all, "{"+AttColor+"}" + strAttName + " {default}" + strKill + " {"+VicColor+"}" + strVicName + "{default}.") : Chat.PrintToChat(all, "{"+VicColor+"}" + strVicName + "{default} " + TEXT_KF_Suicide + ".");
 }
 
 void ShowKills(CZP_Player@ pPlayer, const int &in iKills, const bool &in bIsInfection)

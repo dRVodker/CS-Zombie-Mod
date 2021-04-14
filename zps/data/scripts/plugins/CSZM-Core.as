@@ -19,7 +19,7 @@
 
 #include "./cszm_modules/noitems.as"
 
-#include "../SendGameText"
+#include "./cszm_modules/sendgametext"
 #include "./cszm_modules/chat.as"
 #include "./cszm_modules/cache.as"
 #include "./cszm_modules/killfeed.as"
@@ -749,7 +749,7 @@ class CSZMPlayer
 		{
 			Scale = nScale;
 			Engine.Ent_Fire_Ent(FindEntityByEntIndex(PlayerIndex), "SetModelScale", formatFloat(Scale, 'l', 2, 2));
-			Chat.CenterMessagePlayer(ToBasePlayer(PlayerIndex), "| Масштаб изменён: " + formatFloat(Scale, 'l', 2, 2) + " |");
+			Chat.CenterMessagePlayer(ToBasePlayer(PlayerIndex), "| " + TEXT_ScaleChange + ": " + formatFloat(Scale, 'l', 2, 2) + " |");
 			IsScaleChanged = true;
 		}
 
@@ -792,7 +792,7 @@ class CSZMPlayer
 		if (ExtraLife < 5)
 		{
 			ExtraLife++;
-			Chat.CenterMessagePlayer(ToBasePlayer(PlayerIndex), "| Extra Life: "+ExtraLife+" |");
+			Chat.CenterMessagePlayer(ToBasePlayer(PlayerIndex), "| " + TEXT_ExLife + ": "+ExtraLife+" |");
 			IsExtraLifeAdded = true;
 		}
 
@@ -906,7 +906,7 @@ class CSZMPlayer
 
 		SetUsed(PlayerIndex, pItemAntidote);
 
-		Chat.CenterMessagePlayer(pBasePlayer, strInfRes + formatInt(InfectResist));
+		Chat.CenterMessagePlayer(pBasePlayer, TEXT_InfRes + formatInt(InfectResist));
 	}
 
 	void InjectAdrenaline(CBaseEntity@ pItemAdrenaline)
@@ -957,8 +957,8 @@ class CSZMPlayer
 
 	void ShowStatsEnd()
 	{
-		string strStatsHead = "Ваша статистика раунда:\n";
-		string strStats = strStatsHead + " Убийства зомби: " + formatInt(Kills) + "\n Заражение людей: " + formatInt(Victims);
+		string strStatsHead = TEXT_YourRoundStats + ":\n";
+		string strStats = strStatsHead + " " + TEXT_ZKills + ": " + formatInt(Kills) + "\n " + TEXT_HKills + ": " + formatInt(Victims);
 		ShowTextPlr(ToZPPlayer(PlayerIndex), strStats, 1, 0.00f, 0, 0.25f, 0.25f, 0.00f, 10.10f, Color(205, 205, 220), Color(255, 95, 5));
 	}
 
@@ -1009,7 +1009,7 @@ class CSZMPlayer
 				if (!bAllowZombieRespawn)
 				{
 					ExtraLife--;
-					Chat.CenterMessagePlayer(pBasePlayer, "| Extra Life: "+ExtraLife+" |");
+					Chat.CenterMessagePlayer(pBasePlayer, "| " + TEXT_ExLife + ": "+ExtraLife+" |");
 				}
 			}
 		}
@@ -1077,7 +1077,7 @@ class CSZMPlayer
 				if (pPlayer.GetCurrentWeapon() !is null && LessThanGT(InfResShowTime) && Utils.StrContains("item_antidote", pPlayer.GetCurrentWeapon().GetEntityName()))
 				{
 					InfResShowTime = PlusGT(1.12f);
-					Chat.CenterMessagePlayer(pBasePlayer, strInfRes + formatInt(InfectResist));
+					Chat.CenterMessagePlayer(pBasePlayer, TEXT_InfRes + formatInt(InfectResist));
 				}
 
 				if (pPlayer.GetCurrentWeapon() !is null && pPlayer.GetCurrentWeapon().entindex() != WeaponIndex)
@@ -1387,14 +1387,6 @@ namespace Radio
 	enum eInputs {IP_EXIT, IP_PREV = 8, IP_NEXT, IP_DROP = 11, IP_MENU}
 	const int MaxItemsOnPage = 7;
 	const int DefaultMenuHoldTime = 15;
-	const array<string> gDeniedReason = 
-	{
-		"Недостаточно средств!",
-		"Нет свободного места!",
-		"Максимум доп. здоровья!",
-		"Максимум доп. жизней!",
-		"У вас уже есть броня!"
-	};
 	const array<string> gMenuSound = 
 	{
 		"buttons/button14.wav",
@@ -2053,7 +2045,7 @@ namespace Radio
 
 		if (iTextIndex > -1)
 		{
-			Chat.PrintToChatPlayer(ToBasePlayer(nPlrInd), "{red}*{gold}" + gDeniedReason[iTextIndex]);
+			Chat.PrintToChatPlayer(ToBasePlayer(nPlrInd), "{red}*{gold}" + TEXT_DeniedReason[iTextIndex]);
 		}
 
 		return iResult;
@@ -2124,7 +2116,7 @@ namespace Radio
 			}
 			else
 			{
-				Chat.PrintToChatPlayer(ToBasePlayer(index), strMinDrop);
+				Chat.PrintToChatPlayer(ToBasePlayer(index), TEXT_MinDrop);
 			}
 		}
 		else
@@ -2229,7 +2221,7 @@ void MapPurchase(NetObject@ pData)
 	if (Array_CSZMPlayer[iPlayerIndex].CashBank < iCost)
 	{
 		Engine.EmitSoundPlayer(ToZPPlayer(iPlayerIndex), Radio::gMenuSound[1]);
-		Chat.PrintToChatPlayer(ToBasePlayer(iPlayerIndex), "{red}*{gold}" + Radio::gDeniedReason[0]);
+		Chat.PrintToChatPlayer(ToBasePlayer(iPlayerIndex), "{red}*{gold}" + Radio::TEXT_DeniedReason[0]);
 	}
 	else
 	{
@@ -2368,7 +2360,7 @@ HookReturnCode CSZM_RoundWin(const string &in strMapname, RoundWinState iWinStat
 		}
 
 		ApplyVictoryRewards(iWinState);
-		SendGameText(any, "-=Счётчик побед=-" + "\n Люди: " + formatInt(iHumanWin) + "\n Зомби: " + formatInt(iZombieWin), 4, 0, 0, 0.35f, 0.25f, 0, 10.10f, Color(235, 235, 235), Color(255, 95, 5));
+		SendGameText(any, "-=" + TEXT_WinCounter + "=-" + "\n " + TEXT_WHuman + ": " + formatInt(iHumanWin) + "\n " + TEXT_WZombie + ": " + formatInt(iZombieWin), 4, 0, 0, 0.35f, 0.25f, 0, 10.10f, Color(235, 235, 235), Color(255, 95, 5));
 	}
 
 	return HOOK_CONTINUE;
@@ -2845,7 +2837,7 @@ HookReturnCode CSZM_OnPlayerDisconnected(CZP_Player@ pPlayer)
 				flRTWait = 0;
 				Engine.EmitSound("buttons/button8.wav");
 				RoundManager.SetWinState(STATE_STALEMATE);
-				SD(strLastZLeave);
+				SD(TEXT_LastZLeave);
 			}
 		}
 
@@ -2896,8 +2888,6 @@ HookReturnCode CSZM_OnEntityCreation(const string &in strClassname, CBaseEntity@
 
 HookReturnCode CSZM_OnEntityDestruction(const string &in strClassname, CBaseEntity@ pEntity)
 {
-	//SD("[OED]Class: " + strClassname);
-
 	if (bIsCSZM && Utils.StrEql("npc_grenade_frag", strClassname, true))
 	{
 		ShootTracers(pEntity.GetAbsOrigin());
@@ -3051,27 +3041,27 @@ HookReturnCode CSZM_OnEntDamaged(CBaseEntity@ pEntity, CTakeDamageInfo &out Dama
 
 			if (Utils.StrEql("weapon_glock", WeaponName) || Utils.StrEql("weapon_usp", WeaponName) || Utils.StrEql("weapon_glock18c", WeaponName) || Utils.StrEql("weapon_mp5", WeaponName))
 			{
-				flForceMultiplier = 0.59f;
+				flForceMultiplier = 0.75f;
 			}
 			else if (Utils.StrEql("weapon_ppk", WeaponName))
 			{
-				flForceMultiplier = 1.85f;
+				flForceMultiplier = 2.2f;
 			}
 			else if (Utils.StrEql("weapon_m4", WeaponName) || Utils.StrEql("weapon_ak47", WeaponName))
 			{
-				flForceMultiplier = 0.98f;
+				flForceMultiplier = 1.75f;
 			}
 			else if (Utils.StrEql("weapon_870", WeaponName) || Utils.StrEql("weapon_winchester", WeaponName))
 			{
-				flForceMultiplier = 0.195f;
+				flForceMultiplier = 0.525f;
 			}
 			else if (Utils.StrEql("weapon_supershorty", WeaponName))
 			{
-				flForceMultiplier = 0.2675f;
+				flForceMultiplier = 0.65f;
 			}
 			else if (Utils.StrEql("weapon_revolver", WeaponName))
 			{
-				flForceMultiplier = 0.18f;
+				flForceMultiplier = 0.3f;
 			}
 
 			flForceMultiplier *= (flMass * 0.25f);
@@ -3209,7 +3199,7 @@ void AddTime(int &in iTime)
 		}
 	
 		iSeconds += iTime;
-		SendGameText(any, "\n+ " + formatInt(iTime) + " Секунд", 1, 1, -1, 0.0025f, 0, 0.35f, 1.75f, Color(255, 175, 85), Color(0, 0, 0));
+		SendGameText(any, "\n+ " + formatInt(iTime) + " " + TEXT_AddSeconds, 1, 1, -1, 0.0025f, 0, 0.35f, 1.75f, Color(255, 175, 85), Color(0, 0, 0));
 	}
 }
 
@@ -3285,7 +3275,7 @@ void SelectPlrsForInfect()
 		TurnToZombie(iPlayerIndex);
 	}
 
-	SD(strCSZM + "{gold}Произошла мутация зараженных ({red}" + formatInt(iInfected) + " {gold}из {blue}" + formatInt(iSurvCount) + "{gold})");
+	SD("{blue}[{coral}cszm{blue}] {gold}" + TEXT_Mutation + " ({red}" + formatInt(iInfected) + " {gold}/{blue}" + formatInt(iSurvCount) + "{gold})");
 	Engine.EmitSoundPosition(0, "@cszm_fx/misc/suspense.wav", Vector(0, 0, 0), 1.0f, 0, Math::RandomInt(95, 105));
 
 	NetData nData;

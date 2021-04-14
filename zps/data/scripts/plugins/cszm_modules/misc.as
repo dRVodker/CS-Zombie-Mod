@@ -75,18 +75,18 @@ void SetDoorFilter(const int &in iFilter)
 void lobby_hint(CZP_Player@ pPlayer)
 {
 	string sNextLine = "\n";
-	SendGameTextPlayer(pPlayer, strHintF1, 5, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color(64, 128, 255), Color(255, 95, 5));
-	SendGameTextPlayer(pPlayer, "\n" + strHintF3, 4, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color(255, 255, 255), Color(255, 95, 5));
+	SendGameTextPlayer(pPlayer, TEXT_HintF1, 5, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color(64, 128, 255), Color(255, 95, 5));
+	SendGameTextPlayer(pPlayer, "\n" + TEXT_HintF3, 4, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color(255, 255, 255), Color(255, 95, 5));
 }
 
 void lobby_hint_wu(CZP_Player@ pPlayer)
 {
-	SendGameTextPlayer(pPlayer, strHintF4WU, 5, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color(64, 255, 128), Color(255, 95, 5));
+	SendGameTextPlayer(pPlayer, TEXT_HintF4WU, 5, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 120.0f, Color(64, 255, 128), Color(255, 95, 5));
 }
 
 void spec_hint(CZP_Player@ pPlayer)
 {
-	SendGameTextPlayer(pPlayer, strHintF4, 5, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 15.0f, Color(64, 255, 128), Color(255, 95, 5));
+	SendGameTextPlayer(pPlayer, TEXT_HintF4, 5, 0.0f, 0.05f, 0.10f, 0.0f, 2.0f, 15.0f, Color(64, 255, 128), Color(255, 95, 5));
 }
 
 void PutPlrToLobby(CBaseEntity@ pEntPlayer)
@@ -380,6 +380,8 @@ void SetCustomDoorHealth(CBaseEntity@ pEntity, const int &in iPlrCount)
 
 	int NewHealth = int((iPlrCount * flMultiplier) + Math::RandomInt(0, 25));
 
+	//Engine.Ent_Fire_Ent(pEntity, "SetDoorHealth", "" + NewHealth);
+	
 	pEntity.SetMaxHealth(NewHealth);
 	pEntity.SetHealth(NewHealth);
 	pDoor.SetDoorHealth(NewHealth);
@@ -542,7 +544,7 @@ void ApplyVictoryRewards(RoundWinState iWinState)
 			else if (Team == TEAM_ZOMBIES)
 			{
 				pCSZMPlayer.AddMoney(ECO_Lose);
-				Chat.PrintToChatPlayer(ToBasePlayer(i), "{red}" + formatInt(ECO_Lose) + "$ {gold}За поражение в раунде!");
+				Chat.PrintToChatPlayer(ToBasePlayer(i), "{red}" + formatInt(ECO_Lose) + "$ {gold}" + TEXT_ECO_losing + "!");
 				pPlayerEntity.TakeDamage(CTakeDamageInfo(pPlayerEntity, pPlayerEntity, float(pPlayerEntity.GetHealth() + 315.0f), 1));
 			}
 		}
